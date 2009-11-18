@@ -1,0 +1,28 @@
+syntax: glob
+
+Sandcastle/Data/**
+
+Sandcastle/Examples/conceptualExample/**
+Sandcastle/Examples/generic/**
+Sandcastle/Examples/sandcastle/**
+Sandcastle/Examples/Test/**
+Sandcastle/Examples/setPath.bat
+
+Sandcastle/Presentation/hana/**
+Sandcastle/Presentation/Prototype/**
+Sandcastle/Presentation/Shared/**
+Sandcastle/Presentation/vs2005/**
+
+Sandcastle/ProductionTools/**
+
+Sandcastle/ProductionTransforms/**
+
+Sandcastle/Schemas/**
+
+# Exclude build and output dirs
+
+Sandcastle/Examples/vs2010/Intellisense/**
+Sandcastle/Examples/vs2010/Output/**
+Sandcastle/Examples/vs2010/reflection.org
+Sandcastle/Examples/vs2010/manifest.xml
+Sandcastle/Examples/vs2010/reflection.xml
