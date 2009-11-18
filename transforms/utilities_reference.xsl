@@ -7,10 +7,12 @@
         xmlns:msxsl="urn:schemas-microsoft-com:xslt"
     >
 
-  <xsl:import href="../../shared/transforms/utilities_reference.xsl"/>
+  <xsl:import href="../../Shared/transforms/utilities_reference.xsl"/>
 
-  <xsl:output method="xml" omit-xml-declaration="yes" encoding="utf-8" />
-  <!-- <xsl:output method="xml" omit-xml-declaration="yes" encoding="utf-8" doctype-public="-//W3C//DTD HTML 4.0 Transitional//EN" doctype-system="http://www.w3.org/TR/html4/loose.dtd" /> -->
+  <!-- <xsl:output method="xml" omit-xml-declaration="yes" encoding="utf-8" /> -->
+  <xsl:output method="xml" omit-xml-declaration="no" encoding="utf-8"
+							doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
+							doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" />
 
 	<!-- key parameter is the api identifier string -->
 	<xsl:param name="key" />
@@ -33,8 +35,18 @@
 				<xsl:call-template name="insertMetadata" />
 			</head>
 			<body>
-        
-       <xsl:call-template name="upperBodyStuff"/>
+				
+				<div id="ctl00_banner1_banner" class="lw_bannerOuter">
+					<div class="lw_banner">
+						<div class="lw_tabs">
+							<p class="LW_tab">
+								<xsl:call-template name="topicTitlePlain"/>
+							</p>
+						</div>
+					</div>
+				</div>
+				
+				<xsl:call-template name="upperBodyStuff"/>
 				<xsl:call-template name="main"/>
 			</body>
 		</html>
