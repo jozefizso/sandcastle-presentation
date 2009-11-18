@@ -1,5 +1,5 @@
 
-# Sandcastle build script overrides for vs2005 doc model.
+# Sandcastle build script overrides for vs2010 doc model.
 
 . $DxRoot\Presentation\Shared\SharedDocModel.ps1
 
