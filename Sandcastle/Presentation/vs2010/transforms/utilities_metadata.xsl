@@ -7,7 +7,7 @@
         xmlns:msxsl="urn:schemas-microsoft-com:xslt"
    >
 
-  <xsl:import href="%DXROOT%/shared/transforms/utilities_metadata.xsl" />
+  <xsl:import href="%DXROOT%/Presentation/shared/transforms/utilities_metadata.xsl" />
 
   <xsl:template name="insertMetadata">
 		<xsl:if test="$metadata='true'">

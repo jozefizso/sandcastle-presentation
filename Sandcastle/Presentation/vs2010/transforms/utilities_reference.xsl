@@ -7,7 +7,7 @@
         xmlns:msxsl="urn:schemas-microsoft-com:xslt"
     >
 
-  <xsl:import href="%DXROOT%/Shared/transforms/utilities_reference.xsl"/>
+  <xsl:import href="%DXROOT%/Presentation/Shared/transforms/utilities_reference.xsl"/>
 
   <!-- <xsl:output method="xml" omit-xml-declaration="yes" encoding="utf-8" /> -->
   <xsl:output method="xml" omit-xml-declaration="no" encoding="utf-8"
