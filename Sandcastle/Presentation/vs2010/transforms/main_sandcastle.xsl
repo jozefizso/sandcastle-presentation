@@ -3,7 +3,6 @@
 
   <!-- stuff specified to comments authored in DDUEXML -->
 
-
   <xsl:include href="htmlBody.xsl"/>
   <xsl:include href="utilities_reference.xsl" />
 

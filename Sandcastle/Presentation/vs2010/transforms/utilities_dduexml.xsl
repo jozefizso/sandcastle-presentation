@@ -7,7 +7,7 @@
         xmlns:msxsl="urn:schemas-microsoft-com:xslt"
    >
 
-  <xsl:import href="../../shared/transforms/utilities_dduexml.xsl" />
+  <xsl:import href="$DXROOT/shared/transforms/utilities_dduexml.xsl" />
 
   <!-- sections -->
 
