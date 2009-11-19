@@ -7,5 +7,5 @@ if not exist Output\media mkdir Output\media
 copy "%DXROOT%\Presentation\vs2010\icons\*" Output\icons
 copy "%DXROOT%\Presentation\vs2010\scripts\*" Output\scripts
 copy "%DXROOT%\Presentation\vs2010\styles\*" Output\styles
-if not exist Intellisense mkdir Intellisense
 
+REM if not exist Intellisense mkdir Intellisense

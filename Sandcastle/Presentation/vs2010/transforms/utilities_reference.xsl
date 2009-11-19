@@ -36,7 +36,7 @@
 			</head>
 			<body>
 				
-				<div id="ctl00_banner1_banner" class="lw_bannerOuter">
+				<div class="lw_bannerOuter">
 					<div class="lw_banner">
 						<div class="lw_tabs">
 							<p class="LW_tab">

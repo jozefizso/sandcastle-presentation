@@ -12,5 +12,3 @@ set PATH=%TOOLSPATH%\HTML Help Workshop;%TOOLSPATH%\Microsoft Help 2.0 SDK;%PATH
 REM ********** Call BuildAssembler ****************************
 echo BuildAssemler
 BuildAssembler /config:"%DXROOT%\Presentation\vs2010\configuration\sandcastle.config" manifest.xml
-
-:end

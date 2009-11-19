@@ -74,12 +74,14 @@
 	<item id="copyHoverImage">CopyHover image</item>
 	<item id="copyImage">Copy image</item>
 	<item id="footerImage">Footer image</item>
-	
-  	 <!-- product labels -->
-  	<item id="framework">.NET Framework</item>
-  	<item id="compact">.NET Compact Framework</item>
-  	<item id="everett">1.1</item>
-  	<item id="whidbey">2.0</item>
+
+  <!-- product labels -->
+  <item id="framework">.NET Framework</item>
+  <item id="compact">.NET Compact Framework</item>
+  <item id="everett">1.1</item>
+  <item id="whidbey">2.0</item>
+  <item id="winfx">3.0</item>
+  <item id="orcas">3.5</item>
 
 	<item id="copyCode">Copy Code</item>
   	
@@ -243,8 +245,7 @@
 <item id="MailToLink">javascript:SubmitFeedback('<include item="feedback_alias" />','<include item="feedback_product" />','<include item="feedback_deliverable" />','<include item="feedback_fileVersion" />','<include item="feedback_topicVersion" />','<include item="feedback_body" />','<include item="feedback_subject" />');</item> 
 -->
   
-<item id="copyrightStatement"><include item="copyrightText"/></item>
-
-<item id="copyrightText">&#169; 2005 Microsoft Corporation. All rights reserved.</item> 
+  <item id="copyrightStatement"><include item="copyrightText"/></item>
+  <item id="copyrightText">&#169; 2005 Microsoft Corporation. All rights reserved.</item> 
 
 </content>
