@@ -1,0 +1,42 @@
+﻿<document>
+  <reference>
+    <topicdata group="api" />
+    <apidata name="Value" group="member" subgroup="property" />
+    <memberdata visibility="public" />
+    <proceduredata virtual="false" />
+    <propertydata get="true" />
+    <getter name="get_Value" />
+    <returns>
+      <type api="T:System.Int32" ref="false" />
+    </returns>
+    <containers>
+      <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+        <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+        <noAptca />
+      </library>
+      <namespace api="N:TestNamespace">
+        <topicdata group="api" />
+        <apidata name="TestNamespace" group="namespace" />
+        <file name="N_TestNamespace" />
+      </namespace>
+      <type api="T:TestNamespace.StoredNumber" ref="true">
+        <apidata name="StoredNumber" group="type" subgroup="class" />
+        <typedata visibility="public" serializable="true" layout="auto" format="ansi" />
+      </type>
+      <summary> 
+            Tests whether sandcastle can handle all c# tags as defined at http://msdn2.microsoft.com/en-us/library/5ast78ax.aspx.
+            Comments of method "Increment (int step)" include almost all tags.
+            Method "Swap" is used to test generics tags, such as "typeparam".
+            <threadsafety static="true" instance="false" /></summary>
+    </containers>
+    <file name="P_TestNamespace_StoredNumber_Value" />
+  </reference>
+  <syntax>
+    <div codeLanguage="CSharp">
+      <span class="keyword">public</span> <referenceLink target="T:System.Int32" prefer-overload="false" show-container="false" show-templates="false" show-parameters="false">int</referenceLink> <span class="identifier">Value</span> { <span class="keyword">get</span>; }</div>
+  </syntax>
+  <comments>
+    <summary>Gets the stored number.</summary>
+  </comments>
+  <metadata />
+</document>

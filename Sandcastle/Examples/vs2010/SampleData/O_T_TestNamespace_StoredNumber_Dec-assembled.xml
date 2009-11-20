@@ -1,0 +1,72 @@
+﻿<document>
+  <reference>
+    <topicdata name="Dec" group="list" subgroup="overload" memberSubgroup="method" pseudo="true" allMembersTopicId="AllMembers.T:TestNamespace.StoredNumber" />
+    <apidata name="Dec" group="member" subgroup="method" />
+    <elements>
+      <element api="M:TestNamespace.StoredNumber.Dec">
+        <topicdata group="api" />
+        <apidata name="Dec" group="member" subgroup="method" />
+        <memberdata visibility="public" overload="Overload:TestNamespace.StoredNumber.Dec" />
+        <proceduredata virtual="false" />
+        <containers>
+          <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+            <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+            <noAptca />
+          </library>
+          <namespace api="N:TestNamespace" />
+          <type api="T:TestNamespace.StoredNumber" ref="true" />
+        </containers>
+        <file name="M_TestNamespace_StoredNumber_Dec" />
+        <overloads>
+          <summary>test overlads tag</summary>
+        </overloads>
+      </element>
+      <element api="M:TestNamespace.StoredNumber.Dec(System.Int32)">
+        <topicdata group="api" />
+        <apidata name="Dec" group="member" subgroup="method" />
+        <memberdata visibility="public" overload="Overload:TestNamespace.StoredNumber.Dec" />
+        <proceduredata virtual="false" />
+        <parameters>
+          <parameter name="step">
+            <type api="T:System.Int32" ref="false" />
+          </parameter>
+        </parameters>
+        <containers>
+          <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+            <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+            <noAptca />
+          </library>
+          <namespace api="N:TestNamespace" />
+          <type api="T:TestNamespace.StoredNumber" ref="true" />
+        </containers>
+        <file name="M_TestNamespace_StoredNumber_Dec_1_cd2d7ec9" />
+        <summary>
+            dec by a specified step
+            </summary>
+      </element>
+    </elements>
+    <containers>
+      <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+        <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+      </library>
+      <namespace api="N:TestNamespace">
+        <topicdata group="api" />
+        <apidata name="TestNamespace" group="namespace" />
+        <file name="N_TestNamespace" />
+      </namespace>
+      <type api="T:TestNamespace.StoredNumber" ref="true">
+        <apidata name="StoredNumber" group="type" subgroup="class" />
+        <typedata visibility="public" serializable="true" layout="auto" format="ansi" />
+      </type>
+      <summary> 
+            Tests whether sandcastle can handle all c# tags as defined at http://msdn2.microsoft.com/en-us/library/5ast78ax.aspx.
+            Comments of method "Increment (int step)" include almost all tags.
+            Method "Swap" is used to test generics tags, such as "typeparam".
+            <threadsafety static="true" instance="false" /></summary>
+    </containers>
+    <file name="O_T_TestNamespace_StoredNumber_Dec" />
+  </reference>
+  <syntax />
+  <comments />
+  <metadata />
+</document>

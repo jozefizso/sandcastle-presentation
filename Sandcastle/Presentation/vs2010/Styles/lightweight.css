@@ -1,0 +1,243 @@
+/*
+ * VS 2010 Presentation Template for Sandcastle
+ *
+ * Based on the MSDN Library Lightweight style.
+ */
+
+body {
+	font-family:'Segoe UI', Verdana, Arial;
+	font-size:80%;
+	color:#000;
+	margin:0;
+	padding:0;
+	min-width:500px;
+	background-color:#fff
+}
+
+
+a {
+	color:#2178e0;
+	text-decoration:none
+}
+
+a:link, a:visited {
+	color:#2178e0
+}
+
+a:hover, a:active {
+	color:#2178e0;
+	text-decoration:underline
+}
+
+a img {
+	border:none
+}
+
+/**
+ * Header
+ */
+
+.lw_bannerOuter {
+	background-image:url(../Images/lightweight_topnav_slice.gif);
+	background-repeat:repeat-x;
+	height:30px
+}
+
+.lw_banner {
+	background-color:Transparent;
+	background-image:url(../Images/lightweight_topnav.png);
+	background-repeat:no-repeat;
+	background-position:right;
+	border-bottom:solid 1px #bbb;
+	border-top:solid 1px #bbb;
+	height:28px;
+}
+
+.lw_banner p {
+	margin: 0 10px;
+}
+
+.lw_tabs {
+	position:absolute;
+	top:6px;
+	color:#fff;
+	width: 100%;
+}
+
+.lw_tab a {
+	color:#fff!important
+}
+
+.lw_tab, .lw_selectedTab {
+	height:21px;
+	float:left;
+	padding-left:11px;
+	padding-right:11px
+}
+
+/**
+ * Left navigation
+ */
+.OH_leftNav {
+	float:left;
+	left:0;
+	width:230px;
+	background-color:White;
+	margin-right:1px;
+	overflow:hidden;
+	border-bottom:solid 1px #b8b8bb;
+	padding-top:6px
+}
+
+#toc {
+	width:230px
+}
+
+/**
+ * Content
+ */
+
+.OH_outerDiv {
+	background-color:#fff
+}
+
+.OH_outerContent {
+	_width:100%;
+	float:none;
+	overflow:hidden;
+	padding-left:13px;
+	border-left:solid 1px #b8b8bb;
+	border-bottom:solid 1px #b8b8bb;
+}
+
+div.OH_topic {
+	padding-top:18px
+}
+
+/**
+ * Tables
+ */
+div.OH_outerContent div#mainSection table {
+	border-collapse:collapse;
+	border:1px solid #bbb;
+	margin-bottom:5px;
+	margin-top:5px;
+	margin-right:13px;
+	padding:0;
+	width:auto
+}
+
+div.OH_outerContent div#mainSection table th {
+	background-color:#e5e5e5;
+	font-size:120%;
+	text-align:left;
+	padding-left:13px
+}
+
+/**
+ * Titles
+ */
+.OH_title {
+	font-size:17pt;
+	font-weight:bold;
+	color:#3f529c;
+	padding:0;
+	text-align:left;
+	margin: 0
+}
+
+h3 {
+	font-size:1.1em;
+	font-weight:bold
+}
+
+h4 {
+	font-size:100%
+}
+
+.subHeading {
+	font-weight:bold;
+	margin:0
+}
+
+/**
+ * Region titles
+ */
+ 
+.regionArea {
+	height:20px;
+	margin-bottom:8px
+}
+.regionhr {
+	border:1px solid #e5e5e5;
+	color:#e5e5e5;
+	margin-left:4px
+}
+.regiontitle {
+	font-size:160%;
+	font-weight:bold;
+	color:#3f529c;
+	float:left;
+	padding-right:4px;
+	z-index:2
+}
+.hrdiv {
+	padding-top:12px;
+	padding-left:4px
+}
+
+ul.seeAlsoStyle {
+	padding:0;
+	margin: 0;
+	list-style: none;
+}
+ul.seeAlsoStyle li {
+	padding: 0 0 5px 0;
+	margin: 0;
+}
+
+/**
+ * Notes
+ */
+div#mainBody div.alert {
+	width: 98.9%;
+	padding-bottom: 0.82em;
+}
+
+div#mainBody div.alert TH {
+	text-align:left;
+	padding-left:11px;
+	padding-bottom:0;
+	background-color:#fcfec5!important;
+	border-bottom-style:hidden
+}
+div#mainBody div.alert TH img {
+	padding-right:11px
+}
+div#mainBody div.alert TD {
+	background-color:#fcfec5;
+	padding-left:11px!important;
+	padding-bottom:0!important;
+	padding-top:0!important;
+	border-top-width:0!important
+}
+div#mainBody div.alert TD p {
+	margin-top:0
+}
+
+/**
+ * Footer
+ */
+
+.footerline {
+	border-top: 1px solid #e5e5e5;
+	/*width:100%;*/
+	padding-top:4px;
+	padding-left:13px;
+	padding-bottom:13px;
+	background-color:#f1f1f1
+}
+
+.footerpipe {
+	color:silver
+}

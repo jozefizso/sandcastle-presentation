@@ -1,0 +1,71 @@
+﻿<document>
+  <reference>
+    <topicdata name="StoredNumber" group="list" subgroup="Properties" typeTopicId="T:TestNamespace.StoredNumber" />
+    <apidata name="StoredNumber" group="type" subgroup="class" />
+    <typedata visibility="public" serializable="true" layout="auto" format="ansi" />
+    <elements>
+      <element api="P:TestNamespace.StoredNumber.MyProp">
+        <topicdata group="api" />
+        <apidata name="MyProp" group="member" subgroup="property" />
+        <memberdata visibility="public" />
+        <proceduredata virtual="false" />
+        <propertydata get="true" set="true" />
+        <getter name="get_MyProp" />
+        <setter name="set_MyProp" />
+        <returns>
+          <type api="T:System.Int32" ref="false" />
+        </returns>
+        <containers>
+          <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+            <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+            <noAptca />
+          </library>
+          <namespace api="N:TestNamespace" />
+          <type api="T:TestNamespace.StoredNumber" ref="true" />
+        </containers>
+        <file name="P_TestNamespace_StoredNumber_MyProp" />
+        <summary>
+            see <see langword="null" /> as reference
+            </summary>
+      </element>
+      <element api="P:TestNamespace.StoredNumber.Value">
+        <topicdata group="api" />
+        <apidata name="Value" group="member" subgroup="property" />
+        <memberdata visibility="public" />
+        <proceduredata virtual="false" />
+        <propertydata get="true" />
+        <getter name="get_Value" />
+        <returns>
+          <type api="T:System.Int32" ref="false" />
+        </returns>
+        <containers>
+          <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+            <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+            <noAptca />
+          </library>
+          <namespace api="N:TestNamespace" />
+          <type api="T:TestNamespace.StoredNumber" ref="true" />
+        </containers>
+        <file name="P_TestNamespace_StoredNumber_Value" />
+        <summary>Gets the stored number.</summary>
+      </element>
+    </elements>
+    <containers>
+      <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+        <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+      </library>
+      <namespace api="N:TestNamespace">
+        <topicdata group="api" />
+        <apidata name="TestNamespace" group="namespace" />
+        <file name="N_TestNamespace" />
+      </namespace>
+    </containers>
+    <file name="Properties_T_TestNamespace_StoredNumber" />
+  </reference>
+  <syntax>
+    <div codeLanguage="CSharp">[<referenceLink target="T:System.SerializableAttribute" prefer-overload="false" show-container="false" show-templates="false" show-parameters="false" />]
+<span class="keyword">public</span> <span class="keyword">class</span> <span class="identifier">StoredNumber</span></div>
+  </syntax>
+  <comments />
+  <metadata />
+</document>

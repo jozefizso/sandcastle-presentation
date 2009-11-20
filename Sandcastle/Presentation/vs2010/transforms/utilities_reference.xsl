@@ -26,8 +26,8 @@
   <xsl:template match="/">
 		<html>
 			<head>
-        <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"/>
-        <META NAME="save" CONTENT="history"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="save" content="history"/>
         <title><xsl:call-template name="topicTitlePlain"/></title>
 				<xsl:call-template name="insertStylesheets" />
 				<xsl:call-template name="insertScripts" />
@@ -35,23 +35,28 @@
 				<xsl:call-template name="insertMetadata" />
 			</head>
 			<body>
-				
-				<div class="lw_bannerOuter">
-					<div class="lw_banner">
-						<div class="lw_tabs">
-							<p class="LW_tab">
-								<xsl:call-template name="topicTitlePlain"/>
-							</p>
-						</div>
-					</div>
-				</div>
-				
-				<xsl:call-template name="upperBodyStuff"/>
+				<xsl:call-template name="bodyHeaderMain"/>
 				<xsl:call-template name="main"/>
 			</body>
 		</html>
 	</xsl:template>
 
+
+  <!-- main window -->
+
+  <xsl:template name="main">
+    <div id="OH_outerDiv">
+      <div id="OH_outerContent">
+
+        <!-- 'header' shared content item is used to show optional boilerplate at the top of the topic's scrolling region, e.g. pre-release boilerplate -->
+        <!--<include item="header" />-->
+
+        <xsl:call-template name="body" />
+      </div>
+      <xsl:call-template name="footer" />
+    </div>
+  </xsl:template>
+  
 	<!-- useful global variables -->
 
   <xsl:variable name="group">
@@ -95,8 +100,9 @@
 
 	<xsl:template name="insertStylesheets">
 		<link rel="stylesheet" type="text/css" href="../styles/presentation.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/lightweight.css" />
 		<!-- make mshelp links work -->
-		<link rel="stylesheet" type="text/css" href="ms-help://Hx/HxRuntime/HxLink.css" />
+		<!--<link rel="stylesheet" type="text/css" href="ms-help://Hx/HxRuntime/HxLink.css" />-->
     <!--<link rel="stylesheet" type="text/css" href="ms-help://Dx/DxRuntime/DxLink.css" />-->
 	</xsl:template>
 
@@ -667,23 +673,6 @@
 
 	<!-- Index entry -->
 	
-	<!-- main window -->
-
-  <xsl:template name="main">
-    <div id="mainSection">
-
-      <div id="mainBody">
-        <div id="allHistory" class="saveHistory" onsave="saveAll()" onload="loadAll()"/>
-
-        <!-- 'header' shared content item is used to show optional boilerplate at the top of the topic's scrolling region, e.g. pre-release boilerplate -->
-        <include item="header" />
-        
-        <xsl:call-template name="body" />
-      </div>
-      <xsl:call-template name="foot" />
-    </div>
-    
-  </xsl:template>
 
   <xsl:template name="syntaxBlocks">
 

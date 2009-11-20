@@ -508,7 +508,7 @@
 
   <!-- Footer stuff -->
   
-	<xsl:template name="foot">
+	<!--<xsl:template name="foot">
     <div id="footer">
       <div class="footerLine">
         <img width="100%" height="3px">
@@ -534,7 +534,7 @@
         </parameter>
       </include>
     </div>
-	</xsl:template>
+	</xsl:template>-->
 
   <xsl:template name="seeAlsoSection">
 

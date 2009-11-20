@@ -20,9 +20,10 @@ if not exist Output\media mkdir Output\media
 
 REM Mirror (sync) the contents of the resource folders to the Output
 
+robocopy "%VS2010P%\Images" "Output\Images" /MIR /NJH /NJS /NP /NFL
 robocopy "%VS2010P%\icons" "Output\icons" /MIR /NJH /NJS /NP /NFL
-robocopy "%VS2010P%\scripts" "Output\scripts" /MIR /NJH /NJS /NP /NFL
-robocopy "%VS2010P%\styles" "Output\styles" /MIR /NJH /NJS /NP /NFL
+robocopy "%VS2010P%\Scripts" "Output\Scripts" /MIR /NJH /NJS /NP /NFL
+robocopy "%VS2010P%\Styles" "Output\Styles" /MIR /NJH /NJS /NP /NFL
 
 REM if not exist Intellisense mkdir Intellisense
 

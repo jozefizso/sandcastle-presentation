@@ -3,7 +3,8 @@
 
   <!-- stuff specified to comments authored in DDUEXML -->
 
-  <xsl:include href="htmlBody.xsl"/>
+  <xsl:include href="html_body_header.xsl"/>
+  <xsl:include href="html_body_footer.xsl"/>
   <xsl:include href="utilities_reference.xsl" />
 
   <xsl:variable name="summary" select="normalize-space(/document/comments/summary)" />
@@ -717,34 +718,4 @@
     </xsl:call-template>
   </xsl:template>
 
-  <!-- Footer stuff -->
-
-  <xsl:template name="foot">
-    <div id="footer">
-
-      <div class="footerLine">
-        <img width="100%" height="3px">
-          <includeAttribute name="src" item="iconPath">
-            <parameter>footer.gif</parameter>
-          </includeAttribute>
-          <includeAttribute name="title" item="footerImage" />
-        </img>
-      </div>
-
-      <include item="footer">
-        <parameter>
-          <xsl:value-of select="$key"/>
-        </parameter>
-        <parameter>
-          <xsl:call-template name="topicTitlePlain"/>
-        </parameter>
-        <parameter>
-          <xsl:value-of select="/document/metadata/item[@id='PBM_FileVersion']" />
-        </parameter>
-        <parameter>
-          <xsl:value-of select="/document/metadata/attribute[@name='TopicVersion']" />
-        </parameter>
-      </include>
-    </div>
-  </xsl:template>
 </xsl:stylesheet>

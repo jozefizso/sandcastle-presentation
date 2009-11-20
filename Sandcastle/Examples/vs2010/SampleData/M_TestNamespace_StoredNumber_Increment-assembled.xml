@@ -1,0 +1,41 @@
+﻿<document>
+  <reference>
+    <topicdata group="api" />
+    <apidata name="Increment" group="member" subgroup="method" />
+    <memberdata visibility="public" overload="Overload:TestNamespace.StoredNumber.Increment" />
+    <proceduredata virtual="false" />
+    <containers>
+      <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+        <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+        <noAptca />
+      </library>
+      <namespace api="N:TestNamespace">
+        <topicdata group="api" />
+        <apidata name="TestNamespace" group="namespace" />
+        <file name="N_TestNamespace" />
+      </namespace>
+      <type api="T:TestNamespace.StoredNumber" ref="true">
+        <apidata name="StoredNumber" group="type" subgroup="class" />
+        <typedata visibility="public" serializable="true" layout="auto" format="ansi" />
+      </type>
+      <summary> 
+            Tests whether sandcastle can handle all c# tags as defined at http://msdn2.microsoft.com/en-us/library/5ast78ax.aspx.
+            Comments of method "Increment (int step)" include almost all tags.
+            Method "Swap" is used to test generics tags, such as "typeparam".
+            <threadsafety static="true" instance="false" /></summary>
+    </containers>
+    <file name="M_TestNamespace_StoredNumber_Increment" />
+  </reference>
+  <syntax>
+    <div codeLanguage="CSharp">
+      <span class="keyword">public</span> <span class="keyword">void</span> <span class="identifier">Increment</span>()</div>
+  </syntax>
+  <comments>
+    <summary>
+      <c>Increment</c> method incriments the stored number by one. 
+             <note type="caution">
+             note description here
+            </note><preliminary /></summary>
+  </comments>
+  <metadata />
+</document>

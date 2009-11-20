@@ -7,10 +7,10 @@
          >
 
   <xsl:import href="globalTemplates.xsl"/>
-  <xsl:template name="upperBodyStuff">
-    <input type="hidden" id="userDataCache" class="userDataStyle"/>
-    <input type="hidden" id="hiddenScrollOffset"/>
-    
+  
+  <xsl:template name="bodyHeaderMain">
+    <!-- commonImages - included for backward compatiblity while transforming
+         XSL files to the new style. -->
     <xsl:call-template name="commonImages"/>
 
     <xsl:call-template name="bodyHeader"/>
@@ -18,10 +18,17 @@
   </xsl:template>
 
   <xsl:template name="bodyHeader">
-    <div id="header">
-      <xsl:call-template name="bodyHeaderTopTable"/>
+    <div class="lw_bannerOuter">
+      <div class="lw_banner">
+        <div class="lw_tabs">
+          <!--<xsl:call-template name="bodyHeaderTopTable"/>-->
 
-      <xsl:call-template name="bodyHeaderBottomTable"/>
+          <!--<xsl:call-template name="bodyHeaderBottomTable"/>-->
+          <div class="lw_tab">
+            <a href="/">Home</a>
+          </div>
+        </div>
+      </div>
     </div>
   </xsl:template>
 
@@ -444,6 +451,7 @@ copyImage - overview (not namespace); list (only overload lists ctor, method, pr
 copyHoverImage - overview (not namespace); list (only overload lists ctor, method, prop)
   -->
   <xsl:template name="commonImages">
+    <!-- NOTE: This template should be removed. -->
     <img id="collapseImage" style="display:none; height:0; width:0;">
       <includeAttribute name="src" item="iconPath">
         <parameter>collapse_all.gif</parameter>

@@ -178,19 +178,9 @@
 	<item id="MailToLink">javascript:sendfeedback('Documentation Feedback (Sandcastle CTP): ', '{1}', '');</item>
   -->
 
-<item id="footer">
-<span id="feedbackarea">
-			Send
-		<a>
-			<includeAttribute name="href" item="MailToLink">
-        <parameter>{2}</parameter>
-        <parameter>{3}</parameter>
-      </includeAttribute>
-      feedback
-		</a>
-			on this topic to Microsoft.
-		</span>
-</item>
+  <item id="footer">
+    
+  </item>
   
 <item id="feedbackHeader">
   <span id="headfeedbackarea" class="feedbackhead">
@@ -246,6 +236,6 @@
 -->
   
   <item id="copyrightStatement"><include item="copyrightText"/></item>
-  <item id="copyrightText">&#169; 2005 Microsoft Corporation. All rights reserved.</item> 
+  <item id="copyrightText">&#169; 2009 Jozef Izso. All rights reserved.</item> 
 
 </content>

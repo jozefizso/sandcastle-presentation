@@ -16,6 +16,7 @@ set PATH=%TOOLSPATH%\HTML Help Workshop;%TOOLSPATH%\Microsoft Help 2.0 SDK;%PATH
 
 
 call "%VS2010P%\CleanOutput.bat"
+call "%VS2010P%\CopyOutput.bat"
 
 REM ********** Call BuildAssembler ****************************
 

@@ -1,0 +1,261 @@
+﻿<document>
+  <reference>
+    <topicdata name="StoredNumber" group="list" subgroup="Methods" typeTopicId="T:TestNamespace.StoredNumber" />
+    <apidata name="StoredNumber" group="type" subgroup="class" />
+    <typedata visibility="public" serializable="true" layout="auto" format="ansi" />
+    <elements>
+      <element api="M:System.Object.ToString">
+        <apidata name="ToString" group="member" subgroup="method" />
+        <memberdata visibility="public" />
+        <proceduredata virtual="true" />
+        <returns>
+          <type api="T:System.String" ref="true" />
+        </returns>
+        <containers>
+          <library assembly="mscorlib" module="mscorlib" kind="DynamicallyLinkedLibrary" />
+          <namespace api="N:System" />
+          <type api="T:System.Object" ref="true" />
+        </containers>
+      </element>
+      <element api="M:System.Object.Equals(System.Object)">
+        <apidata name="Equals" group="member" subgroup="method" />
+        <memberdata visibility="public" />
+        <proceduredata virtual="true" />
+        <parameters>
+          <parameter name="obj">
+            <type api="T:System.Object" ref="true" />
+          </parameter>
+        </parameters>
+        <returns>
+          <type api="T:System.Boolean" ref="false" />
+        </returns>
+        <containers>
+          <library assembly="mscorlib" module="mscorlib" kind="DynamicallyLinkedLibrary" />
+          <namespace api="N:System" />
+          <type api="T:System.Object" ref="true" />
+        </containers>
+      </element>
+      <element api="M:System.Object.GetHashCode">
+        <apidata name="GetHashCode" group="member" subgroup="method" />
+        <memberdata visibility="public" />
+        <proceduredata virtual="true" />
+        <returns>
+          <type api="T:System.Int32" ref="false" />
+        </returns>
+        <containers>
+          <library assembly="mscorlib" module="mscorlib" kind="DynamicallyLinkedLibrary" />
+          <namespace api="N:System" />
+          <type api="T:System.Object" ref="true" />
+        </containers>
+      </element>
+      <element api="M:System.Object.GetType">
+        <apidata name="GetType" group="member" subgroup="method" />
+        <memberdata visibility="public" />
+        <proceduredata virtual="false" />
+        <returns>
+          <type api="T:System.Type" ref="true" />
+        </returns>
+        <containers>
+          <library assembly="mscorlib" module="mscorlib" kind="DynamicallyLinkedLibrary" />
+          <namespace api="N:System" />
+          <type api="T:System.Object" ref="true" />
+        </containers>
+      </element>
+      <element api="M:System.Object.Finalize">
+        <apidata name="Finalize" group="member" subgroup="method" />
+        <memberdata visibility="family" />
+        <proceduredata virtual="true" />
+        <containers>
+          <library assembly="mscorlib" module="mscorlib" kind="DynamicallyLinkedLibrary" />
+          <namespace api="N:System" />
+          <type api="T:System.Object" ref="true" />
+        </containers>
+      </element>
+      <element api="M:System.Object.MemberwiseClone">
+        <apidata name="MemberwiseClone" group="member" subgroup="method" />
+        <memberdata visibility="family" />
+        <proceduredata virtual="false" />
+        <returns>
+          <type api="T:System.Object" ref="true" />
+        </returns>
+        <containers>
+          <library assembly="mscorlib" module="mscorlib" kind="DynamicallyLinkedLibrary" />
+          <namespace api="N:System" />
+          <type api="T:System.Object" ref="true" />
+        </containers>
+      </element>
+      <element api="Overload:TestNamespace.StoredNumber.Dec">
+        <element api="M:TestNamespace.StoredNumber.Dec">
+          <topicdata group="api" />
+          <apidata name="Dec" group="member" subgroup="method" />
+          <memberdata visibility="public" overload="Overload:TestNamespace.StoredNumber.Dec" />
+          <proceduredata virtual="false" />
+          <containers>
+            <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+              <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+              <noAptca />
+            </library>
+            <namespace api="N:TestNamespace" />
+            <type api="T:TestNamespace.StoredNumber" ref="true" />
+          </containers>
+          <file name="M_TestNamespace_StoredNumber_Dec" />
+          <overloads>
+            <summary>test overlads tag</summary>
+          </overloads>
+        </element>
+        <element api="M:TestNamespace.StoredNumber.Dec(System.Int32)">
+          <topicdata group="api" />
+          <apidata name="Dec" group="member" subgroup="method" />
+          <memberdata visibility="public" overload="Overload:TestNamespace.StoredNumber.Dec" />
+          <proceduredata virtual="false" />
+          <parameters>
+            <parameter name="step">
+              <type api="T:System.Int32" ref="false" />
+            </parameter>
+          </parameters>
+          <containers>
+            <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+              <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+              <noAptca />
+            </library>
+            <namespace api="N:TestNamespace" />
+            <type api="T:TestNamespace.StoredNumber" ref="true" />
+          </containers>
+          <file name="M_TestNamespace_StoredNumber_Dec_1_cd2d7ec9" />
+          <summary>
+            dec by a specified step
+            </summary>
+        </element>
+        <topicdata name="Dec" group="list" subgroup="overload" memberSubgroup="method" pseudo="true" allMembersTopicId="AllMembers.T:TestNamespace.StoredNumber" />
+        <apidata name="Dec" group="member" subgroup="method" />
+        <containers>
+          <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+            <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+          </library>
+          <namespace api="N:TestNamespace" />
+          <type api="T:TestNamespace.StoredNumber" ref="true" />
+        </containers>
+        <file name="O_T_TestNamespace_StoredNumber_Dec" />
+      </element>
+      <element api="Overload:TestNamespace.StoredNumber.Increment">
+        <element api="M:TestNamespace.StoredNumber.Increment">
+          <topicdata group="api" />
+          <apidata name="Increment" group="member" subgroup="method" />
+          <memberdata visibility="public" overload="Overload:TestNamespace.StoredNumber.Increment" />
+          <proceduredata virtual="false" />
+          <containers>
+            <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+              <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+              <noAptca />
+            </library>
+            <namespace api="N:TestNamespace" />
+            <type api="T:TestNamespace.StoredNumber" ref="true" />
+          </containers>
+          <file name="M_TestNamespace_StoredNumber_Increment" />
+          <summary>
+            <c>Increment</c> method incriments the stored number by one. 
+             <note type="caution">
+             note description here
+            </note><preliminary /></summary>
+        </element>
+        <element api="M:TestNamespace.StoredNumber.Increment(System.Int32)">
+          <topicdata group="api" />
+          <apidata name="Increment" group="member" subgroup="method" />
+          <memberdata visibility="public" overload="Overload:TestNamespace.StoredNumber.Increment" />
+          <proceduredata virtual="false" />
+          <parameters>
+            <parameter name="step">
+              <type api="T:System.Int32" ref="false" />
+            </parameter>
+          </parameters>
+          <containers>
+            <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+              <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+              <noAptca />
+            </library>
+            <namespace api="N:TestNamespace" />
+            <type api="T:TestNamespace.StoredNumber" ref="true" />
+          </containers>
+          <file name="M_TestNamespace_StoredNumber_Increment_1_cd2d7ec9" />
+          <summary>
+            <c>Increment</c> method incriments the stored number by a specified <paramref name="step" />. 
+             <list type="number"><item><description>Item 1.</description></item><item><description>Item 2.</description></item></list><para>see <see cref="T:System.Int32" /></para><para>seealso <seealso cref="T:System.Int64" /></para></summary>
+        </element>
+        <topicdata name="Increment" group="list" subgroup="overload" memberSubgroup="method" pseudo="true" allMembersTopicId="AllMembers.T:TestNamespace.StoredNumber" />
+        <apidata name="Increment" group="member" subgroup="method" />
+        <containers>
+          <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+            <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+          </library>
+          <namespace api="N:TestNamespace" />
+          <type api="T:TestNamespace.StoredNumber" ref="true" />
+        </containers>
+        <file name="O_T_TestNamespace_StoredNumber_Increment" />
+      </element>
+      <element api="M:TestNamespace.StoredNumber.PreliminaryTest">
+        <topicdata group="api" />
+        <apidata name="PreliminaryTest" group="member" subgroup="method" />
+        <memberdata visibility="public" />
+        <proceduredata virtual="false" />
+        <containers>
+          <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+            <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+            <noAptca />
+          </library>
+          <namespace api="N:TestNamespace" />
+          <type api="T:TestNamespace.StoredNumber" ref="true" />
+        </containers>
+        <file name="M_TestNamespace_StoredNumber_PreliminaryTest" />
+      </element>
+      <element api="M:TestNamespace.StoredNumber.Swap``1(``0@,``0@)">
+        <topicdata group="api" />
+        <apidata name="Swap" group="member" subgroup="method" />
+        <memberdata visibility="public" />
+        <proceduredata virtual="false" />
+        <templates>
+          <template name="T" />
+        </templates>
+        <parameters>
+          <parameter name="lhs">
+            <referenceTo>
+              <template name="T" index="0" api="M:TestNamespace.StoredNumber.Swap``1(``0@,``0@)" />
+            </referenceTo>
+          </parameter>
+          <parameter name="rhs">
+            <referenceTo>
+              <template name="T" index="0" api="M:TestNamespace.StoredNumber.Swap``1(``0@,``0@)" />
+            </referenceTo>
+          </parameter>
+        </parameters>
+        <containers>
+          <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+            <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+            <noAptca />
+          </library>
+          <namespace api="N:TestNamespace" />
+          <type api="T:TestNamespace.StoredNumber" ref="true" />
+        </containers>
+        <file name="M_TestNamespace_StoredNumber_Swap``1_2_3b936691" />
+        <summary>
+            Swap data of type <typeparamref name="T" /></summary>
+      </element>
+    </elements>
+    <containers>
+      <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+        <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+      </library>
+      <namespace api="N:TestNamespace">
+        <topicdata group="api" />
+        <apidata name="TestNamespace" group="namespace" />
+        <file name="N_TestNamespace" />
+      </namespace>
+    </containers>
+    <file name="Methods_T_TestNamespace_StoredNumber" />
+  </reference>
+  <syntax>
+    <div codeLanguage="CSharp">[<referenceLink target="T:System.SerializableAttribute" prefer-overload="false" show-container="false" show-templates="false" show-parameters="false" />]
+<span class="keyword">public</span> <span class="keyword">class</span> <span class="identifier">StoredNumber</span></div>
+  </syntax>
+  <comments />
+  <metadata />
+</document>
