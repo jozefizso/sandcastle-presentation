@@ -81,7 +81,7 @@ a img {
 .OH_leftNav {
 	float:left;
 	left:0;
-	width:230px;
+	width:280px;
 	background-color:White;
 	margin-right:1px;
 	overflow:hidden;
@@ -91,6 +91,66 @@ a img {
 
 #toc {
 	width:230px
+}
+
+/**
+ * Search
+ */
+ 
+.SearchWrapper {
+	width:256px;
+	margin-left:12px;
+	margin-right:12px;
+	height:24px
+}
+
+.lt_image {
+	float:left;
+	top:0
+}
+
+.SearchPanel {
+	background-image:url(../Images/slice_Search.gif);
+	background-repeat:repeat-x;
+	float:left;
+	font-style:italic;
+	height:26px
+}
+
+.SearchBox, .SearchBoxActive {
+	float:left;
+	padding-left:1px;
+	padding-right:1px;
+	padding-top:4px;
+	display:inline;
+	width:226px;
+	line-height:12px;
+	font-size:11px;
+	font-style:italic;
+	border-width:0;
+	margin-top:1px;
+	margin-bottom:1px;
+	height:16px
+}
+
+.SearchBox, .SearchBox2 {
+	color:#d6d6d6
+}
+
+.SearchButton {
+	margin-left:1px;
+	vertical-align:middle;
+	margin-top:2px
+}
+
+.SearchButton img {
+	text-decoration:none;
+	cursor:pointer
+}
+
+.rt_image {
+	float:left;
+	top:0
 }
 
 /**

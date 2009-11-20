@@ -51,6 +51,7 @@
         <!-- 'header' shared content item is used to show optional boilerplate at the top of the topic's scrolling region, e.g. pre-release boilerplate -->
         <!--<include item="header" />-->
 
+        <xsl:call-template name="navigation" />
         <xsl:call-template name="body" />
       </div>
       <xsl:call-template name="footer" />

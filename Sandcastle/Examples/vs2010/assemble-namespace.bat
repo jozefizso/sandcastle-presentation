@@ -20,9 +20,9 @@ call "%VS2010P%\CopyOutput.bat"
 
 REM ********** Call BuildAssembler ****************************
 
-set SandcastleConfig=SampleData\Sandcastle-NS.config
-set InputFile=SampleData\N_TestNamespace-assembled.xml
+rem set SandcastleConfig=SampleData\Sandcastle-NS.config
+set SandcastleConfig=%VS2010P%\configuration\sandcastle.config
 
-BuildAssembler /config:"%SandcastleConfig%" "%InputFile%"
+BuildAssembler /config:"%SandcastleConfig%" manifest-ns.xml
 
 endlocal

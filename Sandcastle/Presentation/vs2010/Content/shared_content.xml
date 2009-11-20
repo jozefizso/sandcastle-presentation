@@ -2,6 +2,7 @@
  xmlns:MSHelp="http://msdn.microsoft.com/mshelp">
 
 	<!-- paths -->
+	<item id="imagePath">../Images/{0}</item>
 	<item id="iconPath">../icons/{0}</item>
 	<item id="scriptPath">../scripts/{0}</item>
 	<item id="artPath">../art/{0}</item>
@@ -235,7 +236,10 @@
 <item id="MailToLink">javascript:SubmitFeedback('<include item="feedback_alias" />','<include item="feedback_product" />','<include item="feedback_deliverable" />','<include item="feedback_fileVersion" />','<include item="feedback_topicVersion" />','<include item="feedback_body" />','<include item="feedback_subject" />');</item> 
 -->
   
+  <!-- copyright -->
   <item id="copyrightStatement"><include item="copyrightText"/></item>
   <item id="copyrightText">&#169; 2009 Jozef Izso. All rights reserved.</item> 
 
+  <!-- search -->
+  <item id="searchInputText">Search documentation</item> 
 </content>

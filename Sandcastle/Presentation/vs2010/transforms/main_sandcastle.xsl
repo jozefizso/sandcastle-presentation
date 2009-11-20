@@ -4,7 +4,9 @@
   <!-- stuff specified to comments authored in DDUEXML -->
 
   <xsl:include href="html_body_header.xsl"/>
+  <xsl:include href="html_body_navigation.xsl"/>
   <xsl:include href="html_body_footer.xsl"/>
+  
   <xsl:include href="utilities_reference.xsl" />
 
   <xsl:variable name="summary" select="normalize-space(/document/comments/summary)" />
