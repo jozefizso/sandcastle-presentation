@@ -171,7 +171,7 @@ a img {
 }
 
 div.OH_topic {
-	padding-top:18px
+	padding:18px 0
 }
 
 /**
@@ -192,6 +192,31 @@ div.OH_outerContent div#mainSection table th {
 	font-size:120%;
 	text-align:left;
 	padding-left:13px
+}
+
+.tableSection table th {
+	border:1px solid #bbb;
+	color:#000;
+	background-color:#e5e5e5;
+	padding-left:13px;
+	padding-right:13px;
+	vertical-align:middle;
+	text-align:left;
+	font-size:120%;
+	height:21px;
+	font-style:normal;
+	font-weight:normal
+}
+
+.tableSection table p {
+	margin:0
+}
+
+div.OH_outerContent div#mainSection table td {
+	border:1px solid #bbb;
+	color:#000;
+	padding:13px;
+	VERTICAL-ALIGN:top
 }
 
 /**
@@ -225,8 +250,8 @@ h4 {
  */
  
 .regionArea {
-	height:20px;
-	margin-bottom:8px
+	/*height:20px;*/
+	margin:12px 0 8px 0;
 }
 .regionhr {
 	border:1px solid #e5e5e5;
@@ -238,7 +263,8 @@ h4 {
 	font-weight:bold;
 	color:#3f529c;
 	float:left;
-	padding-right:4px;
+	padding:0 4px 0 0;
+	margin:0;
 	z-index:2
 }
 .hrdiv {
@@ -254,6 +280,28 @@ ul.seeAlsoStyle {
 ul.seeAlsoStyle li {
 	padding: 0 0 5px 0;
 	margin: 0;
+}
+
+/**
+ * Topic metadata
+ */
+.topicMetaVersion {
+	font-family:'Segoe UI', Verdana, Arial;
+	color:#7d7d7d;
+	font-size:10pt;
+	margin: 0;
+}
+.topicMetaVersion strong {
+	padding-right:5px;
+	padding-left:5px;
+	color:#e66a38;
+	font-weight:normal
+}
+
+.topicMetaVersion a {
+	padding-right:5px;
+	padding-left:5px;
+	color:#2178e0
 }
 
 /**

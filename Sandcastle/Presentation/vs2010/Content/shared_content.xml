@@ -55,6 +55,7 @@
 	<item id="JSharpLabel">J#</item>
 	<item id="JScriptLabel">JScript</item>
   <item id="JavaScriptLabel">JavaScript</item>
+	<item id="FSharpLabel">F#</item>
   <item id="XAMLLabel">XAML</item>
 
   <!-- section titles -->
@@ -100,14 +101,15 @@
   <item id="devlangsDropdown">Code: {0}</item>
   <item id="all">All</item>
   <item id="multiple">Multiple</item>
-  <item id="VisualBasic">Visual Basic</item>
-  <item id="VBScript">Visual Basic Script</item>
+  <item id="VisualBasic">VB</item>
+  <item id="VBScript">VBScript</item>
   <item id="CSharp">C#</item>
-  <item id="ManagedCPlusPlus">Visual C++</item>
+  <item id="ManagedCPlusPlus">C++</item>
   <item id="JSharp">J#</item>
   <item id="JScript">JScript</item>
   <item id="xmlLang">Xml</item>
-  <item id="JavaScript">JavaScript</item>
+  <item id="JavaScript">JS</item>
+  <item id="FSharp">F#</item>
   <item id="html">Html</item>
   <item id="visualbasicANDcsharp"><include item="VisualBasic"/> and <include item="CSharp"/></item>
   <item id="other"></item>
@@ -241,5 +243,6 @@
   <item id="copyrightText">&#169; 2009 Jozef Izso. All rights reserved.</item> 
 
   <!-- search -->
-  <item id="searchInputText">Search documentation</item> 
+  <item id="searchInputText">Search documentation</item>
+  <item id="print">Print</item>
 </content>

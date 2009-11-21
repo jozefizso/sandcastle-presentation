@@ -63,6 +63,8 @@
     <file name="Properties_T_TestNamespace_StoredNumber" />
   </reference>
   <syntax>
+    <div codeLanguage="VisualBasic">&lt;<referenceLink target="T:System.SerializableAttribute" prefer-overload="false" show-container="false" show-templates="false" show-parameters="false" />&gt; _
+<span class="keyword">Public</span> <span class="keyword">Class</span> <span class="identifier">StoredNumber</span></div>
     <div codeLanguage="CSharp">[<referenceLink target="T:System.SerializableAttribute" prefer-overload="false" show-container="false" show-templates="false" show-parameters="false" />]
 <span class="keyword">public</span> <span class="keyword">class</span> <span class="identifier">StoredNumber</span></div>
   </syntax>

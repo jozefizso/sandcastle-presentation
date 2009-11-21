@@ -21,9 +21,6 @@
     <div class="lw_bannerOuter">
       <div class="lw_banner">
         <div class="lw_tabs">
-          <!--<xsl:call-template name="bodyHeaderTopTable"/>-->
-
-          <!--<xsl:call-template name="bodyHeaderBottomTable"/>-->
           <div class="lw_tab">
             <a href="/">Home</a>
           </div>

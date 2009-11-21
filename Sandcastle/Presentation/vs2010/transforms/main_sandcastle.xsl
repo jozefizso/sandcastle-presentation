@@ -5,6 +5,7 @@
 
   <xsl:include href="html_body_header.xsl"/>
   <xsl:include href="html_body_navigation.xsl"/>
+  <xsl:include href="html_body.xsl"/>
   <xsl:include href="html_body_footer.xsl"/>
   
   <xsl:include href="utilities_reference.xsl" />
@@ -15,72 +16,6 @@
                            ($group='type' or $group='member' or $group='list'))"/>
   <xsl:variable name="examplesSection" select="boolean(string-length(/document/comments/example[normalize-space(.)]) > 0)"/>
   <xsl:variable name="languageFilterSection" select="boolean(string-length(/document/comments/example[normalize-space(.)]) > 0)" />
-
-  <xsl:template name="body">
-
-    <!-- auto-inserted info -->
-    <!-- <xsl:apply-templates select="/document/reference/attributes" /> -->
-    <xsl:apply-templates select="/document/comments/preliminary" />
-    <xsl:apply-templates select="/document/comments/summary" />
-    <xsl:if test="$subgroup='overload'">
-      <xsl:apply-templates select="/document/reference/elements" mode="overloadSummary" />
-    </xsl:if>
-    <!-- assembly information -->
-    <xsl:if test="not($group='list' or $group='root' or $group='namespace')">
-      <xsl:call-template name="requirementsInfo"/>
-    </xsl:if>
-    <!-- syntax -->
-    <xsl:if test="not($group='list' or $group='namespace')">
-      <xsl:apply-templates select="/document/syntax" />
-    </xsl:if>
-    <!-- members -->
-    <xsl:choose>
-      <xsl:when test="$group='root'">
-        <xsl:apply-templates select="/document/reference/elements" mode="root" />
-      </xsl:when>
-      <xsl:when test="$group='namespace'">
-        <xsl:apply-templates select="/document/reference/elements" mode="namespace" />
-      </xsl:when>
-      <xsl:when test="$subgroup='enumeration'">
-        <xsl:apply-templates select="/document/reference/elements" mode="enumeration" />
-      </xsl:when>
-      <xsl:when test="$group='type'">
-        <xsl:apply-templates select="/document/reference/elements" mode="type" />
-      </xsl:when>
-      <xsl:when test="$group='list'">
-        <xsl:choose>
-          <xsl:when test="$subgroup='overload'">
-            <xsl:apply-templates select="/document/reference/elements" mode="overload" />
-          </xsl:when>
-          <xsl:when test="$subgroup='DerivedTypeList'">
-            <xsl:apply-templates select="/document/reference/elements" mode="derivedType" />
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:apply-templates select="/document/reference/elements" mode="member" />
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:when>
-    </xsl:choose>
-    <!-- remarks -->
-    <xsl:apply-templates select="/document/comments/remarks" />
-    <!-- example -->
-    <xsl:apply-templates select="/document/comments/example" />
-    <!-- other comment sections -->
-    <!-- permissions -->
-    <xsl:call-template name="permissions" />
-    <!-- exceptions -->
-    <xsl:call-template name="exceptions" />
-    <!-- inheritance -->
-    <xsl:apply-templates select="/document/reference/family" />
-    <xsl:apply-templates select="/document/comments/threadsafety" />
-    <!--versions-->
-    <xsl:if test="not($group='list' or $group='namespace' or $group='root' )">
-      <xsl:apply-templates select="/document/reference/versions" />
-    </xsl:if>
-    <!-- see also -->
-    <xsl:call-template name="seealso" />
-
-  </xsl:template>
 
   <xsl:template name="getParameterDescription">
     <xsl:param name="name" />
@@ -580,9 +515,7 @@
           <include item="syntaxTitle"/>
         </xsl:with-param>
         <xsl:with-param name="content">
-          <div id="syntaxCodeBlocks" class="code">
-            <xsl:call-template name="syntaxBlocks" />
-          </div>
+          <xsl:call-template name="syntaxBlocks" />
           <!-- parameters & return value -->
           <xsl:apply-templates select="/document/reference/parameters" />
           <xsl:apply-templates select="/document/reference/templates" />
@@ -674,24 +607,18 @@
     <xsl:param name="title" />
     <xsl:param name="content" />
 
-    <xsl:variable name="toggleTitle" select="concat($toggleSwitch,'Toggle')" />
+    <!--<xsl:variable name="toggleTitle" select="concat($toggleSwitch,'Toggle')" />-->
     <xsl:variable name="toggleSection" select="concat($toggleSwitch,'Section')" />
 
-    <h1 class="heading">
-      <span onclick="ExpandCollapse({$toggleTitle})" style="cursor:default;" onkeypress="ExpandCollapse_CheckKey({$toggleTitle}, event)" tabindex="0">
-        <img id="{$toggleTitle}" class="toggle" name="toggleSwitch">
-          <includeAttribute name="src" item="iconPath">
-            <parameter>collapse_all.gif</parameter>
-          </includeAttribute>
-        </img>
+    <div class="regionArea">
+      <h2 class="regiontitle">
         <xsl:copy-of select="$title" />
-      </span>
-    </h1>
-
-    <div id="{$toggleSection}" class="section" name="collapseableSection" style="">
-      <xsl:copy-of select="$content" />
+      </h2>
+      <div class='hrdiv'><hr class='regionhr' /></div>
     </div>
 
+    <a id="{$toggleSection}"><xsl:comment/></a>
+    <xsl:copy-of select="$content" />
   </xsl:template>
 
   <xsl:template name="subSection">

@@ -45,13 +45,15 @@
   <!-- main window -->
 
   <xsl:template name="main">
-    <div id="OH_outerDiv">
-      <div id="OH_outerContent">
+    <div class="OH_outerDiv">
+      <xsl:call-template name="navigation" />
+
+      <div class="OH_outerContent">
 
         <!-- 'header' shared content item is used to show optional boilerplate at the top of the topic's scrolling region, e.g. pre-release boilerplate -->
         <!--<include item="header" />-->
+        <!--<xsl:call-template name="bodyHeaderBottomTable"/>-->
 
-        <xsl:call-template name="navigation" />
         <xsl:call-template name="body" />
       </div>
       <xsl:call-template name="footer" />
@@ -100,7 +102,7 @@
   <!-- document head -->
 
 	<xsl:template name="insertStylesheets">
-		<link rel="stylesheet" type="text/css" href="../styles/presentation.css" />
+		<!--<link rel="stylesheet" type="text/css" href="../styles/presentation.css" />-->
     <link rel="stylesheet" type="text/css" href="../styles/lightweight.css" />
 		<!-- make mshelp links work -->
 		<!--<link rel="stylesheet" type="text/css" href="ms-help://Hx/HxRuntime/HxLink.css" />-->
@@ -676,45 +678,71 @@
 	
 
   <xsl:template name="syntaxBlocks">
+    <div class="CodeSnippetContainer">
+      <xsl:apply-templates select="/document/syntax" mode="tabs" />
+      <xsl:apply-templates select="/document/syntax" mode="code" />
+    </div>
+  </xsl:template>
 
-    <xsl:for-each select="/document/syntax/div[@codeLanguage]">
-      <xsl:choose>
-        <xsl:when test="@codeLanguage='VisualBasic'">
-          <xsl:call-template name="languageSyntaxBlock">
-            <xsl:with-param name="language">VisualBasicDeclaration</xsl:with-param>
-          </xsl:call-template>
-        </xsl:when>
-        <xsl:when test="@codeLanguage='JSharp'">
-          <xsl:if test="not(/document/reference/versions) or boolean(/document/reference/versions/versions[@name='netfw']//version[not(@name='netfw35')])">
-            <xsl:call-template name="languageSyntaxBlock" />
-          </xsl:if>
-        </xsl:when>
-        <xsl:when test="@codeLanguage='XAML'">
-          <xsl:call-template name="XamlSyntaxBlock"/>
-        </xsl:when>
-        <xsl:otherwise>
+  <xsl:template match="syntax" mode="tabs">
+    <div class="CodeSnippetContainerTabs">
+      <div class="CodeSnippetContainerTabLeft">
+        <xsl:comment></xsl:comment>
+      </div>
+      
+      <xsl:apply-templates mode="tabs" />
+      
+      <div class="CodeSnippetContainerTabRight">
+        <xsl:comment></xsl:comment>
+      </div>
+    </div>
+  </xsl:template>
+
+  <xsl:template match="syntax" mode="code">
+    <div class="CodeSnippetContainerCodeCollection">
+      <div class="CodeSnippetToolBar">
+        <div class="CodeSnippetToolBarText">
+          <a href="#" class="PrintText">
+            <includeAttribute name="title" item="print" />
+            <include item="print" />
+          </a>
+        </div>
+      </div>
+      <xsl:apply-templates select="div" mode="code" />
+    </div>
+  </xsl:template>
+
+  <xsl:template match="syntax/div" mode="tabs">
+    <xsl:variable name="language" select="@codeLanguage"/>
+    <div class="CodeSnippetContainerTabFirst">
+      <a href="#">
+        <includeAttribute name="title" item="{$language}Label" />
+        <include item="{$language}" />
+      </a>
+    </div>
+  </xsl:template>
+
+  <xsl:template match="syntax/div" mode="code">
+    <xsl:choose>
+      <xsl:when test="@codeLanguage='JSharp'">
+        <xsl:if test="not(/document/reference/versions) or boolean(/document/reference/versions/versions[@name='netfw']//version[not(@name='netfw35')])">
           <xsl:call-template name="languageSyntaxBlock" />
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:for-each>
+        </xsl:if>
+      </xsl:when>
+      <xsl:when test="@codeLanguage='XAML'">
+        <xsl:call-template name="XamlSyntaxBlock"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="languageSyntaxBlock" />
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template name="languageSyntaxBlock">
     <xsl:param name="language" select="@codeLanguage"/>
-    <span codeLanguage="{$language}">
-      <table>
-        <tr>
-          <th>
-            <include item="{$language}" />
-          </th>
-        </tr>
-        <tr>
-          <td>
-            <pre xml:space="preserve"><xsl:text/><xsl:copy-of select="node()"/><xsl:text/></pre>
-          </td>
-        </tr>
-      </table>
-    </span>
+    <div class="CodeSnippetContainerCode">
+      <pre xml:space="preserve" class="libCScode"><xsl:text/><xsl:copy-of select="node()"/><xsl:text/></pre>
+    </div>
   </xsl:template>
 
 	<xsl:template match="elements" mode="root">
@@ -791,8 +819,7 @@
   <xsl:template name="namespaceList">
     <xsl:param name="listSubgroup" />
 
-    <table id="typeList" class="members" frame="lhs" cellpadding="2">
-      <col width="10%"/>
+    <table id="typeList" class="members">
       <tr>
         <th class="iconColumn">
           &#160;

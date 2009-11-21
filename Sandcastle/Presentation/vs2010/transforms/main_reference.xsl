@@ -383,9 +383,7 @@
           <include item="syntaxTitle"/>
         </xsl:with-param>
         <xsl:with-param name="content">
-          <div id="syntaxCodeBlocks" class="code">
-            <xsl:call-template name="syntaxBlocks" />
-          </div>
+          <xsl:call-template name="syntaxBlocks" />
           <!-- parameters & return value -->
           <xsl:apply-templates select="/document/reference/templates" />
           <xsl:apply-templates select="/document/reference/parameters" />

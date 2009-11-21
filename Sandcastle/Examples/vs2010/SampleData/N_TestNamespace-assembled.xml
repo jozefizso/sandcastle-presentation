@@ -23,15 +23,19 @@
             Tests whether sandcastle can handle all c# tags as defined at http://msdn2.microsoft.com/en-us/library/5ast78ax.aspx.
             Comments of method "Increment (int step)" include almost all tags.
             Method "Swap" is used to test generics tags, such as "typeparam".
-            <threadsafety static="true" instance="false" /></summary>
+            </summary>
       </element>
     </elements>
     <file name="N_TestNamespace" />
   </reference>
   <syntax>
+    <div codeLanguage="VisualBasic">
+      <span class="keyword">Namespace</span> <span class="identifier">TestNamespace</span></div>
     <div codeLanguage="CSharp">
       <span class="keyword">namespace</span> <span class="identifier">TestNamespace</span></div>
   </syntax>
-  <comments />
+  <comments>
+    <summary>This is a test of a namespace.</summary>
+  </comments>
   <metadata />
 </document>

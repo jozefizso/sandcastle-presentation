@@ -158,13 +158,13 @@ span.nolink {
 /* Applies to everything below the non-scrolling header region. */
 div#mainSection
 {
-	font-size: 62.5%;
-	width: 100%;
+	/*font-size: 62.5%;
+	width: 100%;*/
 }
 html>body #mainSection
 {
-	font-size:73%;
-	width: 100%;
+	/*font-size:73%;
+	width: 100%;*/
 }
 
 /* Applies to everything below the non-scrolling header region, minus the footer. */
@@ -176,13 +176,13 @@ div#mainBody
 	/*padding-bottom: 20;*/
 }
 
-html>body #mainBody
+/*html>body #mainBody
 {
 	font-size: 93%;
 	margin-left: 15;
 	margin-top: 10;
 	padding-bottom: 20;
-}
+}*/
 
 /* Adds right padding for all blocks in mainBody */
 div#mainBody p, div#mainBody ol, div#mainBody ul, div#mainBody dl
@@ -589,14 +589,14 @@ div#mainSection table th
 	text-align: left;
 }
 
-div#mainSection table td
+/*div#mainSection table td
 {
 	background-color: #F7F7FF;
 	border-bottom: 1px solid #D5D5D3;
 	border-left: 1px none #D5D5D3;
 	padding-left: 5px;
 	padding-right: 5px;
-}
+}*/
 
 /* Formats the first column--the one that displays icons--in mref list tables (such as Public Constructors, 
    Protected Constructors, Public Properties, Protected Properties, and so on). */
