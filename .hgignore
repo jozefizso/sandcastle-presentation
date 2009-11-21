@@ -30,3 +30,5 @@ Sandcastle/Examples/vs2010/reflection.xml
 Vs2010Presentation.suo
 Extensions/Izsaknet.Sandcastle/bin/**
 Extensions/Izsaknet.Sandcastle/obj/**
+
+Extensions/**/bin
