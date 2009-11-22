@@ -3,13 +3,8 @@
  */
 package net.izsak.sandcastle;
 
-import nu.xom.Attribute;
-import nu.xom.Element;
-
 import com.sun.javadoc.ExecutableMemberDoc;
-import com.sun.javadoc.ParamTag;
 import com.sun.javadoc.Parameter;
-import com.sun.javadoc.Tag;
 
 /**
  * @author Jozef Izso
@@ -67,16 +62,16 @@ public abstract class ExecutableMember<T extends ExecutableMemberDoc> extends Me
 	/* (non-Javadoc)
 	 * @see net.izsak.sandcastle.Member#processTag(com.sun.javadoc.Tag, java.lang.String)
 	 */
-	@Override
-	protected Element processTag(Tag tag, String name) {
-		if (tag instanceof ParamTag) {
-			ParamTag pt = (ParamTag)tag;
-			Element elmParam = new Element("param");
-			elmParam.addAttribute(new Attribute("name", pt.parameterName()));
-			elmParam.appendChild(pt.parameterComment());
-			return elmParam;
-		}
-		else
-			return super.processTag(tag, name);
-	}
+//	@Override
+//	protected Element processTag(Tag tag, String name) {
+//		if (tag instanceof ParamTag) {
+//			ParamTag pt = (ParamTag)tag;
+//			Element elmParam = new Element("param");
+//			elmParam.addAttribute(new Attribute("name", pt.parameterName()));
+//			elmParam.appendChild(pt.parameterComment());
+//			return elmParam;
+//		}
+//		else
+//			return super.processTag(tag, name);
+//	}
 }

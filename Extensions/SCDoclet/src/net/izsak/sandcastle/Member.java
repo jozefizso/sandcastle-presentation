@@ -70,9 +70,8 @@ public abstract class Member<T extends Doc> {
 		elm.addAttribute(new Attribute("name", getQualifiedMemberName()));
 		
 		if (this.doc.getRawCommentText().length() > 0) {
-			Element summary = new Element("summary");
-			summary.appendChild(this.doc.commentText());
-			elm.appendChild(summary);
+			SummaryBlockTag summary = new SummaryBlockTag(this.doc);
+			elm.appendChild(summary.toXml());
 		}
 		this.processTags(elm);
 		addContent(elm);
@@ -83,16 +82,10 @@ public abstract class Member<T extends Doc> {
 	
 	protected void processTags(Element member) {
 		for(Tag t : this.doc.tags()) {
-			Element elmTag = processTag(t, t.name().substring(1));
+			BlockTagConverter converter = BlockTagFactory.createConverter(t);
+			Element elmTag = converter.toXml();
 			if (elmTag != null)
 				member.appendChild(elmTag);
 		}
-	}
-
-	
-	protected Element processTag(Tag tag, String name) {
-		Element elmTag = new Element(name);
-		elmTag.appendChild(tag.text());
-		return elmTag;
 	}
 }

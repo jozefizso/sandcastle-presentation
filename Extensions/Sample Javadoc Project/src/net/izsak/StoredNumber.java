@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  * This class tests where Doclet for Sandcastle can handle
  * various features of Java and Javadoc.
+ * It is stored in the package {@link net.izsak}.
  * 
  * @version 1.0
  */
@@ -28,35 +29,53 @@ public final class StoredNumber {
 	/**
 	 * Increments stored number by one.
 	 */
-	public void Increment() {
+	public void increment() {
 		this.value++;
 	}
 
 	/**
 	 * Increments stored number by ammount.
 	 */
-	public void Increment(int ammount) {
+	public void increment(int ammount) {
 		this.value += ammount;
 	}
 	
 	/**
 	 * Decrements stored number by one.
 	 * 
-	 * @deprecated This method is deprecated in favor of {@link Decrement} method.
+	 * @deprecated This method is deprecated in favor of {@link #decrement()} method.
 	 */
 	@Deprecated
-	public void Dec() {
-		this.Decrement();
+	public void dec() {
+		this.decrement();
 	}
 
 	/**
 	 * Decrements stored number by one.
 	 */
-	public int Decrement() {
+	public int decrement() {
 		return --this.value;
 	}
 	
-	public void Throw() throws IllegalStateException {
+	/**
+	 * Add the value of the parameter {@param number} to the value of current object.
+	 * 
+	 * @param number Other number.
+	 * @throws IllegalArgumentException Thrown when {@param number} is null.
+	 */
+	public void add(StoredNumber number) throws IllegalArgumentException {
+		if (number == null)
+			throw new IllegalArgumentException("number");
+		
+		this.value += number.value;
+	}
+	
+	/**
+	 * Always throws an exception.
+	 * 
+	 * @throws IllegalStateException
+	 */
+	public void throwMethod() throws IllegalStateException {
 		throw new IllegalStateException("Illegal state sample.");
 	}
 }

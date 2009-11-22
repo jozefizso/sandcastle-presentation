@@ -14,7 +14,7 @@ import com.sun.javadoc.MethodDoc;
  *
  */
 public class ClassMember extends Member<ClassDoc> {
-
+	
 	/**
 	 * @param doc
 	 */
@@ -28,6 +28,14 @@ public class ClassMember extends Member<ClassDoc> {
 	@Override
 	public String getTypeChar() {
 		return "T";
+	}
+	
+	/* (non-Javadoc)
+	 * @see net.izsak.sandcastle.Member#getFullName()
+	 */
+	@Override
+	public String getFullName() {
+		return this.getDoc().qualifiedTypeName();
 	}
 
 	/* (non-Javadoc)
