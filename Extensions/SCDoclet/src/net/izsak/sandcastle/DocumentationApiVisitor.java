@@ -53,6 +53,14 @@ public class DocumentationApiVisitor {
 		this.doc = doc;
 	}
 	
+	public void setApiWriter(IApiWriter apiWriter) {
+		if (apiWriter == null)
+			throw new IllegalArgumentException("Argument apiWriter cannot be null.");
+		
+		this.writer = apiWriter;
+		this.writer.setApiNamer(this.namer);
+	}
+	
 	/**
 	 * Starts the processing of API and extracting documentation
 	 * and/or API information from packages.

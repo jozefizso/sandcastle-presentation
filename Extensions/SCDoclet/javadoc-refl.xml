@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<reflection>
+    <assemblies/>
+    <apis>
+        <api id="N:net.izsak">
+            <apidata name="net.izsak" group="namespace"/>
+            <elements>
+                <element api="T:net.izsak.StoredNumber"/>
+                <element api="T:net.izsak.SimpleBean"/>
+                <element api="T:net.izsak.Program"/>
+            </elements>
+        </api>
+        <api id="T:net.izsak.Program">
+            <apidata name="Program" group="type" subgroup="class"/>
+            <typedata visibility="public"/>
+            <family>
+                <ancestors>
+                    <type api="T:java.lang.Object" ref="true"/>
+                </ancestors>
+            </family>
+            <elements>
+                <element api="M:net.izsak.Program.#ctor"/>
+                <element api="M:net.izsak.Program.main(java.lang.String)"/>
+            </elements>
+        </api>
+        <api id="T:net.izsak.SimpleBean">
+            <apidata name="SimpleBean" group="type" subgroup="class"/>
+            <typedata visibility="public"/>
+            <family>
+                <ancestors>
+                    <type api="T:java.lang.Object" ref="true"/>
+                </ancestors>
+            </family>
+            <elements>
+                <element api="M:net.izsak.SimpleBean.#ctor"/>
+                <element api="M:net.izsak.SimpleBean.x"/>
+                <element api="M:net.izsak.SimpleBean.getName"/>
+                <element api="M:net.izsak.SimpleBean.setValue(int)"/>
+                <element api="M:net.izsak.SimpleBean.hasValue"/>
+            </elements>
+        </api>
+        <api id="T:net.izsak.StoredNumber">
+            <apidata name="StoredNumber" group="type" subgroup="class"/>
+            <typedata visibility="public" sealed="true"/>
+            <family>
+                <ancestors>
+                    <type api="T:java.lang.Object" ref="true"/>
+                </ancestors>
+            </family>
+            <elements>
+                <element api="M:net.izsak.StoredNumber.#ctor"/>
+                <element api="M:net.izsak.StoredNumber.value"/>
+                <element api="M:net.izsak.StoredNumber.increment"/>
+                <element api="M:net.izsak.StoredNumber.increment(int)"/>
+                <element api="M:net.izsak.StoredNumber.dec"/>
+                <element api="M:net.izsak.StoredNumber.decrement"/>
+                <element api="M:net.izsak.StoredNumber.add(net.izsak.StoredNumber)"/>
+                <element api="M:net.izsak.StoredNumber.throwMethod"/>
+            </elements>
+        </api>
+    </apis>
+</reflection>

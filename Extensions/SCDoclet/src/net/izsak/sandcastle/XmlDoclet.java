@@ -28,10 +28,11 @@ public class XmlDoclet extends Doclet {
 			return false;
 		}
 		
+		visitor.setApiWriter(new ApiWriter());
 		visitor.setRootDoc(root);
 		visitor.visitApi();
 		
-		visitor.saveXml("javadoc.xml");
+		visitor.saveXml("javadoc-refl.xml");
 		return true;
 	}
 

@@ -4,7 +4,9 @@
 package net.izsak.sandcastle;
 
 import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.ConstructorDoc;
 import com.sun.javadoc.Doc;
+import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MemberDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.PackageDoc;
@@ -24,6 +26,21 @@ public class DotNetApiNamer implements IApiNamer {
 	 */
 	@Override
 	public String getApiName(Doc member) {
+		if (member.isClass()) {
+			return this.getClassName((ClassDoc)member);
+		}
+		else if (member.isMethod()) {
+			return this.getMemberName((MemberDoc)member);
+		}
+		else if (member.isConstructor()) {
+			return this.getMemberName((ConstructorDoc)member);
+		}
+		else if (member.isField()) {
+			return this.getMemberName((FieldDoc)member);
+		}
+		else if (member instanceof PackageDoc) {
+			return this.getPackageName((PackageDoc)member);
+		}
 		return null;
 	}
 	
