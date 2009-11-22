@@ -3,6 +3,7 @@
  */
 package net.izsak.sandcastle.tags;
 
+import net.izsak.sandcastle.IApiNamer;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -19,8 +20,8 @@ public class ParamBlockTag extends BlockTagConverter {
 	/**
 	 * 
 	 */
-	public ParamBlockTag(ParamTag tag) {
-		super(tag);
+	public ParamBlockTag(ParamTag tag, IApiNamer apiNamer) {
+		super(tag, apiNamer);
 		this.tag = tag;
 	}
 	

@@ -57,7 +57,10 @@ public class DotNetApiNamer implements IApiNamer {
 				sb.append("(");
 				
 				for (Parameter p : md.parameters()) {
-					sb.append(p.typeName());
+					if (p.type().isPrimitive())
+						sb.append(p.typeName());
+					else
+						sb.append(p.type().asClassDoc().qualifiedName());
 					sb.append(",");
 				}
 				sb.setCharAt(sb.length()-1, ')');

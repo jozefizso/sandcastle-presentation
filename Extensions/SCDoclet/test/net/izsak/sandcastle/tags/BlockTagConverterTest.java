@@ -40,7 +40,7 @@ public class BlockTagConverterTest {
 			allowing(block).inlineTags(); will(returnValue(Arrays.asList(inline).toArray()));
 		}});
 		
-		BlockTagConverter converter = new BlockTagConverter(block);
+		BlockTagConverter converter = new BlockTagConverter(block, null);
 		
 		Element elm = converter.toXml();
 		

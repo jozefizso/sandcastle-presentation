@@ -12,7 +12,7 @@
             <author>Jozef Izso</author>
         </member>
         <member name="M:net.izsak.Program.#ctor"/>
-        <member name="M:net.izsak.Program.main(java.lang.String[])">
+        <member name="M:net.izsak.Program.main(java.lang.String)">
             <summary>Main execution point of the program.</summary>
             <param name="args">Array of arguments.</param>
         </member>
@@ -26,12 +26,12 @@
         <member name="M:net.izsak.SimpleBean.getName">
             <summary>Returns "Simple bean" text.</summary>
         </member>
+        <member name="M:net.izsak.SimpleBean.hasValue">
+            <summary>Returns true when value of x is greater then 0.</summary>
+        </member>
         <member name="M:net.izsak.SimpleBean.setValue(int)">
             <summary>Sets the value of the bean.</summary>
             <param name="x">Actual value to be set.</param>
-        </member>
-        <member name="M:net.izsak.SimpleBean.hasValue">
-            <summary>Returns true when value of x is greater then 0.</summary>
         </member>
         <member name="M:net.izsak.SimpleBean.x"/>
         <member name="T:net.izsak.StoredNumber">
@@ -46,11 +46,14 @@
             </summary>
             <param name="i">The value to which this instance will be initialized.</param>
         </member>
-        <member name="M:net.izsak.StoredNumber.increment">
-            <summary>Increments stored number by one.</summary>
-        </member>
-        <member name="M:net.izsak.StoredNumber.increment(int)">
-            <summary>Increments stored number by ammount.</summary>
+        <member name="M:net.izsak.StoredNumber.add(net.izsak.StoredNumber)">
+            <summary>Add the value of the parameter 
+                <paramref name="number"/> to the value of current object.
+            </summary>
+            <param name="number">Other number.</param>
+            <throws cref="T:java.lang.IllegalArgumentException">Thrown when 
+                <paramref name="number"/> is null.
+            </throws>
         </member>
         <member name="M:net.izsak.StoredNumber.dec">
             <summary>Decrements stored number by one.</summary>
@@ -61,14 +64,11 @@
         <member name="M:net.izsak.StoredNumber.decrement">
             <summary>Decrements stored number by one.</summary>
         </member>
-        <member name="M:net.izsak.StoredNumber.add(StoredNumber)">
-            <summary>Add the value of the parameter 
-                <paramref name="number"/> to the value of current object.
-            </summary>
-            <param name="number">Other number.</param>
-            <throws cref="T:java.lang.IllegalArgumentException">Thrown when 
-                <paramref name="number"/> is null.
-            </throws>
+        <member name="M:net.izsak.StoredNumber.increment">
+            <summary>Increments stored number by one.</summary>
+        </member>
+        <member name="M:net.izsak.StoredNumber.increment(int)">
+            <summary>Increments stored number by ammount.</summary>
         </member>
         <member name="M:net.izsak.StoredNumber.throwMethod">
             <summary>Always throws an exception.</summary>

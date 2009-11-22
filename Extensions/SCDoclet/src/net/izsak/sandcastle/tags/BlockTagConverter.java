@@ -3,6 +3,7 @@
  */
 package net.izsak.sandcastle.tags;
 
+import net.izsak.sandcastle.IApiNamer;
 import nu.xom.Element;
 
 import com.sun.javadoc.Tag;
@@ -14,13 +15,15 @@ import com.sun.javadoc.Tag;
 public class BlockTagConverter {
 	
 	private Tag tag;
+	private IApiNamer apiNamer;
 
 	protected BlockTagConverter() {
-		this(null);
+		this(null, null);
 	}
 	
-	public BlockTagConverter(Tag tag) {
+	public BlockTagConverter(Tag tag, IApiNamer apiNamer) {
 		this.tag = tag;
+		this.apiNamer = apiNamer;
 	}
 	
 	/**
@@ -38,6 +41,10 @@ public class BlockTagConverter {
 		return this.tag.inlineTags();
 	}
 	
+	public IApiNamer getApiNamer() {
+		return this.apiNamer;
+	}
+	
 	public Element toXml() {
 		if (!hasContent())
 			return null;
@@ -45,7 +52,11 @@ public class BlockTagConverter {
 		Element elmTag = new Element(this.getName());
 		addAttributes(elmTag);
 		
-		InlineTagConverter inlines = new InlineTagConverter(this.getTag(), this.getInlineTags());
+		InlineTagConverter inlines = new InlineTagConverter(
+				this.getTag(),
+				this.getInlineTags(),
+				this.apiNamer);
+		
 		inlines.toXml(elmTag);
 		
 		return elmTag;

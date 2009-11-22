@@ -3,6 +3,8 @@
  */
 package net.izsak.sandcastle.tags;
 
+import net.izsak.sandcastle.IApiNamer;
+
 import com.sun.javadoc.Doc;
 import com.sun.javadoc.Tag;
 
@@ -17,8 +19,8 @@ public class SummaryBlockTag extends BlockTagConverter {
 	/**
 	 * @param tag
 	 */
-	public SummaryBlockTag(Doc doc) {
-		super();
+	public SummaryBlockTag(Doc doc, IApiNamer apiNamer) {
+		super(null, apiNamer);
 		this.doc = doc;
 	}
 	

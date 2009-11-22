@@ -125,8 +125,8 @@ public class DocumentationWriter implements IApiWriter {
 		this.elmMembers.appendChild(elmMember);
 	}
 	
-	private static void writeSummary(Element member, Doc doc) {
-		SummaryBlockTag summary = new SummaryBlockTag(doc);
+	private void writeSummary(Element member, Doc doc) {
+		SummaryBlockTag summary = new SummaryBlockTag(doc, this.apiNamer);
 		Element elmSummary = summary.toXml();
 		if (elmSummary != null)
 			member.appendChild(elmSummary);

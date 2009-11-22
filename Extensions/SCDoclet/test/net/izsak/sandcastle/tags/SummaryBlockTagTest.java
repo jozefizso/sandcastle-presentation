@@ -6,6 +6,7 @@ package net.izsak.sandcastle.tags;
 import java.util.Arrays;
 
 import junit.framework.Assert;
+import net.izsak.sandcastle.DotNetApiNamer;
 import nu.xom.Element;
 import nu.xom.Text;
 
@@ -39,7 +40,7 @@ public class SummaryBlockTagTest {
 			allowing(doc).inlineTags(); will(returnValue(Arrays.asList(tag).toArray()));
 		}});
 		
-		SummaryBlockTag summary = new SummaryBlockTag(doc);
+		SummaryBlockTag summary = new SummaryBlockTag(doc, new DotNetApiNamer());
 		
 		Element elm = summary.toXml();
 		

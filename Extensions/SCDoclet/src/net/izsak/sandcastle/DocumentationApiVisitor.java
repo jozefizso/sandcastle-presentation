@@ -86,7 +86,7 @@ public class DocumentationApiVisitor {
 			this.writer.writeClass(cd);
 			this.visitConstructors(Arrays.asList(cd.constructors()));
 			this.visitMethods(Arrays.asList(cd.methods()));
-			this.visitFields(Arrays.asList(cd.fields()));
+			this.visitFields(Arrays.asList(cd.fields(true)));
 		}
 	}
 	

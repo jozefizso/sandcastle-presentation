@@ -3,7 +3,7 @@
  */
 package net.izsak.sandcastle.tags;
 
-import net.izsak.sandcastle.ClassMember;
+import net.izsak.sandcastle.IApiNamer;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -21,8 +21,8 @@ public class ExceptionBlockTag extends BlockTagConverter {
 	 * @param elementName
 	 * @param tag
 	 */
-	public ExceptionBlockTag(ThrowsTag tag) {
-		super(tag);
+	public ExceptionBlockTag(ThrowsTag tag, IApiNamer apiNamer) {
+		super(tag, apiNamer);
 		this.tag = tag;
 	}
 	
@@ -32,9 +32,7 @@ public class ExceptionBlockTag extends BlockTagConverter {
 	@Override
 	protected void addAttributes(Element element) {
 		super.addAttributes(element);
-		ClassMember cm = new ClassMember(this.tag.exceptionType().asClassDoc(), "");
-		String qname = cm.getQualifiedMemberName();
-		
+		String qname = this.getApiNamer().getClassName(this.tag.exceptionType().asClassDoc());		
 		element.addAttribute(new Attribute("cref", qname));
 	}
 

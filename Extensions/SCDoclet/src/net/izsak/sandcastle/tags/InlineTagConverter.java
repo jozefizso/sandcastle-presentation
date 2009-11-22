@@ -3,8 +3,7 @@
  */
 package net.izsak.sandcastle.tags;
 
-import net.izsak.sandcastle.Member;
-import net.izsak.sandcastle.MemberFactory;
+import net.izsak.sandcastle.IApiNamer;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -18,10 +17,12 @@ import com.sun.javadoc.Tag;
 public class InlineTagConverter {
 	private Tag block;
 	private Tag[] inlineTags;
+	private IApiNamer apiNamer;
 	
-	public InlineTagConverter(Tag block, Tag[] inlineTags) {
+	public InlineTagConverter(Tag block, Tag[] inlineTags, IApiNamer apiNamer) {
 		this.block = block;
 		this.inlineTags = inlineTags;
+		this.apiNamer = apiNamer;
 	}
 	
 	public void toXml(Element parent) {
@@ -48,14 +49,14 @@ public class InlineTagConverter {
 	}
 	
 	protected Element processSeeTag(SeeTag tag) {
-		Member<?> member = MemberFactory.createInstance(tag);
+		String qname = getSeeTagTypeName(tag);
 		
-		if (member == null) {
+		if (qname == null) {
 			return processLinkTag(tag);
 		}
-		
+
 		Element elmLink = new Element("see");
-		elmLink.addAttribute(new Attribute("cref", member.getQualifiedMemberName()));
+		elmLink.addAttribute(new Attribute("cref", qname));
 		return elmLink;
 	}
 	
@@ -71,5 +72,19 @@ public class InlineTagConverter {
 		Element elmLink = new Element("paramref");
 		elmLink.addAttribute(new Attribute("name", tag.text()));
 		return elmLink;
+	}
+	
+	protected String getSeeTagTypeName(SeeTag tag) {
+		String qname = null;
+		
+		if (tag.referencedClass() != null) {
+			qname = this.apiNamer.getClassName(tag.referencedClass());
+		} else if (tag.referencedMember() != null) {
+			qname = this.apiNamer.getMemberName(tag.referencedMember());
+		} else if (tag.referencedPackage() != null) {
+			qname = this.apiNamer.getPackageName(tag.referencedPackage());
+		}
+		
+		return qname;
 	}
 }

@@ -15,13 +15,13 @@ import org.junit.Test;
 public class MethodMemberTest {
 	@Test
 	public void isBeanProperty_Test() {
-		assertTrue(MethodMember.isBeanProperty("setName"));
-		assertTrue(MethodMember.isBeanProperty("getName"));
-		assertTrue(MethodMember.isBeanProperty("isEmpty"));
-		assertTrue(MethodMember.isBeanProperty("hasValue"));
+		assertTrue(MemberUtil.isBeanProperty("setName"));
+		assertTrue(MemberUtil.isBeanProperty("getName"));
+		assertTrue(MemberUtil.isBeanProperty("isEmpty"));
+		assertTrue(MemberUtil.isBeanProperty("hasValue"));
 		
-		assertFalse(MethodMember.isBeanProperty("issues"));
-		assertFalse(MethodMember.isBeanProperty("addNumber"));
-		assertFalse(MethodMember.isBeanProperty("increment"));
+		assertFalse(MemberUtil.isBeanProperty("issues"));
+		assertFalse(MemberUtil.isBeanProperty("addNumber"));
+		assertFalse(MemberUtil.isBeanProperty("increment"));
 	}
 }
