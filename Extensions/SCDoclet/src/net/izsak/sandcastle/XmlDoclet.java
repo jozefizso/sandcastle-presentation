@@ -3,6 +3,10 @@
  */
 package net.izsak.sandcastle;
 
+import net.izsak.sandcastle.configuration.DocletOptions;
+
+import org.apache.commons.cli.ParseException;
+
 import com.sun.javadoc.DocErrorReporter;
 import com.sun.javadoc.Doclet;
 import com.sun.javadoc.LanguageVersion;
@@ -15,19 +19,28 @@ import com.sun.javadoc.RootDoc;
 public class XmlDoclet extends Doclet {
 
 	public static boolean start(RootDoc root) {
-		Documentation doc = new Documentation("Sandcastle Doclet");
+		DocumentationApiVisitor visitor = new DocumentationApiVisitor();
+		try {
+			visitor.setOptions(root.options());
+		}
+		catch (ParseException ex) {
+			ex.printStackTrace();
+			return false;
+		}
 		
-		PackageExtractor pe = new PackageExtractor(root);
-		pe.extractPackages(root.classes());
+		visitor.setRootDoc(root);
+		visitor.visitApi();
 		
-		doc.processPackages(pe.getAllPackages());
-		
-		doc.saveXml("javadoc.xml");
+		visitor.saveXml("javadoc.xml");
 		return true;
 	}
 
 	public static int optionLength(String option) {
-		return 2;
+		DocletOptions options = new DocletOptions();
+		if (options.hasOption(option))
+			return options.getOption(option).getArgs() + 1;
+		
+		return 0;
 	}
 
 	public static boolean validOptions(String options[][],

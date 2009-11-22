@@ -45,7 +45,8 @@ public class MemberFactory {
 		} else if (tag.referencedPackage() != null) {
 			member = new PackageMember((PackageDoc)tag.referencedPackage());
 		} else {
-			throw new IllegalArgumentException("Argument doc cannot be converter to Member object.");
+			// normal link to URL
+			return null;
 		}
 		return (Member<T>)member;
 	}

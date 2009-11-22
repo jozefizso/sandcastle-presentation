@@ -25,8 +25,9 @@ public class MethodMember extends ExecutableMember<MethodDoc> {
 	 */
 	@Override
 	public String getTypeChar() {
-		String name = this.getDoc().name();
-		return (name.startsWith("set") || name.startsWith("get")) ? "P" : "M";
+		//String name = this.getDoc().name();
+		//return (isBeanProperty(name)) ? "P" : "M";
+		return "M";
 	}
 
 	/* (non-Javadoc)
@@ -34,5 +35,16 @@ public class MethodMember extends ExecutableMember<MethodDoc> {
 	 */
 	@Override
 	protected void processChildMembers(Element members) {
+	}
+	
+	public static boolean isBeanProperty(String name) {
+		if ((name.startsWith("set") || name.startsWith("get") || name.startsWith("has"))
+				&& name.length() > 3) {
+			return Character.isUpperCase(name.charAt(3));
+		} else if (name.startsWith("is") && name.length() > 2) {
+			return Character.isUpperCase(name.charAt(2));
+		}
+		
+		return false;
 	}
 }

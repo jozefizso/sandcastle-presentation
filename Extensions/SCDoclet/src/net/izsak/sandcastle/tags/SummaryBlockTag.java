@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2009 Jozef Izso. All Rights Reserved.
  */
-package net.izsak.sandcastle;
+package net.izsak.sandcastle.tags;
 
 import com.sun.javadoc.Doc;
 import com.sun.javadoc.Tag;
@@ -36,5 +36,14 @@ public class SummaryBlockTag extends BlockTagConverter {
 	@Override
 	public Tag[] getInlineTags() {
 		return this.doc.inlineTags();
+	}
+	
+	/* (non-Javadoc)
+	 * @see net.izsak.sandcastle.BlockTagConverter#hasContent()
+	 */
+	@Override
+	protected boolean hasContent() {
+		//return this.doc.commentText().length() > 0;
+		return this.getInlineTags().length > 0;
 	}
 }

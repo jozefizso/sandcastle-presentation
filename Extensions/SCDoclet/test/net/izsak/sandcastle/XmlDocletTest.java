@@ -3,9 +3,11 @@
  */
 package net.izsak.sandcastle;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 
@@ -27,5 +29,13 @@ public class XmlDocletTest {
 		boolean success = XmlDoclet.start(root);
 		
 		assertTrue(success);
+	}
+	
+	@Test
+	public void optionLength_Test() {
+		Assert.assertEquals(2, XmlDoclet.optionLength("-doc"));
+		Assert.assertEquals(2, XmlDoclet.optionLength("-metadata"));
+		
+		Assert.assertEquals(0, XmlDoclet.optionLength("-unknownOption"));
 	}
 }

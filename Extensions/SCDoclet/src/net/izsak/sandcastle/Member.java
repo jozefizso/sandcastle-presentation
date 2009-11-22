@@ -3,6 +3,9 @@
  */
 package net.izsak.sandcastle;
 
+import net.izsak.sandcastle.tags.BlockTagConverter;
+import net.izsak.sandcastle.tags.BlockTagFactory;
+import net.izsak.sandcastle.tags.SummaryBlockTag;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -70,8 +73,10 @@ public abstract class Member<T extends Doc> {
 		elm.addAttribute(new Attribute("name", getQualifiedMemberName()));
 		
 		if (this.doc.getRawCommentText().length() > 0) {
-			SummaryBlockTag summary = new SummaryBlockTag(this.doc);
-			elm.appendChild(summary.toXml());
+			SummaryBlockTag summary = new SummaryBlockTag(this.doc); 
+			Element elmSummary = summary.toXml();
+			if (elmSummary != null)
+				elm.appendChild(elmSummary);
 		}
 		this.processTags(elm);
 		addContent(elm);

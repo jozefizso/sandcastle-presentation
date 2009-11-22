@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2009 Jozef Izso. All Rights Reserved.
  */
-package net.izsak.sandcastle;
+package net.izsak.sandcastle.tags;
 
 import com.sun.javadoc.ParamTag;
 import com.sun.javadoc.Tag;

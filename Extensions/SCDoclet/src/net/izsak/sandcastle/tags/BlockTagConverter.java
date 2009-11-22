@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2009 Jozef Izso. All Rights Reserved.
  */
-package net.izsak.sandcastle;
+package net.izsak.sandcastle.tags;
 
 import nu.xom.Element;
 
@@ -39,6 +39,9 @@ public class BlockTagConverter {
 	}
 	
 	public Element toXml() {
+		if (!hasContent())
+			return null;
+		
 		Element elmTag = new Element(this.getName());
 		addAttributes(elmTag);
 		
@@ -49,5 +52,9 @@ public class BlockTagConverter {
 	}
 	
 	protected void addAttributes(Element element) {
+	}
+	
+	protected boolean hasContent() {
+		return (this.getTag() != null) && (!this.getTag().text().isEmpty());
 	}
 }

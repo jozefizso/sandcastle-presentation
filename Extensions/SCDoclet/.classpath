@@ -3,8 +3,22 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/jdk1.6.0_16/lib/tools.jar" sourcepath="C:/Program Files (x86)/Java/jdk1.6.0_16/src.zip"/>
+	<classpathentry kind="lib" path="C:/Program Files (x86)/Java/jdk1.6.0_16/lib/tools.jar" sourcepath="d:/dev/OpenSource/java/langtools/src/share/"/>
 	<classpathentry kind="lib" path="lib/xom-1.2.3.jar" sourcepath="d:/dev/OpenSource/xom/"/>
+	<classpathentry kind="lib" path="lib/jmock-2.5.1/jmock-2.5.1.jar"/>
+	<classpathentry kind="lib" path="lib/jmock-2.5.1/hamcrest-core-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/jmock-2.5.1/hamcrest-library-1.1.jar"/>
+	<classpathentry kind="lib" path="lib/jmock-2.5.1/jmock-junit4-2.5.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="D:/dev/OpenSource/apache.org/commons-cli-1.2/commons-cli-1.2.jar" sourcepath="D:/dev/OpenSource/apache.org/commons-cli-1.2/commons-cli-1.2-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/D:/dev/OpenSource/apache.org/commons-cli-1.2/commons-cli-1.2-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="D:/dev/OpenSource/apache.org/commons-configuration-1.6/commons-configuration-1.6.jar" sourcepath="D:/dev/OpenSource/apache.org/commons-configuration-1.6/commons-configuration-1.6-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/D:/dev/OpenSource/apache.org/commons-configuration-1.6/commons-configuration-1.6-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
