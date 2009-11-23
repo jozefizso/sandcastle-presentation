@@ -11,6 +11,7 @@ import com.sun.javadoc.MemberDoc;
 import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.PackageDoc;
 import com.sun.javadoc.Parameter;
+import com.sun.javadoc.Type;
 
 /**
  * Implements {@link IApiNamer} interfaces providing names
@@ -20,7 +21,13 @@ import com.sun.javadoc.Parameter;
  *
  */
 public class DotNetApiNamer implements IApiNamer {
-
+	
+	public String getApiName(Type type) {
+		String qn = type.qualifiedTypeName();
+		qn = "T:" + qn;
+		return qn;
+	}
+	
 	/* (non-Javadoc)
 	 * @see net.izsak.sandcastle.IApiNamer#getMemberName(com.sun.javadoc.Doc)
 	 */
@@ -36,7 +43,7 @@ public class DotNetApiNamer implements IApiNamer {
 			return this.getMemberName((ConstructorDoc)member);
 		}
 		else if (member.isField()) {
-			return this.getMemberName((FieldDoc)member);
+			return this.getFieldName((FieldDoc)member);
 		}
 		else if (member instanceof PackageDoc) {
 			return this.getPackageName((PackageDoc)member);
@@ -60,6 +67,9 @@ public class DotNetApiNamer implements IApiNamer {
 	 */
 	@Override
 	public String getMemberName(MemberDoc memberDoc) {
+		if (memberDoc.isField())
+			return getFieldName((FieldDoc) memberDoc);
+		
 		String qn = memberDoc.qualifiedName();
 		qn = "M:" + qn;
 		
@@ -78,6 +88,10 @@ public class DotNetApiNamer implements IApiNamer {
 						sb.append(p.typeName());
 					else
 						sb.append(p.type().asClassDoc().qualifiedName());
+					
+					if (p.type().dimension().length() > 0)
+						sb.append(p.type().dimension());
+					
 					sb.append(",");
 				}
 				sb.setCharAt(sb.length()-1, ')');
@@ -88,6 +102,12 @@ public class DotNetApiNamer implements IApiNamer {
 		return qn;
 	}
 
+	public String getFieldName(FieldDoc fieldDoc) {
+		String qn = fieldDoc.qualifiedName();
+		qn = "F:" + qn;
+		return qn;
+	}
+	
 	/**
 	 * Returns fully qualified package name preceeded with N prefix.
 	 * Example: <code>N:net.izsak.sandcastle</code>

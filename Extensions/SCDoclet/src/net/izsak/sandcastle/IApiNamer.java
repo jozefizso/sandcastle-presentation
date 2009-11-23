@@ -5,8 +5,10 @@ package net.izsak.sandcastle;
 
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.Doc;
+import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MemberDoc;
 import com.sun.javadoc.PackageDoc;
+import com.sun.javadoc.Type;
 
 /**
  * IApiNamer interface defines methods that can be used
@@ -16,6 +18,8 @@ import com.sun.javadoc.PackageDoc;
  */
 public interface IApiNamer {
 	
+	public String getApiName(Type type);
+	
 	public String getApiName(Doc member);
 	
 	public String getPackageName(PackageDoc packageDoc);
@@ -23,4 +27,6 @@ public interface IApiNamer {
 	public String getClassName(ClassDoc classDoc);
 	
 	public String getMemberName(MemberDoc memberDoc);
+	
+	public String getFieldName(FieldDoc fieldDoc);
 }

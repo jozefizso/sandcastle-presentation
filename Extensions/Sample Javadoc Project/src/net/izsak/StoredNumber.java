@@ -75,7 +75,7 @@ public final class StoredNumber {
 	 * 
 	 * @throws IllegalStateException
 	 */
-	public void throwMethod() throws IllegalStateException {
+	public static void throwMethod() throws IllegalStateException {
 		throw new IllegalStateException("Illegal state sample.");
 	}
 }

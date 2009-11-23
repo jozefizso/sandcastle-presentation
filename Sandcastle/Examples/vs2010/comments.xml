@@ -4,16 +4,13 @@
         <name>test</name>
     </assembly>
     <members>
-      <member name="N:TestNamespace">
-        <summary>This is a test of a namespace.</summary>
-      </member>
         <member name="T:TestNamespace.StoredNumber">
             <summary> 
             Tests whether sandcastle can handle all c# tags as defined at http://msdn2.microsoft.com/en-us/library/5ast78ax.aspx.
             Comments of method "Increment (int step)" include almost all tags.
             Method "Swap" is used to test generics tags, such as "typeparam".
-            </summary>
             <threadsafety static="true" instance="false"/>
+            </summary>
         </member>
         <member name="M:TestNamespace.StoredNumber.#ctor(System.Int32)">
             <summary>Initializes the stored number class with a starting value.</summary>
@@ -90,6 +87,44 @@
         <member name="P:TestNamespace.StoredNumber.MyProp">
             <summary>
             see <see langword="null"/> as reference
+            </summary>
+        </member>
+        <member name="M:TestNamespace.Program.Main(System.String[])">
+            <summary>
+            Main entry method for the program.
+            </summary>
+            <param name="args"></param>
+        </member>
+        <member name="T:TestNamespace.OtherNamespace.INumbers">
+            <summary>
+            Same test interface.
+            </summary>
+        </member>
+        <member name="T:TestNamespace.OtherNamespace.IWriter`1">
+            <summary>
+            Same test interface.
+            </summary>
+        </member>
+        <member name="M:TestNamespace.OtherNamespace.IWriter`1.Write(System.String)">
+            <summary>
+            Writes text to output and returns object of type <typeparamref name="T"/>
+            </summary>
+            <param name="text"></param>
+            <returns></returns>
+        </member>
+        <member name="T:TestNamespace.OtherNamespace.ClassWithPublicField">
+            <summary>
+            Holds x and y axis values.
+            </summary>
+        </member>
+        <member name="F:TestNamespace.OtherNamespace.ClassWithPublicField.X">
+            <summary>
+            This is the x-axis.
+            </summary>
+        </member>
+        <member name="F:TestNamespace.OtherNamespace.ClassWithPublicField.Y">
+            <summary>
+            This is the y-axis.
             </summary>
         </member>
     </members>

@@ -3,115 +3,110 @@
  */
 package net.izsak.sandcastle.api;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import net.izsak.sandcastle.IApiNamer;
+import net.izsak.sandcastle.ApiWriterContext;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.Doc;
-import com.sun.javadoc.Type;
 
 /**
  * @author Jozef Izso
  *
  */
-public class ClassApiWriter extends MemberApiWriterBase {
+public class ClassApiWriter extends ProgramElementApiWriter {
 
-	private ClassDoc classDoc;
+	ClassDoc classDoc;
 	
-	public ClassApiWriter(IApiNamer apiNamer, ClassDoc classDoc) {
-		super(apiNamer);
+	public ClassApiWriter(ApiWriterContext context, ClassDoc classDoc) {
+		super(context, classDoc);
 		this.classDoc = classDoc;
 	}
-
-	public void write() {
-		super.write(this.classDoc);
+	
+	/* (non-Javadoc)
+	 * @see net.izsak.sandcastle.api.MemberApiWriterBase#writeApiData()
+	 */
+	@Override
+	public void writeApiData() {
+		super.writeApiData();
+	}
+	
+	/* (non-Javadoc)
+	 * @see net.izsak.sandcastle.api.CodeApiWriterBase#writeOtherData()
+	 */
+	@Override
+	protected void writeOtherData() {
+		super.writeOtherData();
 		
-		this.writeApiData(this.classDoc.typeName(), "type",  getSubGroup());
 		this.writeTypeData();
 		this.writeInheritanceInfo();
-		this.writeMembers(this.combineMembers());
+	}
+	
+	/* (non-Javadoc)
+	 * @see net.izsak.sandcastle.api.MemberApiWriterBase#writeMembers()
+	 */
+	@Override
+	protected void writeMembers() {
+		super.writeMembers(this.combineMembers());
+	}
+	
+	/* (non-Javadoc)
+	 * @see net.izsak.sandcastle.api.MemberApiWriterBase#writeContainersCore(nu.xom.Element)
+	 */
+	@Override
+	protected void writeContainersCore(Element elmContainers) {
+		super.writeNamespaceToContainers(elmContainers, this.classDoc.containingPackage());
 	}
 	
 	public String getSubGroup() {
 		return this.classDoc.isOrdinaryClass() ? "class" : "interface";
 	}
 	
-	/**
-	 * Allowed visibility types:
-	 *   - public
-	 *   - family
-	 *   - assembly
-	 *   - family or assembly
-	 *   - family and assembly
-	 *   - private
-	 *   
-	 * @param classDoc
-	 * @return
-	 */
-	public String getVisibility() {
-		int modifiers = this.classDoc.modifierSpecifier();
-		
-		if (Modifier.isPublic(modifiers)) {
-			return "public";
-		} else if (Modifier.isProtected(modifiers)) {
-			return "family"; // protected
-		} else if (Modifier.isPrivate(modifiers)) {
-			return "private";
-		}
-		
-		return "assembly";
-	}
-	
-	public boolean isSealed() {
-		int mod = this.classDoc.modifierSpecifier();
-		return Modifier.isFinal(mod);
-	}
-	
-	public boolean isAbstract() {
-		int mod = this.classDoc.modifierSpecifier();
-		return Modifier.isAbstract(mod);
-	}
-	
 	private void writeTypeData() {
 		String visibility = getVisibility();
-		boolean sealed = isSealed();
+		boolean sealed = isFinal();
 		boolean abstr = isAbstract();
 		
 		Element elmTypeData = new Element("typedata");
 		elmTypeData.addAttribute(new Attribute("visibility", visibility));
-		if (sealed)
-			elmTypeData.addAttribute(new Attribute("sealed", Boolean.toString(sealed)));
-		if (abstr)
-			elmTypeData.addAttribute(new Attribute("abstract", Boolean.toString(abstr)));
+		elmTypeData.addAttribute(new Attribute("sealed", Boolean.toString(sealed)));
+		elmTypeData.addAttribute(new Attribute("abstract", Boolean.toString(abstr)));
+		elmTypeData.addAttribute(new Attribute("serializable", Boolean.toString(false)));
 		
 		this.addElement(elmTypeData);
 	}
 
+	/**
+	 * Generates a list of super classes.
+	 * <family>
+     *  <ancestors>
+     *    <type api="T:java.lang.Object" ref="true" />
+     *  </ancestors>
+     * </family>
+	 */
 	private void writeInheritanceInfo() {
-		Type superclass = this.classDoc.superclassType();
+		ClassDoc superclass = this.classDoc.superclass();
 		if (superclass == null)
 			return;
-		
-		String qname = this.getApiNamer().getClassName(superclass.asClassDoc());
-		
+
 		Element elmFamily = new Element("family");
 		Element elmAncestors = new Element("ancestors");
-		Element elmType = new Element("type");
-		elmType.addAttribute(new Attribute("api", qname));
-		// always true in Java
-		elmType.addAttribute(new Attribute("ref", "true"));
+		
+		writeTypeInfo(superclass, elmAncestors);
 		
 		elmFamily.appendChild(elmAncestors);
-		elmAncestors.appendChild(elmType);
 		this.addElement(elmFamily);
 	}
-	
+
+	/**
+	 * Combines constructors, methods and fields into one array
+	 * so an list of members defined for a class can be created.
+	 * @return
+	 */
 	private Doc[] combineMembers() {
 		List<Doc> members = new ArrayList<Doc>(20);
 		
