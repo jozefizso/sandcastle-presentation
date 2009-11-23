@@ -6,12 +6,13 @@ package net.izsak.sandcastle;
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.ConstructorDoc;
 import com.sun.javadoc.Doc;
+import com.sun.javadoc.ExecutableMemberDoc;
 import com.sun.javadoc.FieldDoc;
 import com.sun.javadoc.MemberDoc;
-import com.sun.javadoc.MethodDoc;
 import com.sun.javadoc.PackageDoc;
 import com.sun.javadoc.Parameter;
 import com.sun.javadoc.Type;
+import com.sun.javadoc.TypeVariable;
 
 /**
  * Implements {@link IApiNamer} interfaces providing names
@@ -23,6 +24,9 @@ import com.sun.javadoc.Type;
 public class DotNetApiNamer implements IApiNamer {
 	
 	public String getApiName(Type type) {
+		if (type instanceof Doc)
+			return getApiName((Doc)type);
+		
 		String qn = type.qualifiedTypeName();
 		qn = "T:" + qn;
 		return qn;
@@ -33,7 +37,7 @@ public class DotNetApiNamer implements IApiNamer {
 	 */
 	@Override
 	public String getApiName(Doc member) {
-		if (member.isClass()) {
+		if (member.isClass() || member.isInterface()) {
 			return this.getClassName((ClassDoc)member);
 		}
 		else if (member.isMethod()) {
@@ -57,9 +61,13 @@ public class DotNetApiNamer implements IApiNamer {
 	 */
 	@Override
 	public String getClassName(ClassDoc classDoc) {
+		StringBuilder sb = new StringBuilder(256);
+		
 		String qn = classDoc.qualifiedName();
-		qn = "T:" + qn;
-		return qn;
+		sb.append("T:");
+		sb.append(qn);
+		this.addGenericTypes(classDoc.typeParameters(), sb);
+		return sb.toString();
 	}
 
 	/* (non-Javadoc)
@@ -70,36 +78,44 @@ public class DotNetApiNamer implements IApiNamer {
 		if (memberDoc.isField())
 			return getFieldName((FieldDoc) memberDoc);
 		
+		if (memberDoc.isMethod() || memberDoc.isConstructor())
+			return getMethodName((ExecutableMemberDoc)memberDoc);
+		
 		String qn = memberDoc.qualifiedName();
-		qn = "M:" + qn;
+		qn = "M:" + qn;		
+		return qn;
+	}
+
+	public String getMethodName(ExecutableMemberDoc methodDoc) {
+		StringBuilder sb = new StringBuilder(256);
+		String qn = methodDoc.qualifiedName();
 		
-		if (memberDoc.isConstructor())
-			qn = qn + ".#ctor";
+		sb.append("M:");
+		sb.append(qn);
 		
-		if (memberDoc.isMethod()) {
-			MethodDoc md = (MethodDoc)memberDoc;
-			if (md.parameters().length > 0) {
-				StringBuilder sb = new StringBuilder(256);
-				sb.append(qn);
-				sb.append("(");
+		if (methodDoc.isConstructor())
+			sb.append(".#ctor");
+		
+		this.addGenericTypes(methodDoc.typeParameters(), sb);
+		
+		if (methodDoc.parameters().length > 0) {
+			sb.append("(");
+			
+			for (Parameter p : methodDoc.parameters()) {
+				if (p.type().isPrimitive())
+					sb.append(p.typeName());
+				else
+					sb.append(p.type().asClassDoc().qualifiedName());
 				
-				for (Parameter p : md.parameters()) {
-					if (p.type().isPrimitive())
-						sb.append(p.typeName());
-					else
-						sb.append(p.type().asClassDoc().qualifiedName());
-					
-					if (p.type().dimension().length() > 0)
-						sb.append(p.type().dimension());
-					
-					sb.append(",");
-				}
-				sb.setCharAt(sb.length()-1, ')');
-				qn = sb.toString();
+				if (p.type().dimension().length() > 0)
+					sb.append(p.type().dimension());
+				
+				sb.append(",");
 			}
+			sb.setCharAt(sb.length()-1, ')');
 		}
 		
-		return qn;
+		return sb.toString();
 	}
 
 	public String getFieldName(FieldDoc fieldDoc) {
@@ -117,6 +133,19 @@ public class DotNetApiNamer implements IApiNamer {
 		String qn = packageDoc.name();
 		qn = "N:" + qn;
 		return qn;
+	}
+	
+	public void addGenericTypes(TypeVariable[] params, StringBuilder sb) {
+		if (params != null && params.length > 0) {
+			sb.append("{");
+			
+			for(TypeVariable var : params) {
+				String name = var.typeName();
+				sb.append(name);
+				sb.append(",");
+			}
+			sb.setCharAt(sb.length()-1, '}');
+		}
 	}
 
 }

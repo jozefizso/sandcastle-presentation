@@ -41,7 +41,7 @@ public abstract class ApiWriterBase implements IApiWriter {
 		
 		try {
 			Serializer serializer = new Serializer(new FileOutputStream(filename));
-			serializer.setIndent(4);
+			serializer.setIndent(2);
 			serializer.setLineSeparator("\n");
 			serializer.write(document);
 		} catch (FileNotFoundException ex) {

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="file:///D:/dev/sc-vs2010/Sandcastle/Examples/vs2010/XslTest/summary.xsl"?>
+<document>
+	<summary>
+		Sample <code>code</code> text.
+		<para>Nový odstavec.</para>
+		Ďaľší text.
+	</summary>
+</document>
