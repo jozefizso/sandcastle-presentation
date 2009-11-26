@@ -6,11 +6,17 @@
     <members>
         <member name="T:TestNamespace.StoredNumber">
             <summary> 
-            Tests whether sandcastle can handle all c# tags as defined at http://msdn2.microsoft.com/en-us/library/5ast78ax.aspx.
-            Comments of method "Increment (int step)" include almost all tags.
-            Method "Swap" is used to test generics tags, such as "typeparam".
-            <threadsafety static="true" instance="false"/>
+            Tests whether Sandcastle can handle all C# tags as defined at http://msdn2.microsoft.com/en-us/library/5ast78ax.aspx.
+            Comments of method <see cref="M:TestNamespace.StoredNumber.Increment(System.Int32)"/> include almost all tags.
+            Method <see cref="M:TestNamespace.StoredNumber.Swap``1(``0@,``0@)"/> is used to test generics tags, such as "typeparam".
             </summary>
+            <threadsafety static="true" instance="false"/>
+            <remarks>
+            This class works only with <see cref="T:System.Int32"/> value type.
+            <para>
+            It can handle positive and negative values.
+            </para>
+            </remarks>
         </member>
         <member name="M:TestNamespace.StoredNumber.#ctor(System.Int32)">
             <summary>Initializes the stored number class with a starting value.</summary>

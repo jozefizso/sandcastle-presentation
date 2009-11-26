@@ -135,6 +135,7 @@ public class CodeApiWriterBase {
 		String name = this.library.getName();
 		elmLib.addAttribute(new Attribute("assembly", name));
 		elmLib.addAttribute(new Attribute("module", name));
+		elmLib.addAttribute(new Attribute("kind", "DynamicallyLinkedLibrary"));
 		
 		elmContainers.appendChild(elmLib);
 		this.writeContainersCore(elmContainers);

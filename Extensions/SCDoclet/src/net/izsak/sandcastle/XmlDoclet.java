@@ -31,8 +31,12 @@ public class XmlDoclet extends Doclet {
 		visitor.setApiWriter(new ApiWriter());
 		visitor.setRootDoc(root);
 		visitor.visitApi();
+		visitor.saveXml("d:\\dev\\sc-vs2010\\Sandcastle\\Examples\\vs2010\\reflection-javadoc.xml");
 		
-		visitor.saveXml("javadoc-refl.xml");
+		visitor.setApiWriter(new DocumentationWriter());
+		visitor.setRootDoc(root);
+		visitor.visitApi();
+		visitor.saveXml("d:\\dev\\sc-vs2010\\Sandcastle\\Examples\\vs2010\\comments-javadoc.xml");
 		return true;
 	}
 

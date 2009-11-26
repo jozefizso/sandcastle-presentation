@@ -3,6 +3,6 @@
 	<syntax />
 	<comments />
   <metadata>
-    <platform name="net" version="3.5" />
+    <platform name="java" version="1.6" />
   </metadata>
 </document>

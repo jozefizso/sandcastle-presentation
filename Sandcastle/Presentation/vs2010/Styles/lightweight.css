@@ -349,3 +349,44 @@ div#mainBody div.alert TD p {
 .footerpipe {
 	color:silver
 }
+
+
+/**
+ * MAML elements
+ */
+
+span.selflink {
+	font-weight:bold
+}
+span.code {
+	font-family:Monospace, Courier New, Courier;
+	font-size:105%;
+	color:#006
+}
+span.ui {
+	font-weight:bold
+}
+span.math {
+	font-style:italic
+}
+span.input {
+	font-weight:bold
+}
+span.term {
+	font-style:italic
+}
+span.label {
+	font-weight:bold
+}
+span.foreignPhrase {
+	font-style:italic
+}
+span.placeholder {
+	font-style:italic
+}
+span.keyword {
+	font-weight:bold
+}
+span.typeparameter {
+	font-style:italic
+}

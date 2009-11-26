@@ -7,12 +7,16 @@
   <!-- topic titles -->
   <item id="tocTitle">{0}</item>
   <item id="rlTitle">{0} ({1})</item>
+  <item id="TopicTitle">Generic topic title</item>
   <item id="rootTopicTitle">Namespaces</item>
 	<item id="namespaceTopicTitle">{0} Namespace</item>
 	<item id="classTopicTitle">{0} Class</item>
 	<item id="structureTopicTitle">{0} Structure</item>
 	<item id="interfaceTopicTitle">{0} Interface</item>
 	<item id="DerivedTypeListTopicTitle">{0} Derived Classes</item>
+  <!-- Java -->
+  <item id="packagesrootTopicTitle">Packages</item>
+	<item id="packageTopicTitle">Package {0}</item>
   
 	<item id="delegateTopicTitle">{0} Delegate</item>
 	<item id="enumerationTopicTitle">{0} Enumeration</item>

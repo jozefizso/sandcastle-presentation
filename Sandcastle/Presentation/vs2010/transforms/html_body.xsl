@@ -22,10 +22,7 @@
           </parameter>
         </include>
       </h1>
-      <p class="topicMetaVersion">
-        This page is specific to: <strong>.NET Framework Version:</strong>
-        2.0 3.0 <strong>3.5</strong> 4.0
-      </p>
+      <xsl:call-template name="platformInformation" />
     </div>
   </xsl:template>
 
@@ -101,6 +98,24 @@
     <xsl:apply-templates select="/document/comments/preliminary" />
     <xsl:apply-templates select="/document/comments/summary" />
   </xsl:template>
-  
+
+  <xsl:template name="platformInformation">
+    <p class="topicMetaVersion">
+      <xsl:if test="not(/document/metadata/platform)">
+        (No platform information found in metadata.)
+      </xsl:if>
+      <xsl:apply-templates select="/document/metadata/platform" />
+    </p>
+  </xsl:template>
+
+  <xsl:template match="metadata/platform">
+    <xsl:variable name="name" select="@name" />
+    <xsl:variable name="version" select="@version" />
+    
+    <include item="{$name}PlatformTitle" />
+    <strong>
+      <xsl:value-of select="@version"/>
+    </strong>
+  </xsl:template>
   
 </xsl:stylesheet>

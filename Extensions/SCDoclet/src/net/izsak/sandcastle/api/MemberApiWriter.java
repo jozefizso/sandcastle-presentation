@@ -9,6 +9,7 @@ import net.izsak.sandcastle.ApiWriterContext;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
+import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.ExecutableMemberDoc;
 import com.sun.javadoc.MemberDoc;
 import com.sun.javadoc.MethodDoc;
@@ -58,8 +59,10 @@ public class MemberApiWriter extends ProgramElementApiWriter {
 		this.writeMemberData();
 		if (this.memberDoc.isMethod())
 			this.writeMethodData();
-		if (this.memberDoc.isMethod() || this.memberDoc.isConstructor())
+		if (this.memberDoc.isMethod() || this.memberDoc.isConstructor()) {
 			this.writeMethodParameters();
+			this.writeMethodThrows();
+		}
 		if (this.memberDoc.isMethod())
 			this.writeReturnType();
 	}
@@ -111,6 +114,22 @@ public class MemberApiWriter extends ProgramElementApiWriter {
 		}
 		
 		this.addElement(elmAllParams);
+	}
+	
+	private void writeMethodThrows() {
+		ExecutableMemberDoc exe = (ExecutableMemberDoc)this.memberDoc;
+		ClassDoc[] exceptions = exe.thrownExceptions();
+		
+		if (exceptions.length == 0)
+			return;
+		
+		Element elmThrows = new Element("throws");
+		
+		for (ClassDoc ex : exceptions) {
+			this.writeTypeInfo(ex, elmThrows);
+		}
+		
+		this.addElement(elmThrows);
 	}
 
 	protected void writeReturnType() {

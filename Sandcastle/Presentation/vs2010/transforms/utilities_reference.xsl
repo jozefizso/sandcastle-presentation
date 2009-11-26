@@ -103,7 +103,8 @@
 
 	<xsl:template name="insertStylesheets">
 		<!--<link rel="stylesheet" type="text/css" href="../styles/presentation.css" />-->
-    <link rel="stylesheet" type="text/css" href="../styles/lightweight.css" />
+    <link rel="stylesheet" type="text/css" href="../Styles/lightweight.css" />
+    <link rel="stylesheet" type="text/css" href="../Styles/lw-code.css" />
 		<!-- make mshelp links work -->
 		<!--<link rel="stylesheet" type="text/css" href="ms-help://Hx/HxRuntime/HxLink.css" />-->
     <!--<link rel="stylesheet" type="text/css" href="ms-help://Dx/DxRuntime/DxLink.css" />-->
@@ -149,7 +150,7 @@
       <xsl:with-param name="content">
         <xsl:for-each select="parameter">
           <xsl:variable name="paramName" select="@name"/>
-          <dl paramName="{$paramName}">
+          <dl>
             <dt>
               <span class="parameter">
                 <xsl:value-of select="$paramName"/>
@@ -714,7 +715,15 @@
 
   <xsl:template match="syntax/div" mode="tabs">
     <xsl:variable name="language" select="@codeLanguage"/>
-    <div class="CodeSnippetContainerTabFirst">
+    <div>
+      <xsl:attribute name="class">
+        <xsl:text>CodeSnippetContainerTab</xsl:text>
+        <xsl:if test="position() = 1">
+          <xsl:text>First</xsl:text>
+        </xsl:if>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="concat(@codeLanguage, 'Tab')"/>
+      </xsl:attribute>
       <a href="#">
         <includeAttribute name="title" item="{$language}Label" />
         <include item="{$language}" />
@@ -740,7 +749,11 @@
 
   <xsl:template name="languageSyntaxBlock">
     <xsl:param name="language" select="@codeLanguage"/>
-    <div class="CodeSnippetContainerCode">
+    <div>
+      <xsl:attribute name="class">
+        <xsl:text>CodeSnippetContainerCode </xsl:text>
+        <xsl:value-of select="concat(@codeLanguage, 'Code')"/>
+      </xsl:attribute>
       <pre xml:space="preserve" class="libCScode"><xsl:text/><xsl:copy-of select="node()"/><xsl:text/></pre>
     </div>
   </xsl:template>

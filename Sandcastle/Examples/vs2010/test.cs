@@ -8,11 +8,17 @@ namespace TestNamespace
 {
 
     /// <summary> 
-    /// Tests whether sandcastle can handle all c# tags as defined at http://msdn2.microsoft.com/en-us/library/5ast78ax.aspx.
-    /// Comments of method "Increment (int step)" include almost all tags.
-    /// Method "Swap" is used to test generics tags, such as "typeparam".
-    /// <threadsafety static="true" instance="false"/>
+    /// Tests whether Sandcastle can handle all C# tags as defined at http://msdn2.microsoft.com/en-us/library/5ast78ax.aspx.
+    /// Comments of method <see cref="Increment(int)"/> include almost all tags.
+    /// Method <see cref="Swap"/> is used to test generics tags, such as "typeparam".
     /// </summary>
+	/// <threadsafety static="true" instance="false"/>
+	/// <remarks>
+	/// This class works only with <see cref="int"/> value type.
+	/// <para>
+	/// It can handle positive and negative values.
+	/// </para>
+	/// </remarks>
     [Serializable()]
     public class StoredNumber
     {

@@ -17,27 +17,26 @@ set PATH=%TOOLSPATH%\HTML Help Workshop;%TOOLSPATH%\Microsoft Help 2.0 SDK;%PATH
 
 call "%VS2010P%\CleanOutput.bat"
 
-REM ********** Compile and Call MRefBuilder ****************************
+REM ********** Call MRefBuilder ****************************
 
-csc /t:library /out:test.dll /doc:comments.xml test.cs
-MRefBuilder test.dll /out:reflection.org
+REM MRefBuilder test.dll /out:reflection.org
 
 REM ********** Apply Transforms ****************************
 
 set ApplyVSDocModel=%DXROOT%\ProductionTransforms\ApplyVSDocModel.xsl
 set AddFiendlyFilenames=%DXROOT%\ProductionTransforms\AddFriendlyFilenames.xsl
 set ReflectionToManifest=%DXROOT%\ProductionTransforms\ReflectionToManifest.xsl
-set SandcastleConfig=%DXROOTEXT%\Presentation\vs2010\configuration\sandcastle.config
+set SandcastleConfig=%DXROOTEXT%\Presentation\vs2010\configuration\sandcastle-javadoc.config
 
 REM create model and file names
-XslTransform /xsl:"%ApplyVSDocModel%" reflection.org /xsl:"%AddFiendlyFilenames%" /out:reflection.xml /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=false
+XslTransform /xsl:"%ApplyVSDocModel%" javadoc-refl.xml /xsl:"%AddFiendlyFilenames%" /out:full-reflection.xml /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=false
 REM create manifest
-XslTransform /xsl:"%ReflectionToManifest%"  reflection.xml /out:manifest.xml
+XslTransform /xsl:"%ReflectionToManifest%" full-reflection.xml /out:manifest-javadoc.xml
 
 call "%VS2010P%\CopyOutput.bat"
 
 REM ********** Call BuildAssembler ****************************
-BuildAssembler /config:"%SandcastleConfig%" manifest.xml
+BuildAssembler /config:"%SandcastleConfig%" manifest-javadoc.xml
 
 REM **************Generate an intermediate Toc file that simulates the Whidbey TOC format.
 

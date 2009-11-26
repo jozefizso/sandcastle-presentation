@@ -27,8 +27,13 @@ Sandcastle/Examples/vs2010/reflection.org
 Sandcastle/Examples/vs2010/manifest.xml
 Sandcastle/Examples/vs2010/reflection.xml
 
-Vs2010Presentation.suo
-Extensions/Izsaknet.Sandcastle/bin/**
-Extensions/Izsaknet.Sandcastle/obj/**
+# Exclude build dirs and user files
+syntax: regexp
+bin/
+obj/
+\.suo$
+\.user$
 
-Extensions/**/bin
+Output/
+
+Examples/Javadoc/(full-reflection|javadoc-refl|manifest-javadoc)\.xml

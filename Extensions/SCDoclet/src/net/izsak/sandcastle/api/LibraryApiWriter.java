@@ -9,6 +9,9 @@ import nu.xom.Attribute;
 import nu.xom.Element;
 
 /**
+ * Writes information about actual Java library into the
+ * <assemblies> section.
+ * 
  * @author Jozef Izso
  *
  */

@@ -14,7 +14,7 @@ import java.util.Set;
  */
 public class GenericsClass<T extends ArrayList<E> & List<E>, E> {
 
-	public void genericMethod() {
+	public void genericMethod(E param) {
 	}
 	
 	public List<Integer> list() {

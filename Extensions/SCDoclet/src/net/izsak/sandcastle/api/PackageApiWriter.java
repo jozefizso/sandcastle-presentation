@@ -29,20 +29,6 @@ public class PackageApiWriter extends CodeApiWriterBase {
 	}
 	
 	/* (non-Javadoc)
-	 * @see net.izsak.sandcastle.api.CodeApiWriterBase#getSimpleName()
-	 */
-	@Override
-	protected String getSimpleName() {
-		String qname = this.packageDoc.name();
-		
-		int index = qname.lastIndexOf('.');
-		if (index >= 0)
-			qname = qname.substring(index+1);
-		
-		return qname;
-	}
-	
-	/* (non-Javadoc)
 	 * @see net.izsak.sandcastle.api.MemberApiWriterBase#writeMembers()
 	 */
 	@Override

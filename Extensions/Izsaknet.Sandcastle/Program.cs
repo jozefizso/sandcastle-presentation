@@ -4,6 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Xml.Xsl;
 using Izsaknet.Xml;
+using System.Xml;
+using System.Xml.XPath;
+
+using Izsaknet.Sandcastle.Tools;
+using Microsoft.Ddue.Tools;
+using System.Windows.Forms;
 
 namespace Izsaknet.Sandcastle
 {
@@ -11,10 +17,7 @@ namespace Izsaknet.Sandcastle
 	{
 		static void Main(string[] args)
 		{
-			XslCompiledTransform xslt = new XslCompiledTransform();
-			xslt.Load("main.xsl", new XsltSettings(true, true), new XmlEnvVarResolver());
-
-			string s = xslt.ToString();
+			
 		}
 	}
 }
