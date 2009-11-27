@@ -23,7 +23,7 @@ public class XmlDocletTest {
 	@Test
 	public void runJavadocTest() {
 		File sourceDir = new File("../Sample Javadoc Project/src");
-		JavadocWrapper wrapper = new JavadocWrapper(sourceDir, "net.izsak.generics");
+		JavadocWrapper wrapper = new JavadocWrapper(sourceDir, "net.izsak");
 		RootDoc root = wrapper.getRootDoc();
 		
 		boolean success = XmlDoclet.start(root);

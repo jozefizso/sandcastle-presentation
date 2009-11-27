@@ -3,16 +3,7 @@
  */
 package net.izsak.sandcastle;
 
-import com.sun.javadoc.ClassDoc;
-import com.sun.javadoc.ConstructorDoc;
-import com.sun.javadoc.Doc;
-import com.sun.javadoc.ExecutableMemberDoc;
-import com.sun.javadoc.FieldDoc;
-import com.sun.javadoc.MemberDoc;
-import com.sun.javadoc.PackageDoc;
-import com.sun.javadoc.Parameter;
-import com.sun.javadoc.Type;
-import com.sun.javadoc.TypeVariable;
+import com.sun.javadoc.*;
 
 /**
  * Implements {@link IApiNamer} interfaces providing names
@@ -102,13 +93,25 @@ public class DotNetApiNamer implements IApiNamer {
 			sb.append("(");
 			
 			for (Parameter p : methodDoc.parameters()) {
+				sb.append(p.type().toString());
+				/*
 				if (p.type().isPrimitive())
 					sb.append(p.typeName());
-				else
-					sb.append(p.type().asClassDoc().qualifiedName());
+				else {
+					TypeVariable tvar = p.type().asTypeVariable();
+					if (tvar != null) {
+						sb.append("{");
+						sb.append(tvar.typeName());
+						sb.append("}");
+					}
+					else {
+						sb.append(p.type().asClassDoc().qualifiedName());
+					}
+				}
+				*/
 				
-				if (p.type().dimension().length() > 0)
-					sb.append(p.type().dimension());
+				/*if (p.type().dimension().length() > 0)
+					sb.append(p.type().dimension());*/
 				
 				sb.append(",");
 			}

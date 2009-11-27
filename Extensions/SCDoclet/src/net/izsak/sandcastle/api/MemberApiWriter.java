@@ -97,19 +97,22 @@ public class MemberApiWriter extends ProgramElementApiWriter {
 	private void writeMethodParameters() {
 		ExecutableMemberDoc exe = (ExecutableMemberDoc)this.memberDoc;
 		Parameter[] params = exe.parameters();
-		
 		if (params.length == 0)
 			return;
 		
 		Element elmAllParams = new Element("parameters");
 		
-		for (Parameter param : params) {
+		for (int i = 0; i < params.length; i++) {
+			Parameter param = params[i];
 			String name = param.name();
+			boolean isVarargs = exe.isVarArgs() && (i+1 == params.length);
 			
 			Element elmParam = new Element("parameter");
 			elmParam.addAttribute(new Attribute("name", name));
-			this.writeTypeInfo(param.type(), elmParam);
+			if (isVarargs)
+				elmParam.addAttribute(new Attribute("params", Boolean.toString(true)));
 			
+			this.writeTypeInfo(param.type(), elmParam);
 			elmAllParams.appendChild(elmParam);
 		}
 		

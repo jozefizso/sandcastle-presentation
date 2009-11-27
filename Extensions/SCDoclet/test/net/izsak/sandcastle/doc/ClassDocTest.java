@@ -64,4 +64,30 @@ public class ClassDocTest {
 		XMLAssert.assertXMLEqual(expTypeParT, typeParT.toXML());;
 		XMLAssert.assertXMLEqual(expTypeParE, typeParE.toXML());
 	}
+	
+	@Test
+	public void genericClass03_Test() throws Exception {
+		JavadocTester tester = new JavadocTester("GenericClass03.java");
+		Document doc = tester.getDocumentationXml();
+		
+		String expSummary = "<summary>"+
+		                        "<see cref='M:samples.GenericClass03.method1{T}(T)' /> "+
+            				    "takes just one templated parameter "+
+            				    "<paramref name='obj'/>\n of type <typeparamref name='T'/>."+
+            			    "</summary>";
+		String expTypeParT = "<typeparam name='T'>Type of the input object.</typeparam>";
+		String expParam    = "<param name='obj'>Actual object.</param>";
+		String expReturn   = "<returns>An object of type <typeparamref name='T'/>.</returns>";
+		
+		Node elm = doc.query("//member[@name='M:samples.GenericClass03.method1{T}(T)']").get(0);
+		Node summary = elm.getChild(0);
+		Node typeParT = elm.getChild(1);
+		Node typeParam = elm.getChild(2);
+		Node ret = elm.getChild(3);
+		
+		XMLAssert.assertXMLEqual(expSummary, summary.toXML());
+		XMLAssert.assertXMLEqual(expTypeParT, typeParT.toXML());
+		XMLAssert.assertXMLEqual(expParam, typeParam.toXML());
+		XMLAssert.assertXMLEqual(expReturn, ret.toXML());
+	}
 }

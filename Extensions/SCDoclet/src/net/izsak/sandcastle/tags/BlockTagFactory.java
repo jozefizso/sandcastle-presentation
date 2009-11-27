@@ -24,8 +24,10 @@ public class BlockTagFactory {
 		if (blockTag instanceof ParamTag) {
 			return new ParamBlockTag((ParamTag)blockTag, apiNamer);
 		}
-		else {
-			return new BlockTagConverter(blockTag, apiNamer);
+		if ("@return".equals(blockTag.kind())) {
+			return new ReturnsBlockTag(blockTag, apiNamer);
 		}
+		
+		return new BlockTagConverter(blockTag, apiNamer);
 	}
 }
