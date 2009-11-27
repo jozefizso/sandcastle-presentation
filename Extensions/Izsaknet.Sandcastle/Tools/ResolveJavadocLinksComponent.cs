@@ -70,6 +70,7 @@ namespace Izsaknet.Sandcastle.Tools
 					typeTarget.Templates = new string[0];
 					target = typeTarget;
 				}
+				target.DefaultLinkType = LinkType2.External;
 			}
 
 			return target;

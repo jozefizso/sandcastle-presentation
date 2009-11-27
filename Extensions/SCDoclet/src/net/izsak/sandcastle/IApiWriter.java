@@ -3,6 +3,8 @@
  */
 package net.izsak.sandcastle;
 
+import nu.xom.Document;
+
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.MemberDoc;
 import com.sun.javadoc.PackageDoc;
@@ -23,7 +25,7 @@ public interface IApiWriter {
 	
 	public void writeMember(MemberDoc memberDoc);
 	
-	public String toXml();
+	public Document toXmlDocument();
 	
 	public void saveXml(String filename);
 }

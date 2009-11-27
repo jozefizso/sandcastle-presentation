@@ -26,6 +26,14 @@ public class ParamBlockTag extends BlockTagConverter {
 	}
 	
 	/* (non-Javadoc)
+	 * @see net.izsak.sandcastle.tags.BlockTagConverter#getName()
+	 */
+	@Override
+	public String getName() {
+		return tag.isTypeParameter() ? "typeparam" : "param";
+	}
+	
+	/* (non-Javadoc)
 	 * @see net.izsak.sandcastle.BlockTagConverter#addAttributes(nu.xom.Element)
 	 */
 	@Override

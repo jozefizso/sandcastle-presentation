@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>generics1</name>
+    </assembly>
+    <members>
+        <member name="T:TestNamespace.Generics.Class1">
+            <summary>
+            Sample class with just one generic method <see cref="M:TestNamespace.Generics.Class1.Method1``1(``0)"/>.
+            </summary>
+        </member>
+        <member name="M:TestNamespace.Generics.Class1.Method1``1(``0)">
+            <summary>
+            <see cref="M:TestNamespace.Generics.Class1.Method1``1(``0)"/> takes just one templated parameter <paramref name="obj"/>
+            of type <typeparamref name="T"/>.
+            </summary>
+            <typeparam name="T">Type of the input object.</typeparam>
+            <param name="obj">Actual object.</param>
+        </member>
+    </members>
+</doc>

@@ -69,18 +69,33 @@ public class InlineTagConverter {
 	}
 	
 	protected Element processParamTag(Tag tag) {
+		if (tag.text().startsWith("<"))
+			return processTypeParamTag(tag);
+		
 		Element elmLink = new Element("paramref");
 		elmLink.addAttribute(new Attribute("name", tag.text()));
+		return elmLink;
+	}
+	
+	protected Element processTypeParamTag(Tag tag) {
+		if (!(tag.text().startsWith("<") && tag.text().endsWith(">")))
+			throw new IllegalArgumentException("Argument tag does not reference generic type param.");
+		
+		String text = tag.text().substring(1, tag.text().length()-1);
+		Element elmLink = new Element("typeparamref");
+		elmLink.addAttribute(new Attribute("name", text));
 		return elmLink;
 	}
 	
 	protected String getSeeTagTypeName(SeeTag tag) {
 		String qname = null;
 		
-		if (tag.referencedClass() != null) {
-			qname = this.apiNamer.getClassName(tag.referencedClass());
-		} else if (tag.referencedMember() != null) {
+		// check for member first because referenced members have referencedClass()
+		// set also.
+		if (tag.referencedMember() != null) {
 			qname = this.apiNamer.getMemberName(tag.referencedMember());
+		} else if (tag.referencedClass() != null) {
+			qname = this.apiNamer.getClassName(tag.referencedClass());
 		} else if (tag.referencedPackage() != null) {
 			qname = this.apiNamer.getPackageName(tag.referencedPackage());
 		}

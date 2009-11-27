@@ -9,6 +9,7 @@ import java.util.List;
 
 import net.izsak.sandcastle.configuration.DocletOptions;
 import net.izsak.sandcastle.configuration.DocletOptionsParser;
+import nu.xom.Document;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.MissingOptionException;
@@ -117,8 +118,8 @@ public class DocumentationApiVisitor {
 		}
 	}
 	
-	public String toXml() {
-		return this.writer.toXml();
+	public Document toXmlDocument() {
+		return this.writer.toXmlDocument();
 	}
 	
 	public void saveXml() throws MissingOptionException {

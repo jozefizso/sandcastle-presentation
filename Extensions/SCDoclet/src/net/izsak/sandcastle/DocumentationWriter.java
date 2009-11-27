@@ -65,9 +65,17 @@ public class DocumentationWriter extends ApiWriterBase implements IApiWriter {
 		writeSummary(elmMember, doc);
 		writeTags(elmMember, doc.tags());
 		
-		this.elmMembers.appendChild(elmMember);
+		if (elmMember.getChildCount() > 0)
+			this.elmMembers.appendChild(elmMember);
 	}
 
+	/**
+	 * Writes the <summary> element with documentation and formats
+	 * any inline tags found in it.
+	 * 
+	 * @param member Element to which the <summary> will be appended.
+	 * @param doc    Documentation of the actual code element.
+	 */
 	private void writeSummary(Element member, Doc doc) {
 		SummaryBlockTag summary = new SummaryBlockTag(doc, this.getApiNamer());
 		Element elmSummary = summary.toXml();

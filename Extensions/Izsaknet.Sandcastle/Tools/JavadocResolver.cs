@@ -47,7 +47,12 @@ namespace Izsaknet.Sandcastle.Tools
 		public string GetExternalUrl(string targetId)
 		{
 			string typeName = ParseTargetId(targetId);
-			string packageName = typeName.Substring(0, typeName.LastIndexOf('.'));
+			int lastDot = typeName.LastIndexOf('.');
+			
+			if (lastDot == -1)
+				return null;
+
+			string packageName = typeName.Substring(0, lastDot);
 
 			this.EnsureCache();
 			

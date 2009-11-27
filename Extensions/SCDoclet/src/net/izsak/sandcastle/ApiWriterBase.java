@@ -28,10 +28,10 @@ public abstract class ApiWriterBase implements IApiWriter {
 	}
 
 	@Override
-	public String toXml() {
+	public Document toXmlDocument() {
 		Element elmRoot = this.createXmlRoot();
 		Document document = new Document(elmRoot);
-		return document.toXML();
+		return document;
 	}
 
 	@Override

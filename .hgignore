@@ -35,5 +35,6 @@ obj/
 \.user$
 
 Output/
+target/
 
 Examples/Javadoc/(full-reflection|javadoc-refl|manifest-javadoc)\.xml
