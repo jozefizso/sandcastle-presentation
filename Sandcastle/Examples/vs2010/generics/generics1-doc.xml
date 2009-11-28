@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <doc>
     <assembly>
-        <name>generics1</name>
+        <name>tmp</name>
     </assembly>
     <members>
         <member name="T:TestNamespace.Generics.Class1">
@@ -16,6 +16,7 @@
             </summary>
             <typeparam name="T">Type of the input object.</typeparam>
             <param name="obj">Actual object.</param>
+            <returns>An object of type <typeparamref name="T"/>.</returns>
         </member>
     </members>
 </doc>

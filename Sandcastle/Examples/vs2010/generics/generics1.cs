@@ -16,8 +16,10 @@ namespace TestNamespace.Generics
 		/// </summary>
 		/// <typeparam name="T">Type of the input object.</typeparam>
 		/// <param name="obj">Actual object.</param>
-		public void Method1<T>(T obj)
+		/// <returns>An object of type <typeparamref name="T"/>.</returns>
+		public T Method1<T>(T obj)
 		{
+			return default(T);
 		}
 	}
 }

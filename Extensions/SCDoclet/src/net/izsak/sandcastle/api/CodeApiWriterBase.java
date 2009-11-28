@@ -173,7 +173,7 @@ public class CodeApiWriterBase {
 			return "constructor";
 		if (this.doc.isMethod())
 			return "method";
-		if (this.doc.isOrdinaryClass())
+		if (this.doc.isOrdinaryClass() || this.doc.isException())
 			return "class";
 		if (this.doc.isEnum())
 			return "enum";
@@ -193,6 +193,9 @@ public class CodeApiWriterBase {
 	}
 
 	protected void writeTypeInfo(Type type, Element elmContainer) {
+		if (type == null) {
+			return;
+		}
 		String dim = type.dimension();
 		if (dim.length() == 0) {
 			this.writeSimpleTypeInfo(type, elmContainer);
@@ -225,7 +228,10 @@ public class CodeApiWriterBase {
 		
 		Element elmArrayOf = new Element("arrayOf");
 		elmArrayOf.addAttribute(new Attribute("rank", Integer.toString(num)));
-		this.writeTypeInfo(arrayType, elmArrayOf);
+		if (type.isPrimitive())
+			this.writeSimpleTypeInfo(type, elmArrayOf);
+		else
+			this.writeTypeInfo(arrayType, elmArrayOf);
 		
 		elmContainer.appendChild(elmArrayOf);
 	}

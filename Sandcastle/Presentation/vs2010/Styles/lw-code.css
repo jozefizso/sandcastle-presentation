@@ -30,7 +30,8 @@ div.CodeSnippetContainerCode {
     display: none;
 }
 
-div.CodeSnippetContainerCode.CSharpCode {
+div.CodeSnippetContainerCode.CSharpCode,
+div.CodeSnippetContainerCode.JSharpCode {
     display: block;
 }
 

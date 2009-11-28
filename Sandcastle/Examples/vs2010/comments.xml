@@ -101,37 +101,5 @@
             </summary>
             <param name="args"></param>
         </member>
-        <member name="T:TestNamespace.OtherNamespace.INumbers">
-            <summary>
-            Same test interface.
-            </summary>
-        </member>
-        <member name="T:TestNamespace.OtherNamespace.IWriter`1">
-            <summary>
-            Same test interface.
-            </summary>
-        </member>
-        <member name="M:TestNamespace.OtherNamespace.IWriter`1.Write(System.String)">
-            <summary>
-            Writes text to output and returns object of type <typeparamref name="T"/>
-            </summary>
-            <param name="text"></param>
-            <returns></returns>
-        </member>
-        <member name="T:TestNamespace.OtherNamespace.ClassWithPublicField">
-            <summary>
-            Holds x and y axis values.
-            </summary>
-        </member>
-        <member name="F:TestNamespace.OtherNamespace.ClassWithPublicField.X">
-            <summary>
-            This is the x-axis.
-            </summary>
-        </member>
-        <member name="F:TestNamespace.OtherNamespace.ClassWithPublicField.Y">
-            <summary>
-            This is the y-axis.
-            </summary>
-        </member>
     </members>
 </doc>

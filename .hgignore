@@ -37,4 +37,4 @@ obj/
 Output/
 target/
 
-Examples/Javadoc/(full-reflection|javadoc-refl|manifest-javadoc)\.xml
+Examples/Javadoc/(full-reflection|javadoc-refl|manifest-javadoc|javadoc)\.xml
