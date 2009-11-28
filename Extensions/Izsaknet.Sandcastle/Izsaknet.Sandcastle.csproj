@@ -108,7 +108,7 @@
     <Compile Include="Tools\JavadocResolver.cs" />
     <Compile Include="Tools\LineParser.cs" />
     <Compile Include="Tools\ResolveJavadocLinksComponent.cs" />
-    <Compile Include="Tools\TargetIdParser.cs" />
+    <Compile Include="Tools\TargetIdConverter.cs" />
     <Compile Include="Xml\XmlEnvVarResolver.cs" />
   </ItemGroup>
   <ItemGroup>

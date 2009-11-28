@@ -52,25 +52,8 @@ namespace Izsaknet.Sandcastle.Tools
 			{
 				// Assume the target is from Java and create dummy Target object.
 
-				TargetIdParser parser = TargetIdParser.Parse(targetId);
-
-				if (parser.TargetType == "N")
-				{
-					NamespaceTarget nsTarget = new NamespaceTarget();
-					nsTarget.Id = targetId;
-					nsTarget.Name = parser.Namespace;
-					target = nsTarget;
-				}
-				else if (parser.TargetType == "T")
-				{
-					TypeTarget typeTarget = new TypeTarget();
-					typeTarget.Id = targetId;
-					typeTarget.Namespace = new NamespaceReference("N:" + parser.Namespace);
-					typeTarget.Name = parser.TypeName;
-					typeTarget.Templates = new string[0];
-					target = typeTarget;
-				}
-				target.DefaultLinkType = LinkType2.External;
+				TargetIdConverter parser = new TargetIdConverter(targetId);
+				target = parser.ToTarget();
 			}
 
 			return target;

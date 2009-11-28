@@ -94,6 +94,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\JavadocResolverTest.cs" />
     <Compile Include="Tools\ResolveJavadocLinksComponentTest.cs" />
+    <Compile Include="Tools\TargetIdConverterTest.cs" />
     <Compile Include="UnityBootstrapper.cs" />
   </ItemGroup>
   <ItemGroup>

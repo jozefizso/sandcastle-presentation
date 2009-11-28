@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+//using System.Linq;
 using System.Text;
 
 using Microsoft.Ddue.Tools;
@@ -11,6 +11,19 @@ namespace Izsaknet.Sandcastle.Tools
 {
 	public class JavadocResolver : IExternalReferenceResolver
 	{
+		private static Dictionary<string, string> PrimitiveTypes = new Dictionary<string,string>()
+		{
+			{ "byte", "Byte" },
+			{ "char", "Character" },
+			{ "short", "Short" },
+			{ "int", "Integer" },
+			{ "long", "Long" },
+			{ "float", "Float" },
+			{ "double", "Double" },
+			{ "boolean", "Boolean" },
+			{ "void", "Void" },
+		};
+
 		public JavadocResolver()
 		{
 			this.Locale = "en-us";
@@ -46,20 +59,46 @@ namespace Izsaknet.Sandcastle.Tools
 
 		public string GetExternalUrl(string targetId)
 		{
-			string typeName = ParseTargetId(targetId);
-			int lastDot = typeName.LastIndexOf('.');
-			
+			int lastDot = targetId.LastIndexOf('.');
+
 			if (lastDot == -1)
+			{
+				string wrapper;
+				if (IsPrimitiveType(targetId, out wrapper))
+					targetId = wrapper;
+				else
+					return null;
+			}
+
+			TargetIdConverter conv = new TargetIdConverter(targetId);
+			Target t = conv.ToTarget();
+
+			if (t is MethodTarget)
 				return null;
 
-			string packageName = typeName.Substring(0, lastDot);
-
 			this.EnsureCache();
-			
+
+			string packageName = "";
+			NamespaceTarget nt = t as NamespaceTarget;
+			if (nt != null)
+			{
+				packageName = nt.Name;
+
+				string slashedPackage = packageName.Replace('.', '/');
+				return this.JavadocUrl + "/" + slashedPackage + "/package-summary.html";
+			}
+
+			TypeTarget tt = t as TypeTarget;
+			if (tt == null)
+				return null;
+
+			packageName = tt.Container;
+
 			if (!this.packagesCache.Contains(packageName))
 				return null;
 
-			string slashedTypeName = typeName.Replace('.', '/');
+			string slashedTypeName = packageName.Replace('.', '/');
+			slashedTypeName += "/" + packageName;
 			if (!this.JavadocUrl.EndsWith("/"))
 				this.JavadocUrl += "/";
 
@@ -67,19 +106,6 @@ namespace Izsaknet.Sandcastle.Tools
 		}
 
 		#endregion
-
-		private string ParseTargetId(string targetId)
-		{
-			if (!targetId.StartsWith("T:"))
-				throw new ArgumentException("Argument targetId has unknown value.", "targetId");
-
-			string objName = targetId.Substring(2);
-
-			if (String.IsNullOrEmpty(objName))
-				throw new ArgumentException("No type name was specified in argument targetId.", "targetId");
-
-			return objName;
-		}
 
 		private void EnsureCache()
 		{
@@ -97,6 +123,22 @@ namespace Izsaknet.Sandcastle.Tools
 					this.packagesCache.Add(package);
 				}
 			}
+		}
+
+		private bool IsPrimitiveType(string targetId, out string wrapperTypeId)
+		{
+			string name = targetId.Substring(2);
+
+			string typeName;
+			if (PrimitiveTypes.TryGetValue(name, out typeName))
+			{
+				// return wrapper class reference
+				wrapperTypeId = "T:java.lang." + typeName;
+				return true;
+			}
+
+			wrapperTypeId = null;
+			return false;
 		}
 	}
 }
