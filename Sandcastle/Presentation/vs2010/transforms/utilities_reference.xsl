@@ -861,7 +861,6 @@
         </xsl:with-param>
         <xsl:with-param name="content">
           <table class="members" id="memberList" frame="lhs" cellpadding="2">
-            <col width="10%"/>
             <tr>
               <th class="iconColumn"></th>
               <th class="nameColumn">
@@ -1018,8 +1017,7 @@
       </xsl:with-param>
       <xsl:with-param name="toplink" select="true()"/>
       <xsl:with-param name="content">
-        <table id="memberList" class="members" frame="lhs" cellpadding="2">
-          <col width="10%"/>
+        <table class="members">
           <tr>
             <th class="iconColumn">
               &#160;
