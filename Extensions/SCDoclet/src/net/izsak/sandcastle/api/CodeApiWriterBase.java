@@ -243,6 +243,13 @@ public class CodeApiWriterBase {
 		Element elmSpec = new Element("specialization");
 		
 		for (Type paramType : args) {
+			if (paramType.typeName().equals("?")) {
+				Element elmTemplate = new Element("template");
+				elmTemplate.addAttribute(new Attribute("name", "?"));
+				elmSpec.appendChild(elmTemplate);
+				continue;
+			}
+			
 			TypeVariable typeVar = paramType.asTypeVariable();
 			if (typeVar != null)
 				this.writeTypeVariable(typeVar, elmSpec);
@@ -250,7 +257,8 @@ public class CodeApiWriterBase {
 				this.writeTypeInfo(paramType, elmSpec);
 		}
 		
-		elmContainer.appendChild(elmSpec);
+		if (elmSpec.getChildCount() > 0)
+			elmContainer.appendChild(elmSpec);
 	}
 	
 	/**

@@ -26,4 +26,10 @@ public class JavadocTester {
 		Document doc = doclet.processDoc(wrapper.getRootDoc());
 		return doc;
 	}
+
+	public Document getApiXml() {
+		XmlDoclet doclet = new XmlDoclet();
+		Document doc = doclet.processApi(wrapper.getRootDoc());
+		return doc;
+	}
 }

@@ -11,7 +11,7 @@
   <xsl:template name="bodyHeaderMain">
     <!-- commonImages - included for backward compatiblity while transforming
          XSL files to the new style. -->
-    <xsl:call-template name="commonImages"/>
+    <!--<xsl:call-template name="commonImages"/>-->
 
     <xsl:call-template name="bodyHeader"/>
     

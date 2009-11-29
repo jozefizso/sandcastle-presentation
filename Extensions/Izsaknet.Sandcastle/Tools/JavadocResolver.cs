@@ -98,7 +98,7 @@ namespace Izsaknet.Sandcastle.Tools
 				return null;
 
 			string slashedTypeName = packageName.Replace('.', '/');
-			slashedTypeName += "/" + packageName;
+			slashedTypeName += "/" + tt.Name;
 			if (!this.JavadocUrl.EndsWith("/"))
 				this.JavadocUrl += "/";
 

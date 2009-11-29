@@ -30,7 +30,7 @@
         <meta name="save" content="history"/>
         <title><xsl:call-template name="topicTitlePlain"/></title>
 				<xsl:call-template name="insertStylesheets" />
-				<xsl:call-template name="insertScripts" />
+				<!--<xsl:call-template name="insertScripts" />-->
 				<xsl:call-template name="insertFilename" />
 				<xsl:call-template name="insertMetadata" />
 			</head>

@@ -14,7 +14,7 @@
 
 	<xsl:include href="utilities_reference.xsl" />
 	<xsl:include href="utilities_dduexml.xsl" />
-  <xsl:include href="htmlBody.xsl"/>
+  <!--<xsl:include href="htmlBody.xsl"/>-->
   <xsl:include href="seeAlsoSection.xsl"/>
   
   <xsl:variable name="summary" select="normalize-space(/document/comments/ddue:dduexml/ddue:summary)" />

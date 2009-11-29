@@ -6,6 +6,7 @@ package net.izsak.sandcastle.tags;
 import net.izsak.sandcastle.IApiNamer;
 import nu.xom.Attribute;
 import nu.xom.Element;
+import nu.xom.Node;
 
 import com.sun.javadoc.SeeTag;
 import com.sun.javadoc.Tag;
@@ -33,7 +34,7 @@ public class InlineTagConverter {
 		
 		for (Tag inline : this.inlineTags) {
 			if (inline.name().equals("Text")) {
-				parent.appendChild(inline.text());
+				processTextTag(inline, parent);
 			} else if (inline.kind().equals("@see")) {
 				Element see = processSeeTag((SeeTag)inline);
 				parent.appendChild(see);
@@ -46,6 +47,23 @@ public class InlineTagConverter {
 	
 	private boolean hasContent() {
 		return (this.block != null) && (!this.block.text().isEmpty());
+	}
+	
+	protected void processTextTag(Tag tag, Element parent) {
+		String text = tag.text();
+		if (text.contains("<")) {			
+			HtmlCleaner cleaner = new HtmlCleaner(text);
+			Element body = cleaner.clean();
+			
+			while (body.getChildCount() > 0) {
+				Node n = body.getChild(0);
+				n.detach();
+				parent.appendChild(n);
+			}
+		}
+		else {
+			parent.appendChild(tag.text());
+		}
 	}
 	
 	protected Element processSeeTag(SeeTag tag) {
