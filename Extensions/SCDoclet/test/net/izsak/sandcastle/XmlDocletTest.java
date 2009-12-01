@@ -33,9 +33,22 @@ public class XmlDocletTest {
 	
 	@Test
 	public void optionLength_Test() {
-		Assert.assertEquals(2, XmlDoclet.optionLength("-doc"));
-		Assert.assertEquals(2, XmlDoclet.optionLength("-metadata"));
+		//Assert.assertEquals(2, XmlDoclet.optionLength("-doc"));
+		//Assert.assertEquals(2, XmlDoclet.optionLength("-metadata"));
+		Assert.assertEquals(2, XmlDoclet.optionLength("-config"));
 		
 		Assert.assertEquals(0, XmlDoclet.optionLength("-unknownOption"));
+	}
+
+	
+	@Test
+	public void xmlDoclet_options_files_Test() {
+		File sourceDir = new File("../Sample Javadoc Project/src");
+		JavadocWrapper wrapper = new JavadocWrapper(sourceDir, "net.izsak");
+		RootDoc root = wrapper.getRootDoc();
+		
+		boolean success = XmlDoclet.start(root);
+		
+		assertTrue(success);
 	}
 }

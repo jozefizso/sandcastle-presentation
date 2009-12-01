@@ -8,12 +8,10 @@ import java.util.Collections;
 import java.util.List;
 
 import net.izsak.sandcastle.configuration.DocletOptions;
-import net.izsak.sandcastle.configuration.DocletOptionsParser;
 import nu.xom.Document;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.MissingOptionException;
-import org.apache.commons.cli.ParseException;
 
 import com.sun.javadoc.ClassDoc;
 import com.sun.javadoc.ConstructorDoc;
@@ -42,12 +40,6 @@ public class DocumentationApiVisitor {
 		this.namer = new DotNetApiNamer();
 		this.writer = new DocumentationWriter();
 		this.writer.setApiNamer(this.namer);
-	}
-	
-	public void setOptions(String[][] javadocOptions) throws ParseException {
-		DocletOptionsParser parser = new DocletOptionsParser();
-		CommandLine cmd = parser.parse(javadocOptions);
-		this.cmd = cmd;
 	}
 	
 	public void setRootDoc(RootDoc doc) {

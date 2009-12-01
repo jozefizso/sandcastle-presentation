@@ -3,10 +3,12 @@
  */
 package net.izsak.sandcastle;
 
+import net.izsak.sandcastle.configuration.DocletConfig;
 import net.izsak.sandcastle.configuration.DocletOptions;
 import nu.xom.Document;
 
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.configuration.ConfigurationException;
 
 import com.sun.javadoc.DocErrorReporter;
 import com.sun.javadoc.Doclet;
@@ -32,12 +34,6 @@ public class XmlDoclet extends Doclet {
 
 	protected Document process(RootDoc root, IApiWriter apiWriter) {
 		DocumentationApiVisitor visitor = new DocumentationApiVisitor();
-		try {
-			visitor.setOptions(root.options());
-		}
-		catch (ParseException ex) {
-			throw new IllegalArgumentException(ex);
-		}
 		
 		visitor.setApiWriter(apiWriter);
 		visitor.setRootDoc(root);
@@ -48,24 +44,33 @@ public class XmlDoclet extends Doclet {
 	
 	
 	public static boolean start(RootDoc root) {
-		DocumentationApiVisitor visitor = new DocumentationApiVisitor();
+		DocletConfig config = new DocletConfig();
 		try {
-			visitor.setOptions(root.options());
-		}
-		catch (ParseException ex) {
+			config.configure(root.options());
+		} catch (ConfigurationException ex) {
+			ex.printStackTrace();
+			return false;
+		} catch (ParseException ex) {
 			ex.printStackTrace();
 			return false;
 		}
 		
-		visitor.setApiWriter(new ApiWriter());
-		visitor.setRootDoc(root);
-		visitor.visitApi();
-		visitor.saveXml("d:\\dev\\sc-vs2010\\Sandcastle\\Examples\\javadoc\\javadoc-refl.xml");
+		DocumentationApiVisitor visitor = new DocumentationApiVisitor();
 		
-		visitor.setApiWriter(new DocumentationWriter());
-		visitor.setRootDoc(root);
-		visitor.visitApi();
-		visitor.saveXml("d:\\dev\\sc-vs2010\\Sandcastle\\Examples\\javadoc\\javadoc.xml");
+		if (config.generateApiFile()) {
+			visitor.setApiWriter(new ApiWriter());
+			visitor.setRootDoc(root);
+			visitor.visitApi();
+			visitor.saveXml(config.getApiFileName());
+		}
+		
+		if (config.generateDocFile()) {
+			visitor.setApiWriter(new DocumentationWriter());
+			visitor.setRootDoc(root);
+			visitor.visitApi();
+			visitor.saveXml(config.getDocFileName());
+		}
+		
 		return true;
 	}
 
@@ -77,9 +82,7 @@ public class XmlDoclet extends Doclet {
 		return 0;
 	}
 
-	public static boolean validOptions(String options[][],
-			DocErrorReporter reporter) {
-
+	public static boolean validOptions(String options[][], DocErrorReporter reporter) {
 		return true;
 	}
 

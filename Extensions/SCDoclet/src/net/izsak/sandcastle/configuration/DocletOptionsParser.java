@@ -4,6 +4,7 @@
 package net.izsak.sandcastle.configuration;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
@@ -13,9 +14,9 @@ import org.apache.commons.cli.PosixParser;
  */
 public class DocletOptionsParser extends PosixParser {
 	
-	public CommandLine parse(String[][] javadocOptions) throws ParseException	{
+	public CommandLine parse(Options options, String[][] javadocOptions) throws ParseException	{
 		String[] arguments = flattenArguments(javadocOptions);
-		return super.parse(new DocletOptions(), arguments);
+		return super.parse(options, arguments);
 	}
 	
 	private static int countDimmensions(String[][] options) {

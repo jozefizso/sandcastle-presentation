@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.izsak.sandcastle</groupId>
-  <artifactId>net.izsak.sandcastle.doclet</artifactId>
+  <artifactId>doclet</artifactId>
   <name>Sandcastle Doclet</name>
   <version>0.0.1-SNAPSHOT</version>
   <description>Doclet that outputs documentation and API information to XML that can be consumed by Sandcastle.</description>
@@ -21,6 +21,23 @@
 	          <compilerVersion>1.6</compilerVersion>
 	        </configuration>
   		</plugin>
+  		<plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-assembly-plugin</artifactId>
+  			<version>2.2-beta-4</version>
+  			<configuration>
+	  			<finalName>${project.build.finalName}_b${BUILD_NUMBER}</finalName>
+  			</configuration>
+  			<executions>
+				<execution>
+					<phase>package</phase>
+					<goals>
+						<goal>attached</goal>
+						<!-- <goal>assembly</goal>-->
+					</goals>
+				</execution>
+			</executions>
+  		</plugin>
   	</plugins>
   </build>
   <profiles>
@@ -39,6 +56,7 @@
           <version>1.5</version>
           <scope>system</scope>
           <systemPath>${java.home}/../lib/tools.jar</systemPath>
+          <optional>true</optional>
         </dependency>
       </dependencies>
     </profile>
@@ -87,7 +105,14 @@
     <dependency>
     	<groupId>nu.validator.htmlparser</groupId>
     	<artifactId>htmlparser</artifactId>
-    	<version>1.2.1</version>
+    	<version>1.2.0</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>commons-configuration</groupId>
+    	<artifactId>commons-configuration</artifactId>
+    	<version>1.6</version>
     	<type>jar</type>
     	<scope>compile</scope>
     </dependency>

@@ -96,6 +96,9 @@ public class CodeApiWriterBase {
 	protected void writeApiData(String simpleName, String group, String subGroup) {
 		if (!Validator.isValidateGroupName(group))
 			throw new IllegalArgumentException("Argument group cannot have value "+ group +".");
+		if ("enum".equals(subGroup))
+			subGroup = "enumeration";
+		
 		if (subGroup != null && !Validator.isValidSubGroupName(subGroup))
 			throw new IllegalArgumentException("Argument subGroup cannot have value "+ subGroup +".");
 		
