@@ -10,7 +10,7 @@ using System.Web.Services.Protocols;
 
 namespace Microsoft.Ddue.Tools {
 
-    public class MsdnResolver {
+    public class MsdnResolver : IExternalReferenceResolver {
 
         public MsdnResolver () {
             msdnService = new ContentService();
@@ -33,6 +33,12 @@ namespace Microsoft.Ddue.Tools {
                 locale = value;
             }
         }
+
+		string IExternalReferenceResolver.ResolverName { get { return "MSDN URL"; } }
+		string IExternalReferenceResolver.GetExternalUrl(string targetId)
+		{
+			return this.GetMsdnUrl(targetId);
+		}
 
         public string GetMsdnUrl (string id) {
 

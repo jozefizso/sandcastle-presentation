@@ -53,7 +53,9 @@ namespace Microsoft.Ddue.Tools {
 			writer.WriteIdentifier(name);
 
 			XPathNavigator baseClass = reflection.SelectSingleNode(apiBaseClassExpression);
-			if ((baseClass != null) && !((bool) baseClass.Evaluate(typeIsObjectExpression))) {
+			XPathExpression typeIsObjectExpr = this.GetIsObjectExpression();
+			if ((baseClass != null) && !((bool)baseClass.Evaluate(typeIsObjectExpr)))
+			{
 				writer.WriteString(" ");
 				writer.WriteKeyword("extends");
 				writer.WriteString(" ");
@@ -62,6 +64,11 @@ namespace Microsoft.Ddue.Tools {
 
 			WriteImplementedInterfaces(reflection, writer);
 
+		}
+
+		protected virtual XPathExpression GetIsObjectExpression()
+		{
+			return typeIsObjectExpression;
 		}
 
 
@@ -560,7 +567,7 @@ namespace Microsoft.Ddue.Tools {
 
 		// References
 
-		private void WriteTypeReference (XPathNavigator reference, SyntaxWriter writer) {
+		protected void WriteTypeReference (XPathNavigator reference, SyntaxWriter writer) {
 			switch (reference.LocalName) {
 				case "arrayOf":
 					int rank = Convert.ToInt32( reference.GetAttribute("rank",String.Empty) );

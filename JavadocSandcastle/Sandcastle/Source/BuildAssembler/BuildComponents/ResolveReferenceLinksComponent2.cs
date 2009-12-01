@@ -49,61 +49,7 @@ namespace Microsoft.Ddue.Tools {
 
             XPathNodeIterator targets_nodes = configuration.Select("targets");
             foreach (XPathNavigator targets_node in targets_nodes) {
-
-                // get target type
-                string typeValue = targets_node.GetAttribute("type", String.Empty);
-                if (String.IsNullOrEmpty(typeValue)) WriteMessage(MessageLevel.Error, "Each targets element must have a type attribute that specifies which type of links to create.");
-
-                LinkType2 type = LinkType2.None;
-                try {
-                    type = (LinkType2)Enum.Parse(typeof(LinkType2), typeValue, true);
-                    if ((type == LinkType2.Msdn) && (msdn == null)) {
-                        WriteMessage(MessageLevel.Info, "Creating MSDN URL resolver.");
-                        msdn = new MsdnResolver();
-                    }
-                } catch (ArgumentException) {
-                    WriteMessage(MessageLevel.Error, String.Format("'{0}' is not a supported reference link type.", typeValue));
-                }
-
-                // get base directory
-                string baseValue = targets_node.GetAttribute("base", String.Empty);
-
-                // get file pattern
-                string filesValue = targets_node.GetAttribute("files", String.Empty);
-                if (String.IsNullOrEmpty(filesValue)) WriteMessage(MessageLevel.Error, "Each targets element must have a files attribute specifying which target files to load.");
-
-                // determine whether to search recursively
-                bool recurse = false;
-                string recurseValue = targets_node.GetAttribute("recurse", String.Empty);
-                if (!String.IsNullOrEmpty(recurseValue)) {
-                    if (String.Compare(recurseValue, Boolean.TrueString, true) == 0) {
-                        recurse = true;
-                    } else if (String.Compare(recurseValue, Boolean.FalseString, true) == 0) {
-                        recurse = false;
-                    } else {
-                        WriteMessage(MessageLevel.Error, String.Format("On the targets element, recurse='{0}' is not an allowed value.", recurseValue));
-                    }
-                }
-
-                // turn baseValue and filesValue into directoryPath and filePattern
-                string fullPath;
-                if (String.IsNullOrEmpty(baseValue)) {
-                    fullPath = filesValue;
-                } else {
-                    fullPath = Path.Combine(baseValue, filesValue);
-                }
-                fullPath = Environment.ExpandEnvironmentVariables(fullPath);
-                string directoryPath = Path.GetDirectoryName(fullPath);
-                if (String.IsNullOrEmpty(directoryPath)) directoryPath = Environment.CurrentDirectory;
-                string filePattern = Path.GetFileName(fullPath);
-
-                // verify that directory exists
-                if (!Directory.Exists(directoryPath)) WriteMessage(MessageLevel.Error, String.Format("The targets directory '{0}' does not exist.", directoryPath));
-
-                // add the specified targets from the directory
-                WriteMessage(MessageLevel.Info, String.Format("Searching directory '{0}' for targets files of the form '{1}'.", directoryPath, filePattern));
-                AddTargets(directoryPath, filePattern, recurse, type);
-
+				ProcessTargetsNode(targets_node);
             }
 
             WriteMessage(MessageLevel.Info, String.Format("Loaded {0} reference targets.", targets.Count));
@@ -114,6 +60,93 @@ namespace Microsoft.Ddue.Tools {
             string target_value = configuration.GetAttribute("linkTarget", String.Empty);
             if (!String.IsNullOrEmpty(target_value)) linkTarget = target_value; 
         }
+
+		private void ProcessTargetsNode(XPathNavigator targets_node)
+		{
+			// get target type
+			string typeValue = targets_node.GetAttribute("type", String.Empty);
+			if (String.IsNullOrEmpty(typeValue)) WriteMessage(MessageLevel.Error, "Each targets element must have a type attribute that specifies which type of links to create.");
+
+			LinkType2 type = LinkType2.None;
+			try
+			{
+				type = (LinkType2)Enum.Parse(typeof(LinkType2), typeValue, true);
+				if ((type == LinkType2.Msdn) && (msdn == null))
+				{
+					WriteMessage(MessageLevel.Info, "Creating MSDN URL resolver.");
+					msdn = new MsdnResolver();
+				}
+			}
+			catch (ArgumentException)
+			{
+				WriteMessage(MessageLevel.Error, String.Format("'{0}' is not a supported reference link type.", typeValue));
+			}
+
+			if (type == LinkType2.External)
+			{
+				ProcessExternalTargetNode(targets_node);
+				return;
+			}
+
+			// get base directory
+			string baseValue = targets_node.GetAttribute("base", String.Empty);
+
+			// get file pattern
+			string filesValue = targets_node.GetAttribute("files", String.Empty);
+			if (String.IsNullOrEmpty(filesValue)) WriteMessage(MessageLevel.Error, "Each targets element must have a files attribute specifying which target files to load.");
+
+			// determine whether to search recursively
+			bool recurse = false;
+			string recurseValue = targets_node.GetAttribute("recurse", String.Empty);
+			if (!String.IsNullOrEmpty(recurseValue))
+			{
+				if (String.Compare(recurseValue, Boolean.TrueString, true) == 0)
+				{
+					recurse = true;
+				}
+				else if (String.Compare(recurseValue, Boolean.FalseString, true) == 0)
+				{
+					recurse = false;
+				}
+				else
+				{
+					WriteMessage(MessageLevel.Error, String.Format("On the targets element, recurse='{0}' is not an allowed value.", recurseValue));
+				}
+			}
+
+			// turn baseValue and filesValue into directoryPath and filePattern
+			string fullPath;
+			if (String.IsNullOrEmpty(baseValue))
+			{
+				fullPath = filesValue;
+			}
+			else
+			{
+				fullPath = Path.Combine(baseValue, filesValue);
+			}
+			fullPath = Environment.ExpandEnvironmentVariables(fullPath);
+			string directoryPath = Path.GetDirectoryName(fullPath);
+			if (String.IsNullOrEmpty(directoryPath)) directoryPath = Environment.CurrentDirectory;
+			string filePattern = Path.GetFileName(fullPath);
+
+			// verify that directory exists
+			if (!Directory.Exists(directoryPath)) WriteMessage(MessageLevel.Error, String.Format("The targets directory '{0}' does not exist.", directoryPath));
+
+			// add the specified targets from the directory
+			WriteMessage(MessageLevel.Info, String.Format("Searching directory '{0}' for targets files of the form '{1}'.", directoryPath, filePattern));
+			AddTargets(directoryPath, filePattern, recurse, type);
+		}
+
+		/// <summary>
+		/// Extension point: override <see cref="ProcessExternalTargetNode()"/> method to
+		/// process targets element with type="external". You can create an <see cref="IExternalReferenceREsolver"/>
+		/// object based on the data in targets element.
+		/// </summary>
+		/// <param name="targets_node"></param>
+		protected virtual void ProcessExternalTargetNode(XPathNavigator targets_node)
+		{
+			WriteMessage(MessageLevel.Error, "ResolverReferenceLinksComponent2 cannot handle <targets> node with type=\"external\".");
+		}
 
         private void AddTargets (string directory, string filePattern, bool recurse, LinkType2 type) {
             string[] files = Directory.GetFiles(directory, filePattern);
@@ -140,6 +173,23 @@ namespace Microsoft.Ddue.Tools {
                 WriteMessage(MessageLevel.Error, String.Format("An access error occured while opening the reference targets file '{0}'. The error message is: {1}", file, BuildComponentUtilities.GetExceptionMessage(e)));
             }
         }
+
+		public IExternalReferenceResolver ExternalResover
+		{
+			get { return this.extResolver; }
+			set { this.extResolver = value; }
+		}
+
+		/// <summary>
+		/// Extension point: override <see cref="GetTarget(string)"/> method to provide
+		/// your own Target object based on the <paramref name="targetId"/> value.
+		/// </summary>
+		/// <param name="targetId"></param>
+		/// <returns></returns>
+		protected virtual Target GetTarget(string targetId)
+		{
+			return this.targets[targetId];
+		}
 
         private string linkTarget = "_blank";
         
@@ -180,7 +230,7 @@ namespace Microsoft.Ddue.Tools {
                     DisplayOptions options = link.DisplayOptions;
                     LinkType2 type = LinkType2.None;
 
-                    Target target = targets[targetId];
+                    Target target = GetTarget(targetId);
                     if (target == null) {
                         // no such target known; set link type to none and warn
                         type = LinkType2.None;
@@ -235,18 +285,11 @@ namespace Microsoft.Ddue.Tools {
                         type = LinkType2.Self;
                     }
 
-                    // get msdn endpoint, if needed
-                    string msdnUrl = null;
-                    if (type == LinkType2.Msdn) {
-                        if ((msdn == null) || (msdn.IsDisabled)) {
-                            // no msdn resolver
-                        } else {
-                            msdnUrl = msdn.GetMsdnUrl(targetId);
-                            if (String.IsNullOrEmpty(msdnUrl)) {
-                                WriteMessage(MessageLevel.Warn, String.Format("MSDN URL not found for target '{0}'.", targetId));
-                            }
-                        }
-                        if (String.IsNullOrEmpty(msdnUrl)) type = LinkType2.None;
+                    // get msdn or external endpoint, if needed
+                    string externalUrl = null;
+                    if (type == LinkType2.Msdn || type == LinkType2.External) {
+						externalUrl = ResolveExternalUrl(targetId, type);
+                        if (String.IsNullOrEmpty(externalUrl)) type = LinkType2.None;
                     }
                     
                     // write opening link tag and target info
@@ -277,8 +320,9 @@ namespace Microsoft.Ddue.Tools {
                             writer.WriteAttributeString("tabindex", "0");
                             break;
                         case LinkType2.Msdn:
+						case LinkType2.External:
                             writer.WriteStartElement("a");
-                            writer.WriteAttributeString("href", msdnUrl);
+                            writer.WriteAttributeString("href", externalUrl);
                             writer.WriteAttributeString("target", linkTarget);
                             break;
                     }
@@ -372,11 +416,30 @@ namespace Microsoft.Ddue.Tools {
 
         }
 
+		private string ResolveExternalUrl(string targetId, LinkType2 type)
+		{
+			IExternalReferenceResolver resolver = (type == LinkType2.Msdn) ? this.msdn : this.ExternalResover;
+
+			if ((resolver == null) || (resolver.IsDisabled))
+			{
+				// no resolver
+				WriteMessage(MessageLevel.Warn, String.Format("No resolver for link type {0} is defined or enabled.", type));
+				return null;
+			}
+			
+			String externalUrl = resolver.GetExternalUrl(targetId);
+			if (String.IsNullOrEmpty(externalUrl))
+			{
+				WriteMessage(MessageLevel.Warn, String.Format("{0} not found for target '{1}'.", resolver.ResolverName, targetId));
+			}
+			return externalUrl;
+		}
+
         // msdn resolver
 
         private MsdnResolver msdn = null;
 
-
+		private IExternalReferenceResolver extResolver = null;
     }
 
 

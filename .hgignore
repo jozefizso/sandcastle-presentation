@@ -1,12 +1,17 @@
-syntax: glob
+# 
+# Sandcastle Presentation
+# http://code.google.com/p/sandcastle-presentation/
+# 
 
+syntax: regexp
 
 # Exclude build dirs and user preference files
-syntax: regexp
+
 bin/
 obj/
 Output/
 target/
+chm/
 \.suo$
 \.user$
 
@@ -14,4 +19,10 @@ target/
 # Exclude some temporary XML files
 
 reflection\.org
-Branding/.*(reflection|javadoc|manifest).*\.xml
+(Sandcastle|Branding)/.*(reflection|javadoc|manifest|toc).*\.xml
+(Sandcastle|Branding)/.*\.dll
+
+
+# Exclude build dirs in mainSandcastle project
+syntax: glob
+JavadocSandcastle/Sandcastle/ProductionTools

@@ -46,7 +46,7 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\..\mine\tools\snk\izsak-net.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\JavadocSandcastleKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -155,8 +155,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\mine\tools\snk\izsak-net.snk">
-      <Link>izsak-net.snk</Link>
+    <None Include="..\JavadocSandcastleKey.snk">
+      <Link>JavadocSandcastleKey.snk</Link>
     </None>
     <None Include="app.config" />
     <None Include="Properties\Settings.settings">

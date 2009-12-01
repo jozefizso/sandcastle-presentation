@@ -152,12 +152,20 @@ namespace Microsoft.Ddue.Tools {
             get {
                 return (id);
             }
+			set
+			{
+				this.id = value;
+			}
         }
 
         public string Container {
             get {
                 return (container);
             }
+			set
+			{
+				this.container = value;
+			}
         }
 
         public string File {
@@ -166,10 +174,14 @@ namespace Microsoft.Ddue.Tools {
             }
         }
 
-        internal LinkType2 DefaultLinkType {
+        public LinkType2 DefaultLinkType {
             get {
                 return (type);
             }
+			set
+			{
+				this.type = value;
+			}
         }
 
         public virtual void Add (TargetCollection targets) {
@@ -185,7 +197,11 @@ namespace Microsoft.Ddue.Tools {
         public string Name {
             get {
                 return(name);
-            }
+			}
+			set
+			{
+				this.name = value;
+			}
         }
 
     }
@@ -204,12 +220,20 @@ namespace Microsoft.Ddue.Tools {
             get {
                 return(name);
             }
+			set
+			{
+				this.name = value;
+			}
         }
 
         public NamespaceReference Namespace {
             get {
                 return (containingNamespace);
             }
+			set
+			{
+				this.containingNamespace = value;
+			}
         }
 
         public SimpleTypeReference OuterType {
@@ -222,6 +246,10 @@ namespace Microsoft.Ddue.Tools {
             get {
                 return(templates);
             }
+			set
+			{
+				this.templates = value;
+			}
         }
 
     }
@@ -252,6 +280,10 @@ namespace Microsoft.Ddue.Tools {
             get {
                 return (name);
             }
+			set
+			{
+				this.name = value;
+			}
         }
 
         public TypeReference Type {
@@ -266,6 +298,10 @@ namespace Microsoft.Ddue.Tools {
             }
         }
 
+		public void SetTypeReference(SimpleTypeReference typeRef)
+		{
+			this.containingType = typeRef;
+		}
     }
 
     public class ConstructorTarget : MemberTarget {
@@ -329,12 +365,20 @@ namespace Microsoft.Ddue.Tools {
             get {
                 return (parameters);
             }
+			set
+			{
+				this.parameters = value;
+			}
         }
 
         public string[] Templates {
             get {
                 return (templates);
             }
+			set
+			{
+				this.templates = value;
+			}
         }
 
         // property to hold specialized template arguments (used with extension methods)
@@ -344,7 +388,11 @@ namespace Microsoft.Ddue.Tools {
             get
             {
                 return (templateArgs);
-            }
+			}
+			set
+			{
+				this.templateArgs = value;
+			}
         }
 
     }
@@ -393,7 +441,7 @@ namespace Microsoft.Ddue.Tools {
             return(targets[namespaceId]);
         }
 
-        internal NamespaceReference (string id) {
+        public NamespaceReference (string id) {
             this.namespaceId = id;
         }
 
@@ -2733,7 +2781,8 @@ namespace Microsoft.Ddue.Tools {
         Local,
         Index,
         LocalOrIndex,
-        Msdn
+        Msdn,
+		External
     }
 
 }

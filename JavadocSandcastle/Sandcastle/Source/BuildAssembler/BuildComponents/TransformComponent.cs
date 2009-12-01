@@ -129,7 +129,7 @@ namespace Microsoft.Ddue.Tools {
             // The transforms presumably come from a trusted source, so there's no reason
             // not to enable scripting and the document function. The latter is used to read topic
             // info files for the conceptual WebDocs build.
-			xslt.Load(file, new XsltSettings(true, true), new XmlUrlResolver());
+			xslt.Load(file, new XsltSettings(true, true), new XmlEnvVarResolver());
 		}
 
 		private XslCompiledTransform xslt = new XslCompiledTransform();
@@ -150,4 +150,19 @@ namespace Microsoft.Ddue.Tools {
 
 	}
 
+	/// <summary>
+	/// Resolves environment variables in paths in XSL files.
+	/// </summary>
+	/// <author>Jozef Izso</author>
+	internal class XmlEnvVarResolver : XmlUrlResolver
+	{
+		public XmlEnvVarResolver()
+			: base()
+		{ }
+
+		public override Uri ResolveUri(Uri baseUri, string relativeUri)
+		{
+			return base.ResolveUri(baseUri, Environment.ExpandEnvironmentVariables(relativeUri));
+		}
+	}
 }

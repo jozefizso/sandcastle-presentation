@@ -12,6 +12,7 @@ using System.Xml;
 using System.Xml.XPath;
 
 using Microsoft.Ddue.Tools.CommandLine;
+using System.Diagnostics;
 
 namespace Microsoft.Ddue.Tools {
 
@@ -311,6 +312,10 @@ namespace Microsoft.Ddue.Tools {
                 break;
                 case MessageLevel.Error:
                     ConsoleApplication.WriteMessage(LogLevel.Error, text);
+#if DEBUG
+					if (Debugger.IsAttached)
+						Debugger.Break();
+#endif
                     Environment.Exit(1);
                 break;
             }

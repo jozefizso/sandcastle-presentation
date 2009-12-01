@@ -12,6 +12,7 @@ using System.Xml;
 using System.Xml.XPath;
 
 using Microsoft.Ddue.Tools.CommandLine;
+using System.Diagnostics;
 
 namespace Microsoft.Ddue.Tools
 {
