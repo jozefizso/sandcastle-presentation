@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "C:\...\Doc\Help\", "Doc\Help\", "{10FE288A-5C6E-41FB-8D99-4CF9A7D06D3C}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.VirtualPath = "/TestWebsite"
+		Debug.AspNetCompiler.PhysicalPath = "Doc\Help\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\TestWebsite\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/TestWebsite"
+		Release.AspNetCompiler.PhysicalPath = "Doc\Help\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\TestWebsite\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "1328"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|.NET = Debug|.NET
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{10FE288A-5C6E-41FB-8D99-4CF9A7D06D3C}.Debug|.NET.ActiveCfg = Debug|.NET
+		{10FE288A-5C6E-41FB-8D99-4CF9A7D06D3C}.Debug|.NET.Build.0 = Debug|.NET
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

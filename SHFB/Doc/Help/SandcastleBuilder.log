@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shfbBuild product="Sandcastle Help File Builder Utilities" version="1.8.0.2" projectFile="D:\dev\OpenSource\Sandcastle\SHFB1\SandcastleBuilder\Doc\SandcastleBuilder.shfbproj" started="3. 12. 2009 21:05:47">
+<buildStep step="Initializing">
+Loading and initializing plug-ins...
+Additional Reference Links Version 1.8.0.2
+Copyright &#169; 2007-2009, Eric Woodruff, All Rights Reserved
+</buildStep>
+<buildStep step="ClearWorkFolder">
+Clearing working folder...
+</buildStep>
+<buildStep step="FindingTools">
+Finding tools...
+Found Sandcastle in 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\'
+SHFB: Warning BE0004: MRefBuilder has a version of '2.5.10626.0' but version '2.4.10520.1' was expected.  You may need to update your copy of the help file builder.
+
+Found HTML 1.x help compiler in 'C:\Program Files (x86)\HTML Help Workshop\'
+    Last step completed in 00:00:00.0060
+</buildStep>
+<buildStep step="Failed">
+
+SHFB: Error BE0032: Reflection data files do not exist yet
+
+
+  GC: Memory used before: 7&#160;695&#160;872
+  GC: Memory used after: 5&#160;647&#160;712
+
+</buildStep>
+</shfbBuild>
