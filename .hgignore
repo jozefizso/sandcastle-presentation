@@ -25,4 +25,5 @@ reflection\.org
 
 # Exclude build dirs in mainSandcastle project
 syntax: glob
+JavadocSandcastle/Sandcastle/Data
 JavadocSandcastle/Sandcastle/ProductionTools

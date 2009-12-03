@@ -13,7 +13,8 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>SandcastleBuilderMRefBuilder.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,6 +34,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\SandcastleBuilder.MRefBuilder.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>bin\Debug\SandcastleBuilder.MRefBuilder.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>bin\Release\SandcastleBuilder.MRefBuilder.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CCI, Version=2.5.10626.0, Culture=neutral, PublicKeyToken=ba59f1362a302f1c, processorArchitecture=x86" />
@@ -58,9 +77,6 @@
     <Compile Include="BindingRedirectSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="SandcastleBuilderMRefBuilder.snk" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -70,7 +86,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>XCopy /q /y "$(TargetDir)*.dll" "$(SolutionDir)SandcastleBuilderGUI\bin\$(ConfigurationName)"
-XCopy /q /y "$(TargetDir)*.xml" "$(SolutionDir)SandcastleBuilderGUI\bin\$(ConfigurationName)"</PostBuildEvent>
+    <PostBuildEvent>XCopy /q /y "$(TargetDir)*.dll" "$(SolutionDir)SandcastleBuilderGUI\$(OutDir)"
+XCopy /q /y "$(TargetDir)*.xml" "$(SolutionDir)SandcastleBuilderGUI\$(OutDir)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

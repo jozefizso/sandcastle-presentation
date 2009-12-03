@@ -42,6 +42,7 @@
 //                           Added support for conceptual content.
 // 1.8.0.0  07/26/2008  EFW  Modified to support the new project format
 // 1.8.0.1  12/14/2008  EFW  Updated to use .NET 3.5 and MSBuild 3.5
+// 1.8.0.2  03/12/2009  JIZ  More detailed error information.
 //=============================================================================
 
 using System;
@@ -590,9 +591,14 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 // Make sure we can find the tools
                 this.FindTools();
 
-                if(!Directory.Exists(sandcastleFolder + @"Data\Reflection"))
-                    throw new BuilderException("BE0032", "Reflection data " +
-                        "files do not exist yet");
+				string reflectionFolder = Path.Combine(sandcastleFolder, @"Data\Reflection");
+				if (!Directory.Exists(reflectionFolder))
+				{
+					throw new BuilderException(
+						"BE0032",
+						String.Format("Reflection data files do not exist yet. " +
+							"Missing .NET reflection files at '{0}'.", reflectionFolder));
+				}
 
                 // Make sure the HelpFileVersion property is in the form of
                 // a real version number.
@@ -1735,7 +1741,7 @@ AllDone:
 
             Version fileVersion = new Version(fvi.FileMajorPart,
                     fvi.FileMinorPart, fvi.FileBuildPart, fvi.FilePrivatePart);
-            Version expectedVersion = new Version("2.4.10520.1");
+			Version expectedVersion = new Version("2.5.10626.0");
 
             if(fileVersion < expectedVersion)
                 throw new BuilderException("BE0036", String.Format(

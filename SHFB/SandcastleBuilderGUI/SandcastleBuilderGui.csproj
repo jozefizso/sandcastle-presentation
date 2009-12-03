@@ -54,6 +54,24 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\SandcastleBuilderGUI.xml</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>bin\Debug\SandcastleBuilderGUI.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>bin\Release\SandcastleBuilderGUI.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.TextEditor, Version=3.0.0.2970, Culture=neutral, PublicKeyToken=4d61825e8dd49f1a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -632,7 +650,7 @@
     <Content Include="SharedContent\VS2005BuilderContent_zh-CN.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\CodeColorizer\ColorizerLibrary\Template\CopyCode_h.gif">
+    <Content Include="..\CodeColorizer\ColorizerLibrary\Template\CopyCode_h.gif">
       <Link>Colorizer\CopyCode_h.gif</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -713,23 +731,23 @@
     <Content Include="Templates\Hana.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\CodeColorizer\ColorizerLibrary\Template\CopyCode.gif">
+    <Content Include="..\CodeColorizer\ColorizerLibrary\Template\CopyCode.gif">
       <Link>Colorizer\CopyCode.gif</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\CodeColorizer\ColorizerLibrary\Template\highlight.css">
+    <Content Include="..\CodeColorizer\ColorizerLibrary\Template\highlight.css">
       <Link>Colorizer\highlight.css</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\CodeColorizer\ColorizerLibrary\Template\highlight.js">
+    <Content Include="..\CodeColorizer\ColorizerLibrary\Template\highlight.js">
       <Link>Colorizer\highlight.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\CodeColorizer\ColorizerLibrary\Template\highlight.xml">
+    <Content Include="..\CodeColorizer\ColorizerLibrary\Template\highlight.xml">
       <Link>Colorizer\highlight.xml</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\CodeColorizer\ColorizerLibrary\Template\highlight.xsl">
+    <Content Include="..\CodeColorizer\ColorizerLibrary\Template\highlight.xsl">
       <Link>Colorizer\highlight.xsl</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
