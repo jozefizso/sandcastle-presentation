@@ -10,7 +10,7 @@
     <RootNamespace>SandcastleBuilder.HtmlExtract</RootNamespace>
     <AssemblyName>SandcastleHtmlExtract</AssemblyName>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>SandcastleHtmlExtract.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\JavadocSandcastle\JavadocSandcastleKey.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>2.0</OldToolsVersion>
@@ -81,7 +81,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SandcastleHtmlExtract.snk" />
+    <None Include="..\..\JavadocSandcastle\JavadocSandcastleKey.snk">
+      <Link>JavadocSandcastleKey.snk</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

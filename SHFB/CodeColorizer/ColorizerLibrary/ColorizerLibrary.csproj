@@ -11,7 +11,7 @@
     <AssemblyKeyContainerName>
     </AssemblyKeyContainerName>
     <AssemblyName>ColorizerLibrary</AssemblyName>
-    <AssemblyOriginatorKeyFile>ColorizerLibrary.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\..\JavadocSandcastle\JavadocSandcastleKey.snk</AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
@@ -132,7 +132,9 @@
     <Content Include="Template\CopyCode_h.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ColorizerLibrary.snk" />
+    <None Include="..\..\..\JavadocSandcastle\JavadocSandcastleKey.snk">
+		<Link>JavadocSandcastleKey.snk</Link>
+	</None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />

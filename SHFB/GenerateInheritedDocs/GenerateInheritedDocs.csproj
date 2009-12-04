@@ -10,7 +10,7 @@
     <RootNamespace>InheritedDocumentation</RootNamespace>
     <AssemblyName>GenerateInheritedDocs</AssemblyName>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>GenerateInheritedDocs.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\JavadocSandcastle\JavadocSandcastleKey.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>2.0</OldToolsVersion>
@@ -94,7 +94,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="GenerateInheritedDocs.snk" />
+    <None Include="..\..\JavadocSandcastle\JavadocSandcastleKey.snk">
+      <Link>JavadocSandcastleKey.snk</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

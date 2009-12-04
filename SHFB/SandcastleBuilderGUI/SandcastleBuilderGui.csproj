@@ -12,7 +12,7 @@
     <ApplicationIcon>Images\SandcastleBuilder.ico</ApplicationIcon>
     <StartupObject>SandcastleBuilder.Gui.StartUp</StartupObject>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>SandcastleBuilderGui.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\JavadocSandcastle\JavadocSandcastleKey.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>2.0</OldToolsVersion>
@@ -295,7 +295,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Images\SandcastleBuilder.ico" />
-    <None Include="SandcastleBuilderGui.snk" />
+    <None Include="..\..\JavadocSandcastle\JavadocSandcastleKey.snk">
+      <Link>JavadocSandcastleKey.snk</Link>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SandcastleBuilderUtils\SandcastleBuilderUtils.csproj">

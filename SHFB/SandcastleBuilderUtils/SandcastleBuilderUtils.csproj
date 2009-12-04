@@ -10,7 +10,7 @@
     <RootNamespace>SandcastleBuilder.Utils</RootNamespace>
     <AssemblyName>SandcastleBuilder.Utils</AssemblyName>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>SandcastleBuilderUtils.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\JavadocSandcastle\JavadocSandcastleKey.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>2.0</OldToolsVersion>
@@ -251,7 +251,9 @@
     <Compile Include="XPath\XPathFunctionContext.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SandcastleBuilderUtils.snk" />
+    <None Include="..\..\JavadocSandcastle\JavadocSandcastleKey.snk">
+      <Link>JavadocSandcastleKey.snk</Link>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Controls\StatusBarTextProvider.bmp" />

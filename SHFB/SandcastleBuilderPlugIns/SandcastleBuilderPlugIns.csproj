@@ -10,7 +10,7 @@
     <RootNamespace>SandcastleBuilder.PlugIns</RootNamespace>
     <AssemblyName>SandcastleBuilder.PlugIns</AssemblyName>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>SandcastleBuilderPlugIns.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\JavadocSandcastle\JavadocSandcastleKey.snk</AssemblyOriginatorKeyFile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>2.0</OldToolsVersion>
@@ -163,7 +163,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SandcastleBuilderPlugIns.snk" />
+    <None Include="..\..\JavadocSandcastle\JavadocSandcastleKey.snk">
+      <Link>JavadocSandcastleKey.snk</Link>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AdditionalReferenceLinksConfigDlg.resx">
