@@ -414,6 +414,7 @@
     <Compile Include="Conversion\ConvertFromSandcastleGui.cs" />
     <Compile Include="Conversion\ConvertToMSBuildFormat.cs" />
     <Compile Include="Design\BuildActionEnumConverter.cs" />
+    <Compile Include="Design\PresentationStyleInfo.cs" />
     <Compile Include="Design\UserDefinedPropertyEditor.cs" />
     <Compile Include="Design\DynamicReadOnlyPropertyDescriptor.cs" />
     <Compile Include="Design\NamespaceSummaryItemEditorDlg.cs">
@@ -438,8 +439,11 @@
     <Compile Include="Design\UserDefinedPropertyTypeConverter.cs" />
     <Compile Include="FileItem.cs" />
     <Compile Include="FileItemCollection.cs" />
+    <Compile Include="PresentationStyleFolder.cs" />
+    <Compile Include="PresentationStylesItemCollection.cs" />
     <Compile Include="SdkLinkTarget.cs" />
     <Compile Include="SdkLinkType.cs" />
+    <Compile Include="Strings\ProjectSR.cs" />
     <None Include="Resources\ProjectTemplate.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

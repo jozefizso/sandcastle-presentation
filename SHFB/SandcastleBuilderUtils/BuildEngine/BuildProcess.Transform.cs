@@ -311,7 +311,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     break;
 
                 case "presentationstyle":
-                    replaceWith = project.PresentationStyle;
+                    replaceWith = project.PresentationStyle.Name;
                     break;
 
                 case "presentationparam":

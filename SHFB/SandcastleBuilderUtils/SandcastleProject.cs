@@ -80,6 +80,7 @@ using SandcastleBuilder.Utils.BuildComponent;
 using SandcastleBuilder.Utils.ConceptualContent;
 using SandcastleBuilder.Utils.Design;
 using SandcastleBuilder.Utils.PlugIn;
+using SandcastleBuilder.Utils.Strings;
 
 namespace SandcastleBuilder.Utils
 {
@@ -94,7 +95,7 @@ namespace SandcastleBuilder.Utils
         //=====================================================================
 
         // The schema version used in the saved project files
-        private static Version SchemaVersion = new Version(1, 8, 0, 0);
+        private static Version SchemaVersion = new Version(1, 9, 0, 0);
 
         /// <summary>The default configuration</summary>
         public const string DefaultConfiguration = "Debug";
@@ -143,6 +144,9 @@ namespace SandcastleBuilder.Utils
         // Build process plug-in configurations
         private PlugInConfigurationDictionary plugInConfigs;
 
+		// List of lookup folders with presentation styles
+		private PresentationStylesItemCollection stylesFolders;
+
         // Path and build-related properties
         private FolderPath hhcPath, hxcompPath, sandcastlePath, workingPath;
         private FilePath buildLogFile;
@@ -156,8 +160,9 @@ namespace SandcastleBuilder.Utils
             showFeedbackControl, includeStopWordList, indentHtml;
         private string helpTitle, htmlHelpName, copyrightHref, copyrightText,
             feedbackEMailAddress, feedbackEMailLinkText, headerText,
-            footerText, projectSummary, rootNSTitle, presentationStyle,
+            footerText, projectSummary, rootNSTitle,
             plugInNamespaces, helpFileVersion;
+		private PresentationStyleInfo presentationStyle;
         private CultureInfo language;
         private ProjectLinkType projectLinks;
         private SdkLinkType sdkLinks;
@@ -447,6 +452,15 @@ namespace SandcastleBuilder.Utils
                 return fileItems;
             }
         }
+
+		[Browsable(false), XmlIgnore]
+		public Collection<PresentationStyleFolder> PresentationStylePaths
+		{
+			get
+			{
+				return this.stylesFolders;
+			}
+		}
         #endregion
 
         #region Comment related properties
@@ -1214,13 +1228,14 @@ namespace SandcastleBuilder.Utils
         [Category("Help File"), Description("Select which presentation " +
           "style to use for the generated help topic pages"),
           TypeConverter(typeof(PresentationStyleTypeConverter)), EscapeValue]
-        public string PresentationStyle
+        public PresentationStyleInfo PresentationStyle
         {
             get { return presentationStyle; }
             set
             {
-                if(value == null || !PresentationStyleTypeConverter.IsPresent(value))
-                    value = PresentationStyleTypeConverter.FirstMatching(value);
+				if (value == null || !PresentationStyleTypeConverter.IsPresent(value.Name))
+					value = PresentationStyleTypeConverter.DefaultStyle;
+						//PresentationStyleTypeConverter.FirstMatching(value);
 
                 this.SetProjectProperty("PresentationStyle", value);
                 presentationStyle = value;
@@ -2196,8 +2211,7 @@ namespace SandcastleBuilder.Utils
         /// </summary>
         /// <param name="sender">The sender of the event</param>
         /// <param name="e">The event parameters</param>
-        private void docSources_ListChanged(object sender,
-          ListChangedEventArgs e)
+        private void docSources_ListChanged(object sender, ListChangedEventArgs e)
         {
             if(!loadingProperties)
             {
@@ -2212,8 +2226,7 @@ namespace SandcastleBuilder.Utils
         /// </summary>
         /// <param name="sender">The sender of the event</param>
         /// <param name="e">The event parameters</param>
-        private void ItemList_ListChanged(object sender,
-          ListChangedEventArgs e)
+        private void ItemList_ListChanged(object sender, ListChangedEventArgs e)
         {
             if(!loadingProperties)
                 this.MarkAsDirty();
@@ -2299,16 +2312,13 @@ namespace SandcastleBuilder.Utils
 
                 property = projectCache["SHFBSchemaVersion"];
 
-                if(property == null || String.IsNullOrEmpty(property.Value))
-                    throw new BuilderException("PRJ0001",
-                        "Invalid or missing SchemaVersion");
+				if (property == null || String.IsNullOrEmpty(property.Value))
+					throw ProjectSR.MissingSchemaVersionElement();
 
                 schemaVersion = new Version(property.Value);
 
-                if(schemaVersion > SandcastleProject.SchemaVersion)
-                    throw new BuilderException("PRJ0002", "The selected " +
-                        "file is for a more recent version of the help file " +
-                        "builder.  Please upgrade your copy to load the file.");
+				if (schemaVersion > SandcastleProject.SchemaVersion)
+					throw ProjectSR.UnsupportedSchemaVersion(schemaVersion, SandcastleProject.SchemaVersion);
 
                 // Note that many properties don't use the final value as they
                 // don't contain variables that need replacing.
@@ -2347,6 +2357,10 @@ namespace SandcastleBuilder.Utils
                         case "PLUGINCONFIGURATIONS":
                             plugInConfigs.FromXml(prop.Value);
                             break;
+
+						case "PRESENTATIONSTYLES":
+							stylesFolders.FromXml(prop.Value);
+							break;
 
                         default:
                             // These may or may not contain variable references
@@ -2689,6 +2703,9 @@ namespace SandcastleBuilder.Utils
             helpAttributes = new MSHelpAttrCollection(this);
             helpAttributes.ListChanged += new ListChangedEventHandler(
                 ItemList_ListChanged);
+
+			stylesFolders = new PresentationStylesItemCollection(this);
+			stylesFolders.ListChanged += new ListChangedEventHandler(ItemList_ListChanged);
 
             try
             {

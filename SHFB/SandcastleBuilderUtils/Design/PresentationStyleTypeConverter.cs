@@ -27,10 +27,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 using SandcastleBuilder.Utils;
 using SandcastleBuilder.Utils.BuildEngine;
+using System.Collections.ObjectModel;
 
 namespace SandcastleBuilder.Utils.Design
 {
@@ -44,9 +46,11 @@ namespace SandcastleBuilder.Utils.Design
         //=====================================================================
         // Private data members
 
-        private static List<string> styles = new List<string>();
-        private static StandardValuesCollection standardValues =
-            PresentationStyleTypeConverter.InitializeStandardValues();
+		private static List<PresentationStyleInfo> styles = new List<PresentationStyleInfo>();
+        private static StandardValuesCollection standardValues = null;
+            //PresentationStyleTypeConverter.InitializeStandardValues();
+
+		//private StandardValuesCollection standardValues = null;
 
         //=====================================================================
         // Properties
@@ -56,16 +60,22 @@ namespace SandcastleBuilder.Utils.Design
         /// </summary>
         /// <value>Returns <b>vs2005</b> if present.  If not, it returns the
         /// first best match or, failing that, the first style in the list.</value>
-        public static string DefaultStyle
+        public static PresentationStyleInfo DefaultStyle
         {
             get
             {
-                string defaultStyle = "vs2005";
+				string dxroot = Environment.GetEnvironmentVariable("DXROOT");
 
-                if(!IsPresent(defaultStyle))
-                    defaultStyle = FirstMatching(defaultStyle);
+				var folder = new PresentationStyleInfo();
+				folder.Name = "vs2005";
+				folder.Path = Path.Combine(dxroot, @"Presentation\vs2005");
 
-                return defaultStyle;
+				//string defaultStyle = "vs2005";
+
+				//if(!IsPresent(defaultStyle))
+				//    defaultStyle = FirstMatching(defaultStyle);
+
+				return folder;
             }
         }
 
@@ -76,77 +86,61 @@ namespace SandcastleBuilder.Utils.Design
         /// This is used to get the standard values by searching for the
         /// .NET Framework versions installed on the current system.
         /// </summary>
-        private static StandardValuesCollection InitializeStandardValues()
-        {
-            string folder;
+		private static void InitializeStandardValues(ITypeDescriptorContext context)
+		{
+			if (standardValues != null)
+				return;
 
-            try
-            {
-                // Try the DXROOT environment variable first
-                folder = Environment.GetEnvironmentVariable("DXROOT");
-                if(String.IsNullOrEmpty(folder) ||
-                  !folder.Contains(@"\Sandcastle"))
-                    folder = String.Empty;
+			if (context == null)
+				return;
 
-                // Try to find Sandcastle based on the path if not there
-                if(folder.Length == 0)
-                {
-                    Match m = Regex.Match(
-                        Environment.GetEnvironmentVariable("PATH"),
-                        @"[A-Z]:\\.[^;]+\\Sandcastle(?=\\Prod)",
-                        RegexOptions.IgnoreCase);
+			SandcastleProject proj = context.Instance as SandcastleProject;
+			if (proj == null)
+				throw new ArgumentException("PresentationStyleTypeConverter requires context.Instance "+
+					"property to be set to SandcastleProject object.", "context");
 
-                    // If not found in the path, search all fixed drives
-                    if(m.Success)
-                        folder = m.Value;
-                    else
-                    {
-                        folder = BuildProcess.FindOnFixedDrives(@"\Sandcastle");
+			standardValues = InitializeStandardValues(proj.PresentationStylePaths);
+		}
 
-                        // If not found there, try the VS 2005 SDK folders
-                        if(folder.Length == 0)
-                        {
-                            folder = BuildProcess.FindSdkExecutable(
-                                "MRefBuilder.exe");
+		private static StandardValuesCollection InitializeStandardValues(Collection<PresentationStyleFolder> folders)
+		{
+			var styles = new List<PresentationStyleInfo>();
 
-                            if(folder.Length != 0)
-                                folder = folder.Substring(0,
-                                    folder.LastIndexOf('\\'));
-                        }
-                    }
-                }
+			foreach(PresentationStyleFolder folder in folders)
+			{
+				string path = Environment.ExpandEnvironmentVariables(folder.Path);
 
-                if(folder.Length != 0)
-                {
-                    folder += @"\Presentation";
+				AddPresentationsFromFolder(path, styles);
+			}
 
-                    string[] dirs = Directory.GetDirectories(folder);
+			return new StandardValuesCollection(styles);
+		}
 
-                    // The Shared folder is omitted as it contains files
-                    // common to all presentation styles.
-                    foreach(string s in dirs)
-                        if(!s.EndsWith("Shared", StringComparison.Ordinal))
-                            styles.Add(s.Substring(s.LastIndexOf('\\') + 1));
-                }
-            }
-            catch(Exception)
-            {
-                // Eat the exception.  If we can't find Sandcastle here, the
-                // build will fail too so the user will be notified then.
-            }
+		private static void AddPresentationsFromFolder(string folder, IList<PresentationStyleInfo> styles)
+		{
+			if (!Directory.Exists(folder))
+				return;
 
-            // Add the three basic styles as placeholders if nothing was found.
-            // The build will fail but the project will still load.
-            if(styles.Count == 0)
-            {
-                styles.Add("hana");
-                styles.Add("Prototype");
-                styles.Add("vs2005");
-            }
+			string[] dirs = Directory.GetDirectories(folder);
+			
+			// The Shared folder is omitted as it contains files
+			// common to all presentation styles.
+			foreach (string s in dirs)
+			{
+				if (!s.EndsWith("Shared", StringComparison.OrdinalIgnoreCase))
+				{
+					var di = new DirectoryInfo(s);
 
-            styles.Sort();
-            return new StandardValuesCollection(styles);
-        }
+					var ps = new PresentationStyleInfo()
+					{
+						Name = s.Substring(s.LastIndexOf('\\') + 1),
+						Path = di.FullName,
+					};
+
+					styles.Add(ps);
+				}
+			}
+		}
 
         /// <summary>
         /// This is overridden to return the values for the type converter's
@@ -154,10 +148,10 @@ namespace SandcastleBuilder.Utils.Design
         /// </summary>
         /// <param name="context">The format context object</param>
         /// <returns>Returns the standard values for the type</returns>
-        public override StandardValuesCollection GetStandardValues(
-          ITypeDescriptorContext context)
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
-            return standardValues;
+			InitializeStandardValues(context);
+			return standardValues;
         }
 
         /// <summary>
@@ -166,8 +160,7 @@ namespace SandcastleBuilder.Utils.Design
         /// </summary>
         /// <param name="context">The format context object</param>
         /// <returns>Always returns true</returns>
-        public override bool GetStandardValuesExclusive(
-          ITypeDescriptorContext context)
+        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
         {
             return true;
         }
@@ -178,8 +171,7 @@ namespace SandcastleBuilder.Utils.Design
         /// </summary>
         /// <param name="context">The format context object</param>
         /// <returns>Always returns true</returns>
-        public override bool GetStandardValuesSupported(
-          ITypeDescriptorContext context)
+        public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
             return true;
         }
@@ -192,7 +184,7 @@ namespace SandcastleBuilder.Utils.Design
         /// <returns>True if present, false if not found</returns>
         public static bool IsPresent(string style)
         {
-            return styles.Contains(style);
+			return styles.Exists(s => s.Name == style);
         }
 
         /// <summary>
@@ -202,29 +194,18 @@ namespace SandcastleBuilder.Utils.Design
         /// </summary>
         /// <param name="style">The style for which to look</param>
         /// <returns>The best match or the first style if not found.</returns>
-        public static string FirstMatching(string style)
+        public static PresentationStyleInfo FirstMatching(string styleName)
         {
-            string compareStyle;
-
-            if(!String.IsNullOrEmpty(style))
+            if(!String.IsNullOrEmpty(styleName))
             {
-                // Try for a case-insensitive match first
-                foreach(string s in styles)
-                    if(String.Compare(s, style,
-                      StringComparison.OrdinalIgnoreCase) == 0)
-                        return s;
+				var q = from s in styles
+						where s.Name == styleName
+						select s;
 
-                // Try for the closest match
-                style = style.ToLower(CultureInfo.InvariantCulture);
+				var style = q.FirstOrDefault();
 
-                foreach(string s in styles)
-                {
-                    compareStyle = s.ToLower(CultureInfo.InvariantCulture);
-
-                    if(compareStyle.StartsWith(style,
-                      StringComparison.Ordinal) || compareStyle.Contains(style))
-                        return s;
-                }
+				if (style != null)
+					return style;
             }
 
             // Not found, return the first style
