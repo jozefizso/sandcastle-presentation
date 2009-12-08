@@ -148,24 +148,26 @@ namespace SandcastleBuilder.Utils.ConceptualContent
 
             builder.ReportProgress("Checking for other token files...");
 
-            foreach(FileItem tokenFile in this.tokenFiles)
-                if(!File.Exists(tokenFile.FullPath))
-                {
-                    missingFile = true;
-                    builder.ReportProgress("    Missing token file: {0}",
-                        tokenFile.FullPath);
-                }
-                else
-                {
-                    builder.ReportProgress("    {0} -> {1}", tokenFile.FullPath,
-                        Path.Combine(builder.WorkingFolder, Path.GetFileName(
-                        tokenFile.FullPath)));
-                    builder.TransformTemplate(Path.GetFileName(tokenFile.FullPath),
-                        Path.GetDirectoryName(tokenFile.FullPath),
-                        builder.WorkingFolder);
-                }
+			foreach (FileItem tokenFile in this.tokenFiles)
+			{
+				if (!File.Exists(tokenFile.FullPath))
+				{
+					missingFile = true;
+					builder.ReportProgress("    Missing token file: {0}",
+						tokenFile.FullPath);
+				}
+				else
+				{
+					builder.ReportProgress("    {0} -> {1}", tokenFile.FullPath,
+						Path.Combine(builder.WorkingFolder, Path.GetFileName(
+						tokenFile.FullPath)));
+					builder.TransformTemplate(Path.GetFileName(tokenFile.FullPath),
+						Path.GetDirectoryName(tokenFile.FullPath),
+						builder.WorkingFolder);
+				}
+			}
 
-            if(missingFile)
+            if (missingFile)
                 throw new BuilderException("BE0052", "One or more token " +
                     "files could not be found");
 

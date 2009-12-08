@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shfbBuild product="Sandcastle Help File Builder Utilities" version="1.8.0.2" projectFile="d:\dev\sc-vs2010\SHFB\Doc\SandcastleBuilder.shfbproj" started="3. 12. 2009 23:36:55">
+<shfbBuild product="Sandcastle Help File Builder Utilities" version="1.8.0.2" projectFile="d:\dev\sc-vs2010\SHFB\Doc\SandcastleBuilder.shfbproj" started="8. 12. 2009 21:20:55">
 <buildStep step="Initializing">
 Loading and initializing plug-ins...
 Additional Reference Links Version 1.8.0.2
@@ -13,8 +13,8 @@ Finding tools...
 Found Sandcastle in 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\'
 Found HTML 1.x help compiler in 'C:\Program Files (x86)\HTML Help Workshop\'
 
-  GC: Memory used before: 182&#160;580&#160;440
-  GC: Memory used after: 7&#160;226&#160;368
+  GC: Memory used before: 6&#160;778&#160;444
+  GC: Memory used after: 2&#160;776&#160;220
 
 </buildStep>
 <buildStep step="ValidatingDocumentationSources">
@@ -77,11 +77,12 @@ Copying XML comments files
 </buildStep>
 <buildStep step="GenerateSharedContent">
 Generating shared content files (en-US, English (United States))...
-    Last step completed in 00:00:00.0140
+SHFB: Warning BE0068: Template 'D:\dev\sc-vs2010\SHFB\SandcastleBuilderGui\bin\x86\Debug\Templates\..\SharedContent\vs2010BuilderContent_en-US.xml' does not exist.
+    Last step completed in 00:00:00.0310
 </buildStep>
 <buildStep step="GenerateApiFilter">
 Generating API filter for MRefBuilder...
-    Last step completed in 00:00:00.0470
+    Last step completed in 00:00:00.0850
 </buildStep>
 <buildStep step="GenerateReflectionInfo">
 Generating reflection information...
@@ -90,15 +91,15 @@ GenerateRefInfo:
   MrefBuilder (v2.5.10626.0)
   Copyright c Microsoft 2006
   Info: Loaded 8 assemblies for reflection and 17 dependency assemblies.
-  Info: Wrote information on 17 namespaces, 190 types, and 1529 members
+  Info: Wrote information on 17 namespaces, 190 types, and 1531 members
   XslTransform (v2.5.10626.0)
   Copyright c Microsoft 2005-2006
   Info: Applying XSL transformation 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\ProductionTransforms\MergeDuplicates.xsl'.
-    Last step completed in 00:00:06.7134
+    Last step completed in 00:00:06.6184
 </buildStep>
 <buildStep step="GenerateNamespaceSummaries">
 Generating namespace summary information...
-    Last step completed in 00:00:00.0340
+    Last step completed in 00:00:00.0360
 </buildStep>
 <buildStep step="ApplyVisibilityProperties">
 Applying visibility properties to reflection information file
@@ -125,7 +126,7 @@ XslTransform (v2.5.10626.0)
 Copyright c Microsoft 2005-2006
 Info: Applying XSL transformation 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\ProductionTransforms\ApplyVSDocModel.xsl'.
 Info: Applying XSL transformation 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\ProductionTransforms\AddGuidFilenames.xsl'.
-</plugIn>    Last step completed in 00:00:17.8030
+</plugIn>    Last step completed in 00:00:16.9800
 </buildStep>
 <buildStep step="GenerateInheritedDocumentation">
 Generating inherited documentation...
@@ -169,10 +170,10 @@ SHFB: Warning GID0003: Unable to locate API ID 'M:SandcastleBuilder.Utils.Design
 
 Documentation merged successfully
 
-  GC: Memory used before: 100&#160;855&#160;476
-  GC: Memory used after: 64&#160;616&#160;208
+  GC: Memory used before: 100&#160;268&#160;572
+  GC: Memory used after: 63&#160;929&#160;876
 
-    Last step completed in 00:00:05.8303
+    Last step completed in 00:00:05.7853
 </buildStep>
 <buildStep step="TransformReflectionInfo">
 Transforming reflection output...
@@ -181,11 +182,11 @@ TransformManifest:
   XslTransform (v2.5.10626.0)
   Copyright c Microsoft 2005-2006
   Info: Applying XSL transformation 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\ProductionTransforms\ApplyVSDocModel.xsl'.
-  Info: Applying XSL transformation 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\ProductionTransforms\AddGuidFilenames.xsl'.
+  Info: Applying XSL transformation 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\ProductionTransforms\AddFriendlyFilenames.xsl'.
   XslTransform (v2.5.10626.0)
   Copyright c Microsoft 2005-2006
   Info: Applying XSL transformation 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\ProductionTransforms\ReflectionToManifest.xsl'.
-    Last step completed in 00:00:18.7181
+    Last step completed in 00:00:17.6720
 </buildStep>
 <buildStep step="ModifyHelpTopicFilenames">
 Modifying help topic filenames in reflection information file
@@ -194,113 +195,115 @@ Modifying help topic filenames in reflection information file
 </buildStep>
 <buildStep step="CopyStandardContent">
 Copying standard help content...
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\adm.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\adm.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\adm_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\adm_arch.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\adm_dev.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\adm_dev.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\adm_dev_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\adm_dev_arch.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\alert_caution.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\alert_caution.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\alert_note.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\alert_note.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\alert_security.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\alert_security.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\arch.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\big_adm.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\big_adm.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\big_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\big_arch.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\big_dev.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\big_dev.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\big_kw.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\big_kw.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\box.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\box.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\Caution.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\Caution.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\CFW.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\CFW.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\collall.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\collall.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\collapse.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\collapse.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\collapse_all.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\collapse_all.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\copycode.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\copycode.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\copycodeHighlight.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\copycodeHighlight.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\dev.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\dev.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\dev_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\dev_arch.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\dropdown.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\dropdown.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\dropdownHover.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\dropdownHover.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\drpdown.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\drpdown.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\drpdown_orange.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\drpdown_orange.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\drpdown_orange_up.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\drpdown_orange_up.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\drpup.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\drpup.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\exp.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\exp.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\expall.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\expall.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\expand_all.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\expand_all.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\filter1a.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\filter1a.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\filter1c.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\filter1c.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\footer.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\footer.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\gradient.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\gradient.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\greencheck.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\greencheck.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\greychck.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\greychck.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\header_prev_next.jpg -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\header_prev_next.jpg
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\header_sql_tutorial_blank.jpg -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\header_sql_tutorial_blank.jpg
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\header_sql_tutorial_logo.GIF -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\header_sql_tutorial_logo.GIF
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\kw.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\kw_adm.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw_adm.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\kw_adm_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw_adm_arch.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\kw_adm_dev.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw_adm_dev.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\kw_adm_dev_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw_adm_dev_arch.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\kw_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw_arch.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\kw_dev.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw_dev.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\kw_dev_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw_dev_arch.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\LastChild.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\LastChild.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\load.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\load.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\load_hover.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\load_hover.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\note.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\note.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\pencil.GIF -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pencil.GIF
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\privclass.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privclass.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\privdelegate.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privdelegate.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\privenum.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privenum.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\privenumeration.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privenumeration.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\privevent.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privevent.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\privextension.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privextension.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\privfield.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privfield.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\privinterface.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privinterface.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\privmethod.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privmethod.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\privproperty.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privproperty.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\privstructure.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privstructure.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\protclass.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protclass.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\protdelegate.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protdelegate.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\protenum.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protenum.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\protenumeration.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protenumeration.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\protevent.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protevent.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\protextension.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protextension.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\protfield.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protfield.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\protinterface.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protinterface.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\protmethod.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protmethod.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\protoperator.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protoperator.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\protproperty.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protproperty.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\protstructure.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protstructure.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\pubclass.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubclass.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\pubdelegate.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubdelegate.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\pubenum.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubenum.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\pubenumeration.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubenumeration.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\pubevent.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubevent.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\pubextension.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubextension.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\pubfield.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubfield.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\pubinterface.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubinterface.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\pubmethod.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubmethod.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\puboperator.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\puboperator.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\pubproperty.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubproperty.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\pubstructure.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubstructure.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\requirements1a.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\requirements1a.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\requirements1c.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\requirements1c.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\save.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\save.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\save_hover.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\save_hover.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\security.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\security.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\seealso1a.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\seealso1a.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\seealso1c.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\seealso1c.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\static.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\static.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\icons\xna.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\xna.gif
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\scripts\CheckboxMenu.js -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\scripts\CheckboxMenu.js
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\scripts\CommonUtilities.js -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\scripts\CommonUtilities.js
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\scripts\Dropdown.js -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\scripts\Dropdown.js
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\scripts\EventUtilities.js -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\scripts\EventUtilities.js
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\scripts\script_feedBack.js -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\scripts\script_feedBack.js
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\scripts\script_manifold.js -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\scripts\script_manifold.js
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\scripts\SplitScreen.js -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\scripts\SplitScreen.js
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\styles\Presentation.css -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\styles\Presentation.css
-D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\styles\Whidbey\presentation.css -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\styles\Whidbey\presentation.css
-    Last step completed in 00:00:00.6780
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\adm.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\adm.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\adm_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\adm_arch.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\adm_dev.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\adm_dev.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\adm_dev_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\adm_dev_arch.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\alert_caution.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\alert_caution.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\alert_note.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\alert_note.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\alert_security.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\alert_security.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\arch.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\big_adm.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\big_adm.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\big_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\big_arch.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\big_dev.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\big_dev.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\big_kw.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\big_kw.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\box.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\box.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\Caution.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\Caution.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\CFW.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\CFW.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\collall.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\collall.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\collapse.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\collapse.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\collapse_all.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\collapse_all.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\copycode.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\copycode.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\copycodeHighlight.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\copycodeHighlight.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\dev.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\dev.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\dev_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\dev_arch.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\dropdown.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\dropdown.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\dropdownHover.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\dropdownHover.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\drpdown.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\drpdown.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\drpdown_orange.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\drpdown_orange.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\drpdown_orange_up.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\drpdown_orange_up.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\drpup.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\drpup.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\exp.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\exp.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\expall.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\expall.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\expand_all.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\expand_all.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\filter1a.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\filter1a.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\filter1c.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\filter1c.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\footer.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\footer.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\gradient.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\gradient.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\greencheck.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\greencheck.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\greychck.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\greychck.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\header_prev_next.jpg -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\header_prev_next.jpg
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\header_sql_tutorial_blank.jpg -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\header_sql_tutorial_blank.jpg
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\header_sql_tutorial_logo.GIF -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\header_sql_tutorial_logo.GIF
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\kw.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\kw_adm.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw_adm.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\kw_adm_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw_adm_arch.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\kw_adm_dev.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw_adm_dev.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\kw_adm_dev_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw_adm_dev_arch.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\kw_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw_arch.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\kw_dev.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw_dev.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\kw_dev_arch.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\kw_dev_arch.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\LastChild.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\LastChild.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\load.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\load.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\load_hover.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\load_hover.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\note.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\note.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\pencil.GIF -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pencil.GIF
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\privclass.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privclass.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\privdelegate.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privdelegate.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\privenum.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privenum.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\privenumeration.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privenumeration.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\privevent.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privevent.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\privextension.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privextension.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\privfield.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privfield.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\privinterface.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privinterface.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\privmethod.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privmethod.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\privproperty.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privproperty.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\privstructure.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\privstructure.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\protclass.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protclass.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\protdelegate.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protdelegate.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\protenum.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protenum.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\protenumeration.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protenumeration.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\protevent.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protevent.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\protextension.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protextension.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\protfield.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protfield.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\protinterface.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protinterface.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\protmethod.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protmethod.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\protoperator.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protoperator.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\protproperty.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protproperty.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\protstructure.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\protstructure.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\pubclass.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubclass.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\pubdelegate.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubdelegate.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\pubenum.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubenum.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\pubenumeration.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubenumeration.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\pubevent.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubevent.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\pubextension.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubextension.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\pubfield.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubfield.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\pubinterface.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubinterface.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\pubmethod.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubmethod.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\puboperator.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\puboperator.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\pubproperty.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubproperty.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\pubstructure.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\pubstructure.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\requirements1a.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\requirements1a.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\requirements1c.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\requirements1c.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\save.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\save.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\save_hover.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\save_hover.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\security.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\security.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\seealso1a.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\seealso1a.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\seealso1c.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\seealso1c.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\static.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\static.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\icons\xna.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\icons\xna.gif
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\scripts\CheckboxMenu.js -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\scripts\CheckboxMenu.js
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\scripts\CommonUtilities.js -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\scripts\CommonUtilities.js
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\scripts\Dropdown.js -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\scripts\Dropdown.js
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\scripts\EventUtilities.js -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\scripts\EventUtilities.js
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\scripts\script_feedBack.js -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\scripts\script_feedBack.js
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\scripts\script_manifold.js -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\scripts\script_manifold.js
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\scripts\SplitScreen.js -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\scripts\SplitScreen.js
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\styles\lightweight.css -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\styles\lightweight.css
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\styles\lw-code.css -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\styles\lw-code.css
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\styles\Presentation.css -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\styles\Presentation.css
+D:\dev\sc-vs2010\Branding\Presentation\vs2010\styles\Whidbey\presentation.css -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\stylesWhidbey\presentation.css
+    Last step completed in 00:00:00.3820
 </buildStep>
 <buildStep step="CopyConceptualContent">
 Copying conceptual content...
@@ -778,29 +781,29 @@ Generating conceptual topic files
     d:\dev\sc-vs2010\SHFB\Doc\Content\VersionHistory\v1.0.0.0.aml -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\ddueXml\936bc328-bcbf-4e5b-91fd-8d81bdf9e928.xml
     Parsing topic file 'd:\dev\sc-vs2010\SHFB\Doc\Content\Glossary.aml'
     d:\dev\sc-vs2010\SHFB\Doc\Content\Glossary.aml -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\ddueXml\66bf98c7-7179-4940-8767-7085052f2f53.xml
-    Last step completed in 00:00:01.6931
+    Last step completed in 00:00:01.7051
 </buildStep>
 <buildStep step="CreateConceptualTopicConfigs">
 Creating conceptual topic configuration files...
     Companion files
     _ContentMetadata_.xml
     ConceptualManifest.xml
-    Last step completed in 00:00:00.1870
+    Last step completed in 00:00:00.2550
 </buildStep>
 <buildStep step="CopyAdditionalContent">
 Copying additional content files...
 d:\dev\sc-vs2010\SHFB\Doc\Media\PayPal.gif -&gt; d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\Output\Media\PayPal.gif
-    Last step completed in 00:00:00.0050
+    Last step completed in 00:00:00.0100
 </buildStep>
 <buildStep step="MergeTablesOfContents">
 Merging conceptual and additional tables of contents...
-    Last step completed in 00:00:01.1431
+    Last step completed in 00:00:01.0921
 </buildStep>
 <buildStep step="CreateBuildAssemblerConfigs">
 Creating Sandcastle configuration files...
     sandcastle.config
     conceptual.config
-    Last step completed in 00:00:00.0220
+    Last step completed in 00:00:00.0260
 </buildStep>
 <buildStep step="MergeCustomConfigs">
 Merging custom build component configurations
@@ -822,10 +825,10 @@ Adding references to d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\conceptual.
 
 Adding references to d:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\sandcastle.config...
 </plugIn>
-  GC: Memory used before: 180&#160;385&#160;336
-  GC: Memory used after: 178&#160;430&#160;388
+  GC: Memory used before: 172&#160;689&#160;240
+  GC: Memory used after: 172&#160;234&#160;388
 
-    Last step completed in 00:00:00.7220
+    Last step completed in 00:00:00.7300
 </buildStep>
 <buildStep step="BuildConceptualTopics">
 Building conceptual help topics...
@@ -834,374 +837,8 @@ BuildConceptualTopics:
   BuildAssembler (v2.5.10626.0)
   Copyright c Microsoft 2006
   Info: CopyFromFileComponent: Instantiating component.
-  Info: CopyFromFileComponent: Loading data file 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\Transforms\skeleton_conceptual.xml'.
+  Info: CopyFromFileComponent: Loading data file 'D:\dev\sc-vs2010\Branding\Presentation\vs2010\Transforms\skeleton_conceptual.xml'.
   Info: CopyFromIndexComponent: Instantiating component.
   Info: CopyFromIndexComponent: Searching for files that match 'ddueXml\*.xml'.
   Info: CopyFromIndexComponent: Indexed 228 elements in 228 files.
-  Info: CopyFromIndexComponent: Loaded 0 copy components.
-  Info: SharedContentComponent: Instantiating component.
-  Info: SharedContentComponent: Searching for files that match 'HelpFileBuilderTokens.tokens'.
-  Info: SharedContentComponent: Loading shared content file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\HelpFileBuilderTokens.tokens'.
-  Info: SharedContentComponent: Found 1 files in HelpFileBuilderTokens.tokens.
-  Info: SharedContentComponent: Searching for files that match 'SandcastleBuilder.tokens'.
-  Info: SharedContentComponent: Loading shared content file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\SandcastleBuilder.tokens'.
-  Info: SharedContentComponent: Found 1 files in SandcastleBuilder.tokens.
-  Info: SharedContentComponent: Loaded 12 shared content items.
-  Info: CopyFromIndexComponent: Instantiating component.
-  Info: CopyFromIndexComponent: Searching for files that match '_ContentMetadata_.xml'.
-  Info: CopyFromIndexComponent: Indexed 228 elements in 1 files.
-  Info: CopyFromIndexComponent: Loaded 0 copy components.
-  Info: CodeBlockComponent: Instantiating component.
-  Info: CodeBlockComponent: 
-      [Sandcastle Help File Builder BuildAssembler Components, version 1.8.0.2]
-      Code Block Component. Copyright c 2006-2009, Eric Woodruff, All Rights Reserved.
-      Portions copyright (c) 2003, Jonathan de Halleux, All rights reserved.
-      http://SHFB.CodePlex.com
-  Info: TransformComponent: Instantiating component.
-  Info: PostTransformComponent: Instantiating component.
-  Info: PostTransformComponent: 
-      [Sandcastle Help File Builder BuildAssembler Components, version 1.8.0.2]
-      Post-Transform Component. Copyright c 2006-2009, Eric Woodruff, All Rights Reserved
-      http://SHFB.CodePlex.com
-  Info: ResolveArtLinksComponent: Instantiating component.
-  Info: ResolveArtLinksComponent: Indexed 12 art targets.
-  Info: SharedContentComponent: Instantiating component.
-  Info: SharedContentComponent: Searching for files that match 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\content\shared_content.xml'.
-  Info: SharedContentComponent: Loading shared content file 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\content\shared_content.xml'.
-  Info: SharedContentComponent: Found 1 files in D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\content\shared_content.xml.
-  Info: SharedContentComponent: Searching for files that match 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\content\feedback_content.xml'.
-  Info: SharedContentComponent: Loading shared content file 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\content\feedBack_content.xml'.
-  Info: SharedContentComponent: Found 1 files in D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\content\feedback_content.xml.
-  Info: SharedContentComponent: Searching for files that match 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\content\conceptual_content.xml'.
-  Info: SharedContentComponent: Loading shared content file 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\content\conceptual_content.xml'.
-  Info: SharedContentComponent: Found 1 files in D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\content\conceptual_content.xml.
-  Info: SharedContentComponent: Searching for files that match 'SharedBuilderContent.xml'.
-  Info: SharedContentComponent: Loading shared content file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\SharedBuilderContent.xml'.
-  Info: SharedContentComponent: Overriding shared content item 'producttitle' with value in file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\SharedBuilderContent.xml'.
-  Info: SharedContentComponent: Overriding shared content item 'copycode' with value in file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\SharedBuilderContent.xml'.
-  Info: SharedContentComponent: Overriding shared content item 'locale' with value in file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\SharedBuilderContent.xml'.
-  Info: SharedContentComponent: Found 1 files in SharedBuilderContent.xml.
-  Info: SharedContentComponent: Searching for files that match 'PresentationStyleBuilderContent.xml'.
-  Info: SharedContentComponent: Loading shared content file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\PresentationStyleBuilderContent.xml'.
-  Info: SharedContentComponent: Overriding shared content item 'header' with value in file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\PresentationStyleBuilderContent.xml'.
-  Info: SharedContentComponent: Overriding shared content item 'footer' with value in file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\PresentationStyleBuilderContent.xml'.
-  Info: SharedContentComponent: Overriding shared content item 'fb_alias' with value in file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\PresentationStyleBuilderContent.xml'.
-  Info: SharedContentComponent: Overriding shared content item 'fb_product' with value in file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\PresentationStyleBuilderContent.xml'.
-  Info: SharedContentComponent: Overriding shared content item 'fb_body' with value in file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\PresentationStyleBuilderContent.xml'.
-  Info: SharedContentComponent: Overriding shared content item 'fb_send' with value in file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\PresentationStyleBuilderContent.xml'.
-  Info: SharedContentComponent: Overriding shared content item 'fb_headerfeedback' with value in file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\PresentationStyleBuilderContent.xml'.
-  Info: SharedContentComponent: Overriding shared content item 'feedback_alias' with value in file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\PresentationStyleBuilderContent.xml'.
-  Info: SharedContentComponent: Overriding shared content item 'feedback_product' with value in file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\PresentationStyleBuilderContent.xml'.
-  Info: SharedContentComponent: Overriding shared content item 'feedback_body' with value in file 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\PresentationStyleBuilderContent.xml'.
-  Info: SharedContentComponent: Found 1 files in PresentationStyleBuilderContent.xml.
-  Info: SharedContentComponent: Loaded 200 shared content items.
-  Info: ResolveConceptualLinksComponent: Instantiating component.
-  Info: ResolveConceptualLinksComponent: Collected 1 targets directories.
-  Info: CachedResolveReferenceLinksComponent: Instantiating component.
-  Info: CachedResolveReferenceLinksComponent: Searching directory 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\958670DD' for targets files of the form 'reflection.xml'.
-  Info: CachedResolveReferenceLinksComponent: Creating MSDN URL resolver.
-  Info: CachedResolveReferenceLinksComponent: Searching directory 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Data\Reflection' for targets files of the form '*.xml'.
-  Info: CachedResolveReferenceLinksComponent: Searching directory 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working' for targets files of the form 'reflection.xml'.
-  Info: CachedResolveReferenceLinksComponent: Loaded 175760 reference targets.
-  Info: CachedResolveReferenceLinksComponent: 
-      [Sandcastle Help File Builder BuildAssembler Components, version 1.8.0.2]
-      Cached Resolve Reference  Links 2 Component.  Copyright c 2006-2009, Eric Woodruff, All Rights Reserved
-      http://SHFB.CodePlex.com
-  Info: CachedResolveReferenceLinksComponent: The MSDN URL cache 'C:\Users\Jozef\AppData\Local\EWSoftware\Sandcastle Help File Builder\Cache\MsdnUrl.cache' does not exist yet.  All IDs will be looked up in this build.
-  Info: SaveComponent: Instantiating component.
-  Info: BuildAssembler: Building topic bd1ddb51-1c4f-434f-bb1a-ce2135d3a909
-  Info: BuildAssembler: Building topic 24504fda-d3ef-4dd9-8335-6db8b25d00f2
-  Info: BuildAssembler: Building topic 21c2a363-6c94-440b-8985-6b224d275463
-  Info: BuildAssembler: Building topic b772e00e-1705-4062-adb6-774826ce6700
-  Info: BuildAssembler: Building topic 8c0c97d0-c968-4c15-9fe9-e8f3a443c50a
-  Info: BuildAssembler: Building topic 8e3f8757-0ef3-4772-bb2f-5d7ae57e50da
-  Info: BuildAssembler: Building topic c47d9242-b3a8-4153-aa9e-ae8cb41cefe2
-  Info: BuildAssembler: Building topic d5dbf017-25f1-48cb-86db-90f76ee8f4d7
-  Info: BuildAssembler: Building topic f68822d2-97ba-48da-a98b-46747983b4a0
-  Info: BuildAssembler: Building topic 5864f501-6433-4bd3-825d-1843b9b27540
-  Info: BuildAssembler: Building topic 0a38fb2a-1166-4a4f-bd76-12390655df5c
-  Info: BuildAssembler: Building topic 6236b6e2-b27f-45d6-a8de-7a7913ff7ce1
-  Info: BuildAssembler: Building topic b91996c3-4c92-4c99-8958-92ce04bca0f9
-  Info: BuildAssembler: Building topic 14a10de0-b38b-403d-8fc3-4d36a737e3b3
-  Info: BuildAssembler: Building topic 576b6a36-0808-4857-bec0-e6eeeae4e36b
-  Info: BuildAssembler: Building topic 96956ab6-fd5e-4bc7-a577-a18b0ff258ea
-  Info: BuildAssembler: Building topic 2152ed96-bf69-4b9b-b1a7-4fffc71b3095
-  Info: BuildAssembler: Building topic a24489fb-45d6-46f4-9eaa-9a9c4e0919b2
-  Info: BuildAssembler: Building topic 79897974-ffc9-4b84-91a5-e50c66a0221d
-  Info: BuildAssembler: Building topic 94c7f744-9b90-4254-93ab-9b15f47d9f42
-  Info: BuildAssembler: Building topic 8ffc0d37-0215-4609-b6f8-dba53a6c5063
-  Info: BuildAssembler: Building topic ec822059-b179-4add-984d-485580050ffb
-  Info: BuildAssembler: Building topic e12c2b9f-18c7-4718-850b-ac3c2e293672
-  Info: BuildAssembler: Building topic 64f0576f-51b3-4dae-aaac-06568c6c2f68
-  Info: BuildAssembler: Building topic 9309b01b-87bf-4d68-b035-c10ac77d1522
-  Info: BuildAssembler: Building topic 0a9d6da4-cff6-4664-8b64-b7df04c8a37d
-  Info: BuildAssembler: Building topic c38461a6-6edd-42cf-9d91-73c4b11cdd70
-  Info: BuildAssembler: Building topic e32086c6-de17-4e54-a746-1ac80bf0c45a
-  Info: BuildAssembler: Building topic da405a33-3eeb-4451-9aa8-a55be5026434
-  Info: BuildAssembler: Building topic eb7e1bc7-21c5-4453-bbaf-dec8c62c15bd
-  Info: BuildAssembler: Building topic 48f5a893-acde-4e50-8c17-72b83d9c3f9d
-  Info: BuildAssembler: Building topic 52aa172a-a310-4f75-b20f-7e2c7d870c65
-  Info: BuildAssembler: Building topic 1b2dff59-92cc-4578-b261-f3849f30c26c
-  Info: BuildAssembler: Building topic 7d28bf8f-923f-44c1-83e1-337a416947a1
-  Info: BuildAssembler: Building topic 74664b00-b83f-450a-833a-25984ba812e3
-  Info: BuildAssembler: Building topic 68a2fa4e-c6de-47ed-a9a6-60cc6ef01df4
-  Info: BuildAssembler: Building topic e6fcfa33-e7ee-430a-abfe-6b7962e6d068
-  Info: BuildAssembler: Building topic 5a2ab898-7161-454d-b5d3-959df0de0e36
-  Info: BuildAssembler: Building topic 3c489bd6-598c-4684-aafb-fbe9400864d3
-  Info: BuildAssembler: Building topic 7df16a60-f718-4b8f-bfa2-88c42906070c
-  Info: BuildAssembler: Building topic a76a88ff-d67f-4eb5-9622-90287c786c1b
-  Info: BuildAssembler: Building topic e49eea91-a9ef-4aa5-ad8f-16ebd61b798a
-  Info: BuildAssembler: Building topic 5292ce5c-fda1-4a77-9155-a11755ef1730
-  Info: BuildAssembler: Building topic 3d4edd2d-7883-4508-b9d2-bd7b4d848b0d
-  Info: BuildAssembler: Building topic 54e3dc97-5125-441e-8e84-7f9303e95f26
-  Info: BuildAssembler: Building topic 4b8ab701-2321-4d24-a287-8848de086f68
-  Info: BuildAssembler: Building topic ed6870bb-772d-4596-9fc1-5638ae6d621b
-  Info: BuildAssembler: Building topic 4fd3b2b6-dfad-4513-983b-5e74d2342ff0
-  Info: BuildAssembler: Building topic 77d2d693-db84-4ae3-a84c-e33c71f92e9a
-  Info: BuildAssembler: Building topic d80219be-54ba-4c5f-8903-83ef29fbaa00
-  Info: BuildAssembler: Building topic 1863a4d7-61b6-4dde-862d-a358d0cfbd54
-  Info: BuildAssembler: Building topic 3e3772fb-f8d2-49cf-8199-5f61f2d57ce8
-  Info: BuildAssembler: Building topic 8ea650b6-ab50-4288-a930-baf5b58a4cb0
-  Info: BuildAssembler: Building topic 54de66c4-a57a-4bfc-9eb6-bd9e6fb56589
-  Info: BuildAssembler: Building topic 3dd5fe3b-1bc3-42e5-8900-56165e3f9aed
-  Info: BuildAssembler: Building topic a31e4dd4-7466-4c12-b734-60bd50fc91af
-  Info: BuildAssembler: Building topic e031b14e-42f0-47e1-af4c-9fed2b88cbc7
-  Info: BuildAssembler: Building topic 2d483967-30cb-421c-81ff-fdba705e1e6b
-  Info: BuildAssembler: Building topic 15b6b7be-3778-4487-b524-d558d02e6460
-  Info: BuildAssembler: Building topic 99773472-ff05-4eba-8194-b36a0536280e
-  Warn: SharedContentComponent: Missing shared content item. Tag:'include'; Id:'security'.
-  Warn: SharedContentComponent: Missing shared content item. Tag:'include'; Id:'security'.
-  Info: BuildAssembler: Building topic f5051d32-b973-4fe1-9ffe-e30531007691
-  Info: BuildAssembler: Building topic 161537d9-6f89-42ef-9c51-3a15ef94df65
-  Info: BuildAssembler: Building topic d0ac3f31-bc25-4c5a-b2e6-d64a74fdb67c
-  Warn: SharedContentComponent: Missing shared content item. Tag:'include'; Id:'security'.
-  Info: BuildAssembler: Building topic 31696f39-8f4e-4c4d-ab08-41a40793df03
-  Info: BuildAssembler: Building topic aa7bcd07-1a86-42dc-9f1d-49bd4afeb5d2
-  Info: BuildAssembler: Building topic 796d6bbe-5130-4c87-8790-5cceb66219c7
-  Warn: SharedContentComponent: Missing shared content item. Tag:'include'; Id:'security'.
-  Warn: SharedContentComponent: Missing shared content item. Tag:'include'; Id:'security'.
-  Warn: SharedContentComponent: Missing shared content item. Tag:'include'; Id:'security'.
-  Info: BuildAssembler: Building topic 93c452fd-71d4-470e-8d27-ec3d979679a4
-  Info: BuildAssembler: Building topic d0e91b66-135e-446b-9239-c02fcafabd09
-  Info: BuildAssembler: Building topic 6c03afba-18d0-4270-b521-c2015c4d97b3
-  Info: BuildAssembler: Building topic cd68ef02-3493-4af6-96de-1957b0aaf858
-  Info: BuildAssembler: Building topic a14e026e-642f-4ce6-9506-341e57cc3d1f
-  Info: BuildAssembler: Building topic 8dcbb69b-7a1a-4049-8e6b-2bf344efbbc9
-  Info: BuildAssembler: Building topic 3a1c4bf1-8ecf-4ab3-8010-277bed8d3819
-  Info: BuildAssembler: Building topic 7f03ba39-09f8-4320-bdbd-ed31a3bd885f
-  Info: BuildAssembler: Building topic 85c08740-1190-471c-8fea-360a4a8e4612
-  Info: BuildAssembler: Building topic 5d546511-6aec-455a-ba09-9daffb124c6d
-  Info: BuildAssembler: Building topic f47527c7-67ce-487d-a2a0-91d1cb08e15e
-  Info: BuildAssembler: Building topic f502c07b-8110-477d-8953-73255296206b
-  Info: BuildAssembler: Building topic da0332e0-a7d3-4f9d-a9e4-5027502ea9ea
-  Info: BuildAssembler: Building topic 7e6e0e96-36cd-4541-9477-2657b98661f5
-  Info: BuildAssembler: Building topic 58ce80ee-eb4b-4027-8871-7e83fad8e476
-  Info: BuildAssembler: Building topic e6d18448-2459-46f1-bbdc-a7db415f2bda
-  Info: BuildAssembler: Building topic 46d1f76e-a97e-4ee6-971c-fdeab725ff09
-  Info: BuildAssembler: Building topic 13bf1e14-bf8f-478b-8fe6-932d18922a85
-  Info: BuildAssembler: Building topic 726e79fd-260d-4f9f-96c7-cc62d3c210db
-  Info: BuildAssembler: Building topic 7f4054ff-9490-452e-b842-5b783f31a8af
-  Info: BuildAssembler: Building topic 06ad726a-d35b-419c-bff6-0157f32d659b
-  Info: BuildAssembler: Building topic ed7661b1-f675-4a8d-a0a2-6eed59cd3720
-  Info: BuildAssembler: Building topic c7b03c89-be8f-42d8-8a8e-a16034e4c9e0
-  Info: BuildAssembler: Building topic 74ced26b-73de-42f7-aa8e-b6a6d8c8aa40
-  Info: BuildAssembler: Building topic 89a0728c-fe7c-49b1-9b6b-14ac952630dc
-  Info: BuildAssembler: Building topic 4fc20fd3-6ed3-49ed-ac97-c99b08c72f38
-  Info: BuildAssembler: Building topic 29685951-0496-4717-bf33-a14bf065a8b8
-  Info: BuildAssembler: Building topic 4a961b0a-7558-472a-9ec1-3a0b9f0f6410
-  Info: BuildAssembler: Building topic 44bd5bf4-6cf0-41ca-b12c-41c34076c298
-  Info: BuildAssembler: Building topic 7b30aec2-4942-4805-a072-c22db33ab2b6
-  Info: BuildAssembler: Building topic 757d284c-5c04-4bf1-93c5-f00961b92132
-  Info: BuildAssembler: Building topic 40f7d484-1b99-4bf9-a905-9a67b4801568
-  Info: BuildAssembler: Building topic ced6d9d6-33df-4b14-abfd-4cc18b9b0ea8
-  Info: BuildAssembler: Building topic 1dcdb33a-4227-4aaa-833f-1354e683180a
-  Info: BuildAssembler: Building topic c03a9cf5-553c-4a93-9da2-cb70605232d8
-  Info: BuildAssembler: Building topic 6976940c-6e75-4b8f-a812-57265911b51d
-  Info: BuildAssembler: Building topic e4c67ec0-236c-449f-8def-ce0ae480e2eb
-  Info: BuildAssembler: Building topic 4fd3af24-e11f-409f-9725-59f4bdedab51
-  Info: BuildAssembler: Building topic db8785bc-617c-4b3f-ae1e-2f886b0e3b88
-  Info: BuildAssembler: Building topic 56534d41-8d1f-41bd-a3a1-ed2787ab3b89
-  Info: BuildAssembler: Building topic fec21ccb-1873-4bad-a04e-7d6c01ab70a7
-  Info: BuildAssembler: Building topic 155a7ef8-6cce-420a-b2ff-4d6217f71075
-  Info: BuildAssembler: Building topic e91ccee4-4e65-4e41-9d15-88cc327b370b
-  Info: BuildAssembler: Building topic d78a99d7-248c-4711-8967-096b8e936cb4
-  Info: BuildAssembler: Building topic 25036a28-bd82-4032-8108-ac614423a2cf
-  Info: BuildAssembler: Building topic 72ef66af-a2ea-4947-a5d3-b64ec7a0b943
-  Info: BuildAssembler: Building topic bbbf3033-0d53-4d23-98cc-7b4f0c5f960b
-  Info: BuildAssembler: Building topic 8e2f5ce6-0815-4635-949d-4b314926bb3d
-  Info: BuildAssembler: Building topic bc38b398-4cca-4972-b4b5-966def8428b4
-  Info: BuildAssembler: Building topic 0d0868d8-6ee2-472e-b627-bc5890017190
-  Info: BuildAssembler: Building topic 3e506dda-8d9e-4e87-a265-cd213b97d815
-  Info: BuildAssembler: Building topic 378d6894-02b8-4ee9-9c50-58f278490ed8
-  Info: BuildAssembler: Building topic 593259a3-ea02-4023-b318-0d33362f1e2c
-  Info: BuildAssembler: Building topic e2af12c6-af9e-4b59-9fe1-fc3c413022ae
-  Info: BuildAssembler: Building topic b9604d2f-3c75-4b84-9164-82e2dbaa75e5
-  Info: BuildAssembler: Building topic 2d72ecc9-b388-44f4-a76a-5786ca708b4f
-  Info: BuildAssembler: Building topic 24033cf4-69c1-4fc9-baac-103699ac90f8
-  Info: BuildAssembler: Building topic f5ebb418-9a07-4854-89e1-13fbf8de4630
-  Info: BuildAssembler: Building topic 9a54f7c2-2ca6-425e-89fb-c939ff50224f
-  Info: BuildAssembler: Building topic 50c2326c-5f1d-4615-9ee6-ad1d4952eded
-  Info: BuildAssembler: Building topic 4acd8d52-bdf9-4794-a880-da34e46d743a
-  Info: BuildAssembler: Building topic 2cf8d4a0-14c8-46db-a18d-f56eda1e4f4f
-  Info: BuildAssembler: Building topic 5e951c2b-d012-46e0-b80e-17ebd741410b
-  Info: BuildAssembler: Building topic f94a8e73-784a-4a3c-9688-28202a4462c3
-  Info: BuildAssembler: Building topic ba3f61ed-0b01-4986-9442-6488b960d83f
-  Info: BuildAssembler: Building topic 97715366-3002-4735-8004-29205cd522b9
-  Info: BuildAssembler: Building topic 62fe32a8-7c35-4fda-835f-1b2cf84e2b5f
-  Info: BuildAssembler: Building topic 34b2d026-649e-4822-9e48-c1d095eeec66
-  Info: BuildAssembler: Building topic b04316ef-8b8f-4374-acb5-0880e44daea4
-  Info: BuildAssembler: Building topic b0632326-5af8-4ab3-9d11-a80191978477
-  Info: BuildAssembler: Building topic 1aad4b53-77df-4a0e-b6a9-676c2f753953
-  Info: BuildAssembler: Building topic 802873dd-138e-4b35-9298-730c188cb991
-  Info: BuildAssembler: Building topic 7ebfa7b8-e0ba-453c-a236-094b4ec076c4
-  Info: BuildAssembler: Building topic f645ebaa-e368-4cc4-bca8-8deb9117e25e
-  Info: BuildAssembler: Building topic a68cc0cf-11cf-41dd-acd3-6955f5209e41
-  Info: BuildAssembler: Building topic d7c089fd-1dfc-47a2-8d1f-874288e0655d
-  Info: BuildAssembler: Building topic e076c319-ff84-40dc-bb00-ff4c72718215
-  Info: BuildAssembler: Building topic fe808500-7b87-4f68-ae13-c3e68cae8b13
-  Info: BuildAssembler: Building topic 270ef6fd-7bec-4db0-875c-5d857294e9c6
-  Info: BuildAssembler: Building topic ff831dbb-fa08-414e-be84-3982d9df1970
-  Info: BuildAssembler: Building topic 082d9890-6de5-43c9-ae5e-2e1533b82f6b
-  Info: BuildAssembler: Building topic cdaaca46-b815-4763-9dac-c4a57cdb2a58
-  Info: BuildAssembler: Building topic e4c00c10-9368-4790-b1c4-4a47adeb2af9
-  Info: BuildAssembler: Building topic 355bb237-acf6-4df8-bfc6-d89736837abb
-  Info: BuildAssembler: Building topic ceaee6cc-6393-40c6-bca4-869b0553f2b3
-  Info: BuildAssembler: Building topic ac7c5fc5-134a-495c-a743-f4f577ffa31a
-  Info: BuildAssembler: Building topic f6fd25df-5d9c-449e-a63a-32c05ee731d7
-  Info: BuildAssembler: Building topic c472d97b-e5b9-4e60-8746-dc1ec660167b
-  Info: BuildAssembler: Building topic 82ead344-5447-484d-acfe-e778b7ac12cf
-  Info: BuildAssembler: Building topic 93aecba9-ef0e-40d8-a82e-34399bee6ca3
-  Info: BuildAssembler: Building topic 6038c08c-de58-4579-a018-bdbbce3134f5
-  Info: BuildAssembler: Building topic efa6ca2b-c052-4555-90d8-a9cc9093f793
-  Info: BuildAssembler: Building topic c3dbcf13-6585-4b45-ae2f-6bd8acd8b62b
-  Info: BuildAssembler: Building topic 0f17b9b9-8e80-41d7-85cc-d9a97ff529ea
-  Info: BuildAssembler: Building topic 7cf02d57-8cb3-4f29-ab90-236ae57f9c23
-  Info: BuildAssembler: Building topic cc3ac64c-a882-47ff-b104-bf497f56b42d
-  Info: BuildAssembler: Building topic e4b1c387-d296-42ed-9458-7c6b460b5c35
-  Info: BuildAssembler: Building topic c47b9dfb-e27c-4af2-b9e9-68258a8eca01
-  Info: BuildAssembler: Building topic 93d73e6e-2b07-4bc4-9535-c706dbf8540a
-  Info: BuildAssembler: Building topic a707806a-1173-4a0e-a21d-7b2d5a42f7fe
-  Info: BuildAssembler: Building topic c1f743fb-2040-4d5e-bf9f-5a4985481cc8
-  Info: BuildAssembler: Building topic bc626934-b59f-4557-9db7-9bedcec39bc0
-  Info: BuildAssembler: Building topic 842594b8-d1ba-4baa-9082-de991e376d4f
-  Info: BuildAssembler: Building topic e8c8417f-ac01-450c-8aef-984a69ecbb93
-  Info: BuildAssembler: Building topic 20cf4894-e127-46f7-a0f3-6da7252f3652
-  Info: BuildAssembler: Building topic 42262e8b-6aa4-4ca0-85cb-a395cabb96c7
-  Info: BuildAssembler: Building topic 13b7b97f-6a6d-442a-aabf-b00a026b54c0
-  Info: BuildAssembler: Building topic bddb17b5-2733-4b82-9b0f-7e9cef5e8c56
-  Info: BuildAssembler: Building topic 3eedd8d1-9172-49c3-9f54-f75d21f251d9
-  Info: BuildAssembler: Building topic 3c2c627c-8cbe-4f41-82f4-e383efe5c7cb
-  Info: BuildAssembler: Building topic bc743362-c234-4684-973e-0710543314dc
-  Info: BuildAssembler: Building topic a763207e-4afd-400d-afb5-fa7c632f5144
-  Info: BuildAssembler: Building topic 26e07376-2016-4e02-8ac1-7cc1dd971463
-  Info: BuildAssembler: Building topic 926b78d3-1064-41db-a4c0-09208ea7f104
-  Info: BuildAssembler: Building topic e10bf048-ccc0-4c30-81c6-7273ecdae052
-  Info: BuildAssembler: Building topic 7eb5290e-8d18-4dc7-983d-a01e665063bd
-  Info: BuildAssembler: Building topic a6039b1c-e54a-49a6-9527-68a1944d4b75
-  Info: BuildAssembler: Building topic ce4fdb97-f919-4a01-83cd-7df21f9c20bc
-  Info: BuildAssembler: Building topic 77616f29-e121-4175-8874-15e682097c19
-  Info: BuildAssembler: Building topic 03e02231-a326-4c6b-9d59-8b005dcd959c
-  Info: BuildAssembler: Building topic 3e4812bb-7bf5-4752-9eaf-5e982312d1f7
-  Info: BuildAssembler: Building topic f6258ea1-df3f-4397-81e4-3e0a39abcdc2
-  Info: BuildAssembler: Building topic d813065b-c867-44a8-9315-56fc951c374e
-  Info: BuildAssembler: Building topic 2c0b4d20-b8a3-40ce-b3ac-fff52918b454
-  Info: BuildAssembler: Building topic c5acba93-0ecf-449c-b968-df0572f75203
-  Info: BuildAssembler: Building topic 1d095fa4-c79c-4728-988d-48ad040f8c1c
-  Info: BuildAssembler: Building topic b490911e-d7ce-42ee-920a-1615f6bc3b19
-  Info: BuildAssembler: Building topic 6c55e03c-0b22-4913-ab2a-f0148309b2b5
-  Info: BuildAssembler: Building topic 4854d16a-93bf-4701-997d-049ce91f82cf
-  Info: BuildAssembler: Building topic 07498c61-02a4-4f04-ac76-a89cafedbfec
-  Info: BuildAssembler: Building topic 6417667f-ea10-421f-839c-647561ed207b
-  Info: BuildAssembler: Building topic 860e4647-cb23-448f-93cb-da45f52c3ec7
-  Info: BuildAssembler: Building topic e50090cc-d866-4428-9b44-d7d145df5eb7
-  Info: BuildAssembler: Building topic e2ed6222-c3ee-4c6e-b0f9-fa3c86bc3e2c
-  Info: BuildAssembler: Building topic c7378077-fc10-45f9-b52a-c57dda96fe8d
-  Info: BuildAssembler: Building topic 69d998a7-1af5-4bf5-889b-59cd00b64000
-  Info: BuildAssembler: Building topic 1aea789d-b226-4b39-b534-4c97c256fac8
-  Info: BuildAssembler: Building topic c18d6cb6-e4e4-4944-84ee-f867aa6cfb0d
-  Info: BuildAssembler: Building topic 717ca8cf-1a2f-4e63-a8a9-f836825f3509
-  Info: BuildAssembler: Building topic 078cc1c7-7995-431e-bf9c-8813becbe8df
-  Info: BuildAssembler: Building topic 9f1a5c32-7c10-47e1-bbea-319ee0866e3d
-  Info: BuildAssembler: Building topic 95c85ec6-9f23-426a-b0ad-6b10a0453eaf
-  Info: BuildAssembler: Building topic 5a484e94-6940-4c97-940c-3f46fb8736d2
-  Info: BuildAssembler: Building topic a44fe561-efb9-40ac-84eb-b1a00a4a9596
-  Info: BuildAssembler: Building topic 90e889f7-194b-411e-a376-8e0d91b1f6fd
-  Info: BuildAssembler: Building topic 540d2250-8823-4028-b147-98192837002b
-  Info: BuildAssembler: Building topic f8a3ab8c-1ccb-4108-8953-c613af46ee12
-  Info: BuildAssembler: Building topic a96e26f7-7a2c-475f-9733-4936609f5791
-  Info: BuildAssembler: Building topic 86677ca7-1132-4718-8bf1-c9bd03377089
-  Info: BuildAssembler: Building topic 658e9623-a4a1-442c-8e50-74cec804784e
-  Info: BuildAssembler: Building topic c7cc3fb1-60cf-4cfe-9728-eb571524b4c7
-  Info: BuildAssembler: Building topic b3d3c9d4-34ff-4f48-b6e5-98b8095eb347
-  Info: BuildAssembler: Building topic b6429b69-6364-4efe-9306-9b647e9e26b0
-  Info: BuildAssembler: Building topic e95d1fff-4a68-4e78-b854-270993088f66
-  Info: BuildAssembler: Building topic bd8fb1cd-b913-4cb4-afb4-8cf2260cf634
-  Info: BuildAssembler: Building topic c3177693-041c-455e-9c13-08d473006f14
-  Info: BuildAssembler: Building topic b63812cf-9caa-4e79-9c68-661d0ef9f660
-  Info: BuildAssembler: Building topic 7421d29a-7df1-4e59-b6b6-ad24904cca17
-  Info: BuildAssembler: Building topic 21cf9c3e-ae15-44e0-a68e-7afe730097c3
-  Info: BuildAssembler: Building topic b4dafbd0-e5fa-449e-a16d-e832e68d7bc6
-  Info: BuildAssembler: Building topic 936bc328-bcbf-4e5b-91fd-8d81bdf9e928
-  Info: BuildAssembler: Building topic 66bf98c7-7179-4940-8767-7085052f2f53
-  Info: Processed 228 topics
-
-  GC: Memory used before: 180&#160;115&#160;120
-  GC: Memory used after: 178&#160;404&#160;356
-
-    Last step completed in 00:00:27.8326
-</buildStep>
-<buildStep step="BuildReferenceTopics">
-Building reference help topics...
-[C:\Windows\Microsoft.NET\Framework\v3.5\MSBuild.exe]
-BuildReferenceTopics:
-  BuildAssembler (v2.5.10626.0)
-  Copyright c Microsoft 2006
-  Info: CopyFromFileComponent: Instantiating component.
-  Info: CopyFromFileComponent: Loading data file 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\Presentation\vs2005\Transforms\skeleton.xml'.
-  Info: CachedCopyFromIndexComponent: Instantiating component.
-  Info: CachedCopyFromIndexComponent: Searching for files that match 'd:\dev\sc-vs2010\SHFB\Doc\bin\x86\Debug\Working\958670DD\reflection.xml'.
-  Info: CachedCopyFromIndexComponent: Searching for files that match 'reflection.xml'.
-  Info: CachedCopyFromIndexComponent: Indexed 5669 elements in 2 files.
-  Info: CachedCopyFromIndexComponent: Loaded 0 copy components.
-  Info: CachedCopyFromIndexComponent: 
-      [Sandcastle Help File Builder BuildAssembler Components, version 1.8.0.2]
-      Cached Copy From Index  Component.  Copyright c 2006-2009, Eric Woodruff, All Rights Reserved
-      http://SHFB.CodePlex.com
-  Warn: CachedCopyFromIndexComponent: C:\Users\Jozef\AppData\Local\EWSoftware\Sandcastle Help File Builder\Cache\Reflection.cache does not exist and is being created
-  Info: CopyFromIndexComponent: Instantiating component.
-  Info: CopyFromIndexComponent: Searching for files that match '*.xml'.
-  Info: CopyFromIndexComponent: Indexed 170091 elements in 106 files.
-  Info: CopyFromIndexComponent: Loaded 0 copy components.
-  Info: CachedCopyFromIndexComponent: Loaded 170091 items from the cache file 'C:\Users\Jozef\AppData\Local\EWSoftware\Sandcastle Help File Builder\Cache\Reflection.cache'
-  Info: CopyFromIndexComponent: Instantiating component.
-  Info: CopyFromIndexComponent: Loaded 0 copy components.
-  Info: ForEachComponent: Instantiating component.
-  Info: ForEachComponent: Loading subcomponents.
-  Info: CopyFromIndexComponent: Instantiating component.
-  Info: CopyFromIndexComponent: Loaded 0 copy components.
-  Info: ForEachComponent: Loaded 1 subcomponents.
-  Info: ForEachComponent: Instantiating component.
-  Info: ForEachComponent: Loading subcomponents.
-  Info: CopyFromIndexComponent: Instantiating component.
-  Info: CopyFromIndexComponent: Loaded 0 copy components.
-  Info: ForEachComponent: Loaded 1 subcomponents.
-  Info: ForEachComponent: Instantiating component.
-  Info: ForEachComponent: Loading subcomponents.
-  Info: CopyFromIndexComponent: Instantiating component.
-  Info: CopyFromIndexComponent: Loaded 0 copy components.
-  Info: ForEachComponent: Loaded 1 subcomponents.
-  Info: IfThenComponent: Instantiating component.
-  Info: SyntaxComponent: Instantiating component.
-BUILDASSEMBLER : error : SyntaxComponent: The type 'Microsoft.Ddue.Tools.CSharpDeclarationSyntaxGenerator' does not exist in the assembly 'D:\dev\sc-vs2010\JavadocSandcastle\Sandcastle\ProductionTools\SyntaxComponents.dll'.
-    Last step completed in 00:00:13.6368
-</buildStep>
-<buildStep step="Failed">
-
-SHFB: Error BE0043: Unexpected error detected in last build step.  See output above for details.
-
-
-  GC: Memory used before: 179&#160;988&#160;892
-  GC: Memory used after: 178&#160;404&#160;836
-
-</buildStep>
-</shfbBuild>
+  

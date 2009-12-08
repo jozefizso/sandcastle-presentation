@@ -33,7 +33,7 @@
     <CopyrightHref>http://www.EWoodruff.us</CopyrightHref>
     <CopyrightText>[v{%40HelpFileVersion}] Copyright \xA9 2006-2009, Eric Woodruff, All rights reserved</CopyrightText>
     <FeedbackEMailAddress>Eric%40EWoodruff.us</FeedbackEMailAddress>
-    <PresentationStyle>vs2005</PresentationStyle>
+    <PresentationStyle>vs2010</PresentationStyle>
     <SyntaxFilters>CSharp, VisualBasic</SyntaxFilters>
     <HelpFileVersion>1.8.0.2</HelpFileVersion>
     <ComponentConfigurations>
@@ -392,6 +392,7 @@
     <None Include="Content\PlugIns\BibliographySupport.aml" />
     <None Include="Content\PlugIns\AssemblyBindingRedirection.aml" />
     <None Include="Content\VersionHistory\v1.8.0.2.aml" />
+    <None Include="Content\ErrorsAndWarnings\BuildEngine\BE0068.aml" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Media\ApiFilter.jpg">

@@ -20,31 +20,44 @@
     </TransformDependsOn>
   </PropertyGroup>
 
+  <Choose>
+    <When Condition="'$(PresentationStyle)' == 'vs2005'">
+      <PropertyGroup>
+        <Transformations>ProductionTransforms\ApplyVSDocModel.xsl;ProductionTransforms\AddGuidFilenames.xsl</Transformations>
+        <Arguments>IncludeAllMembersTopic=true;IncludeInheritedOverloadTopics=true;$(ProjectNodeParam)</Arguments>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(PresentationStyle)' == 'hana'">
+      <PropertyGroup>
+        <Transformations>ProductionTransforms\ApplyVSDocModel.xsl;ProductionTransforms\AddGuidFilenames.xsl</Transformations>
+        <Arguments>IncludeAllMembersTopic=false;IncludeInheritedOverloadTopics=true;$(ProjectNodeParam)</Arguments>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(PresentationStyle)' == 'prototype'">
+      <PropertyGroup>
+        <Transformations>ProductionTransforms\ApplyPrototypeDocModel.xsl;ProductionTransforms\AddGuidFilenames.xsl</Transformations>
+        <Arguments></Arguments>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <Transformations>ProductionTransforms\ApplyVSDocModel.xsl;ProductionTransforms\AddFriendlyFilenames.xsl</Transformations>
+        <Arguments>IncludeAllMembersTopic=true;IncludeInheritedOverloadTopics=false;$(ProjectNodeParam)</Arguments>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
   <Target Name="Transform" DependsOnTargets="$(TransformDependsOn)" />
 
   <!-- The Transform Manifest target -->
   <Target Name="TransformManifest">
     <!-- Transform the reflection output based on the presentation style -->
-    <XslTransform Condition="'$(PresentationStyle)' == 'vs2005'"
+    
+    <XslTransform
       SandcastlePath="$(SandcastlePath)"
       WorkingFolder="$(WorkingFolder)"
-      Transformations="ProductionTransforms\ApplyVSDocModel.xsl;ProductionTransforms\AddGuidFilenames.xsl"
-      Arguments="IncludeAllMembersTopic=true;IncludeInheritedOverloadTopics=true;$(ProjectNodeParam)"
-      InputFile="reflection.org"
-      OutputFile="reflection.xml" />
-
-    <XslTransform Condition="'$(PresentationStyle)' == 'hana'"
-      SandcastlePath="$(SandcastlePath)"
-      WorkingFolder="$(WorkingFolder)"
-      Transformations="ProductionTransforms\ApplyVSDocModel.xsl;ProductionTransforms\AddGuidFilenames.xsl"
-      Arguments="IncludeAllMembersTopic=false;IncludeInheritedOverloadTopics=true;$(ProjectNodeParam)"
-      InputFile="reflection.org"
-      OutputFile="reflection.xml" />
-
-    <XslTransform Condition="'$(PresentationStyle)' == 'prototype'"
-      SandcastlePath="$(SandcastlePath)"
-      WorkingFolder="$(WorkingFolder)"
-      Transformations="ProductionTransforms\ApplyPrototypeDocModel.xsl;ProductionTransforms\AddGuidFilenames.xsl"
+      Transformations="$(Transformations)"
+      Arguments="$(Arguments)"
       InputFile="reflection.org"
       OutputFile="reflection.xml" />
 

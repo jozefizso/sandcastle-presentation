@@ -385,25 +385,26 @@ namespace SandcastleBuilder.Utils.BuildEngine
             Directory.CreateDirectory(workingFolder + "Output");
             Directory.CreateDirectory(workingFolder + @"Output\html");
 
-            if(Directory.Exists(presentationFolder + "art"))
-                this.RecursiveCopy(presentationFolder + @"art\*.*",
-                    workingFolder + @"Output\art\");
-
-            if(Directory.Exists(presentationFolder + "icons"))
-                this.RecursiveCopy(presentationFolder + @"icons\*.*",
-                    workingFolder + @"Output\icons\");
-
-            if(Directory.Exists(presentationFolder + "media"))
-                this.RecursiveCopy(presentationFolder + @"media\*.*",
-                    workingFolder + @"Output\media\");
-
-            this.RecursiveCopy(presentationFolder + @"scripts\*.*",
-                workingFolder + @"Output\scripts\");
-            this.RecursiveCopy(presentationFolder + @"styles\*.*",
-                workingFolder + @"Output\styles\");
+			CopyHelpContent("art");
+			CopyHelpContent("icons");
+            CopyHelpContent("media");
+            CopyHelpContent("scripts");
+            CopyHelpContent("styles");
 
             this.ExecutePlugIns(ExecutionBehaviors.After);
         }
+
+		protected void CopyHelpContent(string folderName)
+		{
+			string sourceFolder = Path.Combine(presentationFolder, folderName);
+
+			if (Directory.Exists(sourceFolder))
+			{
+				this.RecursiveCopy(
+					Path.Combine(sourceFolder, "*.*"),
+					Path.Combine(workingFolder, @"Output\"+ folderName));
+			}
+		}
 
         /// <summary>
         /// This copies files from the specified source folder to the specified
@@ -431,7 +432,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
             foreach(string name in files)
             {
-                filename = destPath + Path.GetFileName(name);
+                filename = Path.Combine(destPath, Path.GetFileName(name));
 
                 if(!Directory.Exists(destPath))
                     Directory.CreateDirectory(destPath);

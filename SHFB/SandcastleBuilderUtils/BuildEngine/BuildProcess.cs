@@ -640,30 +640,30 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 // First we need to figure out which style is in effect.
                 // Base it on whether the presentation style folder contains
                 // "v2005", "hana", or "prototype".
-                presentationParam = project.PresentationStyle.ToLower(
-                    CultureInfo.InvariantCulture);
+                presentationParam = project.PresentationStyle.ToLowerInvariant();
 
-                if(presentationParam.IndexOf("vs2005",
-                  StringComparison.Ordinal) != -1)
-                    presentationParam = "vs2005";
-                else
-                    if(presentationParam.IndexOf("hana",
-                      StringComparison.Ordinal) != -1)
-                        presentationParam = "hana";
-                    else
-                    {
-                        if(presentationParam.IndexOf("prototype",
-                          StringComparison.Ordinal) == -1)
-                            this.ReportWarning("BE0001", "Unable to " +
-                                "determine presentation style from folder " +
-                                "'{0}'.  Assuming Prototype style.",
-                                project.PresentationStyle);
+				//if(presentationParam.IndexOf("vs2005",
+				//  StringComparison.Ordinal) != -1)
+				//    presentationParam = "vs2005";
+				//else
+				//    if(presentationParam.IndexOf("hana",
+				//      StringComparison.Ordinal) != -1)
+				//        presentationParam = "hana";
+				//    else
+				//    {
+				//        if(presentationParam.IndexOf("prototype",
+				//          StringComparison.Ordinal) == -1)
+				//            this.ReportWarning("BE0001", "Unable to " +
+				//                "determine presentation style from folder " +
+				//                "'{0}'.  Assuming Prototype style.",
+				//                project.PresentationStyle);
 
-                        presentationParam = "prototype";
-                    }
+				//        presentationParam = "prototype";
+				//    }
 
-                if(!File.Exists(templateFolder + @"..\SharedContent\" +
-                  languageFile))
+				string sharedContentFolder = Path.Combine(templateFolder, @"..\SharedContent\");
+				string languageFilePath = Path.Combine(sharedContentFolder, languageFile);
+                if(!File.Exists(languageFilePath))
                 {
                     languageFile = "SharedBuilderContent_en-US.xml";
 
@@ -676,8 +676,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
                 // See if the user has translated the Sandcastle resources.
                 // If not found, default to US English.
-                languageFolder = presentationFolder + @"\Content\" +
-                    language.Name;
+                languageFolder = presentationFolder + @"\Content\" + language.Name;
 
                 if(Directory.Exists(languageFolder))
                     languageFolder = language.Name + @"\";
@@ -698,28 +697,32 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 {
                     this.ExecutePlugIns(ExecutionBehaviors.Before);
 
-                    this.TransformTemplate(languageFile,
-                        templateFolder + @"..\SharedContent\", workingFolder);
-                    File.Move(workingFolder + languageFile,
-                        workingFolder + "SharedBuilderContent.xml");
+					this.TransformTemplate(
+						languageFile,
+						sharedContentFolder,
+						workingFolder,
+						"SharedBuilderContent.xml");
 
                     // Presentation-style specific shared content
-                    languageFile = languageFile.Replace("Shared",
-                        presentationParam);
+                    languageFile = languageFile.Replace("Shared", presentationParam);
 
-                    this.TransformTemplate(languageFile,
-                        templateFolder + @"..\SharedContent\", workingFolder);
-                    File.Move(workingFolder + languageFile,
-                        workingFolder + "PresentationStyleBuilderContent.xml");
+					this.TransformTemplate(
+						languageFile,
+						sharedContentFolder,
+						workingFolder,
+						"PresentationStyleBuilderContent.xml");
 
                     // Copy the stop word list
                     languageFile = Path.ChangeExtension(
-                        languageFile.Replace(presentationParam +
-                        "BuilderContent", "StopWordList"), ".txt");
-                    File.Copy(templateFolder + @"..\SharedContent\" +
-                        languageFile, workingFolder + "StopWordList.txt");
-                    File.SetAttributes(workingFolder + "StopWordList.txt",
-                        FileAttributes.Normal);
+                        languageFile.Replace(
+							presentationParam + "BuilderContent",
+							"StopWordList"),
+						".txt");
+
+					string stopWordFile = Path.Combine(workingFolder, "StopWordList.txt");
+
+                    File.Copy(Path.Combine(sharedContentFolder, languageFile), stopWordFile);
+                    File.SetAttributes(stopWordFile, FileAttributes.Normal);
 
                     this.ExecutePlugIns(ExecutionBehaviors.After);
                 }
@@ -1734,6 +1737,10 @@ AllDone:
             presentationFolder = String.Format(CultureInfo.InvariantCulture,
                 @"{0}Presentation\{1}\", sandcastleFolder,
                 project.PresentationStyle);
+			// HACK: hard coded path. see case 45.
+			presentationFolder = Environment.GetEnvironmentVariable("VS2010P");
+			if (!presentationFolder.EndsWith(@"\"))
+				presentationFolder += @"\";
 
             // Make sure we've got a version we can use
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(

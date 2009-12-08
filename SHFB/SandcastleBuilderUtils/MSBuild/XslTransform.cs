@@ -151,29 +151,41 @@ namespace SandcastleBuilder.Utils.MSBuild
         /// <returns>True if the parameters are valid, false if not</returns>
         protected override bool ValidateParameters()
         {
-            if(transformations == null || transformations.Length == 0)
+			if (Transformations == null || Transformations.Length == 0)
             {
-                Log.LogError(null, "XTT0001", "XTT0001", "SHFB", 0, 0, 0, 0,
-                  "At least one XSL transformation is required");
+                LogError("XTT0001", "At least one XSL transformation is required. "+
+					"Please set the Transformations property on the <XslTransform> element.");
                 return false;
             }
 
-            if(String.IsNullOrEmpty(inputFile) || !File.Exists(inputFile))
+            if(String.IsNullOrEmpty(InputFile))
             {
-                Log.LogError(null, "XTT0002", "XTT0002", "SHFB", 0, 0, 0, 0,
-                  "An input file must be specified and it must exist");
+                LogError("XTT0002", "An input file must be specified in the property InputFile "+
+					"and it must exist.");
                 return false;
             }
 
-            if(String.IsNullOrEmpty(outputFile))
+			if (!File.Exists(InputFile))
+			{
+                LogError("XTT0002", "An input file '{0}' must exist.", inputFile);
+                return false;
+			}
+
+            if(String.IsNullOrEmpty(OutputFile))
             {
-                Log.LogError(null, "XTT0003", "XTT0003", "SHFB", 0, 0, 0, 0,
-                  "An output filename must be specified");
+                LogError("XTT0003", "An output filename must be specified in property OutpuFile.");
                 return false;
             }
 
             return true;
         }
+
+		private void LogError(string errorNumber, string message, params object[] args)
+		{
+			Log.LogError(null, errorNumber, errorNumber, this.BuildEngine.ProjectFileOfTaskNode,
+				BuildEngine.LineNumberOfTaskNode, BuildEngine.ColumnNumberOfTaskNode, 0, 0,
+              message, args);
+		}
 
         /// <summary>
         /// This returns the full path to the tool

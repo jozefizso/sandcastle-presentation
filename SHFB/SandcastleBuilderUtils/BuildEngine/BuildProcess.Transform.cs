@@ -109,71 +109,90 @@ namespace SandcastleBuilder.Utils.BuildEngine
             return templateText;
         }
 
-        /// <summary>
-        /// Transform the specified template by inserting the necessary
-        /// values into the place holders and saving it to the working folder.
-        /// </summary>
-        /// <param name="template">The template to transform</param>
-        /// <param name="sourceFolder">The folder where the template is
-        /// located</param>
-        /// <param name="destFolder">The folder in which to save the
-        /// transformed file</param>
-        /// <returns>The path to the transformed file</returns>
-        public string TransformTemplate(string template,
-          string sourceFolder, string destFolder)
-        {
-            Encoding enc = Encoding.Default;
-            string templateText, transformedFile;
+		public string TransformTemplate(string template, string sourceFolder, string destFolder, string newName)
+		{
+			string tmpFile = this.TransformTemplate(template, sourceFolder, workingFolder);
 
-            if(template == null)
-                throw new ArgumentNullException("template");
+			if (tmpFile != null)
+				File.Move(tmpFile, Path.Combine(workingFolder, newName));
 
-            if(sourceFolder == null)
-                throw new ArgumentNullException("sourceFolder");
+			return tmpFile;
+		}
 
-            if(destFolder == null)
-                throw new ArgumentNullException("destFolder");
+		/// <summary>
+		/// Transform the specified template by inserting the necessary
+		/// values into the place holders and saving it to the working folder.
+		/// </summary>
+		/// <param name="template">The template to transform</param>
+		/// <param name="sourceFolder">The folder where the template is
+		/// located</param>
+		/// <param name="destFolder">The folder in which to save the
+		/// transformed file</param>
+		/// <returns>The path to the transformed file</returns>
+		public string TransformTemplate(string template, string sourceFolder, string destFolder)
+		{
+			if (template == null)
+				throw new ArgumentNullException("template");
 
-            if(sourceFolder.Length != 0 &&
-              sourceFolder[sourceFolder.Length - 1] != '\\')
-                sourceFolder += @"\";
+			if (sourceFolder == null)
+				throw new ArgumentNullException("sourceFolder");
 
-            if(destFolder.Length != 0 &&
-              destFolder[destFolder.Length - 1] != '\\')
-                destFolder += @"\";
+			if (destFolder == null)
+				throw new ArgumentNullException("destFolder");
 
-            try
-            {
-                // When reading the file, use the default encoding but
-                // detect the encoding if byte order marks are present.
-                templateText = BuildProcess.ReadWithEncoding(
-                    sourceFolder + template, ref enc);
+			//if(sourceFolder.Length != 0 &&
+			//  sourceFolder[sourceFolder.Length - 1] != '\\')
+			//    sourceFolder += @"\";
 
-                // Use a regular expression to find and replace all field
-                // tags with a matching value from the project.  They can
-                // be nested.
-                while(reField.IsMatch(templateText))
-                    templateText = reField.Replace(templateText, fieldMatchEval);
+			//if(destFolder.Length != 0 &&
+			//  destFolder[destFolder.Length - 1] != '\\')
+			//    destFolder += @"\";
 
-                transformedFile = destFolder + template;
+			Encoding enc = Encoding.Default;
 
-                // Write the file back out using its original encoding
-                using(StreamWriter sw = new StreamWriter(transformedFile,
-                    false, enc))
-                {
-                    sw.Write(templateText);
-                }
-            }
-            catch(Exception ex)
-            {
-                throw new BuilderException("BE0019", String.Format(
-                    CultureInfo.CurrentCulture,
-                    "Unable to transform template '{0}': {1}", template,
-                    ex.Message), ex);
-            }
+			try
+			{
+				string sourceTemplate = Path.Combine(sourceFolder, template);
 
-            return transformedFile;
-        }
+				if (!File.Exists(sourceTemplate))
+				{
+					ReportWarning(
+						"BE0068",
+						"Template '{0}' does not exist.",
+						sourceTemplate);
+					return null;
+				}
+
+				// When reading the file, use the default encoding but
+				// detect the encoding if byte order marks are present.
+				string templateText = BuildProcess.ReadWithEncoding(sourceTemplate, ref enc);
+
+				// Use a regular expression to find and replace all field
+				// tags with a matching value from the project.  They can
+				// be nested.
+				while (reField.IsMatch(templateText))
+				{
+					templateText = reField.Replace(templateText, fieldMatchEval);
+				}
+
+				string transformedFile = Path.Combine(destFolder, template);
+
+				// Write the file back out using its original encoding
+				File.WriteAllText(transformedFile, templateText, enc);
+				return transformedFile;
+			}
+			catch (Exception ex)
+			{
+				throw new BuilderException(
+					"BE0019",
+					String.Format(
+						CultureInfo.CurrentCulture,
+						"Unable to transform template '{0}': {1}",
+						template,
+						ex.Message),
+					ex);
+			}
+		}
 
         /// <summary>
         /// This is used to read in a file using an appropriate encoding method

@@ -120,6 +120,9 @@ namespace SandcastleBuilder.Utils.Design
                 {
                     folder += @"\Presentation";
 
+					folder = Environment.GetEnvironmentVariable("VS2010P");
+					folder = Path.Combine(folder, "..");
+
                     string[] dirs = Directory.GetDirectories(folder);
 
                     // The Shared folder is omitted as it contains files
