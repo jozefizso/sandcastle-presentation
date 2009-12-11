@@ -12,10 +12,10 @@
 
   <!-- stuff specific to comments authored in DDUEXML -->
 
-	<xsl:include href="utilities_reference.xsl" />
+	<!--<xsl:include href="utilities_reference.xsl" />-->
 	<xsl:include href="utilities_dduexml.xsl" />
   <!--<xsl:include href="htmlBody.xsl"/>-->
-  <xsl:include href="seeAlsoSection.xsl"/>
+  <!--<xsl:include href="seeAlsoSection.xsl"/>-->
   
   <xsl:variable name="summary" select="normalize-space(/document/comments/ddue:dduexml/ddue:summary)" />
   
@@ -492,11 +492,11 @@
     <xsl:call-template name="memberIntroBoilerplate"/>
   </xsl:template>
 
-  <xsl:template name="codelangAttributes">
+  <!--<xsl:template name="codelangAttributes">
     <xsl:call-template name="mshelpCodelangAttributes">
       <xsl:with-param name="snippets" select="/document/comments/ddue:dduexml/ddue:codeExamples/ddue:codeExample/ddue:legacy/ddue:content/ddue:snippets/ddue:snippet" />
     </xsl:call-template>
-  </xsl:template>
+  </xsl:template>-->
 
   <xsl:template match="ddue:codeEntityReference" mode="abstract">
     <xsl:call-template name="subString">

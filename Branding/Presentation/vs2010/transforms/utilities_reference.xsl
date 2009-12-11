@@ -7,12 +7,9 @@
         xmlns:msxsl="urn:schemas-microsoft-com:xslt"
     >
 
-  <xsl:import href="%DXROOT%/Presentation/Shared/transforms/utilities_reference.xsl"/>
-
-  <!-- <xsl:output method="xml" omit-xml-declaration="yes" encoding="utf-8" /> -->
-  <xsl:output method="xml" omit-xml-declaration="no" encoding="utf-8"
-							doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
-							doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" />
+  <xsl:import href="../../../../JavadocSandcastle/Sandcastle/Presentation/Shared/transforms/utilities_reference.xsl"/>
+  
+  <xsl:include href="main_reference.xsl"/>
 
 	<!-- key parameter is the api identifier string -->
 	<xsl:param name="key" />
@@ -22,43 +19,6 @@
     
 	<xsl:include href="utilities_metadata.xsl" />
   <xsl:include href="xamlSyntax.xsl"/>
-
-  <xsl:template match="/">
-		<html>
-			<head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta name="save" content="history"/>
-        <title><xsl:call-template name="topicTitlePlain"/></title>
-				<xsl:call-template name="insertStylesheets" />
-				<!--<xsl:call-template name="insertScripts" />-->
-				<xsl:call-template name="insertFilename" />
-				<xsl:call-template name="insertMetadata" />
-			</head>
-			<body>
-				<xsl:call-template name="bodyHeaderMain"/>
-				<xsl:call-template name="main"/>
-			</body>
-		</html>
-	</xsl:template>
-
-
-  <!-- main window -->
-
-  <xsl:template name="main">
-    <div class="OH_outerDiv">
-      <xsl:call-template name="navigation" />
-
-      <div class="OH_outerContent">
-
-        <!-- 'header' shared content item is used to show optional boilerplate at the top of the topic's scrolling region, e.g. pre-release boilerplate -->
-        <!--<include item="header" />-->
-        <!--<xsl:call-template name="bodyHeaderBottomTable"/>-->
-
-        <xsl:call-template name="body" />
-      </div>
-      <xsl:call-template name="footer" />
-    </div>
-  </xsl:template>
   
 	<!-- useful global variables -->
 
@@ -1051,39 +1011,6 @@
     </xsl:if>
   </xsl:template>
 
-  <!-- for testing CF and XNA support, check the signature variations of @signatureset elements -->
-  <!-- for testing inherited/protected/etc, do not check the @signatureset variations; just go with the primary .NET Framework value -->
-  <xsl:template name="IsMemberSupportedOnXna">
-    <xsl:choose>
-      <xsl:when test="element">
-        <xsl:for-each select="element">
-          <xsl:call-template name="IsMemberSupportedOnXna"/>
-        </xsl:for-each>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:variable name="platformFilterExcludesXna" select="boolean(platforms and not(platforms/platform[.='Xbox360']))" />
-        <xsl:if test="boolean(not($platformFilterExcludesXna) and (@xnafw or element/@xnafw))">
-          <xsl:text>supported</xsl:text>
-        </xsl:if>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
-
-  <xsl:template name="IsMemberSupportedOnCf">
-    <xsl:choose>
-      <xsl:when test="element">
-        <xsl:for-each select="element">
-          <xsl:call-template name="IsMemberSupportedOnCf"/>
-        </xsl:for-each>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:variable name="platformFilterExcludesCF" select="boolean( platforms and not(platforms[platform[.='PocketPC'] or platform[.='SmartPhone'] or platform[.='WindowsCE']]) )" />
-        <xsl:if test="boolean(not($platformFilterExcludesCF) and (@netcfw or element/@netcfw))">
-          <xsl:text>yes</xsl:text>
-        </xsl:if>
-      </xsl:otherwise>
-    </xsl:choose>
-  </xsl:template>
   
   <xsl:template name="IsMemberStatic">
     <xsl:choose>
@@ -1945,5 +1872,97 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-  
+
+
+  <xsl:template name="exceptions">
+    <xsl:if test="count(/document/comments/exception) &gt; 0">
+      <xsl:call-template name="section">
+        <xsl:with-param name="toggleSwitch" select="'exceptions'"/>
+        <xsl:with-param name="title">
+          <include item="exceptionsTitle" />
+        </xsl:with-param>
+        <xsl:with-param name="content">
+          <div class="tableSection">
+            <table width="100%" cellspacing="2" cellpadding="5" frame="lhs" >
+              <tr>
+                <th class="exceptionNameColumn">
+                  <include item="exceptionNameHeader" />
+                </th>
+                <th class="exceptionConditionColumn">
+                  <include item="exceptionConditionHeader" />
+                </th>
+              </tr>
+              <xsl:for-each select="/document/comments/exception">
+                <tr>
+                  <td>
+                    <referenceLink target="{@cref}" qualified="true" />
+                  </td>
+                  <td>
+                    <xsl:apply-templates select="." />
+                  </td>
+                </tr>
+              </xsl:for-each>
+            </table>
+          </div>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:template name="permissions">
+    <xsl:if test="count(/document/comments/permission) &gt; 0">
+      <xsl:call-template name="section">
+        <xsl:with-param name="toggleSwitch" select="'permissions'" />
+        <xsl:with-param name="title">
+          <include item="permissionsTitle" />
+        </xsl:with-param>
+        <xsl:with-param name="content">
+          <div class="tableSection">
+            <table width="100%" cellspacing="2" cellpadding="5" frame="lhs" >
+              <tr>
+                <th class="permissionNameColumn">
+                  <include item="permissionNameHeader" />
+                </th>
+                <th class="permissionDescriptionColumn">
+                  <include item="permissionDescriptionHeader" />
+                </th>
+              </tr>
+              <xsl:for-each select="/document/comments/permission">
+                <tr>
+                  <td>
+                    <referenceLink target="{@cref}" qualified="true" />
+                  </td>
+                  <td>
+                    <xsl:apply-templates select="." />
+                  </td>
+                </tr>
+              </xsl:for-each>
+            </table>
+          </div>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:template>
+
+  <xsl:template name="seealso">
+    <xsl:if test="$hasSeeAlsoSection">
+      <xsl:call-template name="section">
+        <xsl:with-param name="toggleSwitch" select="'seeAlso'" />
+        <xsl:with-param name="title">
+          <include item="relatedTitle" />
+        </xsl:with-param>
+        <xsl:with-param name="content">
+          <xsl:call-template name="autogenSeeAlsoLinks"/>
+          <xsl:for-each select="/document/comments//seealso | /document/reference/elements/element/overloads//seealso">
+            <div class="seeAlsoStyle">
+              <xsl:apply-templates select=".">
+                <xsl:with-param name="displaySeeAlso" select="true()" />
+              </xsl:apply-templates>
+            </div>
+          </xsl:for-each>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:template>
+
 </xsl:stylesheet>

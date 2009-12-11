@@ -289,5 +289,45 @@
     <xsl:param name="codeLang" />
     <MSHelp:Attr Name="codelang" Value="{$codeLang}" />
   </xsl:template>
-  
+
+  <xsl:template name="codelangAttributes">
+    <xsl:call-template name="mshelpCodelangAttributes">
+      <xsl:with-param name="snippets" select="/document/comments/example/code" />
+    </xsl:call-template>
+  </xsl:template>
+
+
+  <!-- for testing CF and XNA support, check the signature variations of @signatureset elements -->
+  <!-- for testing inherited/protected/etc, do not check the @signatureset variations; just go with the primary .NET Framework value -->
+  <xsl:template name="IsMemberSupportedOnXna">
+    <xsl:choose>
+      <xsl:when test="element">
+        <xsl:for-each select="element">
+          <xsl:call-template name="IsMemberSupportedOnXna"/>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:variable name="platformFilterExcludesXna" select="boolean(platforms and not(platforms/platform[.='Xbox360']))" />
+        <xsl:if test="boolean(not($platformFilterExcludesXna) and (@xnafw or element/@xnafw))">
+          <xsl:text>supported</xsl:text>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template name="IsMemberSupportedOnCf">
+    <xsl:choose>
+      <xsl:when test="element">
+        <xsl:for-each select="element">
+          <xsl:call-template name="IsMemberSupportedOnCf"/>
+        </xsl:for-each>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:variable name="platformFilterExcludesCF" select="boolean( platforms and not(platforms[platform[.='PocketPC'] or platform[.='SmartPhone'] or platform[.='WindowsCE']]) )" />
+        <xsl:if test="boolean(not($platformFilterExcludesCF) and (@netcfw or element/@netcfw))">
+          <xsl:text>yes</xsl:text>
+        </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
 </xsl:stylesheet>

@@ -7,7 +7,8 @@
         xmlns:msxsl="urn:schemas-microsoft-com:xslt"
    >
 
-  <xsl:import href="$DXROOT/shared/transforms/utilities_dduexml.xsl" />
+  <!--<xsl:import href="%DXROOT%/Presentation/Shared/transforms/utilities_dduexml.xsl" />-->
+  <xsl:import href="../../../../JavadocSandcastle/Sandcastle/Presentation/Shared/transforms/utilities_dduexml.xsl" />
 
   <!-- sections -->
 

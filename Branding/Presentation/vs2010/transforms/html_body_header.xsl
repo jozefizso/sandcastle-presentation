@@ -9,12 +9,7 @@
   <xsl:import href="globalTemplates.xsl"/>
   
   <xsl:template name="bodyHeaderMain">
-    <!-- commonImages - included for backward compatiblity while transforming
-         XSL files to the new style. -->
-    <!--<xsl:call-template name="commonImages"/>-->
-
     <xsl:call-template name="bodyHeader"/>
-    
   </xsl:template>
 
   <xsl:template name="bodyHeader">

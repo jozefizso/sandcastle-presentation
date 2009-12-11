@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.1">
-
+  
+  <xsl:output method="xml" omit-xml-declaration="no" encoding="utf-8"
+              doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
+              doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" />
+  
   <!-- stuff specified to comments authored in DDUEXML -->
 
   <xsl:include href="html_body_header.xsl"/>
@@ -17,6 +21,26 @@
   <xsl:variable name="examplesSection" select="boolean(string-length(/document/comments/example[normalize-space(.)]) > 0)"/>
   <xsl:variable name="languageFilterSection" select="boolean(string-length(/document/comments/example[normalize-space(.)]) > 0)" />
 
+  <xsl:template match="/">
+    <html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="save" content="history"/>
+        <title>
+          <xsl:call-template name="topicTitlePlain"/>
+        </title>
+        <xsl:call-template name="insertStylesheets" />
+        <!--<xsl:call-template name="insertScripts" />-->
+        <xsl:call-template name="insertFilename" />
+        <xsl:call-template name="insertMetadata" />
+      </head>
+      <body>
+        <xsl:call-template name="bodyHeaderMain"/>
+        <xsl:call-template name="main"/>
+      </body>
+    </html>
+  </xsl:template>
+  
   <xsl:template name="getParameterDescription">
     <xsl:param name="name" />
     <xsl:apply-templates select="/document/comments/param[@name=$name]" />
@@ -190,97 +214,6 @@
       <xsl:with-param name="codeLang" select="$codeLang" />
     </xsl:call-template>
 
-  </xsl:template>
-
-  <xsl:template name="exceptions">
-    <xsl:if test="count(/document/comments/exception) &gt; 0">
-      <xsl:call-template name="section">
-        <xsl:with-param name="toggleSwitch" select="'exceptions'"/>
-        <xsl:with-param name="title">
-          <include item="exceptionsTitle" />
-        </xsl:with-param>
-        <xsl:with-param name="content">
-          <div class="tableSection">
-            <table width="100%" cellspacing="2" cellpadding="5" frame="lhs" >
-              <tr>
-                <th class="exceptionNameColumn">
-                  <include item="exceptionNameHeader" />
-                </th>
-                <th class="exceptionConditionColumn">
-                  <include item="exceptionConditionHeader" />
-                </th>
-              </tr>
-              <xsl:for-each select="/document/comments/exception">
-                <tr>
-                  <td>
-                    <referenceLink target="{@cref}" qualified="true" />
-                  </td>
-                  <td>
-                    <xsl:apply-templates select="." />
-                  </td>
-                </tr>
-              </xsl:for-each>
-            </table>
-          </div>
-        </xsl:with-param>
-      </xsl:call-template>
-    </xsl:if>
-  </xsl:template>
-
-  <xsl:template name="permissions">
-    <xsl:if test="count(/document/comments/permission) &gt; 0">
-      <xsl:call-template name="section">
-        <xsl:with-param name="toggleSwitch" select="'permissions'" />
-        <xsl:with-param name="title">
-          <include item="permissionsTitle" />
-        </xsl:with-param>
-        <xsl:with-param name="content">
-          <div class="tableSection">
-            <table width="100%" cellspacing="2" cellpadding="5" frame="lhs" >
-              <tr>
-                <th class="permissionNameColumn">
-                  <include item="permissionNameHeader" />
-                </th>
-                <th class="permissionDescriptionColumn">
-                  <include item="permissionDescriptionHeader" />
-                </th>
-              </tr>
-              <xsl:for-each select="/document/comments/permission">
-                <tr>
-                  <td>
-                    <referenceLink target="{@cref}" qualified="true" />
-                  </td>
-                  <td>
-                    <xsl:apply-templates select="." />
-                  </td>
-                </tr>
-              </xsl:for-each>
-            </table>
-          </div>
-        </xsl:with-param>
-      </xsl:call-template>
-    </xsl:if>
-  </xsl:template>
-
-  <xsl:template name="seealso">
-    <xsl:if test="$hasSeeAlsoSection">
-      <xsl:call-template name="section">
-        <xsl:with-param name="toggleSwitch" select="'seeAlso'" />
-        <xsl:with-param name="title">
-          <include item="relatedTitle" />
-        </xsl:with-param>
-        <xsl:with-param name="content">
-          <xsl:call-template name="autogenSeeAlsoLinks"/>
-          <xsl:for-each select="/document/comments//seealso | /document/reference/elements/element/overloads//seealso">
-            <div class="seeAlsoStyle">
-              <xsl:apply-templates select=".">
-                <xsl:with-param name="displaySeeAlso" select="true()" />
-              </xsl:apply-templates>
-            </div>
-          </xsl:for-each>
-        </xsl:with-param>
-      </xsl:call-template>
-    </xsl:if>
   </xsl:template>
 
   <xsl:template match="list[@type='bullet']">
@@ -640,11 +573,5 @@
     </xsl:if>
     <xsl:call-template name="memberIntroBoilerplate"/>
   </xsl:template>
-
-  <xsl:template name="codelangAttributes">
-    <xsl:call-template name="mshelpCodelangAttributes">
-      <xsl:with-param name="snippets" select="/document/comments/example/code" />
-    </xsl:call-template>
-  </xsl:template>
-
+  
 </xsl:stylesheet>

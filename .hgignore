@@ -16,11 +16,12 @@ chm/
 \.user$
 
 
-# Exclude some temporary XML files
+# Exclude some temporary XML and other files
 
 reflection\.org
 (Sandcastle|Branding)/.*(reflection|javadoc|manifest|toc).*\.xml
 (Sandcastle|Branding)/.*\.dll
+SandcastleBuilder.log
 
 
 # Exclude build dirs in mainSandcastle project

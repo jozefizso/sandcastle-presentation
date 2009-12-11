@@ -106,6 +106,7 @@
       <DependentUpon>CompletionNotificationConfigDlg.cs</DependentUpon>
     </Compile>
     <Compile Include="CompletionNotificationPlugIn.cs" />
+    <Compile Include="ConceptualBuildOnlyPlugin.cs" />
     <Compile Include="DbcsFixConfigDlg.cs">
       <SubType>Form</SubType>
     </Compile>

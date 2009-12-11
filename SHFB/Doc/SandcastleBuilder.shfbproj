@@ -118,7 +118,7 @@
           </targets>
         </configuration>
       </PlugInConfig>
-    </PlugInConfigurations>
+<PlugInConfig id="Conceptual Build Only" enabled="True"><configuration /></PlugInConfig></PlugInConfigurations>
     <Preliminary>True</Preliminary>
     <HelpFileFormat>HtmlHelp1x</HelpFileFormat>
     <HelpAttributes>

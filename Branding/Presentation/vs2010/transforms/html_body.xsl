@@ -6,14 +6,36 @@
         xmlns:msxsl="urn:schemas-microsoft-com:xslt"
          >
 
+  <xsl:import href="html_body_header.xsl"/>
+  <xsl:import href="html_body_navigation.xsl"/>
+  <xsl:import href="html_body_footer.xsl"/>
+  
   <xsl:import href="utilities_reference.xsl"/>
 
+  <!-- main window -->
+
+  <xsl:template name="main">
+    <div class="OH_outerDiv">
+      <xsl:call-template name="navigation" />
+
+      <div class="OH_outerContent">
+
+        <!-- 'header' shared content item is used to show optional boilerplate at the top of the topic's scrolling region, e.g. pre-release boilerplate -->
+        <!--<include item="header" />-->
+        <!--<xsl:call-template name="bodyHeaderBottomTable"/>-->
+
+        <xsl:call-template name="body" />
+      </div>
+      <xsl:call-template name="footer" />
+    </div>
+  </xsl:template>
+  
   <xsl:template name="body">
-    <xsl:call-template name="topic" />
+    <xsl:call-template name="documentTitle" />
     <xsl:call-template name="bodyMain" />
   </xsl:template>
 
-  <xsl:template name="topic">
+  <xsl:template name="documentTitle">
     <div class="OH_topic">
       <h1 class="OH_title">
         <include item="nsrTitle">
@@ -29,68 +51,72 @@
   <xsl:template name="bodyMain">
     <div id="mainSection">
       <div id="mainBody">
-        <xsl:call-template name="bodySummary" />
-
-        <xsl:if test="$subgroup='overload'">
-          <xsl:apply-templates select="/document/reference/elements" mode="overloadSummary" />
-        </xsl:if>
-        <!-- assembly information -->
-        <xsl:if test="not($group='list' or $group='root' or $group='namespace')">
-          <xsl:call-template name="requirementsInfo"/>
-        </xsl:if>
-        <!-- syntax -->
-        <xsl:if test="not($group='list' or $group='namespace')">
-          <xsl:apply-templates select="/document/syntax" />
-        </xsl:if>
-        <!-- members -->
-        <xsl:choose>
-          <xsl:when test="$group='root'">
-            <xsl:apply-templates select="/document/reference/elements" mode="root" />
-          </xsl:when>
-          <xsl:when test="$group='namespace'">
-            <xsl:apply-templates select="/document/reference/elements" mode="namespace" />
-          </xsl:when>
-          <xsl:when test="$subgroup='enumeration'">
-            <xsl:apply-templates select="/document/reference/elements" mode="enumeration" />
-          </xsl:when>
-          <xsl:when test="$group='type'">
-            <xsl:apply-templates select="/document/reference/elements" mode="type" />
-          </xsl:when>
-          <xsl:when test="$group='list'">
-            <xsl:choose>
-              <xsl:when test="$subgroup='overload'">
-                <xsl:apply-templates select="/document/reference/elements" mode="overload" />
-              </xsl:when>
-              <xsl:when test="$subgroup='DerivedTypeList'">
-                <xsl:apply-templates select="/document/reference/elements" mode="derivedType" />
-              </xsl:when>
-              <xsl:otherwise>
-                <xsl:apply-templates select="/document/reference/elements" mode="member" />
-              </xsl:otherwise>
-            </xsl:choose>
-          </xsl:when>
-        </xsl:choose>
-        <!-- remarks -->
-        <xsl:apply-templates select="/document/comments/remarks" />
-        <!-- example -->
-        <xsl:apply-templates select="/document/comments/example" />
-        <!-- other comment sections -->
-        <!-- permissions -->
-        <xsl:call-template name="permissions" />
-        <!-- exceptions -->
-        <xsl:call-template name="exceptions" />
-        <!-- inheritance -->
-        <xsl:apply-templates select="/document/reference/family" />
-        <xsl:apply-templates select="/document/comments/threadsafety" />
-        <!--versions-->
-        <xsl:if test="not($group='list' or $group='namespace' or $group='root' )">
-          <xsl:apply-templates select="/document/reference/versions" />
-        </xsl:if>
-        <!-- see also -->
-        <xsl:call-template name="seealso" />
-
+        <xsl:call-template name="bodyContent" />
       </div>
     </div>
+  </xsl:template>
+
+  <xsl:template name="bodyContent">
+    <xsl:call-template name="bodySummary" />
+
+    <xsl:if test="$subgroup='overload'">
+      <xsl:apply-templates select="/document/reference/elements" mode="overloadSummary" />
+    </xsl:if>
+    <!-- assembly information -->
+    <xsl:if test="not($group='list' or $group='root' or $group='namespace')">
+      <xsl:call-template name="requirementsInfo"/>
+    </xsl:if>
+    <!-- syntax -->
+    <xsl:if test="not($group='list' or $group='namespace')">
+      <xsl:apply-templates select="/document/syntax" />
+    </xsl:if>
+    <!-- members -->
+    <xsl:choose>
+      <xsl:when test="$group='root'">
+        <xsl:apply-templates select="/document/reference/elements" mode="root" />
+      </xsl:when>
+      <xsl:when test="$group='namespace'">
+        <xsl:apply-templates select="/document/reference/elements" mode="namespace" />
+      </xsl:when>
+      <xsl:when test="$subgroup='enumeration'">
+        <xsl:apply-templates select="/document/reference/elements" mode="enumeration" />
+      </xsl:when>
+      <xsl:when test="$group='type'">
+        <xsl:apply-templates select="/document/reference/elements" mode="type" />
+      </xsl:when>
+      <xsl:when test="$group='list'">
+        <xsl:choose>
+          <xsl:when test="$subgroup='overload'">
+            <xsl:apply-templates select="/document/reference/elements" mode="overload" />
+          </xsl:when>
+          <xsl:when test="$subgroup='DerivedTypeList'">
+            <xsl:apply-templates select="/document/reference/elements" mode="derivedType" />
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:apply-templates select="/document/reference/elements" mode="member" />
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:when>
+    </xsl:choose>
+    <!-- remarks -->
+    <xsl:apply-templates select="/document/comments/remarks" />
+    <!-- example -->
+    <xsl:apply-templates select="/document/comments/example" />
+    <!-- other comment sections -->
+    <!-- permissions -->
+    <xsl:call-template name="permissions" />
+    <!-- exceptions -->
+    <xsl:call-template name="exceptions" />
+    <!-- inheritance -->
+    <xsl:apply-templates select="/document/reference/family" />
+    <xsl:apply-templates select="/document/comments/threadsafety" />
+    <!--versions-->
+    <xsl:if test="not($group='list' or $group='namespace' or $group='root' )">
+      <xsl:apply-templates select="/document/reference/versions" />
+    </xsl:if>
+    <!-- see also -->
+    <xsl:call-template name="seealso" />
+
   </xsl:template>
 
   <xsl:template name="bodySummary">
