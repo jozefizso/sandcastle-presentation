@@ -571,20 +571,18 @@
           </xsl:variable>
           <xsl:choose>
             <xsl:when test="ddue:title">
-              <h1 class="heading">
-                <span onclick="ExpandCollapse(sectionToggle{$sectionCount})" style="cursor:default;" onkeypress="ExpandCollapse_CheckKey(sectionToggle{$sectionCount}, event)" tabindex="0">
-                  <img id="sectionToggle{$sectionCount}" class="toggle" name="toggleSwitch">
-                    <includeAttribute name="src" item="iconPath">
-                      <parameter>collapse_all.gif</parameter>
-                    </includeAttribute>
-                  </img>
+              <xsl:call-template name="section">
+                <xsl:with-param name="toogleSwitch" select="concat('sectionToggle', $sectionCount)" />
+                <xsl:with-param name="title">
                   <xsl:value-of select="ddue:title" />
-                </span>
-              </h1>
-              <div id="sectionSection{$sectionCount}" class="section" name="collapseableSection" style="">
-                <xsl:apply-templates select="ddue:content"/>
-                <xsl:apply-templates select="ddue:sections" />
-              </div>
+                </xsl:with-param>
+                <xsl:with-param name="content">
+                  <div id="sectionSection{$sectionCount}" class="section" name="collapseableSection" style="">
+                    <xsl:apply-templates select="ddue:content"/>
+                    <xsl:apply-templates select="ddue:sections" />
+                  </div>
+                </xsl:with-param>
+              </xsl:call-template>
             </xsl:when>
             <xsl:otherwise>
               <div id="sectionSection{$sectionCount}" class="seeAlsoNoToggleSection">
@@ -1197,9 +1195,24 @@
     <xsl:param name="content" />
     <xsl:param name="toplink" select="false()" />
 
-    <xsl:variable name="toggleTitle" select="concat($toggleSwitch,'Toggle')" />
+    <!--<xsl:variable name="toggleTitle" select="concat($toggleSwitch,'Toggle')" />-->
     <xsl:variable name="toggleSection" select="concat($toggleSwitch,'Section')" />
 
+    <div class="regionArea">
+      <h2 class="regiontitle">
+        <xsl:copy-of select="$title" />
+      </h2>
+      <div class='hrdiv'>
+        <hr class='regionhr' />
+      </div>
+    </div>
+
+    <a id="{$toggleSection}">
+      <xsl:comment/>
+    </a>
+    <xsl:copy-of select="$content" />
+    
+    <!--
     <h1 class="heading">
       <span onclick="ExpandCollapse({$toggleTitle})" style="cursor:default;" onkeypress="ExpandCollapse_CheckKey({$toggleTitle}, event)" tabindex="0">
         <img id="{$toggleTitle}" class="toggle" name="toggleSwitch">
@@ -1218,7 +1231,7 @@
         <a href="#mainBody"><include item="top"/></a>
       </xsl:if>
     </div>
-
+    -->
   </xsl:template>
 
   <xsl:template name="subSection">
