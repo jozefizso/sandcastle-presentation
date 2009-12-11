@@ -260,5 +260,17 @@
     <!-- changed table section -->
     <!--<xsl:call-template name="writeChangedTable" />-->
   </xsl:template>
+
+
+  <xsl:template name="relatedTopicsNavigation">
+    <xsl:if test="//ddue:relatedTopics/node()">
+      <div id="toc_siblings">
+      <h5 class="OH_siblingTocHeader">
+        <include item="RelatedLinksLinkText" />
+      </h5>
+      <xsl:apply-templates select="//ddue:relatedTopics" mode="navigation" />
+    </div>
+    </xsl:if>
+  </xsl:template>
   
 </xsl:stylesheet>

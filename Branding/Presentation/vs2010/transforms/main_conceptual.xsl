@@ -169,6 +169,12 @@
       </xsl:call-template>
     </xsl:if>
   </xsl:template>
+
+  <xsl:template match="ddue:relatedTopics" mode="navigation">
+    <div class="OH_siblingTocLinks">
+      <xsl:apply-templates mode="navigation" />
+    </div>
+  </xsl:template>
     
   <xsl:template match="ddue:codeExample">
     <!-- create Example section for the first codeExample node -->

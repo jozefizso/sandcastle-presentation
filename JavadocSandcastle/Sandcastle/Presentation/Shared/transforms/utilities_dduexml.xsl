@@ -197,7 +197,6 @@
 	</xsl:template>
 
   <xsl:template match="ddue:link">
-    <span sdata="link">
     <xsl:choose>
       <xsl:when test="starts-with(@xlink:href,'#')">
         <!-- in-page link -->
@@ -212,7 +211,6 @@
         </conceptualLink>
       </xsl:otherwise>
     </xsl:choose>
-    </span>
   </xsl:template>
 
   <xsl:template match="ddue:legacyLink">

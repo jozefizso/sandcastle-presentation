@@ -56,8 +56,62 @@
     <div id="toc">
       <div id="toc_parent">
         Table of Content
+        
+        <xsl:call-template name="relatedTopicsNavigation" />
       </div>
     </div>
+  </xsl:template>
+
+  <xsl:template name="relatedTopicsNavigation">
+    
+  </xsl:template>
+
+  <!-- links -->
+
+  <xsl:template match="ddue:externalLink" mode="navigation">
+    <a>
+      <xsl:attribute name="href">
+        <xsl:value-of select="ddue:linkUri" />
+      </xsl:attribute>
+      <xsl:value-of select="ddue:linkText" />
+    </a>
+    <br />
+  </xsl:template>
+
+  <xsl:template match="ddue:link" mode="navigation">
+    <xsl:choose>
+      <xsl:when test="starts-with(@xlink:href,'#')">
+        <!-- in-page link -->
+        <a href="{@xlink:href}">
+          <xsl:apply-templates />
+        </a>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- verified, external link -->
+        <conceptualLink target="{@xlink:href}">
+          <xsl:apply-templates />
+        </conceptualLink>
+      </xsl:otherwise>
+    </xsl:choose>
+    <br />
+  </xsl:template>
+
+  <xsl:template match="ddue:legacyLink" mode="navigation">
+    <xsl:choose>
+      <xsl:when test="starts-with(@xlink:href,'#')">
+        <!-- in-page link -->
+        <a href="{@xlink:href}">
+          <xsl:apply-templates />
+        </a>
+      </xsl:when>
+      <xsl:otherwise>
+        <!-- unverified, external link -->
+        <mshelp:link keywords="{@xlink:href}" tabindex="0">
+          <xsl:apply-templates />
+        </mshelp:link>
+      </xsl:otherwise>
+    </xsl:choose>
+    <br />
   </xsl:template>
   
 </xsl:stylesheet>
