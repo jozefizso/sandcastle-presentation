@@ -7,7 +7,7 @@
         xmlns:msxsl="urn:schemas-microsoft-com:xslt"
     >
 
-  <xsl:import href="../../../../JavadocSandcastle/Sandcastle/Presentation/Shared/transforms/utilities_reference.xsl"/>
+  <xsl:import href="Shared/utilities_reference.xsl"/>
   
   <xsl:include href="main_reference.xsl"/>
 

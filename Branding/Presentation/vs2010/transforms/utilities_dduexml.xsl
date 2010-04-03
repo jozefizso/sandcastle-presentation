@@ -8,7 +8,7 @@
    >
 
   <!--<xsl:import href="%DXROOT%/Presentation/Shared/transforms/utilities_dduexml.xsl" />-->
-  <xsl:import href="../../../../JavadocSandcastle/Sandcastle/Presentation/Shared/transforms/utilities_dduexml.xsl" />
+  <xsl:import href="Shared/utilities_dduexml.xsl" />
 
   <!-- sections -->
 

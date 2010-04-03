@@ -7,7 +7,7 @@
         xmlns:msxsl="urn:schemas-microsoft-com:xslt"
    >
 
-  <xsl:import href="../../../../JavadocSandcastle/Sandcastle/Presentation/shared/transforms/utilities_metadata.xsl" />
+  <xsl:import href="Shared/utilities_metadata.xsl" />
   <xsl:include href="globalTemplates.xsl"/>
 
   <xsl:template name="insertMetadata">
