@@ -7,6 +7,7 @@ syntax: regexp
 
 # Exclude build dirs and user preference files
 bin/
+Bin/
 obj/
 \.suo$
 \.user$
