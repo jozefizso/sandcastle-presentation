@@ -928,6 +928,182 @@
 			<kw>with</kw>
 			<kw>yield</kw>
 		</keywordlist>
+
+    <!-- CSS language keywords -->
+    <keywords id="kwcsslang-keywords">
+      <!-- http://www.w3.org/TR/CSS21 -->
+
+      <!-- Font Properties -->
+      <kw>color</kw>
+      <kw>font</kw>
+      <kw>font-family</kw>
+      <kw>font-style</kw>
+      <kw>font-variant</kw>
+      <kw>font-size</kw>
+      <kw>font-weight</kw>
+      <kw>text-decoration</kw>
+      <kw>outline</kw>
+      <kw>outline-width</kw>
+      <kw>outline-style</kw>
+      <kw>outline-color</kw>
+
+      <!-- Background Properties -->
+      <kw>background</kw>
+      <kw>background-color</kw>
+      <kw>background-image</kw>
+      <kw>background-attachment</kw>
+      <kw>background-repeat</kw>
+      <kw>background-position</kw>
+      <kw>background-position-x</kw>
+      <kw>background-position-y</kw>
+
+      <!-- Text Properties -->
+      <kw>text-align</kw>
+      <kw>vertical-align</kw>
+      <kw>letter-spacing</kw>
+      <kw>line-height</kw>
+      <kw>text-indent</kw>
+      <kw>text-transform</kw>
+      <kw>word-spacing</kw>
+      <kw>white-space</kw>
+
+      <!-- Layout Properties -->
+      <kw>display</kw>
+      <kw>float</kw>
+      <kw>clear</kw>
+      <kw>visibility</kw>
+      <kw>position</kw>
+      <kw>z-index</kw>
+      <kw>left</kw>
+      <kw>right</kw>
+      <kw>top</kw>
+      <kw>bottom</kw>
+      <kw>overflow</kw>
+      <kw>clip</kw>
+      <kw>width</kw>
+      <kw>min-width</kw>
+      <kw>max-width</kw>
+      <kw>height</kw>
+      <kw>min-height</kw>
+      <kw>max-height</kw>
+
+      <!-- Edges Properties -->
+      <kw>padding</kw>
+      <kw>padding-left</kw>
+      <kw>padding-right</kw>
+      <kw>padding-top</kw>
+      <kw>padding-bottom</kw>
+      <kw>margin</kw>
+      <kw>margin-left</kw>
+      <kw>margin-right</kw>
+      <kw>margin-top</kw>
+      <kw>margin-bottom</kw>
+      <kw>border</kw>
+      <kw>border-left</kw>
+      <kw>border-right</kw>
+      <kw>border-top</kw>
+      <kw>border-bottom</kw>
+      <kw>border-color</kw>
+      <kw>border-style</kw>
+      <kw>border-width</kw>
+      <kw>border-left-color</kw>
+      <kw>border-left-width</kw>
+      <kw>border-left-style</kw>
+      <kw>border-right-color</kw>
+      <kw>border-right-width</kw>
+      <kw>border-right-style</kw>
+      <kw>border-top-color</kw>
+      <kw>border-top-width</kw>
+      <kw>border-top-style</kw>
+      <kw>border-bottom-color</kw>
+      <kw>border-bottom-width</kw>
+      <kw>border-bottom-style</kw>
+
+      <!-- Page Breaks Properties -->
+      <kw>page-break-before</kw>
+      <kw>page-break-after</kw>
+      <kw>page-break-inside</kw>
+      <kw>orphans</kw>
+      <kw>widows</kw>
+
+      <!-- Aural Properties -->
+      <kw>volume</kw>
+
+      <!-- Speaking Properties -->
+      <kw>speak</kw>
+
+      <!-- Pause Properties -->
+      <kw>pause-before</kw>
+      <kw>pause-after</kw>
+      <kw>pause</kw>
+      <kw>cue-before</kw>
+      <kw>cue-after</kw>
+      <kw>cue</kw>
+
+      <!-- Mixing Properties -->
+      <kw>play-during</kw>
+
+      <!-- Spatial Properties -->
+      <kw>azimuth</kw>
+      <kw>elevation</kw>
+
+      <!-- Voice Properties -->
+      <kw>speech-rate</kw>
+      <kw>voice-family</kw>
+      <kw>pitch</kw>
+      <kw>pitch-range</kw>
+      <kw>stress</kw>
+      <kw>richness</kw>
+
+      <!-- Speech Properties -->
+      <kw>speak-punctuation</kw>
+      <kw>speak-numeral</kw>
+
+      <!-- Lists Properties -->
+      <kw>list-style</kw>
+      <kw>list-style-type</kw>
+      <kw>list-style-image</kw>
+      <kw>list-style-position</kw>
+      <kw>counter-increment</kw>
+      <kw>counter-reset</kw>
+
+      <!-- Content Properties -->
+      <kw>content</kw>
+      <kw>quotes</kw>
+
+      <!-- BiDi Properties -->
+      <kw>direction</kw>
+      <kw>unicode-bidi</kw>
+
+      <!-- Table Properties -->
+      <kw>table-layout</kw>
+      <kw>border-collapse</kw>
+      <kw>border-spacing</kw>
+      <kw>border-spacing-x</kw>
+      <kw>border-spacing-y</kw>
+      <kw>caption-side</kw>
+      <kw>empty-cells</kw>
+      <kw>speak-header</kw>
+
+      <!-- Other Properties -->
+      <kw>cursor</kw>
+
+    </keywords>
+    
+    <!-- CSS language pseudo keywords -->
+    <keywords id="kwcsslang-pseudo-keywords">
+      <kw>:link</kw>
+      <kw>:visited</kw>
+      <kw>:active</kw>
+      <kw>:hover</kw>
+      <kw>:focus</kw>
+      <kw>:first-line</kw>
+      <kw>:first-letter</kw>
+      <kw>:first-child</kw>
+      <kw>:lang</kw>
+      <kw>:before</kw>
+      <kw>:after</kw>
+    </keywords>
 	</keywordlists>
 	<!-- Languages syntax specification -->
 	<languages>
@@ -1429,5 +1605,32 @@
 				</context>
 			</contexts>
 		</language>
+
+    <!-- CSS language specification -->
+    <language id="css" not-case-sensitive="no" tabSize="4" name="CSS">
+      <!-- Code contexts: default (most common) is code. -->
+      <contexts default="code">
+        <!-- basic source code context -->
+        <context id="code" attribute="code">
+          <!-- /* block of comment */ -->
+          <detect2chars attribute="hidden" context="blockcomment" char="/" char1="*" />
+          
+          <!-- " " literals -->
+          <regexp id="dqliteral" attribute="literal" context="code" expression="(&quot;&quot;)|(@&quot;(.|[\r\n])*?&quot;|&quot;(.|\\&quot;|\\\r\n)*?((\\\\)+&quot;|[^\\]{1}&quot;))" />
+          <!-- ' ' literals -->
+          <regexp id="sqliteral" attribute="literal" context="code" expression="(&apos;&apos;)|(&apos;(.|\\&apos;|\\\r\n)*?((\\\\)+&apos;|[^\\]{1}&apos;))" />
+          
+          <!-- numbers -->
+          <regexp id="number" attribute="number" context="code" expression="0x[0-9a-fA-F]*|(((?&lt;=[^0-9])(\+|-))?)\b[0-9][0-9]*(\.[0-9]+)?" />
+          <!-- keyword SQL -->
+          <keyword attribute="keyword" context="code" family="kwsql-keywords"/>
+        </context>
+        <!-- block comment /* ... */ -->
+        <context id="blockcomment" attribute="blockcomment">
+          <!-- finish line of comment, start block -->
+          <detect2chars attribute="hidden" context="code" char="*" char1="/" />
+        </context>
+      </contexts>
+    </language>
 	</languages>
 </highlight>

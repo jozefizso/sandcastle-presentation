@@ -94,6 +94,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateInheritedDocs", "Ge
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SandcastleMRefBuilder", "SandcastleMRefBuilder\SandcastleMRefBuilder.csproj", "{E89B64AB-F22B-402A-B5C8-3FF19234E822}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeColorizer.Tests", "..\CodeColorizer\CodeColorizer.Tests\CodeColorizer.Tests.csproj", "{0CDF9A7D-BC64-47D2-867F-FB55B4EC87CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -153,6 +155,12 @@ Global
 		{E89B64AB-F22B-402A-B5C8-3FF19234E822}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E89B64AB-F22B-402A-B5C8-3FF19234E822}.ReleaseNoDoc|Any CPU.ActiveCfg = ReleaseNoDoc|Any CPU
 		{E89B64AB-F22B-402A-B5C8-3FF19234E822}.ReleaseNoDoc|Any CPU.Build.0 = ReleaseNoDoc|Any CPU
+		{0CDF9A7D-BC64-47D2-867F-FB55B4EC87CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CDF9A7D-BC64-47D2-867F-FB55B4EC87CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CDF9A7D-BC64-47D2-867F-FB55B4EC87CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CDF9A7D-BC64-47D2-867F-FB55B4EC87CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CDF9A7D-BC64-47D2-867F-FB55B4EC87CC}.ReleaseNoDoc|Any CPU.ActiveCfg = Release|Any CPU
+		{0CDF9A7D-BC64-47D2-867F-FB55B4EC87CC}.ReleaseNoDoc|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
