@@ -69,11 +69,18 @@ namespace Izsaknet.Sandcastle.Extensions
             using (XmlWriter writer = XmlWriter.Create(destContentFile, settings))
             {
                 writer.WriteStartDocument();
-                writer.WriteStartElement("topics");
+                writer.WriteStartElement("tocTopics");
 
                 foreach (var topics in collection)
                 {
+                    writer.WriteStartElement("tocTopics");
+                    if (topics.ContentLayoutFile != null)
+                        writer.WriteAttributeString("file", topics.ContentLayoutFile.FullPath);
+
                     WriteTopic(writer, topics);
+
+                    writer.WriteEndElement();
+
                 }
 
                 writer.WriteEndElement();
@@ -82,20 +89,15 @@ namespace Izsaknet.Sandcastle.Extensions
 
         private void WriteTopic(XmlWriter writer, TopicCollection topicsList)
         {
-            writer.WriteStartElement("topics");
-            if (topicsList.ContentLayoutFile != null)
-                writer.WriteAttributeString("file", topicsList.ContentLayoutFile.FullPath);
-
             foreach (var topic in topicsList)
             {
                 WriteTopic(writer, topic);
             }
-            writer.WriteEndElement();
         }
 
         private void WriteTopic(XmlWriter writer, Topic topic)
         {
-            writer.WriteStartElement("topic");
+            writer.WriteStartElement("tocTopic");
             writer.WriteAttributeString("id", topic.Id);
             writer.WriteAttributeString("visible", topic.Visible.ToString());
             if (topic.IsDefaultTopic)

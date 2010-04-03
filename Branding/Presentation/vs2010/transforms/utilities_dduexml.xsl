@@ -613,11 +613,12 @@
       </xsl:choose>
     </xsl:if>
   </xsl:template>
-<!--
+  
+  <!-- disable for now -->
   <xsl:template match="@address">
-    <a name="{string(.)}" />
+    <!-- <a name="{string(.)}" /> -->
 	</xsl:template>
--->
+  
 	<xsl:template match="ddue:mediaLink|ddue:mediaLinkInline">
 		<span class="media">
       <xsl:if test="ddue:caption">

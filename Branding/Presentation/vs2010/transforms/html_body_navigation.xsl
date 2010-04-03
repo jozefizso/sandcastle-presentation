@@ -56,7 +56,27 @@
     <div id="toc">
       <div id="toc_parent">
         Table of Content
-        
+
+        <xsl:variable name="currentTopic" select="//toc//tocTopic[@id=/document/topic/@id]" />
+        <xsl:variable name="ancestorTopics" select="$currentTopic/ancestor::tocTopic" />
+        <xsl:variable name="childTopics" select="$currentTopic/child::tocTopic" />
+
+        <xsl:if test="$ancestorTopics">
+          <div class="toclevel0 ancestry">
+            <xsl:apply-templates select="$ancestorTopics" mode="conceptual"/>
+          </div>
+        </xsl:if>
+        <xsl:if test="$currentTopic">
+          <div class="toclevel1 current">
+            <xsl:apply-templates select="$currentTopic" mode="conceptual"/>
+          </div>
+        </xsl:if>
+        <xsl:if test="$childTopics">
+          <div class="toclevel2 child">
+            <xsl:apply-templates select="$childTopics" mode="conceptual"/>
+          </div>
+        </xsl:if>
+
         <xsl:call-template name="relatedTopicsNavigation" />
       </div>
     </div>
@@ -66,6 +86,14 @@
     
   </xsl:template>
 
+  <xsl:template match="tocTopic" mode="conceptual">
+    <conceptualLink>
+      <xsl:attribute name="target">
+        <xsl:value-of select="@id"/>
+      </xsl:attribute>
+    </conceptualLink>
+  </xsl:template>
+  
   <!-- links -->
 
   <xsl:template match="ddue:externalLink" mode="navigation">
