@@ -58,6 +58,7 @@ using SandcastleBuilder.Utils.Controls;
 using SandcastleBuilder.Utils.Design;
 
 using WeifenLuo.WinFormsUI.Docking;
+using SandcastleBuilder.Gui.Utilities;
 
 namespace SandcastleBuilder.Gui
 {
@@ -72,7 +73,8 @@ namespace SandcastleBuilder.Gui
         private SandcastleProject project;
         private Thread buildThread;
         private BuildProcess buildProcess;
-        private Process webServer;
+        private WebServerProvider webServerProvider;
+        private IWebServer webServer;
         private ProjectExplorerWindow projectExplorer;
         private ProjectPropertiesWindow projectProperties;
         private OutputWindow outputWindow;
@@ -167,6 +169,8 @@ namespace SandcastleBuilder.Gui
             // application.
             StatusBarTextProvider.StatusLabel = tsslProgressNote;
             StatusBarTextProvider.ProgressBar = tspbProgressBar;
+
+            webServerProvider = new WebServerProvider();
         }
         #endregion
 
@@ -492,7 +496,7 @@ namespace SandcastleBuilder.Gui
             try
             {
                 if(webServer != null && !webServer.HasExited)
-                    webServer.Kill();
+                    webServer.TryShutDown();
             }
             catch(Exception ex)
             {
@@ -1446,8 +1450,8 @@ namespace SandcastleBuilder.Gui
         /// <param name="e">The event arguments</param>
         private void miViewAspNetWebsite_Click(object sender, EventArgs e)
         {
-            ProcessStartInfo psi;
-            FilePath webServerPath = new FilePath(null);
+            //ProcessStartInfo psi;
+            //FilePath webServerPath = new FilePath(null);
             string[] files = null;
             string path;
 
@@ -1476,81 +1480,30 @@ namespace SandcastleBuilder.Gui
 
             try
             {
-                // See if the web server needs to be started
-                if(webServer == null || webServer.HasExited)
+                if (this.webServer != null)
+                    this.webServer.TryShutDown();
+
+                this.webServer = this.webServerProvider.GetInstalledWebServer();
+
+                if (this.webServer != null)
                 {
-                    if(webServer != null)
-                        webServer.Dispose();
+                    this.webServer.TryShutDown();
 
                     outputPath = Path.GetDirectoryName(outputPath);
+                    this.webServer.RunWebSite(
+                        Settings.Default.ASPNETDevServerPort,
+                        outputPath,
+                        String.Format("/SHFBOutput_{0}", this.Handle));
 
-                    // Visual Studio conveniently provides a development web
-                    // server that doesn't require IIS.
-                    webServerPath.Path = String.Format(
-                        CultureInfo.InvariantCulture, "%SystemRoot%" +
-                        @"\Microsoft.NET\Framework\v{0}\WebDev.WebServer.exe",
-                        FrameworkVersionTypeConverter.LatestMatching("2"));
+                    // This form's handle is used to keep the URL unique in case
+                    // multiple copies of SHFB are running so that each can view
+                    // website output.
+                    outputPath = String.Format(CultureInfo.InvariantCulture,
+                        "http://localhost:{0}/SHFBOutput_{1}/Index.aspx",
+                        Settings.Default.ASPNETDevServerPort, this.Handle);
 
-                    // Visual Studio 2008 and later put it in a different location
-                    if(!File.Exists(webServerPath))
-                    {
-                        path = Environment.ExpandEnvironmentVariables(
-                            @"%ProgramFiles%\Common Files\Microsoft Shared\" +
-                            "DevServer");
-
-                        if(Directory.Exists(path))
-                            files = Directory.GetFiles(path, "WebDev.WebServer.exe",
-                                SearchOption.AllDirectories);
-
-                        if(files != null && files.Length != 0)
-                            webServerPath.Path = files[0];
-                        else
-                        {
-                            path = Environment.ExpandEnvironmentVariables(
-                                @"%ProgramFiles(x86)%\Common Files\Microsoft " +
-                                @"Shared\DevServer");
-
-                            if(Directory.Exists(path))
-                                files = Directory.GetFiles(path, "WebDev.WebServer.exe",
-                                    SearchOption.AllDirectories);
-
-                            if(files != null && files.Length != 0)
-                                webServerPath.Path = files[0];
-                        }
-                    }
-
-                    if(!File.Exists(webServerPath))
-                    {
-                        MessageBox.Show("Unable to locate ASP.NET Development " +
-                            "Web Server.  View the HTML website instead.",
-                            Constants.AppName, MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                        return;
-                    }
-
-                    webServer = new Process();
-                    psi = webServer.StartInfo;
-
-                    psi.FileName = webServerPath;
-                    psi.Arguments = String.Format(CultureInfo.InvariantCulture,
-                        "/port:{0} /path:\"{1}\" /vpath:\"/SHFBOutput_{2}\"",
-                        Settings.Default.ASPNETDevServerPort, outputPath,
-                        this.Handle);
-                    psi.WorkingDirectory = outputPath;
-                    psi.UseShellExecute = false;
-
-                    webServer.Start();
-                    webServer.WaitForInputIdle(30000);
+                    System.Diagnostics.Process.Start(outputPath);
                 }
-
-                // This form's handle is used to keep the URL unique in case
-                // multiple copies of SHFB are running so that each can view
-                // website output.
-                outputPath = String.Format(CultureInfo.InvariantCulture,
-                    "http://localhost:{0}/SHFBOutput_{1}/Index.aspx",
-                    Settings.Default.ASPNETDevServerPort, this.Handle);
-
-                System.Diagnostics.Process.Start(outputPath);
             }
             catch(Exception ex)
             {
