@@ -1,0 +1,12 @@
+# 
+# MAML Editor
+# (c) 2010 Jozef Izso
+# 
+
+syntax: regexp
+
+# Exclude build dirs and user preference files
+bin/
+obj/
+\.suo$
+\.user$

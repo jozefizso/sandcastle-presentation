@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="21c2a363-6c94-440b-8985-6b224d275463" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>The following are the known issues and limitations in the current
+release of the help file builder.</para>
+    </introduction>
+
+    <section>
+      <content>
+<list class="bullet">
+	<listItem>The current official Sandcastle release (May 2008) does not
+support F# syntax sections.  Full support for F# syntax declaration generation
+requires the XSL transformations and resource files from the Sandcastle July
+2009 source code download.  These changes are available for use with the May
+2008 release by downloading and applying the <token>SandcastleStyles</token>
+patch.</listItem>
+
+	<listItem>Full MS Help Viewer support is not yet implemented.  The current
+official Sandcastle release does not support it at all and the July 2009
+source code download does not appear to add the necessary table of contents
+metadata to the topics yet.  This will be fully implemented as the tools become
+available and changes are made in Sandcastle to support it.</listItem>
+
+	<listItem>Certain Visual Studio 2010 project types may fail to load when
+used as documentation sources because they use MSBuild 4.0 specific attributes
+in their projects files.  The help file builder is currently built to use
+MSBuild 3.5 and cannot interpret the newer attributes.  If this happens, you
+must add the assembly, XML comments file, and references to the help file
+builder project individually.</listItem>
+
+	<listItem>Not all build errors and warnings have been documented yet.
+You will recognize these by a "TODO:" comment where the introduction
+should be or in the topic body.  If you need help for one of these errors or
+warnings, please ask in the Discussion area of the <token>SHFB</token> project
+at CodePlex.</listItem>
+
+	<listItem>The standalone GUI does not support source control providers.</listItem>
+
+	<listItem>Linked items (file items in which the physical file is located in
+a folder outside the project's folder) are supported but cannot be added from
+the standalone GUI.</listItem>
+
+	<listItem>COM object references are supported in the projects but they
+cannot be added from the standalone GUI.</listItem>
+
+	<listItem>Due to their non-standard format, managed C++ projects are not
+currently supported as documentation sources or project references.  Add the
+targets and references individually for the time being.</listItem>
+
+	<listItem>The display of editor windows, the Properties window, or the
+Preview window sometimes gets corrupted such that the content area disappears
+or is not sized correctly in the tabbed area of the UI. Selecting a different
+file tab and switching back to the affected tab, closing and reopening the
+affected file/window, or resizing the width of a docked window to force a
+repaint will work around the issue.</listItem>
+
+	<listItem>Renaming a folder or file in the Project Explorer will not rename
+any open document editors associated with the renamed folder or file.  If
+necessary, do a <ui>File | Save As</ui> to save it in the right location or
+just close and reopen the file if it has not been changed.</listItem>
+
+	<listItem>A standard tree control is used in the Project Explorer window
+and does not allow selection of multiple tree nodes.  As such, all operations
+within it only affect the currently selected node.</listItem>
+
+	<listItem>When doing search and replace in a text editor window, the
+highlight on the found text is not always retained when doing a subsequent
+search/replace.  The cursor is positioned correctly though.</listItem>
+
+	<listItem>When using the dropdown on the editor window's "various elements"
+toolbar button (shows <ui>alert</ui> as the default action when first opened),
+the cursor occassionally disappears from the editor window after the dropdown
+closes even though it has the focus and text can be entered.  Change the focus
+to another window and back to restore it.</listItem>
+
+</list>
+
+      </content>
+    </section>
+
+    <relatedTopics>
+    	<link xlink:href="2bba4e09-e9bd-4ef4-9bf4-800af246e97d" />
+    	<link xlink:href="9f1a5c32-7c10-47e1-bbea-319ee0866e3d" />
+		<link xlink:href="95c85ec6-9f23-426a-b0ad-6b10a0453eaf" />
+		<link xlink:href="5a484e94-6940-4c97-940c-3f46fb8736d2" />
+		<link xlink:href="078cc1c7-7995-431e-bf9c-8813becbe8df" />
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>
