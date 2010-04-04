@@ -15,37 +15,33 @@
   <!-- main window -->
 
   <xsl:template name="main">
-    <div class="OH_outerDiv">
+    <div class="contentPlaceHolder">
       <xsl:call-template name="navigation" />
 
-      <div class="OH_outerContent">
-
-        <!-- 'header' shared content item is used to show optional boilerplate at the top of the topic's scrolling region, e.g. pre-release boilerplate -->
-        <!--<include item="header" />-->
-        <!--<xsl:call-template name="bodyHeaderBottomTable"/>-->
-
         <xsl:call-template name="body" />
-      </div>
       <xsl:call-template name="footer" />
     </div>
   </xsl:template>
   
   <xsl:template name="body">
-    <xsl:call-template name="documentTitle" />
-    <xsl:call-template name="bodyMain" />
+    <div class="content">
+      <div class="topicContainer">
+        <div class="topic">
+          <xsl:call-template name="documentTitle" />
+          <xsl:call-template name="bodyMain" />
+        </div>
+      </div>
+    </div>
   </xsl:template>
 
   <xsl:template name="documentTitle">
-    <div class="OH_topic">
-      <h1 class="OH_title">
-        <include item="nsrTitle">
-          <parameter>
-            <xsl:call-template name="topicTitleDecorated"/>
-          </parameter>
-        </include>
-      </h1>
-      <xsl:call-template name="platformInformation" />
-    </div>
+    <p class="majorTitle">
+      <xsl:call-template name="projectTitle"/>
+    </p>
+    <h1 class="title">
+      <xsl:call-template name="topicTitleDecorated"/>
+    </h1>
+    <xsl:call-template name="platformInformation" />
   </xsl:template>
 
   <xsl:template name="bodyMain">
@@ -126,12 +122,16 @@
   </xsl:template>
 
   <xsl:template name="platformInformation">
-    <p class="topicMetaVersion">
-      <xsl:if test="not(/document/metadata/platform)">
-        (No platform information found in metadata.)
-      </xsl:if>
-      <xsl:apply-templates select="/document/metadata/platform" />
-    </p>
+    <xsl:choose>
+      <xsl:when test="/document/metadata/platform">
+        <p class="topicMetaVersion">
+          <xsl:apply-templates select="/document/metadata/platform" />
+        </p>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:comment>(No platform information found in metadata.)</xsl:comment>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
   <xsl:template match="metadata/platform">

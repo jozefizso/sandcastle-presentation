@@ -1190,49 +1190,36 @@
   </xsl:template>
 
   <xsl:template name="section">
+    <!--
     <xsl:param name="toggleSwitch" />
     <xsl:param name="title" />
     <xsl:param name="nonToggletitle" />
     <xsl:param name="content" />
     <xsl:param name="toplink" select="false()" />
+    -->
+    
+    <xsl:param name="toggleSwitch" />
+    <xsl:param name="title" />
+    <xsl:param name="content" />
 
     <!--<xsl:variable name="toggleTitle" select="concat($toggleSwitch,'Toggle')" />-->
     <xsl:variable name="toggleSection" select="concat($toggleSwitch,'Section')" />
 
-    <div class="regionArea">
-      <h2 class="regiontitle">
-        <xsl:copy-of select="$title" />
-      </h2>
-      <div class='hrdiv'>
-        <hr class='regionhr' />
+    <div class="LW_CollapsibleArea_Container">
+      <div class="LW_CollapsibleArea_TitleDiv">
+        <h2 class="LW_CollapsibleArea_Title">
+          <xsl:copy-of select="$title" />
+        </h2>
+        <div class="LW_CollapsibleArea_HrDiv">
+          <hr class="LW_CollapsibleArea_Hr" />
+        </div>
       </div>
-    </div>
 
-    <a id="{$toggleSection}">
-      <xsl:comment/>
-    </a>
-    <xsl:copy-of select="$content" />
-    
-    <!--
-    <h1 class="heading">
-      <span onclick="ExpandCollapse({$toggleTitle})" style="cursor:default;" onkeypress="ExpandCollapse_CheckKey({$toggleTitle}, event)" tabindex="0">
-        <img id="{$toggleTitle}" class="toggle" name="toggleSwitch">
-          <includeAttribute name="src" item="iconPath">
-            <parameter>collapse_all.gif</parameter>
-          </includeAttribute>
-        </img>
-        <xsl:copy-of select="$title" />
-      </span>
-      <xsl:copy-of select="$nonToggletitle" />
-    </h1>
-
-    <div id="{$toggleSection}" class="section" name="collapseableSection" style="">
+      <a id="{$toggleSection}">
+        <xsl:comment/>
+      </a>
       <xsl:copy-of select="$content" />
-      <xsl:if test="boolean($toplink)">
-        <a href="#mainBody"><include item="top"/></a>
-      </xsl:if>
     </div>
-    -->
   </xsl:template>
 
   <xsl:template name="subSection">
@@ -1349,4 +1336,16 @@
     </xsl:choose>
   </xsl:template>
 
+  <!-- Project information -->
+  <xsl:template name="projectTitle">
+    <xsl:choose>
+      <xsl:when test="normalize-space(/document/metadata/project)">
+        <xsl:value-of select="normalize-space(/document/metadata/project)"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <include item="productTitle" />
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
 </xsl:stylesheet>

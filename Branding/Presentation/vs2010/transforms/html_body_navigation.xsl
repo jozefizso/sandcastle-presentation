@@ -9,7 +9,7 @@
   <xsl:import href="utilities_reference.xsl"/>
 
   <xsl:template name="navigation">
-    <div class="OH_leftNav">
+    <div class="navigation">
       <xsl:call-template name="searchBox" />
       <xsl:call-template name="tableOfContent" />
     </div>
@@ -17,44 +17,45 @@
 
 
   <xsl:template name="searchBox">
-    <div id="div_Search" class="OH_SearchBox">
-        <div class="SearchWrapper">
-          <img class="lt_image">
-            <includeAttribute name="title" item="cautionAltText" />
+    <div class="searchcontainer">
+      <form id="SearchForm" action="" method="get">
+        <div class="Search">
+          <img class="LT_image cl_lt_search" alt="">
             <includeAttribute name="src" item="imagePath">
-              <parameter>lt_search.gif</parameter>
+              <parameter>030c41d9079671d09a62d8e2c1db6973.gif</parameter>
             </includeAttribute>
           </img>
-          
-          <div class="SearchPanel">
-            <input name="SearchTextBox" type="text"
+
+          <div class="SearchPanel cl_slice_Search">
+            <input id="searchTextBox" name="query" type="text"
 							maxlength="200" class="SearchBox">
               <includeAttribute name="value" item="searchInputText" />
             </input>
-              <a class="button">
-                <input type="image" name="SearchImageButton" id="SearchImageButton"
-                  class="SearchButton"
-                  style="border-width: 0px;">
-                  <includeAttribute name="src" item="imagePath">
-                    <parameter>searchicon.gif</parameter>
-                  </includeAttribute>
-                </input>
-              </a>
-            </div>
 
-          <img class="rt_image">
-            <includeAttribute name="title" item="cautionAltText" />
+            <a onClick="javascript:document.getElementById('SearchForm').submit();" style="display: inline-block; vertical-align: top;">
+              <span class="SearchButton">
+                <img class="cl_search_icon" alt="" title="Search">
+                  <includeAttribute name="src" item="imagePath">
+                    <parameter>msdn2010branding-stripe1.png</parameter>
+                  </includeAttribute>
+                </img>
+              </span>
+            </a>
+          </div>
+
+          <img class="RT_image cl_rt_search" alt="">
             <includeAttribute name="src" item="imagePath">
-              <parameter>rt_search.gif</parameter>
+              <parameter>030c41d9079671d09a62d8e2c1db6973.gif</parameter>
             </includeAttribute>
           </img>
         </div>
+      </form>
     </div>
   </xsl:template>
 
   <xsl:template name="tableOfContent">
-    <div id="toc">
-      <div id="toc_parent">
+    <div class="navcontainer">
+      <div class="nav">
         Table of Content
 
         <xsl:variable name="currentTopic" select="//toc//tocTopic[@id=/document/topic/@id]" />

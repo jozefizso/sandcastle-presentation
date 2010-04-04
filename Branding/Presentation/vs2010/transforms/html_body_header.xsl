@@ -8,19 +8,40 @@
 
   <xsl:import href="globalTemplates.xsl"/>
   
-  <xsl:template name="bodyHeaderMain">
-    <xsl:call-template name="bodyHeader"/>
-  </xsl:template>
-
   <xsl:template name="bodyHeader">
-    <div class="lw_bannerOuter">
-      <div class="lw_banner">
-        <div class="lw_tabs">
-          <div class="lw_tab">
-            <a href="/">Home</a>
-          </div>
-        </div>
-      </div>
+    <div class="header">
+
+      <table class="headerBar cl_lightweight_topnav_slice" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+          <tr>
+            <td class="leftSection cl_lightweight_header_leftSection_wave leftSectionImageClusterOverride">
+              <div class="tabContainer">
+                <a href="/">Home</a>
+                <!--
+                <a href="http://msdn.microsoft.com/en-us/" title="Home" class=" headerTab">Home</a>
+                <a href="http://msdn.microsoft.com/en-us/library" title="Library" class="headerTabSelected cl_lightweight_selected_tab_repeatX">Library</a>
+                <a href="http://msdn.microsoft.com/en-us/bb188199.aspx" title="Learn" class=" headerTab">Learn</a>
+                <a href="http://msdn.microsoft.com/en-us/aa570309.aspx" title="Downloads" class=" headerTab">Downloads</a>
+                <a href="http://msdn.microsoft.com/en-us/aa570318.aspx" title="Support" class=" headerTab">Support</a>
+                <a href="http://msdn.microsoft.com/en-us/aa497440.aspx" title="Community" class=" headerTab">Community</a>
+                -->
+              </div>
+            </td>
+            <td class="rightSection cl_lightweight_header_rightSection_wave rightSectionImageClusterOverride">
+              <div class="tabContainer">
+                <xsl:call-template name="projectTitle" />
+                <!--
+                <a href="http://login.live.com/login.srf?wa=wsignin1.0&amp;rpsnv=11&amp;ct=1270370464&amp;rver=6.0.5276.0&amp;wp=MCLBI&amp;wlcxt=msdn$msdn$msdn&amp;wreply=http://msdn.microsoft.com/en-us/library/ms771375%2528v=VS.90%2529.aspx&amp;lc=1033&amp;id=254354" title="Sign in">Sign in</a>
+                <span class="pipe">|</span>
+                <a href="http://msdn.microsoft.com/en-us/library/preferences/locale/?returnurl=%252fen-us%252flibrary%252fms771375%28v%253dVS.90%29.aspx" title="United States - English">United States - English</a>
+                <span class="pipe">|</span>
+                <a href="http://msdn.microsoft.com/en-us/library/preferences/experience/?returnurl=%252fen-us%252flibrary%252fms771375%28v%253dVS.90%29.aspx" title="Lightweight View">Lightweight View</a>
+                -->
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </xsl:template>
 

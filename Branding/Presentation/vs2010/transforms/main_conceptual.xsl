@@ -67,9 +67,7 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
-
-  <!-- Title in TOC -->
-
+  
 	<!-- Index entry -->
 
 	<!-- main window -->

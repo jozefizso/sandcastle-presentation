@@ -10,30 +10,18 @@
   
   <!-- Footer stuff -->
   <xsl:template name="footer">
-    <div class="footerline">
-      <span class="copyright">
-        <include item="copyrightStatement"/>
-      </span>
-      
-      <span class="footerpipe">|</span>
-      Template is based on the MSDN 2010 branding.
-      
-      <!--
-      <include item="footer">
-        <parameter>
-          <xsl:value-of select="$key"/>
-        </parameter>
-        <parameter>
-          <xsl:call-template name="topicTitlePlain"/>
-        </parameter>
-        <parameter>
-          <xsl:value-of select="/document/metadata/item[@id='PBM_FileVersion']" />
-        </parameter>
-        <parameter>
-          <xsl:value-of select="/document/metadata/attribute[@name='TopicVersion']" />
-        </parameter>
-      </include>
-      -->
+    <div class="footer">
+      <div id="footer" class="footerContainer cl_footer_slice">
+        <div class="footerLogoContainer">
+          <div class="footerContent">
+            <span class="copyright">
+              <include item="copyrightStatement"/>
+            </span>
+            <span class="pipe">|</span>
+            Template is based on the MSDN 2010 branding.
+          </div>
+        </div>
+      </div>
     </div>
   </xsl:template>
   

@@ -527,33 +527,29 @@
 
   <!-- move these off into a shared file -->
 
-  <xsl:template name="createReferenceLink">
-    <xsl:param name="id" />
-    <xsl:param name="qualified" select="false()" />
-
-    <referenceLink target="{$id}" qualified="{$qualified}" />
-
-  </xsl:template>
-
+  <!--
   <xsl:template name="section">
     <xsl:param name="toggleSwitch" />
     <xsl:param name="title" />
     <xsl:param name="content" />
 
-    <!--<xsl:variable name="toggleTitle" select="concat($toggleSwitch,'Toggle')" />-->
+    <! - -<xsl:variable name="toggleTitle" select="concat($toggleSwitch,'Toggle')" />- - >
     <xsl:variable name="toggleSection" select="concat($toggleSwitch,'Section')" />
 
-    <div class="regionArea">
-      <h2 class="regiontitle">
-        <xsl:copy-of select="$title" />
-      </h2>
-      <div class='hrdiv'><hr class='regionhr' /></div>
+    <div class="LW_CollapsibleArea_Container">
+      <div class="LW_CollapsibleArea_TitleDiv">
+        <h2 class="LW_CollapsibleArea_Title">
+          <xsl:copy-of select="$title" />
+        </h2>
+        <div class="LW_CollapsibleArea_HrDiv"><hr class="LW_CollapsibleArea_Hr" /></div>
+      </div>
+
+      <a id="{$toggleSection}"><xsl:comment/></a>
+      <xsl:copy-of select="$content" />
     </div>
-
-    <a id="{$toggleSection}"><xsl:comment/></a>
-    <xsl:copy-of select="$content" />
   </xsl:template>
-
+  -->
+  
   <xsl:template name="subSection">
     <xsl:param name="title" />
     <xsl:param name="content" />

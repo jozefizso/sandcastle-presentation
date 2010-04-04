@@ -20,7 +20,7 @@
         <xsl:call-template name="insertMetadata" />
       </head>
       <body>
-        <xsl:call-template name="bodyHeaderMain"/>
+        <xsl:call-template name="bodyHeader"/>
         <xsl:call-template name="main"/>
       </body>
     </html>
@@ -34,8 +34,9 @@
     <link rel="stylesheet" type="text/css" href="../styles/msdn10/Msdn10_vstudio-bn20091118.css" />
     <link rel="stylesheet" type="text/css" href="../styles/msdn10/mtps-bn20091118.css" />
     -->
+
     <link rel="stylesheet" type="text/css" href="../Styles/lightweight.css" />
-    <link rel="stylesheet" type="text/css" href="../Styles/lw-code.css" />
+    <!--<link rel="stylesheet" type="text/css" href="../Styles/lw-code.css" />-->
 
     <!-- make mshelp links work -->
     <!--<link rel="stylesheet" type="text/css" href="ms-help://Hx/HxRuntime/HxLink.css" />-->
