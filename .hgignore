@@ -28,3 +28,5 @@ SandcastleBuilder.log
 syntax: glob
 JavadocSandcastle/Sandcastle/Data
 JavadocSandcastle/Sandcastle/ProductionTools
+Sandcastle/Data
+Sandcastle/ProductionTools
