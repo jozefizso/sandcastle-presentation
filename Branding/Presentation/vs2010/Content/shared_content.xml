@@ -240,7 +240,7 @@
   
   <!-- copyright -->
   <item id="copyrightStatement"><include item="copyrightText"/></item>
-  <item id="copyrightText">&#169; 2009 Jozef Izso. All rights reserved.</item> 
+  <item id="copyrightText">&#169; 2010 Jozef Izso. All rights reserved.</item> 
 
   <!-- search -->
   <item id="searchInputText">Search documentation</item>
