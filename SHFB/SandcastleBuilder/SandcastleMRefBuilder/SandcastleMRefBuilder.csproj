@@ -67,7 +67,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>bin\Debug\SandcastleBuilder.MRefBuilder.xml</DocumentationFile>
     <DebugType>full</DebugType>
@@ -84,7 +84,7 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>bin\Release\SandcastleBuilder.MRefBuilder.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -126,6 +126,16 @@
     <Reference Include="MrefBuilder, Version=2.5.10626.0, Culture=neutral, PublicKeyToken=0b1f36dea51a29e2, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(DXROOT)\ProductionTools\MrefBuilder.exe</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="CCI, Version=2.5.10626.0, Culture=neutral, PublicKeyToken=0b1f36dea51a29e2, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(DXROOT)\ProductionTools\CCI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Reflection, Version=2.5.10626.0, Culture=neutral, PublicKeyToken=0b1f36dea51a29e2, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(DXROOT)\ProductionTools\Reflection.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
