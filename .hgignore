@@ -1,13 +1,30 @@
 # 
-# MAML Editor
-# (c) 2010 Jozef Izso
+# Sandcastle Presentation
+# http://code.google.com/p/sandcastle-presentation/
 # 
 
 syntax: regexp
 
 # Exclude build dirs and user preference files
+
 bin/
-Bin/
 obj/
+Output/
+target/
+chm/
 \.suo$
 \.user$
+
+
+# Exclude some temporary XML and other files
+
+reflection\.org
+(Sandcastle|Branding)/.*(reflection|javadoc|manifest|toc).*\.xml
+(Sandcastle|Branding)/.*\.dll
+SandcastleBuilder.log
+
+
+# Exclude build dirs in mainSandcastle project
+syntax: glob
+JavadocSandcastle/Sandcastle/Data
+JavadocSandcastle/Sandcastle/ProductionTools

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>tmp</name>
+    </assembly>
+    <members>
+        <member name="T:TestNamespace.Generics.Class2`1">
+            <summary>
+            Generic class with one type parameter <typeparamref name="T" />.
+            </summary>
+            <typeparam name="T">Type parameter.</typeparam>
+        </member>
+    </members>
+</doc>
