@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  For more information about SchemaCatalog visit http://msdn.microsoft.com/en-us/library/ms255821.aspx
+  For more information on using XML-Document-Transformation visit http://go.microsoft.com/fwlink/?LinkId=125889
+-->
+<SchemaCatalog
+  xmlns:x="http://schemas.microsoft.com/xsd/catalog"
+  xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+
+  <Catalog href="MAML\catalog.xml" xdt:Transform="Insert" />
+  
+</SchemaCatalog>
