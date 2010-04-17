@@ -10,12 +10,9 @@
   <PropertyGroup>
     <XmlCatalog>$(VSINSTALLDIR)Xml\Schemas\catalog.xml</XmlCatalog>
     <TmpCatalog>catalog.tmp.xml</TmpCatalog>
-    <Tmp2Catalog>catalog.tmp2.xml</Tmp2Catalog>
     <TransformFile>catalog.transform.xml</TransformFile>
-    <DestinationFile>catalog.out.xml</DestinationFile>
 
-    <XslRemoveNs>catalog-remove-ns.xslt</XslRemoveNs>
-    <XslAddNs>catalog-add-ns.xslt</XslAddNs>
+    <XslAddMaml>catalog-add-maml.xslt</XslAddMaml>
   </PropertyGroup>
 
   <Target Name="InstallConceptualSchema">
@@ -40,18 +37,10 @@
 
 
     <XslTransformation XmlInputPaths="$(XmlCatalog)"
-                       XslInputPath="$(XslRemoveNs)"
+                       XslInputPath="$(XslAddMaml)"
                        OutputPaths="$(TmpCatalog)"/>
-
-    <TransformXml Source="$(TmpCatalog)"
-                  Transform="$(TransformFile)"
-                  Destination="$(Tmp2Catalog)"/>
-
-    <XslTransformation XmlInputPaths="$(Tmp2Catalog)"
-                       XslInputPath="$(XslAddNs)"
-                       OutputPaths="$(DestinationFile)"/>
-
-    <Copy SourceFiles="$(DestinationFile)"
+    
+    <Copy SourceFiles="$(TmpCatalog)"
           DestinationFiles="$(XmlCatalog)" />
 
     <Message Text="Updated the XML Schema Catalog file." />
@@ -61,7 +50,5 @@
     <Message Text="Cleaning temporary files." />
 
     <Delete Files="$(TmpCatalog)" ContinueOnError="true" />
-    <Delete Files="$(Tmp2Catalog)" ContinueOnError="true" />
-
   </Target>
 </Project>
