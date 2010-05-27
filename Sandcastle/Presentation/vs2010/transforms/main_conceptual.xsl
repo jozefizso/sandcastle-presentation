@@ -21,6 +21,7 @@
   
 	<xsl:include href="utilities_dduexml.xsl" />
   <xsl:include href="seeAlsoSection.xsl" />
+  <xsl:include href="miranda.xsl" />
 
   <xsl:variable name="hasSeeAlsoSection" select="boolean(count(/document/topic/*/ddue:relatedTopics/*[local-name()!='sampleRef']) > 0)"/>
   <xsl:variable name="examplesSection" select="boolean(string-length(/document/topic/*/ddue:codeExample[normalize-space(.)]) > 0)"/>
@@ -170,6 +171,7 @@
 
   <xsl:template match="ddue:relatedTopics" mode="navigation">
     <div class="OH_siblingTocLinks">
+      <xsl:text> </xsl:text>
       <xsl:apply-templates mode="navigation" />
     </div>
   </xsl:template>

@@ -35,7 +35,8 @@
     <link rel="stylesheet" type="text/css" href="../styles/msdn10/mtps-bn20091118.css" />
     -->
 
-    <link rel="stylesheet" type="text/css" href="../Styles/lightweight.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/lightweight.css" />
+    <link rel="stylesheet" type="text/css" href="../styles/lw-miranda.css" />
     <!--<link rel="stylesheet" type="text/css" href="../Styles/lw-code.css" />-->
 
     <!-- make mshelp links work -->

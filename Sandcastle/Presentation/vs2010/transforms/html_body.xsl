@@ -18,7 +18,7 @@
     <div class="contentPlaceHolder">
       <xsl:call-template name="navigation" />
 
-        <xsl:call-template name="body" />
+      <xsl:call-template name="body" />
       <xsl:call-template name="footer" />
     </div>
   </xsl:template>
