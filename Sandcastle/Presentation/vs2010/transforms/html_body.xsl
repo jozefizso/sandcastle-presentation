@@ -35,13 +35,17 @@
   </xsl:template>
 
   <xsl:template name="documentTitle">
-    <p class="majorTitle">
-      <xsl:call-template name="projectTitle"/>
-    </p>
+    <xsl:call-template name="documentMajorTitle"/>
     <h1 class="title">
       <xsl:call-template name="topicTitleDecorated"/>
     </h1>
     <xsl:call-template name="platformInformation" />
+  </xsl:template>
+
+  <xsl:template name="documentMajorTitle">
+    <p class="majorTitle">
+      <xsl:call-template name="projectTitle"/>
+    </p>
   </xsl:template>
 
   <xsl:template name="bodyMain">

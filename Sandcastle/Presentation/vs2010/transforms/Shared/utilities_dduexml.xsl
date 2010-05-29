@@ -192,6 +192,13 @@
 	<xsl:template match="ddue:externalLink">
 		<a>
 			<xsl:attribute name="href"><xsl:value-of select="ddue:linkUri" /></xsl:attribute>
+      <xsl:if test="ddue:linkAlternateText">
+        <xsl:attribute name="title">
+          <xsl:value-of select="ddue:linkText" />
+          <xsl:text> - </xsl:text>
+          <xsl:value-of select="ddue:linkAlternateText"/>
+        </xsl:attribute>
+      </xsl:if>
 			<xsl:value-of select="ddue:linkText" />
 		</a>
 	</xsl:template>

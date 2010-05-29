@@ -1347,5 +1347,13 @@
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
+
+  <!-- Application Name -->
+  <xsl:template match="ddue:appName">
+    <strong class="appName">
+      <!--<include item="appName" />-->
+      <include item="productTitle" />
+    </strong>
+  </xsl:template>
   
 </xsl:stylesheet>

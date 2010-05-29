@@ -1,0 +1,8 @@
+<document>
+	<reference />
+	<syntax />
+	<comments />
+  <metadata>
+    <platform name="net" version="3.5" />
+  </metadata>
+</document>

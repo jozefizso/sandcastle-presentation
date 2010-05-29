@@ -171,6 +171,7 @@
 
   <xsl:template match="ddue:relatedTopics" mode="navigation">
     <div class="OH_siblingTocLinks">
+      <xsl:comment>dummy</xsl:comment>
       <xsl:text> </xsl:text>
       <xsl:apply-templates mode="navigation" />
     </div>
