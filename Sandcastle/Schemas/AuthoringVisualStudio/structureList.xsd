@@ -17,6 +17,7 @@
 
 	<!-- include and import declarations -->
 	<include schemaLocation="base.xsd"/>
+  <include schemaLocation="structure.xsd"/>
 
     <complexType name="listType" mixed="false">
         <choice minOccurs="1" maxOccurs="unbounded">
@@ -46,7 +47,16 @@
 			</simpleType>
 		</attribute>
     </complexType>
-    
+
+  <complexType name="listItemContentType" mixed="true">
+    <choice minOccurs="0" maxOccurs="unbounded">
+      <group ref="maml:structureGroup"/>
+      <group ref="maml:inlineGroup"/>
+      <element name="conditionalSection" type="maml:conditionalSectionType"/>
+    </choice>
+    <attributeGroup ref="maml:contentIdentificationSharingAndConditionGroup"/>
+  </complexType>
+  
 	<!-- element declarations -->
 	<element name="list" type="maml:listType">
 		<annotation>
@@ -60,7 +70,7 @@
 		</annotation>
 	</element>
 	
-	<element name="listItem" type="maml:sectionContentType">
+	<element name="listItem" type="maml:listItemContentType">
 		<annotation>
 			<documentation>
 				The listItem element describes an item within a list. The 
