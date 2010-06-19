@@ -40,6 +40,7 @@
       <element ref="bib:edition" minOccurs="0" />
       <element ref="bib:month" minOccurs="0" />
       <element ref="bib:note" minOccurs="0" />
+      <element ref="bib:url" minOccurs="0" />
     </all>
   </complexType>
 
