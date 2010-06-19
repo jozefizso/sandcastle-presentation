@@ -43,4 +43,6 @@
           targetNamespace="http://ddue.schemas.microsoft.com/authoring/2003/5"/>
   <Schema href="%InstallRoot%/xml/schemas/MAML/structureTable.xsd"
           targetNamespace="http://ddue.schemas.microsoft.com/authoring/2003/5"/>
+  <Schema href="%InstallRoot%/xml/schemas/MAML/biblio.xsd"
+          targetNamespace="http://sandcastle.codeplex.com/schemas/2010/biblio"/>
 </SchemaCatalog>
