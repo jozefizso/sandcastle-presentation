@@ -50,7 +50,7 @@
     <MakeDir Directories="$(TopicStyleDir)\output" Condition="!Exists('$(TopicStyleDir)\output')" />
     <MakeDir Directories="$(TopicStyleDir)\output\html" Condition="!Exists('$(TopicStyleDir)\output\html')" />
     <MakeDir Directories="$(TopicStyleDir)\output\icons" Condition="!Exists('$(TopicStyleDir)\output\icons')" />
-    <MakeDir Directories="$(TopicStyleDir)\output\media" Condition="!Exists('$(TopicStyleDir)\output\media')" />
+    <!--<MakeDir Directories="$(TopicStyleDir)\output\media" Condition="!Exists('$(TopicStyleDir)\output\media')" />-->
     <MakeDir Directories="$(TopicStyleDir)\output\scripts" Condition="!Exists('$(TopicStyleDir)\output\scripts')" />
     <MakeDir Directories="$(TopicStyleDir)\output\styles" Condition="!Exists('$(TopicStyleDir)\output\styles')" />
   </Target>
@@ -90,32 +90,33 @@
          WorkingDirectory="$(TopicStyleDir)" />
   </Target>
   
-  <!--Call MRefBuilder-->
-  <Target Name="Html" DependsOnTargets="Manifest;CopyOutput;CreateWebDirs">
-    <Message Text="Call BuildAssembler..." />
-    <Exec Command='set reflectionfile=$(TopicStyleDir)\reflection.xml&amp; set CommentsDir=$(CommentsDir)&amp; set OutputDir=$(TopicStyleDir)\output\html&amp; "$(ProductionTools)\BuildAssembler" /config:"$(GenericDir)\$(TopicStyle).config" "$(TopicStyleDir)\manifest.xml"' Condition="$(WebBuild)!='true'" />
-    <Exec Command='set reflectionfile=$(TopicStyleDir)\reflection.xml&amp; set CommentsDir=$(CommentsDir)&amp; set OutputDir=$(TopicStyleDir)\output\html&amp; "$(ProductionTools)\BuildAssembler" /config:"$(GenericDir)\vs2005-web.config" "$(TopicStyleDir)\manifest.xml"' Condition="$(WebBuild)=='true'" />
-  </Target>
-
   <!--Generate an intermediate Toc file that simulates the Whidbey TOC format-->
-  <Target Name="Toc" DependsOnTargets="Html">
+  <Target Name="Toc" DependsOnTargets="Manifest;CopyOutput;CreateWebDirs">
     <Message Text="Generate an intermediate Toc file that simulates the Whidbey TOC format...." />
     <Exec Condition="$(TopicStyle) == 'prototype'" Command='"$(ProductionTools)\XslTransform" /xsl:"$(DXROOT)\ProductionTransforms\createPrototypetoc.xsl" "$(TopicStyleDir)\reflection.xml" /out:"$(TopicStyleDir)\toc.xml"' />
     <Exec Condition="$(TopicStyle) != 'prototype'" Command='"$(ProductionTools)\XslTransform" /xsl:"$(DXROOT)\ProductionTransforms\createvstoc.xsl" "$(TopicStyleDir)\reflection.xml" /out:"$(TopicStyleDir)\toc.xml"' />
   </Target>
   
+  <!--Call MRefBuilder-->
+  <Target Name="Html" DependsOnTargets="Toc">
+    <Message Text="Call BuildAssembler..." />
+    <Exec Command='set reflectionfile=$(TopicStyleDir)\reflection.xml&amp; set CommentsDir=$(CommentsDir)&amp; set OutputDir=$(TopicStyleDir)\output\html&amp; "$(ProductionTools)\BuildAssembler" /config:"$(GenericDir)\$(TopicStyle).config" "$(TopicStyleDir)\manifest.xml"' Condition="$(WebBuild)!='true' And $(MSHCBuild)!='true'" />
+    <Exec Command='set reflectionfile=$(TopicStyleDir)\reflection.xml&amp; set CommentsDir=$(CommentsDir)&amp; set OutputDir=$(TopicStyleDir)\output\html&amp; "$(ProductionTools)\BuildAssembler" /config:"$(GenericDir)\vs2005-web.config" "$(TopicStyleDir)\manifest.xml"' Condition="$(WebBuild)=='true'" />
+    <Exec Command='set tocfile=$(TopicStyleDir)\toc.xml&amp; set reflectionfile=$(TopicStyleDir)\reflection.xml&amp; set CommentsDir=$(CommentsDir)&amp; set OutputDir=$(TopicStyleDir)\output\html&amp; "$(ProductionTools)\BuildAssembler" /config:"$(GenericDir)\vs2005-mshc.config" "$(TopicStyleDir)\manifest.xml"' Condition="$(MSHCBuild)=='true'" />
+  </Target>
+
   <!-- Generate CHM help project -->
-  <Target Name="Chm" DependsOnTargets="Toc">
+  <Target Name="Chm" DependsOnTargets="Html">
     <!-- Creating chm directories -->
     <MakeDir Directories="$(TopicStyleDir)\chm" Condition="!Exists('$(TopicStyleDir)\chm')" />
     <MakeDir Directories="$(TopicStyleDir)\chm\html" Condition="!Exists('$(TopicStyleDir)\chm\html')" />
     <MakeDir Directories="$(TopicStyleDir)\chm\icons" Condition="!Exists('$(TopicStyleDir)\chm\icons')" />
     <MakeDir Directories="$(TopicStyleDir)\chm\scripts" Condition="!Exists('$(TopicStyleDir)\chm\scripts')" />
     <MakeDir Directories="$(TopicStyleDir)\chm\styles" Condition="!Exists('$(TopicStyleDir)\chm\styles')" />
-    <MakeDir Directories="$(TopicStyleDir)\chm\media" Condition="!Exists('$(TopicStyleDir)\chm\media')" />
+    <!--<MakeDir Directories="$(TopicStyleDir)\chm\media" Condition="!Exists('$(TopicStyleDir)\chm\media')" />-->
     <!-- Copy icons,styles and scripts from output to chm -->
     <Exec Command='xcopy "$(TopicStyleDir)\output\icons\*" "$(TopicStyleDir)\chm\icons\" /y /r'/>
-    <Exec Command='xcopy "$(TopicStyleDir)\output\media\*" "$(TopicStyleDir)\chm\media\" /y /r'/>
+    <!--<Exec Command='xcopy "$(TopicStyleDir)\output\media\*" "$(TopicStyleDir)\chm\media\" /y /r'/>-->
     <Exec Command='xcopy "$(TopicStyleDir)\output\scripts\*" "$(TopicStyleDir)\chm\scripts\" /y /r'/>
     <Exec Command='xcopy "$(TopicStyleDir)\output\styles\*" "$(TopicStyleDir)\chm\styles\" /y /r'/>
     
@@ -128,7 +129,7 @@
   </Target>
   
   <!-- Generate HxS help project -->
-  <Target Name="Hxs" DependsOnTargets="Toc">
+  <Target Name="Hxs" DependsOnTargets="Html">
     <Message Text="Generate HxS help project...." />
     <Exec Command='copy "$(DXROOT)\Presentation\shared\HxsTemplate\template.HxF" "$(TopicStyleDir)\output\$(Name).HxF"' />
     <Exec Command='copy "$(DXROOT)\Presentation\shared\HxsTemplate\template_A.HxK" "$(TopicStyleDir)\output\$(Name)_A.Hxk"' />
@@ -153,10 +154,23 @@
   </Target>
 
   <!-- Generate web pages -->
-  <Target Name="Web" DependsOnTargets="CreateWebBuildProperty;Toc" Condition="$(TopicStyle)=='vs2005'">
+  <Target Name="Web" DependsOnTargets="CreateWebBuildProperty;Html" Condition="$(TopicStyle)=='vs2005'">
     <Exec Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\Vs2005TocToDsToc.xsl" /arg:topicInfo="$(TopicStyleDir)\output\TopicInfo" /xsl:"$(ProductionTransforms)\DsTocToSitemap.xsl" "$(TopicStyleDir)\Toc.xml" /out:"$(TopicStyleDir)\website\api\web.sitemap"' />
     <Exec Command='xcopy "$(TopicStyleDir)\output\icons\*" "$(TopicStyleDir)\website\icons\" /y /r'/>
     <Exec Command='xcopy "$(TopicStyleDir)\output\styles\*" "$(TopicStyleDir)\website\styles\" /y /r'/>
     <Exec Command='xcopy "$(DXROOT)\Presentation\vs2005\website\*" "$(TopicStyleDir)\website\" /y /r'/>
+  </Target>
+
+  <Target Name="CreateMSHCBuildProperty">
+    <CreateProperty
+        Value="true">
+      <Output
+          TaskParameter="Value"
+          PropertyName="MSHCBuild" />
+    </CreateProperty>
+  </Target>
+
+  <!-- Generate Microsoft Help System -->
+  <Target Name="MSHC" DependsOnTargets="CreateMSHCBuildProperty;Html" Condition="$(TopicStyle)=='vs2005'">
   </Target>
 </Project>
