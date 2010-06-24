@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<content xml:space="preserve">
+
+  <!-- .NET Platform information -->
+  <item id="netPlatformName">.NET Framework Version</item>
+  <item id="netPlatformTitle">This page is specific to: <strong><include item="netPlatformName" />:</strong></item>
+  <!--<item id=""></item>
+  <item id=""></item>-->
+  
+  <!-- Java Platform information -->
+  <item id="javaPlatformName">Java</item>
+  <item id="javaPlatformTitle">This page is specific to: <strong><include item="javaPlatformName" />:</strong></item>
+  
+</content>

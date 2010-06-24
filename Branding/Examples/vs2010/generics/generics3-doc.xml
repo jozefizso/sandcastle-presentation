@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>tmp</name>
+    </assembly>
+    <members>
+        <member name="T:TestNamespace.Generics.Class3`2">
+            <summary>
+            Generic class with two type parameter <typeparamref name="T" /> and
+            <typeparamref name="E" />.
+            </summary>
+            <typeparam name="T">First parameter.</typeparam>
+            <typeparam name="E">Second type parameter.</typeparam>
+        </member>
+    </members>
+</doc>

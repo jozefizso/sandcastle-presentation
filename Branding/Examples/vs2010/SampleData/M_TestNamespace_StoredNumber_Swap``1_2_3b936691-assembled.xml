@@ -1,0 +1,65 @@
+﻿<document>
+  <reference>
+    <topicdata group="api" />
+    <apidata name="Swap" group="member" subgroup="method" />
+    <memberdata visibility="public" />
+    <proceduredata virtual="false" />
+    <templates>
+      <template name="T" />
+    </templates>
+    <parameters>
+      <parameter name="lhs">
+        <referenceTo>
+          <template name="T" index="0" api="M:TestNamespace.StoredNumber.Swap``1(``0@,``0@)" />
+        </referenceTo>
+      </parameter>
+      <parameter name="rhs">
+        <referenceTo>
+          <template name="T" index="0" api="M:TestNamespace.StoredNumber.Swap``1(``0@,``0@)" />
+        </referenceTo>
+      </parameter>
+    </parameters>
+    <containers>
+      <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+        <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+        <noAptca />
+      </library>
+      <namespace api="N:TestNamespace">
+        <topicdata group="api" />
+        <apidata name="TestNamespace" group="namespace" />
+        <file name="N_TestNamespace" />
+      </namespace>
+      <type api="T:TestNamespace.StoredNumber" ref="true">
+        <apidata name="StoredNumber" group="type" subgroup="class" />
+        <typedata visibility="public" serializable="true" layout="auto" format="ansi" />
+      </type>
+      <summary> 
+            Tests whether sandcastle can handle all c# tags as defined at http://msdn2.microsoft.com/en-us/library/5ast78ax.aspx.
+            Comments of method "Increment (int step)" include almost all tags.
+            Method "Swap" is used to test generics tags, such as "typeparam".
+            </summary>
+    </containers>
+    <file name="M_TestNamespace_StoredNumber_Swap``1_2_3b936691" />
+  </reference>
+  <syntax>
+    <div codeLanguage="VisualBasic">
+      <span class="keyword">Public</span> <span class="keyword">Sub</span> <span class="identifier">Swap</span>(<span class="keyword">Of</span> T) ( _
+	<span class="keyword">ByRef</span> <span class="parameter">lhs</span> <span class="keyword">As</span> T, _
+	<span class="keyword">ByRef</span> <span class="parameter">rhs</span> <span class="keyword">As</span> T _
+)</div>
+    <div codeLanguage="CSharp">
+      <span class="keyword">public</span> <span class="keyword">void</span> <span class="identifier">Swap</span>&lt;T&gt;(
+	<span class="keyword">ref</span> T <span class="parameter">lhs</span>,
+	<span class="keyword">ref</span> T <span class="parameter">rhs</span>
+)
+</div>
+  </syntax>
+  <comments>
+    <summary>
+            Swap data of type <typeparamref name="T" /></summary>
+    <param name="lhs">left <typeparamref name="T" /> to swap</param>
+    <param name="rhs">right <typeparamref name="T" /> to swap</param>
+    <typeparam name="T">The element type to swap</typeparam>
+  </comments>
+  <metadata />
+</document>

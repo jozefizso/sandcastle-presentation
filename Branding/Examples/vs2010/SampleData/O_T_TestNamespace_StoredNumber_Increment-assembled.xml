@@ -1,0 +1,74 @@
+﻿<document>
+  <reference>
+    <topicdata name="Increment" group="list" subgroup="overload" memberSubgroup="method" pseudo="true" allMembersTopicId="AllMembers.T:TestNamespace.StoredNumber" />
+    <apidata name="Increment" group="member" subgroup="method" />
+    <elements>
+      <element api="M:TestNamespace.StoredNumber.Increment">
+        <topicdata group="api" />
+        <apidata name="Increment" group="member" subgroup="method" />
+        <memberdata visibility="public" overload="Overload:TestNamespace.StoredNumber.Increment" />
+        <proceduredata virtual="false" />
+        <containers>
+          <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+            <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+            <noAptca />
+          </library>
+          <namespace api="N:TestNamespace" />
+          <type api="T:TestNamespace.StoredNumber" ref="true" />
+        </containers>
+        <file name="M_TestNamespace_StoredNumber_Increment" />
+        <summary>
+          <c>Increment</c> method incriments the stored number by one. 
+             <note type="caution">
+             note description here
+            </note><preliminary /></summary>
+      </element>
+      <element api="M:TestNamespace.StoredNumber.Increment(System.Int32)">
+        <topicdata group="api" />
+        <apidata name="Increment" group="member" subgroup="method" />
+        <memberdata visibility="public" overload="Overload:TestNamespace.StoredNumber.Increment" />
+        <proceduredata virtual="false" />
+        <parameters>
+          <parameter name="step">
+            <type api="T:System.Int32" ref="false" />
+          </parameter>
+        </parameters>
+        <containers>
+          <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+            <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+            <noAptca />
+          </library>
+          <namespace api="N:TestNamespace" />
+          <type api="T:TestNamespace.StoredNumber" ref="true" />
+        </containers>
+        <file name="M_TestNamespace_StoredNumber_Increment_1_cd2d7ec9" />
+        <summary>
+          <c>Increment</c> method incriments the stored number by a specified <paramref name="step" />. 
+             <list type="number"><item><description>Item 1.</description></item><item><description>Item 2.</description></item></list><para>see <see cref="T:System.Int32" /></para><para>seealso <seealso cref="T:System.Int64" /></para></summary>
+      </element>
+    </elements>
+    <containers>
+      <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+        <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+      </library>
+      <namespace api="N:TestNamespace">
+        <topicdata group="api" />
+        <apidata name="TestNamespace" group="namespace" />
+        <file name="N_TestNamespace" />
+      </namespace>
+      <type api="T:TestNamespace.StoredNumber" ref="true">
+        <apidata name="StoredNumber" group="type" subgroup="class" />
+        <typedata visibility="public" serializable="true" layout="auto" format="ansi" />
+      </type>
+      <summary> 
+            Tests whether sandcastle can handle all c# tags as defined at http://msdn2.microsoft.com/en-us/library/5ast78ax.aspx.
+            Comments of method "Increment (int step)" include almost all tags.
+            Method "Swap" is used to test generics tags, such as "typeparam".
+            </summary>
+    </containers>
+    <file name="O_T_TestNamespace_StoredNumber_Increment" />
+  </reference>
+  <syntax />
+  <comments />
+  <metadata />
+</document>
