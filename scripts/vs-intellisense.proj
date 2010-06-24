@@ -1,0 +1,54 @@
+<!--
+ This script will copy XML schemas for conceptual documentation
+ to the Visual Studio installation folder.
+-->
+<Project DefaultTargets="InstallConceptualSchema"
+         ToolsVersion="4."
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
+
+  <PropertyGroup>
+    <XmlCatalog>$(VSINSTALLDIR)Xml\Schemas\catalog.xml</XmlCatalog>
+    <TmpCatalog>catalog.tmp.xml</TmpCatalog>
+    <TransformFile>catalog.transform.xml</TransformFile>
+
+    <XslAddMaml>catalog-add-maml.xslt</XslAddMaml>
+  </PropertyGroup>
+
+  <Target Name="InstallConceptualSchema">
+    <CallTarget Targets="CopySchemaFiles" />
+    <CallTarget Targets="UpdateXmlCatalog" />
+
+    <CallTarget Targets="CleanConceptualSchema" />
+  </Target>
+
+  <Target Name="CopySchemaFiles">
+    <ItemGroup>
+      <SchemaFiles Include="..\Sandcastle\Schemas\AuthoringVisualStudio\*.xsd" />
+      <SchemaFiles Include="..\Sandcastle\Schemas\AuthoringVisualStudio\catalog.xml" />
+    </ItemGroup>
+    <Copy SourceFiles="@(SchemaFiles)"
+          DestinationFolder="$(VSINSTALLDIR)Xml\Schemas\MAML" />
+    
+    <Message Text="Copied schema files to Visual Studio XML Schemas directory." />
+  </Target>
+
+  <Target Name="UpdateXmlCatalog">
+
+
+    <XslTransformation XmlInputPaths="$(XmlCatalog)"
+                       XslInputPath="$(XslAddMaml)"
+                       OutputPaths="$(TmpCatalog)"/>
+    
+    <Copy SourceFiles="$(TmpCatalog)"
+          DestinationFiles="$(XmlCatalog)" />
+
+    <Message Text="Updated the XML Schema Catalog file." />
+  </Target>
+
+  <Target Name="CleanConceptualSchema">
+    <Message Text="Cleaning temporary files." />
+
+    <Delete Files="$(TmpCatalog)" ContinueOnError="true" />
+  </Target>
+</Project>

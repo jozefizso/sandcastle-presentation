@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:bib="http://sandcastle.codeplex.com/schemas/2010/biblio"
+        targetNamespace="http://sandcastle.codeplex.com/schemas/2010/biblio"
+        elementFormDefault="qualified">
+  <annotation>
+    <documentation>
+      This schema defines the Biblio XML documents. Biblio XML
+      is intended to be used in Sandcastle's MAML documents.
+    </documentation>
+    <documentation>
+      This schema is a part of a Sandcastle project and is
+      licenced under Microsoft Public License (Ms-PL).
+      http://www.opensource.org/licenses/ms-pl.html
+    </documentation>
+    <documentation>Schema author: Jozef Izso, jozef.izso@gmail.com</documentation>
+  </annotation>
+
+  <element name="book" type="bib:bookType" />
+
+  <!-- ************ Bibliographical references ************ -->
+  <complexType name="bookType" mixed="false">
+    <annotation>
+      <documentation>
+        Information about cited or referenced book.
+      </documentation>
+    </annotation>
+    <all>
+      <element ref="bib:title" />
+      <element ref="bib:author" />
+      <element ref="bib:editor" minOccurs="0" />
+      <element ref="bib:publisher"/>
+      <element ref="bib:year" />
+      <!-- other optional elements -->
+      <element ref="bib:isbn" minOccurs="0" />
+      <element ref="bib:volume" minOccurs="0" />
+      <element ref="bib:number" minOccurs="0" />
+      <element ref="bib:series" minOccurs="0" />
+      <element ref="bib:address" minOccurs="0" />
+      <element ref="bib:edition" minOccurs="0" />
+      <element ref="bib:month" minOccurs="0" />
+      <element ref="bib:note" minOccurs="0" />
+      <element ref="bib:url" minOccurs="0" />
+    </all>
+  </complexType>
+
+  <!-- ************ Custom data types ************ -->
+  <simpleType name="ISBNType">
+    <annotation>
+      <documentation>The ISBN 10 or 13 number of the publication.</documentation>
+    </annotation>
+    <restriction base="string">
+      <pattern value="(\d{3}-)?\d+-\d+-\d+-\d" />
+    </restriction>
+  </simpleType>
+  
+  <!-- ************ Bibliographic information file fiels ************ -->
+  <!-- Source: http://en.wikipedia.org/wiki/BibTeX -->
+
+  <element name="address" type="string">
+    <annotation>
+      <documentation>Publisher's address (usually just the city, but can be the
+        full address for lesser-known publishers).</documentation>
+    </annotation>
+  </element>
+  <element name="author" type="string">
+    <annotation>
+      <documentation>The name(s) of the author(s) (in the case of more than one author, separated by and).</documentation>
+    </annotation>
+  </element>
+  <element name="booktitle" type="string">
+    <annotation>
+      <documentation>The title of the book, if only part of it is being cited.</documentation>
+    </annotation>
+  </element>
+  <element name="chapter" type="string">
+    <annotation>
+      <documentation>The chapter number.</documentation>
+    </annotation>
+  </element>
+  <element name="edition" type="string">
+    <annotation>
+      <documentation> The edition of a book, long form (such as "first" or "second").</documentation>
+    </annotation>
+  </element>
+  <element name="editor" type="string">
+    <annotation>
+      <documentation>The name(s) of the editor(s).</documentation>
+    </annotation>
+  </element>
+  <element name="howpublished" type="string">
+    <annotation>
+      <documentation>How it was published, if the publishing method is nonstandard.</documentation>
+    </annotation>
+  </element>
+  <element name="isbn" type="bib:ISBNType">
+    <annotation>
+      <documentation>The ISBN number of the publication.</documentation>
+    </annotation>
+  </element>
+  <element name="journal" type="string">
+    <annotation>
+      <documentation>The journal or magazine the work was published in.</documentation>
+    </annotation>
+  </element>
+  <element name="month" type="string">
+    <annotation>
+      <documentation>The month of publication (or, if unpublished, the month of creation).</documentation>
+    </annotation>
+  </element>
+  <element name="note" type="string">
+    <annotation>
+      <documentation>Miscellaneous extra information.</documentation>
+    </annotation>
+  </element>
+  <element name="number" type="string">
+    <annotation>
+      <documentation>The "number" of a journal, magazine, or tech-report, if applicable. (Most publications have a "volume", but no "number" field.).</documentation>
+    </annotation>
+  </element>
+  <element name="pages" type="string">
+    <annotation>
+      <documentation>Page numbers, separated either by commas or double-hyphens.</documentation>
+    </annotation>
+  </element>
+  <element name="publisher" type="string">
+    <annotation>
+      <documentation>The publisher's name.</documentation>
+    </annotation>
+  </element>
+  <element name="school" type="string">
+    <annotation>
+      <documentation>The school where the thesis was written.</documentation>
+    </annotation>
+  </element>
+  <element name="series" type="string">
+    <annotation>
+      <documentation>The series of books the book was published in.</documentation>
+    </annotation>
+  </element>
+  <element name="title" type="string">
+    <annotation>
+      <documentation>The title of the work.</documentation>
+    </annotation>
+  </element>
+  <element name="type" type="string">
+    <annotation>
+      <documentation>The type of tech-report, for example, "Research Note".</documentation>
+    </annotation>
+  </element>
+  <element name="url" type="anyURI">
+    <annotation>
+      <documentation>The WWW address.</documentation>
+    </annotation>
+  </element>
+  <element name="volume" type="string">
+    <annotation>
+      <documentation>The volume of a journal or multi-volume book.</documentation>
+    </annotation>
+  </element>
+  <element name="year" type="integer">
+    <annotation>
+      <documentation>The year of publication (or, if unpublished, the year of creation).</documentation>
+    </annotation>
+  </element>
+</schema>

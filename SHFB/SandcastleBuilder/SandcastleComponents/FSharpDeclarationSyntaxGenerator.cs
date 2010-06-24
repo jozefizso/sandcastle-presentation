@@ -40,6 +40,7 @@ namespace SandcastleBuilder.Components
     /// Sandcastle.  It is included here temporarily so that we can support it
     /// under the May 2008 Sandcastle release which is still the last official
     /// release of Sandcastle.</remarks>
+    [Obsolete("Use the Microsoft.Ddue.Tools.FSharpDeclarationSyntaxGenerator instead of this class in SandcastleBuilder.filters.", false)]
     public class FSharpDeclarationSyntaxGenerator : SyntaxGeneratorTemplate
     {
         /// <summary>
@@ -55,8 +56,8 @@ namespace SandcastleBuilder.Components
         public FSharpDeclarationSyntaxGenerator(XPathNavigator configuration) :
           base(configuration)
         {
-            if (String.IsNullOrEmpty(base.language))
-                base.language = "FSharp";
+            if (String.IsNullOrEmpty(base.Language))
+                base.Language = "FSharp";
         }
 
         /// <summary>

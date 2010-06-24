@@ -69,7 +69,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>bin\Debug\SandcastleBuilderGUI.xml</DocumentationFile>
     <DebugType>full</DebugType>
@@ -85,7 +85,7 @@
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>bin\Release\SandcastleBuilderGUI.xml</DocumentationFile>
     <Optimize>true</Optimize>
@@ -920,7 +920,7 @@
     <PostBuildEvent>IF "$(ConfigurationName)"=="Debug" Goto Exit
 IF "$(ConfigurationName)"=="ReleaseNoDoc" Goto Exit
 
-SET SHFBROOT=$(SolutionDir)SandcastleBuilderGUI\Bin\Release
+SET SHFBROOT=$(SolutionDir)SandcastleBuilderGUI\Bin\Debug
 
 ECHO Building SHFB help files via MSBuild
 "$(SystemRoot)\Microsoft.NET\Framework\v3.5\MSBuild.exe" /p:CleanIntermediates=True /p:Configuration=Release "$(SolutionDir)Doc\SandcastleBuilder.shfbproj"
