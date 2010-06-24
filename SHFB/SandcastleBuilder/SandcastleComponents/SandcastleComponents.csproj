@@ -12,11 +12,9 @@
     <AssemblyName>SandcastleBuilder.Components</AssemblyName>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>SandcastleBuilderComponents.snk</AssemblyOriginatorKeyFile>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
+    <FileUpgradeFlags></FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation>
-    </UpgradeBackupLocation>
+    <UpgradeBackupLocation></UpgradeBackupLocation>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <PublishUrl>http://localhost/SandcastleBuilder.Components/</PublishUrl>
     <Install>true</Install>
@@ -119,19 +117,19 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BuildAssemblerLibrary, Version=2.5.10626.0, Culture=neutral, PublicKeyToken=0b1f36dea51a29e2, processorArchitecture=MSIL">
+    <Reference Include="BuildAssemblerLibrary, Version=2.6.10621.1, Culture=neutral, PublicKeyToken=ba59f1362a302f1c">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(DXROOT)\ProductionTools\BuildAssemblerLibrary.dll</HintPath>
+      <HintPath>..\..\..\Sandcastle\ProductionTools\BuildAssemblerLibrary.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="BuildComponents, Version=2.5.10626.0, Culture=neutral, PublicKeyToken=0b1f36dea51a29e2, processorArchitecture=MSIL">
+    <Reference Include="BuildComponents, Version=2.6.10621.1, Culture=neutral, PublicKeyToken=ba59f1362a302f1c">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(DXROOT)\ProductionTools\BuildComponents.dll</HintPath>
+      <HintPath>..\..\..\Sandcastle\ProductionTools\BuildComponents.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SyntaxComponents, Version=2.5.10626.0, Culture=neutral, PublicKeyToken=0b1f36dea51a29e2, processorArchitecture=MSIL">
+    <Reference Include="SyntaxComponents, Version=2.6.10621.1, Culture=neutral, PublicKeyToken=ba59f1362a302f1c">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(DXROOT)\ProductionTools\SyntaxComponents.dll</HintPath>
+      <HintPath>..\..\..\Sandcastle\ProductionTools\SyntaxComponents.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
