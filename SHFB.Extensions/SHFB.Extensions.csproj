@@ -40,7 +40,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SandcastleBuilder.Utils">
-      <HintPath>..\..\..\..\..\Program Files\EWSoftware\Sandcastle Help File Builder\SandcastleBuilder.Utils.dll</HintPath>
+      <HintPath>$(SHFBROOT)\SandcastleBuilder.Utils.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -63,7 +63,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>Copy /y "$(TargetPath)" "%25ALLUSERSPROFILE%25\Application Data\EWSoftware\Sandcastle Help File Builder\Components and Plug-Ins\$(TargetName).plugins"</PostBuildEvent>
+    <PostBuildEvent>SET SHFBEXT=%25ALLUSERSPROFILE%25\Application Data\EWSoftware\Sandcastle Help File Builder\Components and Plug-Ins\
+xcopy /y /i "$(TargetPath)" "%25SHFBEXT%25"
+del /q "%25SHFBEXT%25\$(TargetName).plugins"
+rename "%25SHFBEXT%25\$(TargetFileName)" $(TargetName).plugins</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

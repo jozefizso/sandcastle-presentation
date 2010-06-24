@@ -459,11 +459,12 @@ namespace SandcastleBuilder.Components
                 if(copyCode.Name == "span")
                 {
                     node = copyCode.ParentNode.ParentNode;
-                    codePreTag = node.NextSibling.ChildNodes[0].ChildNodes[0];
+                    codePreTag = node.SelectSingleNode("following-sibling::*//pre");
+                    //codePreTag = node.NextSibling.ChildNodes[0].ChildNodes[0];
 
                     // If it doesn't contain a marker, ignore it
-                    if(!codePreTag.InnerXml.StartsWith("@@_SHFB_",
-                      StringComparison.Ordinal))
+                    if(codePreTag == null
+                        || !codePreTag.InnerXml.StartsWith("@@_SHFB_", StringComparison.Ordinal))
                         continue;
 
                     parent = node.ParentNode.ParentNode;
