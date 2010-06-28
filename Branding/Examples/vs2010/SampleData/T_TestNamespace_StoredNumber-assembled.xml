@@ -1,0 +1,38 @@
+﻿<document>
+  <reference>
+    <topicdata group="api" allMembersTopicId="AllMembers.T:TestNamespace.StoredNumber" />
+    <apidata name="StoredNumber" group="type" subgroup="class" />
+    <typedata visibility="public" serializable="true" layout="auto" format="ansi" />
+    <family>
+      <ancestors>
+        <type api="T:System.Object" ref="true" />
+      </ancestors>
+    </family>
+    <containers>
+      <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+        <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+      </library>
+      <namespace api="N:TestNamespace">
+        <topicdata group="api" />
+        <apidata name="TestNamespace" group="namespace" />
+        <file name="N_TestNamespace" />
+      </namespace>
+    </containers>
+    <file name="T_TestNamespace_StoredNumber" />
+  </reference>
+  <syntax>
+    <div codeLanguage="VisualBasic">&lt;<referenceLink target="T:System.SerializableAttribute" prefer-overload="false" show-container="false" show-templates="false" show-parameters="false" />&gt; _
+<span class="keyword">Public</span> <span class="keyword">Class</span> <span class="identifier">StoredNumber</span></div>
+    <div codeLanguage="CSharp">[<referenceLink target="T:System.SerializableAttribute" prefer-overload="false" show-container="false" show-templates="false" show-parameters="false" />]
+<span class="keyword">public</span> <span class="keyword">class</span> <span class="identifier">StoredNumber</span></div>
+  </syntax>
+  <comments>
+    <summary> 
+            Tests whether sandcastle can handle all c# tags as defined at http://msdn2.microsoft.com/en-us/library/5ast78ax.aspx.
+            Comments of method "Increment (int step)" include almost all tags.
+            Method "Swap" is used to test generics tags, such as "typeparam".
+            </summary>
+    <threadsafety static="true" instance="false" />
+  </comments>
+  <metadata />
+</document>

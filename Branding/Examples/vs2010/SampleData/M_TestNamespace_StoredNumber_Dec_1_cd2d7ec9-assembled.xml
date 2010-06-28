@@ -1,0 +1,53 @@
+﻿<document>
+  <reference>
+    <topicdata group="api" />
+    <apidata name="Dec" group="member" subgroup="method" />
+    <memberdata visibility="public" overload="Overload:TestNamespace.StoredNumber.Dec" />
+    <proceduredata virtual="false" />
+    <parameters>
+      <parameter name="step">
+        <type api="T:System.Int32" ref="false">
+          <apidata name="Int32" group="type" subgroup="structure" />
+        </type>
+      </parameter>
+    </parameters>
+    <containers>
+      <library assembly="test" module="test" kind="DynamicallyLinkedLibrary">
+        <assemblydata version="0.0.0.0" culture="" key="" hash="SHA1" />
+        <noAptca />
+      </library>
+      <namespace api="N:TestNamespace">
+        <topicdata group="api" />
+        <apidata name="TestNamespace" group="namespace" />
+        <file name="N_TestNamespace" />
+      </namespace>
+      <type api="T:TestNamespace.StoredNumber" ref="true">
+        <apidata name="StoredNumber" group="type" subgroup="class" />
+        <typedata visibility="public" serializable="true" layout="auto" format="ansi" />
+      </type>
+      <summary> 
+            Tests whether sandcastle can handle all c# tags as defined at http://msdn2.microsoft.com/en-us/library/5ast78ax.aspx.
+            Comments of method "Increment (int step)" include almost all tags.
+            Method "Swap" is used to test generics tags, such as "typeparam".
+            </summary>
+    </containers>
+    <file name="M_TestNamespace_StoredNumber_Dec_1_cd2d7ec9" />
+  </reference>
+  <syntax>
+    <div codeLanguage="VisualBasic">
+      <span class="keyword">Public</span> <span class="keyword">Sub</span> <span class="identifier">Dec</span> ( _
+	<span class="parameter">step</span> <span class="keyword">As</span> <referenceLink target="T:System.Int32" prefer-overload="false" show-container="false" show-templates="false" show-parameters="false">Integer</referenceLink> _
+)</div>
+    <div codeLanguage="CSharp">
+      <span class="keyword">public</span> <span class="keyword">void</span> <span class="identifier">Dec</span>(
+	<referenceLink target="T:System.Int32" prefer-overload="false" show-container="false" show-templates="false" show-parameters="false">int</referenceLink> <span class="parameter">step</span>
+)</div>
+  </syntax>
+  <comments>
+    <summary>
+            dec by a specified step
+            </summary>
+    <param name="step"></param>
+  </comments>
+  <metadata />
+</document>

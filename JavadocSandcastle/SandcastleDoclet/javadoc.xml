@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doc>
+    <assembly>
+        <name>*** TMP Project Name ***</name>
+    </assembly>
+    <members>
+        <member name="N:net.izsak"/>
+        <member name="T:net.izsak.Program">
+            <summary>Class 
+                <see cref="T:net.izsak.Program"/> holds the main entry point of the application.
+            </summary>
+            <author>Jozef Izso</author>
+        </member>
+        <member name="M:net.izsak.Program.#ctor"/>
+        <member name="M:net.izsak.Program.main(java.lang.String)">
+            <summary>Main execution point of the program.</summary>
+            <param name="args">Array of arguments.</param>
+        </member>
+        <member name="T:net.izsak.SimpleBean">
+            <summary>More information about Java beans you can find at article 
+                <link href="http://en.wikipedia.org/wiki/Java_Bean">Java Bean</link>
+            </summary>
+            <author>Jozef Izso</author>
+        </member>
+        <member name="M:net.izsak.SimpleBean.#ctor"/>
+        <member name="M:net.izsak.SimpleBean.getName">
+            <summary>Returns "Simple bean" text.</summary>
+        </member>
+        <member name="M:net.izsak.SimpleBean.hasValue">
+            <summary>Returns true when value of x is greater then 0.</summary>
+        </member>
+        <member name="M:net.izsak.SimpleBean.setValue(int)">
+            <summary>Sets the value of the bean.</summary>
+            <param name="x">Actual value to be set.</param>
+        </member>
+        <member name="M:net.izsak.SimpleBean.x"/>
+        <member name="T:net.izsak.StoredNumber">
+            <summary>This class tests where Doclet for Sandcastle can handle various features of Java and Javadoc. It is stored in the package 
+                <see cref="N:net.izsak"/>.
+            </summary>
+            <version>1.0</version>
+        </member>
+        <member name="M:net.izsak.StoredNumber.#ctor">
+            <summary>Initializes new 
+                <see cref="T:net.izsak.StoredNumber"/> instance with defined value.
+            </summary>
+            <param name="i">The value to which this instance will be initialized.</param>
+        </member>
+        <member name="M:net.izsak.StoredNumber.add(net.izsak.StoredNumber)">
+            <summary>Add the value of the parameter 
+                <paramref name="number"/> to the value of current object.
+            </summary>
+            <param name="number">Other number.</param>
+            <throws cref="T:java.lang.IllegalArgumentException">Thrown when 
+                <paramref name="number"/> is null.
+            </throws>
+        </member>
+        <member name="M:net.izsak.StoredNumber.dec">
+            <summary>Decrements stored number by one.</summary>
+            <deprecated>This method is deprecated in favor of 
+                <see cref="T:net.izsak.StoredNumber"/> method.
+            </deprecated>
+        </member>
+        <member name="M:net.izsak.StoredNumber.decrement">
+            <summary>Decrements stored number by one.</summary>
+        </member>
+        <member name="M:net.izsak.StoredNumber.increment">
+            <summary>Increments stored number by one.</summary>
+        </member>
+        <member name="M:net.izsak.StoredNumber.increment(int)">
+            <summary>Increments stored number by ammount.</summary>
+        </member>
+        <member name="M:net.izsak.StoredNumber.throwMethod">
+            <summary>Always throws an exception.</summary>
+            <throws cref="T:java.lang.IllegalStateException">IllegalStateException</throws>
+        </member>
+        <member name="M:net.izsak.StoredNumber.value"/>
+    </members>
+</doc>
