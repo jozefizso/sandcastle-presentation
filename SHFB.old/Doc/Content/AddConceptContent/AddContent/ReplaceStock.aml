@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="77d2d693-db84-4ae3-a84c-e33c71f92e9a" revisionNumber="1">
+  <developerConceptualDocument
+    xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+
+    <introduction>
+      <para>A benefit of the additional content implementation is that it is
+possible to replace the stock content that appears in each help file.  The
+stock content is copied from the Sandcastle installation folder and consists of
+the following:</para>
+    </introduction>
+
+<section>
+  <content>
+<list class="bullet">
+    <listItem>The <localUri>icons\</localUri> folder contains stock help file
+images (i.e. for property icons, method icons, etc).</listItem>
+    <listItem>The <localUri>scripts\</localUri> folder contains stock
+JavaScript files.</listItem>
+    <listItem>The <localUri>styles\</localUri> folder contains stock style
+sheets.</listItem>
+</list>
+
+	<para>In addition, the <localUri>html\</localUri> folder is created to
+contain the help pages generated from the documented assemblies and conceptual
+content.  By adding an additional content entry to the project that resides in
+a like-named folder and has the same filename, you can replace the default entry
+of the same name. For example, you can customize the style sheet to modify the
+default font size, change the hyperlink style, etc.  To make the custom style
+sheet replace the stock copy, add a <localUri>styles\</localUri> folder to the
+project and place a copy of your file in the folder and call it
+<localUri>Presentation.css</localUri>.</para>
+
+  </content>
+</section>
+
+    <relatedTopics>
+      <link xlink:href="4fd3b2b6-dfad-4513-983b-5e74d2342ff0" />
+    </relatedTopics>
+
+  </developerConceptualDocument>
+</topic>
