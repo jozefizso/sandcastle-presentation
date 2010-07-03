@@ -42,6 +42,17 @@ namespace Izsaknet.Sandcastle.VisualStudio
             this.FileTemplateProcessor.Reset();
         }
 
+        protected override bool IsItemTypeFileType(string type)
+        {
+            if (base.IsItemTypeFileType(type))
+                return true;
+
+            if (String.Compare(type, SandcastleProjectFileConstants.ContentLayout, StringComparison.OrdinalIgnoreCase) == 0)
+                return true;
+
+            return false;
+        }
+
         private void InitImageList()
         {
             this.imageList = Utilities.GetImageList(

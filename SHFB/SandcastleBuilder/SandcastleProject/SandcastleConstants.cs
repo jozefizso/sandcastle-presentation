@@ -11,4 +11,9 @@ namespace Izsaknet.Sandcastle.VisualStudio
         public const string SandcastleProjectNodeIcon = "Izsaknet.Sandcastle.VisualStudio.Resources.SandcastleProjectIcon_16.png";
         public const string SandcastleProjectUserContext = "Sandcastle Project Extension";
     }
+
+    public static class SandcastleProjectFileConstants
+    {
+        public const string ContentLayout = "ContentLayout";
+    }
 }
