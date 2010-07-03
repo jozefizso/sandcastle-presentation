@@ -14,7 +14,7 @@
     <ProvideDefaultName>true</ProvideDefaultName>
   </TemplateData>
   <TemplateContent>
-    <Project File="__SandcastleProject.shfbproj" ReplaceParameters="false">
+    <Project File="SandcastleProject.shfbproj" ReplaceParameters="false">
     </Project>
   </TemplateContent>
 </VSTemplate>

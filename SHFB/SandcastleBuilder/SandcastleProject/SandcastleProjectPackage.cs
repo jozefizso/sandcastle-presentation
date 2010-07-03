@@ -2,30 +2,17 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.ComponentModel.Design;
-using Microsoft.Win32;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.OLE.Interop;
+
+using Microsoft.VisualStudio.Project;
 using Microsoft.VisualStudio.Shell;
 
 namespace Izsaknet.Sandcastle.VisualStudio
 {
     /// <summary>
-    /// This is the class that implements the package exposed by this assembly.
-    ///
-    /// The minimum requirement for a class to be considered a valid package for Visual Studio
-    /// is to implement the IVsPackage interface and register itself with the shell.
-    /// This package uses the helper classes defined inside the Managed Package Framework (MPF)
-    /// to do it: it derives from the Package class that provides the implementation of the 
-    /// IVsPackage interface and uses the registration attributes defined in the framework to 
-    /// register itself and its components with the shell.
+    /// <see cref="SandcastleProjectPackage"/> class implements the package exposed by
+    /// this <b>SandcastleProject</b> assembly.
     /// </summary>
-    // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is
-    // a package.
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    // This attribute is used to register the informations needed to show the this package
-    // in the Help/About dialog of Visual Studio.
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [ProvideProjectFactoryAttribute(
         typeof(SandcastleProjectFactory),
@@ -35,16 +22,8 @@ namespace Izsaknet.Sandcastle.VisualStudio
         "shfbproj",
         @"Templates\Projects\SandcastleProject",
         LanguageVsTemplate = "SandcastleProject")]
-    /*[ProvideProjectFactoryAttribute(
-        typeof(SandcastleProjectFactory),
-        "Sandcastle Project",
-        "Sandcastle Project Files, SHFB Files (*.shfbproj);*.shfbproj",
-        "shfbproj",
-        "shfbproj",
-        @"Templates\Projects\SandcastleProject",
-        LanguageVsTemplate = "SandcastleProject")]*/
     [Guid(GuidList.SandcastleProjectPkgString)]
-    public sealed class SandcastleProjectPackage : Package
+    public sealed class SandcastleProjectPackage : ProjectPackage
     {
         /// <summary>
         /// Default constructor of the package.
@@ -58,11 +37,12 @@ namespace Izsaknet.Sandcastle.VisualStudio
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
         }
 
+        #region ProjectPackage Members
 
-
-        /////////////////////////////////////////////////////////////////////////////
-        // Overriden Package Implementation
-        #region Package Members
+        public override string ProductUserContext
+        {
+            get { return SandcastleConstants.SandcastleProjectUserContext; }
+        }
 
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -73,8 +53,18 @@ namespace Izsaknet.Sandcastle.VisualStudio
             Trace.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
             base.Initialize();
 
+            this.RegisterProjectFactory(new SandcastleProjectFactory(this));
         }
         #endregion
 
+        /// <summary>
+        /// Gets the service object of the specified type.
+        /// </summary>
+        /// <typeparam name="T">Type of the service.</typeparam>
+        public T GetService<T>()
+        {
+            T service = (T)this.GetService(typeof(T));
+            return service;
+        }
     }
 }

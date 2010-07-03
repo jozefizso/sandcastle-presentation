@@ -1,0 +1,58 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+using Microsoft.VisualStudio.Project;
+
+namespace Izsaknet.Sandcastle.VisualStudio
+{
+    public class SandcastleProjectNode : ProjectNode
+    {
+        private SandcastleProjectPackage package;
+        private ImageList imageList;
+        internal int imageIndex;
+
+        public SandcastleProjectNode(SandcastleProjectPackage package)
+        {
+            this.package = package;
+            InitImageList();
+        }
+
+        public override Guid ProjectGuid
+        {
+            get { return GuidList.SandcastleProjectFactoryGuid; }
+        }
+
+        public override string ProjectType
+        {
+            get { return SandcastleConstants.ProjectType; }
+        }
+
+        public override int ImageIndex
+        {
+            get { return this.imageIndex; }
+        }
+
+        public override void AddFileFromTemplate(string source, string target)
+        {
+            //this.FileTemplateProcessor.AddReplace("$guid1$", Guid.NewGuid().ToString("B"));
+            //this.FileTemplateProcessor.AddReplace("$safeprojectname$", "Documentation");
+
+            this.FileTemplateProcessor.UntokenFile(source, target);
+            this.FileTemplateProcessor.Reset();
+        }
+
+        private void InitImageList()
+        {
+            this.imageList = Utilities.GetImageList(
+                this.GetType().Assembly.GetManifestResourceStream(
+                    SandcastleConstants.SandcastleProjectNodeIcon));
+
+            this.imageIndex = this.ImageHandler.ImageList.Images.Count;
+            foreach (Image img in imageList.Images)
+            {
+                this.ImageHandler.AddImage(img);
+            }
+        }
+    }
+}
