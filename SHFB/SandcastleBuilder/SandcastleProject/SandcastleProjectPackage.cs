@@ -16,11 +16,11 @@ namespace Izsaknet.Sandcastle.VisualStudio
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     [ProvideProjectFactoryAttribute(
         typeof(SandcastleProjectFactory),
-        "Sandcastle", // Project category
+        null,
         "#113",
         "shfbproj",
         "shfbproj",
-        @"Templates\Projects\SandcastleProject",
+        @".\\NullPath",
         LanguageVsTemplate = "SandcastleProject")]
     [Guid(GuidList.SandcastleProjectPkgString)]
     public sealed class SandcastleProjectPackage : ProjectPackage

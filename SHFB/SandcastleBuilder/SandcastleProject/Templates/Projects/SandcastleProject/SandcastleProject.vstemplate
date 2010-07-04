@@ -6,7 +6,7 @@
     <Name>Sandcastle Documentation Project</Name>
     <Description>A project for creating documentation using Sandcastle toolset.</Description>
     <Icon>SandcastleProject.ico</Icon>
-    <ProjectType>Sandcastle</ProjectType>
+    <ProjectType>SandcastleProject</ProjectType>
     <SortOrder>30</SortOrder>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
     <CreateNewFolder>true</CreateNewFolder>
@@ -14,7 +14,7 @@
     <ProvideDefaultName>true</ProvideDefaultName>
   </TemplateData>
   <TemplateContent>
-    <Project File="SandcastleProject.shfbproj" ReplaceParameters="false">
+    <Project File="SandcastleProject.shfbproj" ReplaceParameters="true">
     </Project>
   </TemplateContent>
 </VSTemplate>

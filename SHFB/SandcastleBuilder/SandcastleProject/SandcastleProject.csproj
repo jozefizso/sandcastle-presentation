@@ -139,23 +139,19 @@
       <SubType>Designer</SubType>
     </None>
     <EmbeddedResource Include="Resources\SandcastleProjectIcon_16.png" />
-    <Content Include="Templates\Projects\SandcastleProject\SandcastleProject.shfbproj">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Templates\Projects\SandcastleProject\SandcastleProject.vstemplate">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
+    <ZipProject Include="Templates\Projects\SandcastleProject\SandcastleProject.shfbproj" />
+    <ZipProject Include="Templates\Projects\SandcastleProject\SandcastleProject.vstemplate" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\SandcastleProjectIcon_32.png" />
-    <Content Include="Templates\Projects\SandcastleProject\SandcastleProject.ico">
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
+    <ZipProject Include="Templates\Projects\SandcastleProject\SandcastleProject.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <VSCTCompile Include="SandcastleProject.vsct" />
+  </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
     <RegisterWithCodebase>true</RegisterWithCodebase>
