@@ -16,6 +16,7 @@ namespace Izsaknet.Sandcastle.VisualStudio
         {
             this.package = package;
             InitImageList();
+            this.SupportsProjectDesigner = true;
         }
 
         public override Guid ProjectGuid
@@ -53,6 +54,21 @@ namespace Izsaknet.Sandcastle.VisualStudio
             return false;
         }
 
+        protected override Guid[] GetConfigurationIndependentPropertyPages()
+        {
+            return GetTypeGuids<GeneralPropertyPage>();
+        }
+
+        //protected override Guid[] GetConfigurationDependentPropertyPages()
+        //{
+        //    return GetTypeGuids<GeneralPropertyPage>();
+        //}
+
+        protected override Guid[] GetPriorityProjectDesignerPages()
+        {
+            return GetTypeGuids<GeneralPropertyPage>();
+        }
+
         private void InitImageList()
         {
             this.imageList = Utilities.GetImageList(
@@ -64,6 +80,15 @@ namespace Izsaknet.Sandcastle.VisualStudio
             {
                 this.ImageHandler.AddImage(img);
             }
+        }
+
+        private static Guid[] GetTypeGuids<T>()
+        {
+            Guid[] result = new Guid[] {
+                typeof(T).GUID
+            };
+
+            return result;
         }
     }
 }

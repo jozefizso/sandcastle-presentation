@@ -22,6 +22,7 @@ namespace Izsaknet.Sandcastle.VisualStudio
         "shfbproj",
         @".\\NullPath",
         LanguageVsTemplate = "SandcastleProject")]
+    [ProvideObject(typeof(GeneralPropertyPage))]
     [Guid(GuidList.SandcastleProjectPkgString)]
     public sealed class SandcastleProjectPackage : ProjectPackage
     {
