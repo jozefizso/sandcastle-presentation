@@ -32,7 +32,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
 
-using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
 
 using SandcastleBuilder.Utils;
 using SandcastleBuilder.Utils.ConceptualContent;
@@ -1947,10 +1947,13 @@ namespace SandcastleBuilder.Gui.ContentEditors
                     fileItem.Include = new FilePath(newPath,
                         fileItem.ProjectElement.Project);
 
-                    foreach(BuildItem item in fileItem.ProjectElement.Project.MSBuildProject.EvaluatedItems)
-                        if(item.Include.StartsWith(path, StringComparison.OrdinalIgnoreCase))
-                            item.Include = newPath + item.Include.Substring(
+                    var msbuildProject = fileItem.ProjectElement.Project.MSBuildProject;
+                    foreach (ProjectItem item in msbuildProject.AllEvaluatedItems)
+                    {
+                        if (item.EvaluatedInclude.StartsWith(path, StringComparison.OrdinalIgnoreCase))
+                            item.UnevaluatedInclude = newPath + item.EvaluatedInclude.Substring(
                                 path.Length);
+                    }
                 }
 
                 this.LoadProject();

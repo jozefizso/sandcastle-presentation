@@ -33,6 +33,7 @@ using Microsoft.Build.BuildEngine;
 
 using SandcastleBuilder.Utils;
 using SandcastleBuilder.Utils.BuildEngine;
+using Microsoft.Build.Evaluation;
 
 namespace SandcastleBuilder.Utils
 {
@@ -137,8 +138,8 @@ namespace SandcastleBuilder.Utils
         {
             this.Clear();
 
-            foreach(BuildItem item in
-              projectFile.MSBuildProject.GetEvaluatedItemsByName(
+            foreach(ProjectItem item in
+              projectFile.MSBuildProject.GetItems(
               buildAction.ToString()))
                 this.Add(new FileItem(new ProjectElement(projectFile, item)));
 

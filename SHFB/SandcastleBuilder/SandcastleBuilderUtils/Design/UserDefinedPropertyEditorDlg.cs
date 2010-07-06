@@ -30,7 +30,8 @@ using System.Reflection;
 using System.Linq;
 using System.Windows.Forms;
 
-using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
+using Microsoft.Build.Construction;
 
 namespace SandcastleBuilder.Utils.Design
 {
@@ -53,7 +54,7 @@ namespace SandcastleBuilder.Utils.Design
             #region Private data members
             //=====================================================================
 
-            private BuildProperty buildProp;
+            private ProjectPropertyElement buildProp;
             private string name, condition, propValue;
             #endregion
 
@@ -145,13 +146,13 @@ namespace SandcastleBuilder.Utils.Design
             /// <param name="buildProperty">The build property to edit or null
             /// for a new property</param>
             public PropertyItem(UserDefinedPropertyEditorDlg owner,
-              BuildProperty buildProperty)
+              ProjectPropertyElement buildProperty)
             {
                 string newPropName;
                 int idx = 1;
 
                 this.Owner = owner;
-                buildProp = buildProperty;
+                this.buildProp = buildProperty;
 
                 if(buildProp != null)
                 {
@@ -226,9 +227,9 @@ namespace SandcastleBuilder.Utils.Design
 
             try
             {
-                foreach(BuildProperty prop in this.Project.GetUserDefinedProperties())
+                foreach(ProjectProperty prop in this.Project.GetUserDefinedProperties())
                 {
-                    propItem = new PropertyItem(this, prop);
+                    propItem = new PropertyItem(this, prop.Xml);
                     this.UserDefinedProperties.Add(propItem);
                     lbProperties.Items.Add(propItem);
                 }
@@ -281,9 +282,8 @@ namespace SandcastleBuilder.Utils.Design
         {
             foreach(PropertyItem item in lbProperties.Items)
             {
-                this.Project.MSBuildProject.SetProperty(item.Name, item.Value);
-                this.Project.MSBuildProject.EvaluatedProperties[
-                    item.Name].Condition = item.Condition;
+                var newProp = this.Project.MSBuildProject.SetProperty(item.Name, item.Value);
+                newProp.Xml.Condition = item.Condition;
             }
 
             this.Close();

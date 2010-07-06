@@ -18,15 +18,21 @@
 // Version     Date     Who  Comments
 // ============================================================================
 // 1.8.0.0  07/11/2008  EFW  Created the code
+// 1.8.1.3  07/05/2010  JI   Updated to use MSBuild 4.0.
 // ============================================================================
 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
 using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
+
+using Project = Microsoft.Build.Evaluation.Project;
+using System.Diagnostics;
 
 namespace SandcastleBuilder.Utils.MSBuild
 {
@@ -103,11 +109,11 @@ namespace SandcastleBuilder.Utils.MSBuild
                             assemblyName = null;
 
                     if(assemblyName != null)
-                        if(Path.IsPathRooted(outputPath))
+                        if (Path.IsPathRooted(outputPath))
                             assemblyName = Path.Combine(outputPath, assemblyName);
                         else
                             assemblyName = Path.Combine(Path.Combine(
-                                Path.GetDirectoryName(msBuildProject.FullFileName),
+                                msBuildProject.DirectoryPath,
                                 outputPath), assemblyName);
                 }
 
@@ -148,17 +154,15 @@ namespace SandcastleBuilder.Utils.MSBuild
                                         Path.GetFileName(docFile));
                                 else
                                     docFile = Path.Combine(Path.Combine(
-                                        Path.GetDirectoryName(msBuildProject.FullFileName),
+                                        msBuildProject.DirectoryPath,
                                         outputPath), Path.GetFileName(docFile));
 
                                 // Fall back to the original location if not found
                                 if(!File.Exists(docFile))
-                                    docFile = Path.Combine(Path.GetDirectoryName(
-                                        msBuildProject.FullFileName), docFile);
+                                    docFile = Path.Combine(msBuildProject.DirectoryPath, docFile);
                             }
                             else
-                                docFile = Path.Combine(Path.GetDirectoryName(
-                                    msBuildProject.FullFileName), docFile);
+                                docFile = Path.Combine(msBuildProject.DirectoryPath, docFile);
                         }
                     }
                 }
@@ -228,13 +232,11 @@ namespace SandcastleBuilder.Utils.MSBuild
         /// <param name="projectFile">The MSBuild project to load</param>
         public MSBuildProject(string projectFile)
         {
-            msBuildProject = new Project(Engine.GlobalEngine);
-
-            if(!File.Exists(projectFile))
+            if (!File.Exists(projectFile))
                 throw new BuilderException("BE0051", "The specified project " +
                     "file does not exist: " + projectFile);
 
-            if(Path.GetExtension(projectFile).ToUpperInvariant() == ".VCPROJ")
+            if (Path.GetExtension(projectFile).ToUpperInvariant() == ".VCPROJ")
                 throw new BuilderException("BE0068", "Incompatible Visual " +
                     "Studio project file format.  See error code help topic " +
                     "for more information.\r\nC++ project files prior to Visual " +
@@ -242,7 +244,11 @@ namespace SandcastleBuilder.Utils.MSBuild
 
             try
             {
-                msBuildProject.Load(projectFile);
+                msBuildProject = new Project(
+                    projectFile,
+                    null,
+                    null,
+                    ProjectCollection.GlobalProjectCollection);
             }
             catch (InvalidProjectFileException ex)
             {
@@ -276,25 +282,23 @@ namespace SandcastleBuilder.Utils.MSBuild
         {
             if(platform.Equals("Any CPU", StringComparison.OrdinalIgnoreCase))
             {
-                List<string> values = new List<string>(
-                    msBuildProject.GetConditionedPropertyValues(
-                    ProjectElement.Platform));
+                var values = msBuildProject.ConditionedProperties[ProjectElement.Platform];
 
-                if(values.IndexOf(platform) == -1 &&
-                  values.IndexOf(SandcastleProject.DefaultPlatform) != -1)
+                if (!values.Contains(platform) &&
+                    values.Contains(SandcastleProject.DefaultPlatform))
+                {
                     platform = SandcastleProject.DefaultPlatform;
+                }
             }
 
-            msBuildProject.GlobalProperties.SetProperty(
-                ProjectElement.Configuration, configuration);
-            msBuildProject.GlobalProperties.SetProperty(
-                ProjectElement.Platform, platform);
+            msBuildProject.SetGlobalProperty(ProjectElement.Configuration, configuration);
+            msBuildProject.SetGlobalProperty(ProjectElement.Platform, platform);
 
             if(!String.IsNullOrEmpty(outDir))
-                msBuildProject.GlobalProperties.SetProperty(
-                    ProjectElement.OutDir, outDir);
+                msBuildProject.SetGlobalProperty(ProjectElement.OutDir, outDir);
 
-            properties = msBuildProject.EvaluatedProperties;
+            ////properties = msBuildProject.EvaluatedProperties;
+            msBuildProject.ReevaluateIfNecessary();
         }
 
         /// <summary>
@@ -304,20 +308,21 @@ namespace SandcastleBuilder.Utils.MSBuild
         /// <param name="solutionName">The solution name to use</param>
         public void SetSolutionMacros(string solutionName)
         {
-            msBuildProject.GlobalProperties.SetProperty(
+            msBuildProject.SetGlobalProperty(
                 ProjectElement.SolutionPath, solutionName);
-            msBuildProject.GlobalProperties.SetProperty(
+            msBuildProject.SetGlobalProperty(
                 ProjectElement.SolutionDir, FolderPath.TerminatePath(
                     Path.GetDirectoryName(solutionName)));
-            msBuildProject.GlobalProperties.SetProperty(
+            msBuildProject.SetGlobalProperty(
                 ProjectElement.SolutionFileName, Path.GetFileName(solutionName));
-            msBuildProject.GlobalProperties.SetProperty(
+            msBuildProject.SetGlobalProperty(
                 ProjectElement.SolutionName,
                 Path.GetFileNameWithoutExtension(solutionName));
-            msBuildProject.GlobalProperties.SetProperty(
+            msBuildProject.SetGlobalProperty(
                 ProjectElement.SolutionExt, Path.GetExtension(solutionName));
-
-            properties = msBuildProject.EvaluatedProperties;
+            
+            ////properties = msBuildProject.EvaluatedProperties;
+            msBuildProject.ReevaluateIfNecessary();
         }
 
         /// <summary>
@@ -325,16 +330,17 @@ namespace SandcastleBuilder.Utils.MSBuild
         /// </summary>
         /// <param name="references">The dictionary used to contain the
         /// cloned references</param>
-        public void CloneReferences(Dictionary<string, BuildItem> references)
+        public void CloneReferences(List<ProjectItem> references)
         {
-            BuildItem refItem;
-            string rootPath, path;
+            ////BuildItem refItem;
+            ////rootPath, path;
+            Project dummyProject = new Project();
 
-            rootPath = Path.GetDirectoryName(msBuildProject.FullFileName);
+            string rootPath = msBuildProject.DirectoryPath;
 
             foreach(string refType in (new string[] { "Reference",
               "COMReference", "ProjectReference" }))
-                foreach(BuildItem reference in msBuildProject.GetEvaluatedItemsByName(refType))
+                foreach (ProjectItem reference in msBuildProject.GetItems(refType))
                 {
                     // Ignore nested project references.  We'll assume that
                     // they exist in the folder with the target and they'll
@@ -342,23 +348,37 @@ namespace SandcastleBuilder.Utils.MSBuild
                     // ignored since cloning them doesn't turn off the imported
                     // flag and we can't modify them.  Those will have to be
                     // added to the SHFB project as reference items if needed.
-                    if(reference.Name == "ProjectReference" || reference.IsImported)
+                    if(reference.ItemType == "ProjectReference" || reference.IsImported)
                         continue;
 
-                    refItem = reference.Clone();
+                    if (references.Exists(p => p.EvaluatedInclude == reference.EvaluatedInclude))
+                        continue;
 
-                    // Convert relative paths to absolute paths
-                    if(refItem.Name == "Reference" && refItem.HasMetadata("HintPath"))
+                    var metadata = new List<ProjectMetadata>(reference.DirectMetadata);
+                    
+                    if (reference.ItemType == "Reference")
                     {
-                        path = refItem.GetMetadata("HintPath");
-
-                        if(!Path.IsPathRooted(path))
-                            refItem.SetMetadata("HintPath", Path.Combine(
-                                rootPath, path));
+                        var hintPath = metadata.Find(pm => pm.Name == "HintPath");
+                        string path = hintPath.EvaluatedValue;
+                        if (hintPath != null && !Path.IsPathRooted(path))
+                        {
+                            hintPath.UnevaluatedValue = Path.Combine(path);
+                        }
                     }
 
-                    if(!references.ContainsKey(refItem.Include))
-                        references.Add(refItem.Include, refItem);
+                    var newList = dummyProject.AddItemFast(
+                        reference.ItemType,
+                        reference.UnevaluatedInclude,
+                        metadata.Select(pm => new KeyValuePair<string,string>(pm.Name, pm.UnevaluatedValue))
+                        );
+
+                    Debug.Assert(
+                        newList.Count > 0,
+                        "newList.Count > 0",
+                        "No new ProjectItem was created. "+ reference.ToString());
+
+                    if (newList.Count > 0)
+                        references.Add(newList[0]);
                 }
         }
         #endregion

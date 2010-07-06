@@ -1,0 +1,11 @@
+﻿Microsoft.Build.BuildEngine.BuildItem migration table:
+
+  BuildItem member         |   ProjectItem member
+---------------------------+------------------------
+  Name                     |   ItemType
+  Include                  |   EvaluatedInclude
+  CustomMetadataNames      |   DirectMetadata
+
+  Clone()                  |   <none>
+  HasMetadata()            |   HasMetadata()
+

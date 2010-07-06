@@ -63,6 +63,7 @@
 //                           support custom syntax filter build components.
 // 1.8.0.3  11/19/2009  EFW  Added support for AutoDocumentDisposeMethods
 // 1.8.0.3  12/06/2009  EFW  Removed support for ShowFeedbackControl
+// 1.8.1.3  07/05/2010  JI   Updated to use MSBuild 4.0.
 //=============================================================================
 
 using System;
@@ -72,15 +73,21 @@ using System.ComponentModel;
 using System.Drawing.Design;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 
-using Microsoft.Build.BuildEngine;
+//using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
 
 using SandcastleBuilder.Utils.BuildComponent;
 using SandcastleBuilder.Utils.Design;
 using SandcastleBuilder.Utils.PlugIn;
+
+using Project = Microsoft.Build.Evaluation.Project;
+using System.Diagnostics;
+using System.Xml;
 
 namespace SandcastleBuilder.Utils
 {
@@ -101,12 +108,16 @@ namespace SandcastleBuilder.Utils
         public const string DefaultConfiguration = "Debug";
         /// <summary>The default platform</summary>
         public const string DefaultPlatform = "AnyCPU";
+        /// <summary>MS Build tools version to be used by the project.</summary>
+        public const string DefaultMSBuildTools = "3.5";
+
+        public const string SHFBSchemaVersionElement = "SHFBSchemaVersion";
 
         // Restricted property names that cannot be used for user-defined
         // property names.
         private static List<string> restrictedProps = new List<string>() {
             "AssemblyName", "Configuration", "Name", "Platform", "ProjectGuid",
-            "RootNamespace", "SHFBSchemaVersion", "SchemaVersion" };
+            "RootNamespace", SHFBSchemaVersionElement, "SchemaVersion" };
         #endregion
 
         #region Private data members
@@ -120,7 +131,7 @@ namespace SandcastleBuilder.Utils
 
         // MS Build and property items
         private Project msBuildProject;
-        private BuildPropertyGroup projectCache;  // MSBuild property cache
+        ////private BuildPropertyGroup projectCache;  // MSBuild property cache
         private bool usingFinalValues;
 
         // Local property info cache
@@ -208,7 +219,7 @@ namespace SandcastleBuilder.Utils
         [Browsable(false), XmlIgnore]
         public string Filename
         {
-            get { return msBuildProject.FullFileName; }
+            get { return msBuildProject.FullPath; }
         }
 
         /// <summary>
@@ -222,30 +233,11 @@ namespace SandcastleBuilder.Utils
         {
             get
             {
-                BuildProperty prop;
-                string config = null;
-
-                if(msBuildProject != null)
-                {
-                    prop = msBuildProject.GlobalProperties[
-                        ProjectElement.Configuration];
-                    
-                    if(prop != null)
-                        config = prop.Value;
-                }
-
-                if(String.IsNullOrEmpty(config))
-                    config = DefaultConfiguration;
-
-                return config;
+                return GetPropertyValue(ProjectElement.Configuration, DefaultConfiguration);
             }
             set
             {
-                if(value == null || value.Trim().Length == 0)
-                    value = DefaultConfiguration;
-
-                msBuildProject.GlobalProperties.SetProperty(
-                    ProjectElement.Configuration, value);
+                SetGlobalPropertyValue(ProjectElement.Configuration, value, DefaultConfiguration);
             }
         }
 
@@ -260,30 +252,11 @@ namespace SandcastleBuilder.Utils
         {
             get
             {
-                BuildProperty prop;
-                string platform = null;
-
-                if(msBuildProject != null)
-                {
-                    prop = msBuildProject.GlobalProperties[
-                        ProjectElement.Platform];
-
-                    if(prop != null)
-                        platform = prop.Value;
-                }
-
-                if(String.IsNullOrEmpty(platform))
-                    platform = DefaultPlatform;
-
-                return platform;
+                return GetPropertyValue(ProjectElement.Platform, DefaultPlatform);
             }
             set
             {
-                if(value == null || value.Trim().Length == 0)
-                    value = DefaultPlatform;
-
-                msBuildProject.GlobalProperties.SetProperty(
-                    ProjectElement.Platform, value);
+                SetGlobalPropertyValue(ProjectElement.Platform, value, DefaultPlatform);
             }
         }
 
@@ -298,27 +271,11 @@ namespace SandcastleBuilder.Utils
         {
             get
             {
-                BuildProperty prop;
-                string outDir = null;
-
-                if(msBuildProject != null)
-                {
-                    prop = msBuildProject.GlobalProperties[
-                        ProjectElement.OutDir];
-
-                    if(prop != null)
-                        outDir = prop.Value;
-                }
-
-                return outDir;
+                return GetPropertyValue(ProjectElement.OutDir, "");
             }
             set
             {
-                if(value == null)
-                    value = String.Empty;
-
-                msBuildProject.GlobalProperties.SetProperty(
-                    ProjectElement.OutDir, value);
+                SetGlobalPropertyValue(ProjectElement.OutDir, value, "");
             }
         }
 
@@ -372,8 +329,7 @@ namespace SandcastleBuilder.Utils
                 if(Path.IsPathRooted(outputPath))
                     path = outputPath;
                 else
-                    path = Path.Combine(Path.GetDirectoryName(
-                        msBuildProject.FullFileName), outputPath);
+                    path = Path.Combine(msBuildProject.DirectoryPath, outputPath);
 
                 return Path.GetFullPath(path + "LastBuild.log");
             }
@@ -430,20 +386,17 @@ namespace SandcastleBuilder.Utils
         /// <remarks>This collection is generated each time the property is
         /// used.  As such, cache a copy if you need to use it repeatedly.</remarks>
         [Browsable(false)]
-        public Collection<FileItem> FileItems
+        public ICollection<FileItem> FileItems
         {
             get
             {
-                Collection<FileItem> fileItems = new Collection<FileItem>();
                 List<string> buildActions = new List<string>(Enum.GetNames(
                     typeof(BuildAction)));
 
-                foreach(BuildItem item in msBuildProject.EvaluatedItems)
-                    if(buildActions.IndexOf(item.Name) != -1)
-                        fileItems.Add(new FileItem(new ProjectElement(this,
-                            item)));
-
-                return fileItems;
+                return msBuildProject.AllEvaluatedItems
+                    .Where(pi => buildActions.Contains(pi.ItemType))
+                    .Select(pi => new FileItem(new ProjectElement(this, pi)))
+                    .ToList();
             }
         }
         #endregion
@@ -1974,7 +1927,7 @@ namespace SandcastleBuilder.Utils
         {
             get
             {
-                return Path.GetDirectoryName(MSBuildProject.FullFileName);
+                return MSBuildProject.DirectoryPath;
             }
         }
 
@@ -2312,16 +2265,16 @@ namespace SandcastleBuilder.Utils
         /// <returns>The string to use as the replacement</returns>
         private string OnBuildVarMatch(Match match)
         {
-            // Get the project property cache if needed
-            if(projectCache == null)
-                projectCache = msBuildProject.EvaluatedProperties;
+            //// Get the project property cache if needed
+            ////if(projectCache == null)
+            ////    projectCache = msBuildProject.EvaluatedProperties;
+            
+            ////BuildProperty projProp = projectCache[];
 
-            BuildProperty projProp = projectCache[match.Groups[1].Value];
+            ////if(projProp != null)
+            ////    return projProp.FinalValue;
 
-            if(projProp != null)
-                return projProp.FinalValue;
-
-            return String.Empty;
+            return msBuildProject.GetPropertyValue(match.Groups[1].Value);
         }
 
         /// <summary>
@@ -2329,7 +2282,7 @@ namespace SandcastleBuilder.Utils
         /// </summary>
         private void LoadProperties()
         {
-            BuildProperty property;
+            ////BuildProperty property;
             Version schemaVersion;
             string helpFileFormat;
             Dictionary<string, string> translateFormat = new Dictionary<string, string> {
@@ -2343,19 +2296,25 @@ namespace SandcastleBuilder.Utils
             try
             {
                 // Ensure that we use the correct build engine for the project
-                if(msBuildProject.ToolsVersion != "3.5")
-                    msBuildProject.DefaultToolsVersion = "3.5";
+                ////if(msBuildProject.ToolsVersion != "3.5")
+                ////    msBuildProject.DefaultToolsVersion = "3.5";
+                Debug.Assert(
+                    msBuildProject.ToolsVersion == "3.5",
+                    @"msBuildProject.ToolsVersion == ""3.5""",
+                    "MSBuild project must use tools from version 3.5.");
 
                 loadingProperties = true;
-                projectCache = msBuildProject.EvaluatedProperties;
+                ////projectCache = msBuildProject.EvaluatedProperties;
+                msBuildProject.ReevaluateIfNecessary();
 
-                property = projectCache["SHFBSchemaVersion"];
-
-                if(property == null || String.IsNullOrEmpty(property.Value))
+                string versionString = msBuildProject.GetPropertyValue(SHFBSchemaVersionElement);
+                if(String.IsNullOrEmpty(versionString))
                     throw new BuilderException("PRJ0001",
                         "Invalid or missing SHFBSchemaVersion");
-
-                schemaVersion = new Version(property.Value);
+                
+                if (!Version.TryParse(versionString, out schemaVersion))
+                    throw new BuilderException("PRJ0001",
+                        "Invalid or missing SHFBSchemaVersion");
 
                 if(schemaVersion > SandcastleProject.SchemaVersion)
                     throw new BuilderException("PRJ0002", "The selected " +
@@ -2364,83 +2323,86 @@ namespace SandcastleBuilder.Utils
 
                 // Note that many properties don't use the final value as they
                 // don't contain variables that need replacing.
-                foreach(BuildProperty prop in projectCache)
-                    switch(prop.Name.ToUpper(CultureInfo.InvariantCulture))
+                foreach (ProjectProperty prop in msBuildProject.AllEvaluatedProperties)
+                {
+                    string value = prop.UnevaluatedValue;
+                    switch (prop.Name.ToUpper(CultureInfo.InvariantCulture))
                     {
                         case "CONFIGURATION":   // These are ignored
                         case "PLATFORM":
                             break;
 
                         case "APIFILTER":
-                            apiFilter.FromXml(prop.Value);
+                            apiFilter.FromXml(value);
                             break;
 
                         case "COMPONENTCONFIGURATIONS":
-                            componentConfigs.FromXml(prop.Value);
+                            componentConfigs.FromXml(value);
                             break;
 
                         case "DOCUMENTATIONSOURCES":
                             // The paths in the elements may contain variable
                             // references so use final values if requested.
-                            if(!usingFinalValues)
-                                docSources.FromXml(prop.Value);
+                            if (!usingFinalValues)
+                                docSources.FromXml(value);
                             else
-                                docSources.FromXml(prop.FinalValue);
+                                docSources.FromXml(prop.EvaluatedValue);
                             break;
 
                         case "HELPATTRIBUTES":
-                            helpAttributes.FromXml(prop.Value);
+                            helpAttributes.FromXml(value);
                             break;
 
                         case "NAMESPACESUMMARIES":
-                            namespaceSummaries.FromXml(prop.Value);
+                            namespaceSummaries.FromXml(value);
                             break;
 
                         case "PLUGINCONFIGURATIONS":
-                            plugInConfigs.FromXml(prop.Value);
+                            plugInConfigs.FromXml(value);
                             break;
 
                         case "HELPFILEFORMAT":
                             // The enum value names changed in v1.8.0.3
-                            if(schemaVersion.Major == 1 &&
+                            if (schemaVersion.Major == 1 &&
                               schemaVersion.Minor == 8 &&
                               schemaVersion.Build == 0 &&
                               schemaVersion.Revision < 3)
                             {
-                                helpFileFormat = prop.Value.ToUpper(CultureInfo.InvariantCulture);
+                                helpFileFormat = value.ToUpper(CultureInfo.InvariantCulture);
 
-                                foreach(string key in translateFormat.Keys)
+                                foreach (string key in translateFormat.Keys)
                                     helpFileFormat = helpFileFormat.Replace(key,
                                         translateFormat[key]);
 
                                 this.SetLocalProperty(prop.Name, helpFileFormat);
 
                                 msBuildProject.SetProperty("HelpFileFormat",
-                                    this.HelpFileFormat.ToString(), null);
+                                    this.HelpFileFormat.ToString());
                             }
                             else
-                                this.SetLocalProperty(prop.Name, prop.Value);
+                                this.SetLocalProperty(prop.Name, value);
                             break;
 
                         default:
                             // These may or may not contain variable references
                             // so use the final value if requested.
-                            if(!usingFinalValues)
-                                this.SetLocalProperty(prop.Name, prop.Value);
+                            if (!usingFinalValues)
+                                this.SetLocalProperty(prop.Name, value);
                             else
-                                this.SetLocalProperty(prop.Name, prop.FinalValue);
+                                this.SetLocalProperty(prop.Name, prop.EvaluatedValue);
                             break;
                     }
 
-                // Note: Project data stored in item groups are loaded on
-                // demand when first used (i.e. references, additional and
-                // conceptual content, etc.)
+                    // Note: Project data stored in item groups are loaded on
+                    // demand when first used (i.e. references, additional and
+                    // conceptual content, etc.)
+                }
             }
             catch(Exception ex)
             {
                 throw new BuilderException("PRJ0003", String.Format(
                     CultureInfo.CurrentCulture, "Error reading project " +
-                    "from '{0}':\r\n{1}", msBuildProject.FullFileName,
+                    "from '{0}':\r\n{1}", msBuildProject.FullPath,
                     ex.Message), ex);
             }
             finally
@@ -2563,7 +2525,7 @@ namespace SandcastleBuilder.Utils
             PropertyInfo localProp;
             DefaultValueAttribute defValue;
             EscapeValueAttribute escAttr;
-            BuildProperty projProp;
+            ProjectProperty projProp;
             FilePath filePath;
             string oldValue, newValue;
 
@@ -2586,13 +2548,17 @@ namespace SandcastleBuilder.Utils
             // See the MPF ProjectNode class for an example.
 
             // Get the project property cache if needed
-            if(projectCache == null)
-                projectCache = msBuildProject.EvaluatedProperties;
+            ////if(projectCache == null)
+            ////    projectCache = msBuildProject.EvaluatedProperties;
 
-            projProp = projectCache[propertyName];
+            ////projProp = projectCache[propertyName];
+
+
+            msBuildProject.ReevaluateIfNecessary();
+            projProp = msBuildProject.GetProperty(propertyName);
 
             if(projProp != null)
-                oldValue = projProp.Value;
+                oldValue = projProp.EvaluatedValue;
             else
                 oldValue = null;
 
@@ -2646,14 +2612,14 @@ namespace SandcastleBuilder.Utils
                 escAttr = pdcCache[propertyName].Attributes[
                     typeof(EscapeValueAttribute)] as EscapeValueAttribute;
 
+                string val = newValue;
                 if(escAttr != null)
-                    msBuildProject.SetProperty(propertyName,
-                        EscapeValueAttribute.Escape(newValue), null);
-                else
-                    msBuildProject.SetProperty(propertyName, newValue, null);
+                    val = EscapeValueAttribute.Escape(newValue);
+                
+                msBuildProject.SetProperty(propertyName, newValue);
 
                 // The cache needs to be refreshed
-                projectCache = null;
+                ////projectCache = null;
 
                 // Notify everyone of the property change
                 this.OnProjectPropertyChanged(new ProjectPropertyChangedEventArgs(
@@ -2667,20 +2633,22 @@ namespace SandcastleBuilder.Utils
         /// <returns>A collection containing all properties determined not to
         /// be help file builder project properties, MSBuild build engine
         /// related properties, or environment variables.</returns>
-        internal Collection<BuildProperty> GetUserDefinedProperties()
+        internal ICollection<ProjectProperty> GetUserDefinedProperties()
         {
-            Collection<BuildProperty> userProps = new Collection<BuildProperty>();
-            Type type = typeof(BuildProperty);
-            FieldInfo field = type.GetField("type", BindingFlags.NonPublic |
-                BindingFlags.Instance);
+            var userProps = new List<ProjectProperty>();
 
-            // Note: type == 0 is NormalProperty
-            if(msBuildProject != null && field != null && propertyCache != null)
-                foreach(BuildProperty prop in msBuildProject.EvaluatedProperties)
-                    if(!prop.IsImported && (int)field.GetValue(prop) == 0 &&
-                      !propertyCache.ContainsKey(prop.Name) &&
-                      restrictedProps.IndexOf(prop.Name) == -1)
-                        userProps.Add(prop);
+            if (msBuildProject == null || propertyCache == null)
+                return userProps;
+            
+            foreach(ProjectProperty prop in msBuildProject.AllEvaluatedProperties)
+            {
+                if (IsMSBuildSpecialProperty(prop))
+                    continue;
+
+                if (!propertyCache.ContainsKey(prop.Name)
+                    && !restrictedProps.Contains(prop.Name))
+                    userProps.Add(prop);
+            }
 
             return userProps;
         }
@@ -2693,34 +2661,58 @@ namespace SandcastleBuilder.Utils
         /// <returns>True if it can be used, false if it cannot be used</returns>
         internal bool IsValidUserDefinedPropertyName(string name)
         {
-            BuildProperty prop;
-            Type type = typeof(BuildProperty);
-            FieldInfo field = type.GetField("type", BindingFlags.NonPublic |
-                BindingFlags.Instance);
-            int propType;
-
-            if(projectCache == null)
-                projectCache = msBuildProject.EvaluatedProperties;
-
-            if(msBuildProject == null || field == null ||
-              propertyCache.ContainsKey(name) ||
-              restrictedProps.IndexOf(name) != -1)
+            if (msBuildProject == null
+                || propertyCache.ContainsKey(name)
+                || restrictedProps.Contains(name))
                 return false;
 
-            prop = msBuildProject.EvaluatedProperties[name];
+            var prop = msBuildProject.GetProperty(name);
 
-            if(prop != null)
+            return ((prop == null) || (!IsMSBuildSpecialProperty(prop)));
+        }
+
+        private static bool IsMSBuildSpecialProperty(ProjectProperty prop)
+        {
+            return (prop.IsImported || prop.IsEnvironmentProperty
+                || prop.IsGlobalProperty || prop.IsReservedProperty);
+        }
+
+        /// <summary>
+        /// Gets property value with name <paramref name="name"/>.
+        /// When property does not exists or the value is null or empty
+        /// string it will return default value provided in parameter
+        /// <paramref name="defaultValue"/>.
+        /// </summary>
+        /// <param name="name">Property name.</param>
+        /// <param name="defaultValue">Default value that will be returned
+        /// when property does not exists.</param>
+        /// <returns>Property value with fallback to default value.</returns>
+        private string GetPropertyValue(string name, string defaultValue)
+        {
+            string config = null;
+
+            if (msBuildProject != null)
             {
-                // Note: 0 is NormalProperty, 2 = GlobalProperty,
-                // 4 = EnvironmentProperty
-                propType = (int)field.GetValue(prop);
-                
-                if(prop.IsImported || (propType != 0 && propType != 2 &&
-                  propType != 4))
-                    return false;
+                config = msBuildProject.GetPropertyValue(name);
             }
 
-            return true;
+            if (String.IsNullOrEmpty(config))
+                config = defaultValue;
+
+            return config;
+        }
+
+        private void SetGlobalPropertyValue(string name, string value, string defaultValue)
+        {
+            if (String.IsNullOrEmpty(name))
+                throw new System.ArgumentException(
+                    "Argument name cannot be null or empty string.",
+                    "name");
+
+            if (String.IsNullOrWhiteSpace(value))
+                value = defaultValue;
+
+            this.msBuildProject.SetGlobalProperty(name, value);
         }
         #endregion
 
@@ -2834,11 +2826,11 @@ namespace SandcastleBuilder.Utils
                     "filename");
 
             filename = Path.GetFullPath(filename);
-            msBuildProject = new Project(Engine.GlobalEngine);
+            var projects = ProjectCollection.GlobalProjectCollection;
 
-            if(!File.Exists(filename))
+            if (!File.Exists(filename))
             {
-                if(mustExist)
+                if (mustExist)
                     throw new ArgumentException("The specific file must exist",
                         "filename");
 
@@ -2847,12 +2839,20 @@ namespace SandcastleBuilder.Utils
                 template = template.Replace("$guid1$", Guid.NewGuid().ToString("B"));
                 template = template.Replace("$safeprojectname$", "Documentation");
 
-                msBuildProject.LoadXml(template);
-                msBuildProject.FullFileName = filename;
+                XmlReaderSettings settings = new XmlReaderSettings();
+                settings.DtdProcessing = DtdProcessing.Prohibit;
+                
+                using (var stream = new StringReader(template))
+                using (var reader = XmlReader.Create(stream, settings))
+                {
+                    msBuildProject = projects.LoadProject(reader, DefaultMSBuildTools);
+                    msBuildProject.FullPath = filename;
+                }
             }
             else
-                msBuildProject.Load(filename);
-
+            {
+                msBuildProject = projects.LoadProject(filename, DefaultMSBuildTools);
+            }
             this.LoadProperties();
         }
 
@@ -2889,17 +2889,24 @@ namespace SandcastleBuilder.Utils
         {
             string newName = Guid.NewGuid().ToString();
 
-            msBuildProject = new Project(Engine.GlobalEngine);
-            usingFinalValues = useFinalValues;
+            var projects = ProjectCollection.GlobalProjectCollection;
+            this.usingFinalValues = useFinalValues;
 
             cloneProject.EnsureProjectIsCurrent(false);
-            msBuildProject.LoadXml(cloneProject.MSBuildProject.Xml);
+            
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.DtdProcessing = DtdProcessing.Prohibit;
+            using (var stream = new StringReader(cloneProject.MSBuildProject.Xml.RawXml))
+            using (var reader = XmlReader.Create(stream, settings))
+            {
+                msBuildProject = projects.LoadProject(reader, DefaultMSBuildTools);
+            }
 
             // Use the same folder so that relative paths have the same
             // base location.  Use a different filename to prevent the
             // cloned instance from being unloaded by the build engine.
-            msBuildProject.FullFileName = Path.Combine(
-                Path.GetDirectoryName(cloneProject.Filename),
+            msBuildProject.FullPath = Path.Combine(
+                cloneProject.MSBuildProject.DirectoryPath,
                 newName + ".shfbproj");
 
             this.Configuration = cloneProject.Configuration;
@@ -2919,7 +2926,7 @@ namespace SandcastleBuilder.Utils
         /// parties know that the project's dirty state has been changed.</event>
         public void MarkAsDirty()
         {
-            msBuildProject.MarkProjectAsDirty();
+            msBuildProject.MarkDirty();
             this.OnDirtyChanged(EventArgs.Empty);
         }
 
@@ -2994,7 +3001,7 @@ namespace SandcastleBuilder.Utils
             FolderPath folderPath;
             FileItem newFileItem = null;
             string folderAction = BuildAction.Folder.ToString(),
-                rootPath = Path.GetDirectoryName(msBuildProject.FullFileName);
+                rootPath = Path.GetDirectoryName(msBuildProject.FullPath);
 
             if(folder.Length != 0 && folder[folder.Length - 1] == '\\')
                 folder = folder.Substring(0, folder.Length - 1);
@@ -3013,12 +3020,11 @@ namespace SandcastleBuilder.Utils
 
             folderPath = new FolderPath(folder, this);
 
-            foreach(BuildItem item in msBuildProject.GetEvaluatedItemsByName(folderAction))
-                if(item.Include == folderPath.PersistablePath)
-                {
-                    newFileItem = new FileItem(new ProjectElement(this, item));
-                    break;
-                }
+            var item = msBuildProject.GetItems(folderAction)
+                .Where(pi => pi.EvaluatedInclude == folderPath.PersistablePath)
+                .FirstOrDefault();
+            if (item != null)
+                newFileItem = new FileItem(new ProjectElement(this, item));
 
             if(!Directory.Exists(folderPath))
                 Directory.CreateDirectory(folderPath);
@@ -3050,7 +3056,7 @@ namespace SandcastleBuilder.Utils
             FileItem newFileItem = null;
             string[] folders;
             string itemPath, rootPath = Path.GetDirectoryName(
-                msBuildProject.FullFileName);
+                msBuildProject.FullPath);
 
             if(String.IsNullOrEmpty(destFile) || !destFile.StartsWith(rootPath,
               StringComparison.OrdinalIgnoreCase))
@@ -3059,12 +3065,12 @@ namespace SandcastleBuilder.Utils
             filePath = new FilePath(destFile, this);
             buildAction = DefaultBuildAction(destFile);
 
-            foreach(BuildItem item in msBuildProject.EvaluatedItems)
+            foreach(var item in msBuildProject.AllEvaluatedItems)
             {
                 if(item.HasMetadata(ProjectElement.LinkPath))
-                    itemPath = item.GetMetadata(ProjectElement.LinkPath);
+                    itemPath = item.GetMetadataValue(ProjectElement.LinkPath);
                 else
-                    itemPath = item.Include;
+                    itemPath = item.EvaluatedInclude;
 
                 if(itemPath == filePath.PersistablePath)
                 {
@@ -3112,8 +3118,7 @@ namespace SandcastleBuilder.Utils
         {
             FilePath filePath;
             FileItem fileItem = null;
-            string itemPath, rootPath = Path.GetDirectoryName(
-                msBuildProject.FullFileName);
+            string itemPath, rootPath = msBuildProject.DirectoryPath;
 
             if(String.IsNullOrEmpty(fileToFind) ||
               !fileToFind.StartsWith(rootPath, StringComparison.OrdinalIgnoreCase))
@@ -3121,12 +3126,12 @@ namespace SandcastleBuilder.Utils
 
             filePath = new FilePath(fileToFind, this);
 
-            foreach(BuildItem item in msBuildProject.EvaluatedItems)
+            foreach(var item in msBuildProject.AllEvaluatedItems)
             {
                 if(item.HasMetadata(ProjectElement.LinkPath))
-                    itemPath = item.GetMetadata(ProjectElement.LinkPath);
+                    itemPath = item.GetMetadataValue(ProjectElement.LinkPath);
                 else
-                    itemPath = item.Include;
+                    itemPath = item.EvaluatedInclude;
 
                 if(itemPath == filePath.PersistablePath)
                 {
@@ -3151,7 +3156,6 @@ namespace SandcastleBuilder.Utils
         /// the <c>SHFBSchemaVersion</c> is set to the current version too.</remarks>
         public void EnsureProjectIsCurrent(bool forceUpdate)
         {
-            BuildProperty property;
             Version schemaVersion;
 
             if(apiFilter.IsDirty)
@@ -3208,15 +3212,16 @@ namespace SandcastleBuilder.Utils
             // is dirty.
             if(msBuildProject.IsDirty)
             {
-                property = msBuildProject.EvaluatedProperties["SHFBSchemaVersion"];
+                var propValue = msBuildProject.GetPropertyValue(SHFBSchemaVersionElement);
 
-                if(property != null && !String.IsNullOrEmpty(property.Value))
+                if (!String.IsNullOrEmpty(propValue))
                 {
-                    schemaVersion = new Version(property.Value);
+                    schemaVersion = new Version(propValue);
 
                     if(schemaVersion != SandcastleProject.SchemaVersion)
-                        msBuildProject.SetProperty("SHFBSchemaVersion",
-                            SandcastleProject.SchemaVersion.ToString(4), null);
+                        msBuildProject.SetProperty(
+                            SHFBSchemaVersionElement,
+                            SandcastleProject.SchemaVersion.ToString(4));
                 }
             }
         }
@@ -3232,9 +3237,9 @@ namespace SandcastleBuilder.Utils
             try
             {
                 filename = Path.GetFullPath(filename);
-                forceUpdate = (filename != msBuildProject.FullFileName);
+                forceUpdate = (filename != msBuildProject.FullPath);
 
-                msBuildProject.FullFileName = filename;
+                msBuildProject.FullPath = filename;
                 this.EnsureProjectIsCurrent(forceUpdate);
 
                 msBuildProject.Save(filename);
@@ -3257,10 +3262,7 @@ namespace SandcastleBuilder.Utils
         /// false if there are no items with the given build action.</returns>
         public bool HasItems(BuildAction buildAction)
         {
-            BuildItemGroup items = msBuildProject.GetEvaluatedItemsByName(
-                buildAction.ToString());
-
-            return (items.Count != 0);
+            return msBuildProject.GetItems(buildAction.ToString()).Count > 0;
         }
         #endregion
     }

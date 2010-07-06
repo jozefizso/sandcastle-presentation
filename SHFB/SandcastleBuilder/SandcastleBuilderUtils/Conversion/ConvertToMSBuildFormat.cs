@@ -29,6 +29,7 @@ using System.Reflection;
 using System.Xml;
 
 using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
 
 namespace SandcastleBuilder.Utils.Conversion
 {
@@ -152,19 +153,20 @@ namespace SandcastleBuilder.Utils.Conversion
         {
             List<string> buildActions = new List<string>(Enum.GetNames(
                 typeof(BuildAction)));
-            List<string> folderNames = new List<string>();
-            string name;
+            HashSet<string> folderNames = new HashSet<string>();
             
             buildActions.Remove("Folder");
 
-            foreach(BuildItem item in project.MSBuildProject.EvaluatedItems)
-                if(buildActions.IndexOf(item.Name) != -1)
+            foreach (ProjectItem item in project.MSBuildProject.AllEvaluatedItems)
+            {
+                if (buildActions.Contains(item.ItemType))
                 {
-                    name = Path.GetDirectoryName(item.Include);
+                    string name = Path.GetDirectoryName(item.EvaluatedInclude);
 
-                    if(name.Length > 0 && folderNames.IndexOf(name) == -1)
+                    if (name.Length > 0)
                         folderNames.Add(name);
                 }
+            }
 
             foreach(string folder in folderNames)
                 project.AddFolderToProject(folder);
