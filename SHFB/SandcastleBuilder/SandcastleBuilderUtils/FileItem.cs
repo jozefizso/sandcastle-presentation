@@ -30,6 +30,7 @@ using System.IO;
 using Microsoft.Build.BuildEngine;
 
 using SandcastleBuilder.Utils.Design;
+using Microsoft.Build.Evaluation;
 
 namespace SandcastleBuilder.Utils
 {
@@ -220,9 +221,9 @@ namespace SandcastleBuilder.Utils
                     path.Length - 1)), value) + "\\";
                 this.Include = new FilePath(newPath, base.ProjectElement.Project);
 
-                foreach(BuildItem item in base.ProjectElement.Project.MSBuildProject.EvaluatedItems)
-                    if(item.Include.StartsWith(path, StringComparison.OrdinalIgnoreCase))
-                        item.Include = newPath + item.Include.Substring(
+                foreach(ProjectItem item in base.ProjectElement.Project.MSBuildProject.AllEvaluatedItems)
+                    if(item.EvaluatedInclude.StartsWith(path, StringComparison.OrdinalIgnoreCase))
+                        item.UnevaluatedInclude = newPath + item.EvaluatedInclude.Substring(
                             path.Length);
             }
         }

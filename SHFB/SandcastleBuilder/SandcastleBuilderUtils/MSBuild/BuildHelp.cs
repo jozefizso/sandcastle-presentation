@@ -21,6 +21,7 @@
 // 1.8.0.1  12/19/2008  EFW  Updated to work with MSBuild 3.5 and Team Build
 // 1.8.0.2  04/20/2009  EFW  Added DumpLogOnFailure property
 // 1.8.0.3  07/06/2009  EFW  Added support for MS Help Viewer output files
+// 1.8.1.3  07/05/2010  JI   Updated to use MSBuild 4.0.
 // ============================================================================
 
 using System;
@@ -36,6 +37,9 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 
 using SandcastleBuilder.Utils.BuildEngine;
+
+using Project = Microsoft.Build.Evaluation.Project;
+using Microsoft.Build.Evaluation;
 
 namespace SandcastleBuilder.Utils.MSBuild
 {
@@ -307,22 +311,29 @@ namespace SandcastleBuilder.Utils.MSBuild
             {
                 // Create the project and set the configuration and platform
                 // options.
-                msBuildProject = new Project(Engine.GlobalEngine);
-                msBuildProject.GlobalProperties.SetProperty(
-                    ProjectElement.Configuration, configuration);
-                msBuildProject.GlobalProperties.SetProperty(
-                    ProjectElement.Platform, platform);
+                ////msBuildProject = new Project(Engine.GlobalEngine);
+                ////msBuildProject.GlobalProperties.SetProperty(
+                ////    ProjectElement.Configuration, configuration);
+                ////msBuildProject.GlobalProperties.SetProperty(
+                ////    ProjectElement.Platform, platform);
 
-                // Override the OutDir property if defined for Team Build
-                if(!String.IsNullOrEmpty(outDir))
-                    msBuildProject.GlobalProperties.SetProperty(
-                        ProjectElement.OutDir, outDir);
-
-                if(!File.Exists(projectFile))
+                if (!File.Exists(projectFile))
                     throw new BuilderException("BHT0003", "The specified " +
                         "project file does not exist: " + projectFile);
 
-                msBuildProject.Load(projectFile);
+                var globalProperties = new Dictionary<string, string>();
+                globalProperties.Add(ProjectElement.Configuration, configuration);
+                globalProperties.Add(ProjectElement.Platform, platform);
+
+                // Override the OutDir property if defined for Team Build
+                if (!String.IsNullOrEmpty(outDir))
+                    globalProperties.Add(ProjectElement.OutDir, outDir);
+
+                msBuildProject = new Project(
+                    projectFile,
+                    globalProperties,
+                    null,
+                    ProjectCollection.GlobalProjectCollection);
             }
 
             // Load the MSBuild project and associate it with a SHFB
@@ -341,14 +352,14 @@ namespace SandcastleBuilder.Utils.MSBuild
 
                 // Since this is an MSBuild task, we'll run it directly rather
                 // than in a background thread.
-                Log.LogMessage("Building {0}", msBuildProject.FullFileName);
+                Log.LogMessage("Building {0}", msBuildProject.FullPath);
                 buildProcess.Build();
             }
             catch(Exception ex)
             {
                 Log.LogError(null, "BHT0002", "BHT0002", "SHFB", 0, 0, 0, 0,
                   "Unable to build project '{0}': {1}",
-                  msBuildProject.FullFileName, ex);
+                  msBuildProject.FullPath, ex);
             }
 
             if(dumpLogOnFailure && lastBuildStep == BuildStep.Failed)
@@ -478,7 +489,7 @@ namespace SandcastleBuilder.Utils.MSBuild
             // actual project reference.
             foreach(DictionaryEntry entry in (Hashtable)obj)
                 foreach(Project project in (ArrayList)entry.Value)
-                    if(project.FullFileName == projectFile)
+                    if (project.FullPath == projectFile)
                         return project;
 
             return null;

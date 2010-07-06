@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 using SandcastleBuilder.Utils;
@@ -168,7 +169,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
         /// </summary>
         /// <param name="files">The folder and file build items from the
         /// project</param>
-        public void LoadTree(Collection<FileItem> files)
+        public void LoadTree(ICollection<FileItem> files)
         {
             SortedDictionary<string, FileItem> fileItems =
                 new SortedDictionary<string,FileItem>();
@@ -182,7 +183,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             string[] parts;
 
             if(files.Count > 0)
-                project = files[0].ProjectElement.Project;
+                project = files.First().ProjectElement.Project;
 
             try
             {

@@ -233,10 +233,10 @@ namespace SandcastleBuilder.Utils.ConceptualContent
             string ext, none = BuildAction.None.ToString(),
                 content = BuildAction.Content.ToString();
 
-            foreach(BuildItem item in project.MSBuildProject.EvaluatedItems)
-                if(item.Name == none || item.Name == content)
+            foreach(var item in project.MSBuildProject.AllEvaluatedItems)
+                if (item.ItemType == none || item.ItemType == content)
                 {
-                    ext = Path.GetExtension(item.Include).ToLower(
+                    ext = Path.GetExtension(item.EvaluatedInclude).ToLower(
                         CultureInfo.InvariantCulture);
 
                     if(ext == ".aml" || ext == ".htm" || ext == ".html" ||

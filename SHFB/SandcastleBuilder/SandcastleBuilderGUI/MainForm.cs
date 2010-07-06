@@ -46,10 +46,9 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-using Microsoft.Build.BuildEngine;
-
 using SandcastleBuilder.Gui.ContentEditors;
 using SandcastleBuilder.Gui.Properties;
+using SandcastleBuilder.Gui.Utilities;
 
 using SandcastleBuilder.Utils;
 using SandcastleBuilder.Utils.BuildEngine;
@@ -58,7 +57,7 @@ using SandcastleBuilder.Utils.Controls;
 using SandcastleBuilder.Utils.Design;
 
 using WeifenLuo.WinFormsUI.Docking;
-using SandcastleBuilder.Gui.Utilities;
+using Microsoft.Build.Exceptions;
 
 namespace SandcastleBuilder.Gui
 {
@@ -219,8 +218,6 @@ namespace SandcastleBuilder.Gui
         /// a new, unnamed project</param>
         private void CreateProject(string projectName, bool mustExist)
         {
-            string[] values;
-
             project = new SandcastleProject(projectName, mustExist);
             project.DocumentationSourcesChanged += new EventHandler(project_Modified);
             project.DirtyChanged += new EventHandler(project_Modified);
@@ -234,8 +231,7 @@ namespace SandcastleBuilder.Gui
             this.project_Modified(this, EventArgs.Empty);
 
             // Get the configuration and platform values
-            values = project.MSBuildProject.GetConditionedPropertyValues(
-                "Configuration");
+            var values = project.MSBuildProject.ConditionedProperties[ProjectElement.Configuration];
 
             tcbConfig.Items.Clear();
 
@@ -248,8 +244,7 @@ namespace SandcastleBuilder.Gui
                 tcbConfig.Items.Add("Release");
             }
 
-            values = project.MSBuildProject.GetConditionedPropertyValues(
-                "Platform");
+            values = project.MSBuildProject.ConditionedProperties[ProjectElement.Platform];
 
             tcbPlatform.Items.Clear();
 

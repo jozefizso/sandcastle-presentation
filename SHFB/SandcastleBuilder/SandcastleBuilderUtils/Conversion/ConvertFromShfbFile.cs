@@ -541,7 +541,7 @@ namespace SandcastleBuilder.Utils.Conversion
             filter = filter.Replace("<filter", "<Filter");
             filter = filter.Replace("</filter", "</Filter");
 
-            base.Project.MSBuildProject.SetProperty("ApiFilter", filter, null);
+            base.Project.MSBuildProject.SetProperty("ApiFilter", filter);
         }
 
         /// <summary>

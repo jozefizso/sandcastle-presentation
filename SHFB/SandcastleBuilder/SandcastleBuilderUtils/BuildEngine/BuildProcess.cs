@@ -44,6 +44,7 @@
 // 1.8.0.1  12/14/2008  EFW  Updated to use .NET 3.5 and MSBuild 3.5
 // 1.8.0.3  07/04/2009  EFW  Added support for the July 2009 release and
 //                           building MS Help Viewer files.
+// 1.8.1.3  07/05/2010  JI   Updated to use MSBuild 4.0.
 //=============================================================================
 
 using System;
@@ -52,6 +53,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -66,6 +68,9 @@ using SandcastleBuilder.Utils.MSBuild;
 using SandcastleBuilder.Utils.PlugIn;
 
 using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
+
+using Project = Microsoft.Build.Evaluation.Project;
 
 namespace SandcastleBuilder.Utils.BuildEngine
 {
@@ -84,7 +89,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
         // Assembly and reference information
         private Collection<string> assembliesList;
-        private Dictionary<string, BuildItem> referenceDictionary;
+        private List<ProjectItem> referenceDictionary;
 
         // Conceptual content settings
         private ConceptualContentSettings conceptualContent;
@@ -453,7 +458,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         public void Build()
         {
             Project msBuildProject;
-            BuildItem buildItem;
+            //BuildItem buildItem;
             Version v;
             string helpFile, languageFile, scriptFile, message = null;
             int waitCount;
@@ -469,10 +474,11 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     "[{0}, version {1}]", fvi.ProductName, fvi.ProductVersion);
 
                 buildStart = stepStart = DateTime.Now;
+                
+                var toolset = ProjectCollection.GlobalProjectCollection.GetToolset(
+                    project.MSBuildProject.ToolsVersion);
 
-                msBuildExePath = Path.Combine(Engine.GlobalEngine.Toolsets[
-                    project.MSBuildProject.ToolsVersion].ToolsPath,
-                    "MSBuild.exe");
+                msBuildExePath = Path.Combine(toolset.ToolsPath, "MSBuild.exe");
 
                 // Base folder for SHFB
                 shfbFolder = Path.GetDirectoryName(asm.Location) + @"\";
@@ -776,21 +782,41 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     scriptFile = this.TransformTemplate("GenerateRefInfo.proj",
                         templateFolder, workingFolder);
 
-                    msBuildProject = new Project(Engine.GlobalEngine);
-                    msBuildProject.Load(scriptFile);
-
+                    msBuildProject = ProjectCollection.GlobalProjectCollection.LoadProject(scriptFile);
+                    
                     // Add the references
-                    foreach(BuildItem item in referenceDictionary.Values)
+                    foreach(var item in referenceDictionary)
                     {
-                        buildItem = msBuildProject.AddNewItem(item.Name,
-                            item.Include);
-                        item.CopyCustomMetadataTo(buildItem);
+                        var metadata = new Dictionary<string, string>();
+                        foreach (var m in item.Metadata)
+                            metadata.Add(m.Name, m.UnevaluatedValue);
+                                
+                        var newItemsList = msBuildProject.AddItem(
+                            item.ItemType,
+                            item.UnevaluatedInclude,
+                            metadata);
+
+                        // fix <HintPath>
+                        var newItem = newItemsList[0];
+                        // skip assemblies
+                        if (newItem.ItemType == "Reference")
+                            continue;
+
+                        var hintPath = newItem.GetMetadata(ProjectElement.HintPath);
+                        if (hintPath != null && !Path.IsPathRooted(hintPath.EvaluatedValue))
+                        {
+                            newItem.SetMetadataValue(
+                                ProjectElement.HintPath,
+                                Path.Combine(projectFolder, hintPath.EvaluatedValue));
+                        }
+                        ////buildItem = msBuildProject.AddNewItem(item.Name,
+                        ////    item.Include);
+                        ////item.CopyCustomMetadataTo(buildItem);
                     }
 
                     // Add the assemblies to document
                     foreach(string assemblyName in assembliesList)
-                        buildItem = msBuildProject.AddNewItem("Assembly",
-                            assemblyName);
+                        msBuildProject.AddItem(ProjectElement.Assembly, assemblyName);
 
                     msBuildProject.Save(scriptFile);
 
@@ -1863,7 +1889,7 @@ AllDone:
                     fvi.FileMinorPart, fvi.FileBuildPart, fvi.FilePrivatePart);
 
 #if !SC_MAY_2008
-            Version expectedVersion = new Version("2.5.10626.0");
+            Version expectedVersion = new Version("2.6.10621.1");
 #else
             Version expectedVersion = new Version("2.4.10520.1");
 #endif
@@ -2056,7 +2082,7 @@ AllDone:
                 new Dictionary<string, MSBuildProject>();
 
             MSBuildProject projRef;
-            BuildItem buildItem;
+            ////BuildItem buildItem;
             XPathDocument testComments;
             XPathNavigator navComments;
             XmlCommentsFile comments;
@@ -2068,7 +2094,7 @@ AllDone:
                 "Validating and copying documentation source information");
 
             assembliesList = new Collection<string>();
-            referenceDictionary = new Dictionary<string, BuildItem>();
+            referenceDictionary = new List<ProjectItem>();
             commentsFiles = new XmlCommentsFileCollection();
 
             if(this.ExecutePlugIns(ExecutionBehaviors.InsteadOf))
@@ -2084,20 +2110,19 @@ AllDone:
 
             // Clone the project's references
             foreach(string refType in (new string[] { "Reference", "COMReference" }))
-                foreach(BuildItem reference in
-                  project.MSBuildProject.GetEvaluatedItemsByName(refType))
+                foreach(ProjectItem reference in project.MSBuildProject.GetItems(refType))
                 {
-                    buildItem = reference.Clone();
+                    ////buildItem = reference.Clone();
 
                     // Make sure the hint path is correct by adding the project
                     // folder to any relative paths.
-                    if(buildItem.HasMetadata(ProjectElement.HintPath) &&
-                      !Path.IsPathRooted(buildItem.GetMetadata(ProjectElement.HintPath)))
-                        buildItem.SetMetadata(ProjectElement.HintPath,
-                            Path.Combine(projectFolder, buildItem.GetMetadata(
-                            ProjectElement.HintPath)));
+                    ////if(buildItem.HasMetadata(ProjectElement.HintPath) &&
+                    ////  !Path.IsPathRooted(buildItem.GetMetadata(ProjectElement.HintPath)))
+                    ////    buildItem.SetMetadata(ProjectElement.HintPath,
+                    ////        Path.Combine(projectFolder, buildItem.GetMetadata(
+                    ////        ProjectElement.HintPath)));
 
-                    referenceDictionary.Add(reference.Include, buildItem);
+                    referenceDictionary.Add(reference);
                 }
 
             // Convert project references to regular references that point to
@@ -2105,17 +2130,25 @@ AllDone:
             // not have enough info for that to happen successfully.  As such,
             // we'll assume the project has already been built and that its
             // target exists.
-            foreach(BuildItem reference in
-              project.MSBuildProject.GetEvaluatedItemsByName("ProjectReference"))
+            foreach(ProjectItem reference in
+              project.MSBuildProject.GetItems("ProjectReference"))
             {
-                projRef = new MSBuildProject(reference.Include);
+                projRef = new MSBuildProject(reference.EvaluatedInclude);
                 projRef.SetConfiguration(project.Configuration,
                     project.Platform, project.MSBuildOutDir);
 
-                buildItem = projRef.ProjectFile.AddNewItem("Reference",
-                    Path.GetFileNameWithoutExtension(projRef.AssemblyName));
-                buildItem.SetMetadata("HintPath", projRef.AssemblyName);
-                referenceDictionary.Add(buildItem.Include, buildItem);
+                var metadata = new Dictionary<string,string> {
+                    { "HintPath", projRef.AssemblyName }
+                };
+                var newItem = projRef.ProjectFile.AddItem("Reference",
+                    Path.GetFileNameWithoutExtension(projRef.AssemblyName),
+                    metadata);
+
+                Debug.Assert(
+                    newItem[0] != null,
+                    "newItem[0] != null",
+                    "New <Reference> to assembly "+ projRef.AssemblyName + " was not created correctly");
+                referenceDictionary.Add(newItem[0]);
             }
 
             // For each source, make three passes: one for projects, one for
@@ -2227,10 +2260,10 @@ AllDone:
                             CultureInfo.InvariantCulture, "Unable to " +
                             "obtain assembly name from project file '{0}' " +
                             "using Configuration '{1}', Platform '{2}'",
-                            msbProject.ProjectFile.FullFileName,
-                            msbProject.ProjectFile.GetEvaluatedProperty(
+                            msbProject.ProjectFile.FullPath,
+                            msbProject.ProjectFile.GetPropertyValue(
                                 ProjectElement.Configuration),
-                            msbProject.ProjectFile.GetEvaluatedProperty(
+                            msbProject.ProjectFile.GetPropertyValue(
                                 ProjectElement.Platform)));
 
                     workingPath = msbProject.XmlCommentsFile;
@@ -2283,9 +2316,12 @@ AllDone:
             {
                 this.ReportProgress("\r\nReferences to use:");
 
-                string[] keys = new string[referenceDictionary.Keys.Count];
-                referenceDictionary.Keys.CopyTo(keys, 0);
-                Array.Sort(keys);
+                //string[] keys = new string[referenceDictionary.Keys.Count];
+                //referenceDictionary.Keys.CopyTo(keys, 0);
+                //Array.Sort(keys);
+                var keys = referenceDictionary
+                    .Select(pi => pi.EvaluatedInclude)
+                    .OrderBy(s => s).ToList();
 
                 foreach(string key in keys)
                     this.ReportProgress("    {0}", key);

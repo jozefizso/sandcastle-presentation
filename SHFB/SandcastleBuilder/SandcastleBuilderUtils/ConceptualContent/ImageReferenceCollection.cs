@@ -30,7 +30,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
 
 using SandcastleBuilder.Utils;
 using SandcastleBuilder.Utils.BuildEngine;
@@ -221,8 +221,8 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         {
             this.Clear();
 
-            foreach(BuildItem item in
-              projectFile.MSBuildProject.GetEvaluatedItemsByName(
+            foreach(ProjectItem item in
+              projectFile.MSBuildProject.GetItems(
               BuildAction.Image.ToString()))
             {
                 this.Add(new ImageReference(new FileItem(new ProjectElement(

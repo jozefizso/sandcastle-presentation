@@ -55,7 +55,7 @@ using System.Security.Permissions;
 [assembly: ComVisible(false)]
 
 // No special permissions are required by this assembly
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
+////[assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
 
 //
 // Version information for an assembly consists of the following four values:

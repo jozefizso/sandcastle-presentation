@@ -30,7 +30,7 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
 
 using SandcastleBuilder.Utils.Design;
 
@@ -97,7 +97,7 @@ namespace SandcastleBuilder.Utils
         {
             Project project = projectFile.MSBuildProject;
 
-            if(project.TimeOfLastDirty == timeOfLastDirty || (!refresh &&
+            if(project.Xml.TimeLastChanged == timeOfLastDirty || (!refresh &&
               timeOfLastDirty != DateTime.MinValue))
                 return;
 
@@ -105,25 +105,23 @@ namespace SandcastleBuilder.Utils
             {
                 loadingItems = true;
                 this.Clear();
-                timeOfLastDirty = project.TimeOfLastDirty;
+                timeOfLastDirty = project.Xml.TimeLastChanged;
 
-                BuildItemGroup referenceGroup = project.GetEvaluatedItemsByName(
-                    ReferenceType);
+                var referenceGroup = project.GetItems(ReferenceType);
 
-                foreach(BuildItem item in referenceGroup)
+                foreach(var item in referenceGroup)
                     this.Add(new ReferenceItem(new ProjectElement(projectFile,
                         item)));
 
-                referenceGroup = project.GetEvaluatedItemsByName(
-                    ProjectReferenceType);
+                referenceGroup = project.GetItems(ProjectReferenceType);
 
-                foreach(BuildItem item in referenceGroup)
+                foreach(var item in referenceGroup)
                     this.Add(new ProjectReferenceItem(new ProjectElement(
                         projectFile, item)));
 
-                referenceGroup = project.GetEvaluatedItemsByName(COMReferenceType);
+                referenceGroup = project.GetItems(COMReferenceType);
 
-                foreach(BuildItem item in referenceGroup)
+                foreach(var item in referenceGroup)
                     this.Add(new COMReferenceItem(new ProjectElement(projectFile,
                         item)));
             }

@@ -234,7 +234,6 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// <returns>The string to use as the replacement</returns>
         private string OnFieldMatch(Match match)
         {
-            BuildProperty buildProp;
             FileItemCollection fileItems;
             StringBuilder sb;
             string replaceWith, fieldName;
@@ -842,21 +841,17 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     break;
 
                 default:
-                    // Try for a custom project property
-                    buildProp = project.MSBuildProject.EvaluatedProperties[fieldName];
-
-                    // If not there, try the global properties
-                    if(buildProp == null)
-                        buildProp = project.MSBuildProject.GlobalProperties[fieldName];
+                    // Try for a property in project
+                    var prop = project.MSBuildProject.GetPropertyValue(fieldName);
 
                     // If not there, give up
-                    if(buildProp == null)
+                    if(String.IsNullOrEmpty(prop))
                         throw new BuilderException("BE0020", String.Format(
                             CultureInfo.CurrentCulture,
                             "Unknown field tag: '{0}'",
                             match.Groups["Field"].Value));
 
-                    replaceWith = buildProp.FinalValue;
+                    replaceWith = prop;
                     break;
             }
 

@@ -22,7 +22,7 @@
 using System;
 using System.ComponentModel;
 
-using Microsoft.Build.BuildEngine;
+using Microsoft.Build.Evaluation;
 
 namespace SandcastleBuilder.Utils
 {
@@ -64,6 +64,8 @@ namespace SandcastleBuilder.Utils
         public const string Platform = "Platform";
         /// <summary>Output directory setting</summary>
         public const string OutDir = "OutDir";
+        /// <summary>Assembly name.</summary>
+        public const string Assembly = "Assembly";
 
         /// <summary>Image ID</summary>
         public const string ImageId = "ImageId";
@@ -93,7 +95,7 @@ namespace SandcastleBuilder.Utils
         //=====================================================================
 
         private SandcastleProject projectFile;
-        private BuildItem item;
+        private ProjectItem item;
         #endregion
 
         #region Properties
@@ -104,11 +106,11 @@ namespace SandcastleBuilder.Utils
         /// </summary>
         public string ItemName
         {
-            get { return item.Name; }
+            get { return item.ItemType; }
             set
             {
                 this.CheckProjectIsEditable();
-                item.Name = value;
+                item.ItemType = value;
                 projectFile.MarkAsDirty();
             }
         }
@@ -118,10 +120,10 @@ namespace SandcastleBuilder.Utils
         /// </summary>
         public string Include
         {
-            get { return item.Include; }
+            get { return item.EvaluatedInclude; }
             set
             {
-                if(item.Include != value)
+                if (item.EvaluatedInclude != value)
                 {
                     if(String.IsNullOrEmpty(value) ||
                       value.IndexOfAny(new char[] { '*', '?' }) != -1)
@@ -129,12 +131,12 @@ namespace SandcastleBuilder.Utils
                             "blank and cannot contain wildcards (* or ?)");
 
                     // Folder items must end in a backslash
-                    if(item.Name == Utils.BuildAction.Folder.ToString() &&
+                    if(item.ItemType == Utils.BuildAction.Folder.ToString() &&
                       value[value.Length - 1] != '\\')
                         value += @"\";
 
                     this.CheckProjectIsEditable();
-                    item.Include = value;
+                    item.UnevaluatedInclude = value;
                     projectFile.MarkAsDirty();
                 }
             }
@@ -158,7 +160,7 @@ namespace SandcastleBuilder.Utils
         /// <param name="project">The project that owns the item</param>
         /// <param name="existingItem">The existing item</param>
         /// <overloads>There are two overloads for the constructor</overloads>
-        internal ProjectElement(SandcastleProject project, BuildItem existingItem)
+        internal ProjectElement(SandcastleProject project, ProjectItem existingItem)
         {
             if(project == null)
                 throw new ArgumentNullException("project");
@@ -199,7 +201,7 @@ namespace SandcastleBuilder.Utils
               itemPath[itemPath.Length - 1] != '\\')
                 itemPath += @"\";
 
-            item = project.MSBuildProject.AddNewItem(itemType, itemPath);
+            item = project.MSBuildProject.AddItem(itemType, itemPath)[0];
             projectFile.MarkAsDirty();
         }
         #endregion
@@ -248,14 +250,14 @@ namespace SandcastleBuilder.Utils
             // Build Action is the name, not metadata
             if(String.Compare(name, ProjectElement.BuildAction,
               StringComparison.OrdinalIgnoreCase) == 0)
-                return item.Name;
+                return item.ItemType;
 
             // Include is an attribute, not metadata
             if(String.Compare(name, ProjectElement.IncludePath,
               StringComparison.OrdinalIgnoreCase) == 0)
-                return item.Include;
+                return item.EvaluatedInclude;
 
-            return item.GetMetadata(name);
+            return item.GetMetadataValue(name);
         }
 
         /// <summary>
@@ -271,7 +273,7 @@ namespace SandcastleBuilder.Utils
             if(String.Compare(name, ProjectElement.BuildAction,
               StringComparison.OrdinalIgnoreCase) == 0)
             {
-                item.Name = value;
+                item.ItemType = value;
                 return;
             }
 
@@ -279,14 +281,14 @@ namespace SandcastleBuilder.Utils
             if(String.Compare(name, ProjectElement.IncludePath,
               StringComparison.OrdinalIgnoreCase) == 0)
             {
-                item.Include = value;
+                item.UnevaluatedInclude = value;
                 return;
             }
 
             if(String.IsNullOrEmpty(value))
                 item.RemoveMetadata(name);
             else
-                item.SetMetadata(name, value);
+                item.SetMetadataValue(name, value);
 
             projectFile.MarkAsDirty();
         }
@@ -359,7 +361,7 @@ namespace SandcastleBuilder.Utils
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            return item.Include.GetHashCode();
+            return item.EvaluatedInclude.GetHashCode();
         }
         #endregion
     }
