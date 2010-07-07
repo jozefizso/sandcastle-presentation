@@ -61,7 +61,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.txtFindName.Enabled = false;
             this.txtFindName.Location = new System.Drawing.Point(48, 28);
-            this.txtFindName.MaxLength = 36;
+            this.txtFindName.MaxLength = 256;
             this.txtFindName.Name = "txtFindName";
             this.txtFindName.Size = new System.Drawing.Size(312, 22);
             this.sbStatusBarText.SetStatusBarText(this.txtFindName, "Find: Enter the ID or, for code entities, a regular expression for which to searc" +

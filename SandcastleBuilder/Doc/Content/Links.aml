@@ -74,6 +74,9 @@ for XML schemas into your help files.</listItem>
 </externalLink> - This custom build component converts LaTeX embedded in XML
 comments to images in the final help file.  The component utilizes mimeTeX 1.7.</listItem>
 
+<!-- 04/19/2010 - Unfortunately, this appears to be a dead project.  If it
+gets updated, I'll add it back.
+
     <listItem><para><externalLink><linkText>Drawbridge</linkText>
   <linkUri>http://www.castleapps.com</linkUri> <linkTarget>_blank</linkTarget>
 </externalLink> - With this build component, Visual Studio class diagrams can
@@ -86,7 +89,7 @@ Sandcastle release.  See this <externalLink>
 <linkUri>http://social.msdn.microsoft.com/Forums/en-US/devdocs/thread/ade02a77-51a5-4e9c-93ec-e095226adfe0</linkUri>
 <linkTarget>_blank</linkTarget></externalLink> for potential ways to get it to
 work if it has not yet been updated.</para>
-</alert></listItem>
+</alert></listItem> -->
 
 </list>
 

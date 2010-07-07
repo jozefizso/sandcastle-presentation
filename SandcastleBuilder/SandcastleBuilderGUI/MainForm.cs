@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder
 // File    : MainForm.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 09/28/2009
-// Note    : Copyright 2006-2009, Eric Woodruff, All rights reserved
+// Updated : 07/05/2010
+// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the main form for the application.
@@ -30,6 +30,7 @@
 // 1.8.0.0  06/20/2008  EFW  Converted the project to use an MSBuild file.
 //                           Changed the UI to a more Visual Studio-like
 //                           layout better suited to editing the project.
+// 1.9.0.0  07/05/2010  EFW  Added support for MS Help Viewer
 //=============================================================================
 
 using System;
@@ -50,6 +51,8 @@ using Microsoft.Build.BuildEngine;
 
 using SandcastleBuilder.Gui.ContentEditors;
 using SandcastleBuilder.Gui.Properties;
+
+using SandcastleBuilder.MicrosoftHelpViewer;
 
 using SandcastleBuilder.Utils;
 using SandcastleBuilder.Utils.BuildEngine;
@@ -529,7 +532,16 @@ namespace SandcastleBuilder.Gui
 
             // Set the current directory to My Documents so that people don't
             // save stuff in the SHFB folder by default.
-            Directory.SetCurrentDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            try
+            {
+                Directory.SetCurrentDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
+            }
+            catch
+            {
+                // This doesn't always work if they use a mapped network drive
+                // for My Documents.  In that case, just ignore the failure and
+                // stay put.
+            }
 
             // If not starting out minimized, attempt to load the last used
             // window size and position.
@@ -1340,10 +1352,9 @@ namespace SandcastleBuilder.Gui
         /// <param name="e">The event argumenst</param>
         private void ctxViewHelpMenu_Opening(object sender, CancelEventArgs e)
         {
-            miViewHtmlHelp1.Enabled = ((project.HelpFileFormat &
-                HelpFileFormat.HtmlHelp1) != 0);
-            miViewMSHelp2.Enabled = ((project.HelpFileFormat &
-                HelpFileFormat.MSHelp2) != 0);
+            miViewHtmlHelp1.Enabled = ((project.HelpFileFormat & HelpFileFormat.HtmlHelp1) != 0);
+            miViewMSHelp2.Enabled = ((project.HelpFileFormat & HelpFileFormat.MSHelp2) != 0);
+            miViewMSHelpViewer.Enabled = ((project.HelpFileFormat & HelpFileFormat.MSHelpViewer) != 0);
             miViewAspNetWebsite.Enabled = miViewHtmlWebsite.Enabled =
                 ((project.HelpFileFormat & HelpFileFormat.Website) != 0);
             miOpenHelpAfterBuild.Checked = Settings.Default.OpenHelpAfterBuild;
@@ -1366,7 +1377,10 @@ namespace SandcastleBuilder.Gui
                 if((project.HelpFileFormat & HelpFileFormat.MSHelp2) != 0)
                     miViewBuiltHelpFile_Click(miViewMSHelp2, e);
                 else
-                    miViewAspNetWebsite_Click(sender, e);
+                    if((project.HelpFileFormat & HelpFileFormat.MSHelpViewer) != 0)
+                        miViewMSHelpViewer_Click(sender, e);
+                    else
+                        miViewAspNetWebsite_Click(sender, e);
         }
 
         /// <summary>
@@ -1377,13 +1391,11 @@ namespace SandcastleBuilder.Gui
         /// <param name="e">The event arguments</param>
         private void miViewBuiltHelpFile_Click(object sender, EventArgs e)
         {
-            // Make sure we start out in the project's output folder
-            // in case the output folder is relative to it.
-            Directory.SetCurrentDirectory(Path.GetDirectoryName(
-                Path.GetFullPath(project.Filename)));
+            // Make sure we start out in the project's output folder in case the output folder
+            // is relative to it.
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Path.GetFullPath(project.Filename)));
 
-            string outputPath = project.OutputPath,
-                help2Viewer = Settings.Default.HTMLHelp2ViewerPath;
+            string outputPath = project.OutputPath, help2Viewer = Settings.Default.HTMLHelp2ViewerPath;
 
             if(String.IsNullOrEmpty(outputPath))
                 outputPath = Directory.GetCurrentDirectory();
@@ -1399,13 +1411,10 @@ namespace SandcastleBuilder.Gui
 
                     if(help2Viewer.Length == 0 || !File.Exists(help2Viewer))
                     {
-                        MessageBox.Show("MS Help 2 files must be registered " +
-                            "in a collection to be viewed or you can use a " +
-                            "standalone viewer.  Use Project | User " +
-                            "Preferences to define a standalone viewer.  " +
-                            "See Links to Resources in the help file if you " +
-                            "need one.", Constants.AppName,
-                            MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        MessageBox.Show("MS Help 2 files must be registered in a collection to be viewed " +
+                            "or you can use a standalone viewer.  Use Project | User Preferences to define a " +
+                            "standalone viewer.  See Links to Resources in the help file if you need one.",
+                            Constants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         return;
                     }
                 }
@@ -1414,10 +1423,8 @@ namespace SandcastleBuilder.Gui
 
             if(!File.Exists(outputPath))
             {
-                MessageBox.Show("A copy of the help file does not appear to " +
-                    "exist yet.  It may need to be built.",
-                    Constants.AppName, MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                MessageBox.Show("A copy of the help file does not appear to exist yet.  It may need to be built.",
+                    Constants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -1431,10 +1438,22 @@ namespace SandcastleBuilder.Gui
             catch(Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
-                MessageBox.Show(String.Format(CultureInfo.CurrentCulture,
-                    "Unable to open help file '{0}'\r\nReason: {1}",
-                    outputPath, ex.Message), Constants.AppName,
-                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show(String.Format(CultureInfo.CurrentCulture, "Unable to open help file '{0}'\r\nReason: {1}",
+                    outputPath, ex.Message), Constants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+        }
+
+        /// <summary>
+        /// Launch the H3 Viewer to view a Microsoft Help Viewer file.  This
+        /// will optionally install it first.
+        /// </summary>
+        /// <param name="sender">The sender of the event</param>
+        /// <param name="e">The event arguments</param>
+        private void miViewMSHelpViewer_Click(object sender, EventArgs e)
+        {
+            using(LaunchMSHelpViewerDlg dlg = new LaunchMSHelpViewerDlg(project))
+            {
+                dlg.ShowDialog();
             }
         }
 
@@ -1559,6 +1578,32 @@ namespace SandcastleBuilder.Gui
                     "Unable to open ASP.NET website '{0}'\r\nReason: {1}",
                     outputPath, ex.Message), Constants.AppName,
                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+        }
+
+        /// <summary>
+        /// Launch the Help Library Manager for interactive use based on the
+        /// current project's settings.
+        /// </summary>
+        /// <param name="sender">The sender of the event</param>
+        /// <param name="e">The event arguments</param>
+        private void miLaunchHlm_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                HelpLibraryManager hlm = new HelpLibraryManager();
+
+                hlm.LaunchInteractive(String.Format(CultureInfo.InvariantCulture,
+                    "/product \"{0}\" /version \"{1}\" /locale {2} /brandingPackage Dev10.mshc",
+                    project.CatalogProductId, project.CatalogVersion, project.Language.Name));
+            }
+            catch(Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+
+                MessageBox.Show(String.Format(CultureInfo.CurrentCulture,
+                    "Unable to launch Help Library Manager.  Reason:\r\n{0}",
+                    ex.Message), Constants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 

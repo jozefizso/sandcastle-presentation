@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder
 // File    : AssemblyInfo.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 01/03/2010
+// Updated : 06/06/2010
 // Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -17,25 +17,10 @@
 // Version     Date     Who  Comments
 // ============================================================================
 // 1.0.0.0  08/02/2006  EFW  Created the code
-// 1.1.0.0  08/22/2006  EFW  Added support for building MS Help 2 files
-// 1.2.0.0  09/02/2006  EFW  Various additions and updates
-// 1.3.0.0  09/08/2006  EFW  Various additions and updates
-// 1.3.2.0  10/10/2006  EFW  Various additions and updates
-// 1.3.4.0  12/24/2006  EFW  Various additions and updates
-// 1.5.0.0  06/19/2007  EFW  Various additions and updates
-// 1.6.0.0  09/30/2007  EFW  Various additions and updates
-// 1.8.0.0  06/20/2008  EFW  Implemented new MSBuild project format
 //=============================================================================
 
 using System;
 using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Security.Permissions;
-
-// Resources contained within the assembly are English
-[assembly: NeutralResourcesLanguageAttribute("en")]
 
 //
 // General Information about an assembly is controlled through the following
@@ -44,28 +29,10 @@ using System.Security.Permissions;
 //
 [assembly: AssemblyProduct("Sandcastle Help File Builder GUI")]
 [assembly: AssemblyTitle("Sandcastle Help File Builder GUI")]
-[assembly: AssemblyDescription("A GUI interface used to help create " +
-    "configuration files used to build HTML help documentation using Sandcastle.")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Eric Woodruff")]
-[assembly: AssemblyCopyright("Copyright \xA9 2006-2010, Eric Woodruff, All Rights Reserved")]
-[assembly: AssemblyTrademark("Eric Woodruff, All Rights Reserved")]
-[assembly: AssemblyCulture("")]
+[assembly: AssemblyDescription("An IDE used to create project files that build " +
+    "help documentation in various formats with Microsoft's Sandcastle tools.")]
+
 [assembly: CLSCompliant(true)]
-[assembly: ComVisible(false)]
 
-// No special permissions are required by this assembly
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
-
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.8.0.3")]
+// See AssemblyInfoShared.cs for the shared attributes common to all projects
+// in the solution.

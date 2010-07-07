@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Components
 // File    : PostTransformComponent.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 06/02/2008
-// Note    : Copyright 2006-2008, Eric Woodruff, All rights reserved
+// Updated : 06/28/2010
+// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a build component that is a companion to the
@@ -37,6 +37,9 @@
 // 1.7.0.0  06/01/2008  EFW  Removed language filter support for Hana and
 //                           Prototype due to changes in the way the
 //                           transformations implement it.
+// 1.9.0.0  06/06/2010  EFW  Replaced outputPath element with an outputPaths
+//                           element that supports multiple help file format
+//                           output locations.
 //=============================================================================
 
 using System;
@@ -46,8 +49,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
@@ -93,10 +94,15 @@ namespace SandcastleBuilder.Components
     ///     &lt;colorizer stylesheet="highlight.css" scriptFile="highlight.js"
     ///        copyImage="CopyCode.gif" /&gt;
     ///
-    ///     &lt;!-- Base output path for the files (required).  This should
+    ///     &lt;!-- Base output paths for the files (required).  These should
     ///          match the parent folder of the output path of the HTML files
-    ///          (see SaveComponent). --&gt;
-    ///     &lt;outputPath value="Output" /&gt;
+    ///          (see each of the SaveComponent instances below). --&gt;
+    ///     &lt;outputPaths&gt;
+    ///       &lt;path value="Output\HtmlHelp1\" /&gt;
+    ///       &lt;path value="Output\MSHelp2\" /&gt;
+    ///       &lt;path value="Output\MSHelpViewer\" /&gt;
+    ///       &lt;path value="Output\Website\" /&gt;
+    ///     &lt;/outputPaths&gt;
     ///
     ///     &lt;!-- Logo image file (optional).  Filename is required.  The
     ///          height, width, altText, placement, and alignment attributes
@@ -109,6 +115,8 @@ namespace SandcastleBuilder.Components
     public class PostTransformComponent : BuildComponent
     {
         #region Logo placement enumerations
+        //=====================================================================
+
         /// <summary>
         /// This enumeration defines the logo placement options
         /// </summary>
@@ -140,15 +148,16 @@ namespace SandcastleBuilder.Components
 
         #region Private data members
         //=====================================================================
-        // Private data members
 
         // Script modification flag
 //        private static bool scriptsModified;
 
-        // The stylesheet, script, and image files to include and the output
-        // path.
-        private string stylesheet, scriptFile, copyImage, copyImage_h,
-            outputPath, destStylesheet, destScriptFile, destImageFile;
+        // Output folder paths
+        private List<string> outputPaths;
+
+        // The stylesheet, script, and image files to include and the output path
+        private string stylesheet, scriptFile, copyImage, copyImage_h;
+        private bool colorizerFilesCopied, logoFileCopied;
 
         // Logo properties
         private string logoFilename, logoAltText, alignment;
@@ -157,6 +166,8 @@ namespace SandcastleBuilder.Components
         #endregion
 
         #region Constructor
+        //=====================================================================
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -174,11 +185,12 @@ namespace SandcastleBuilder.Components
             Assembly asm = Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
 
-            base.WriteMessage(MessageLevel.Info, String.Format(
-                CultureInfo.InvariantCulture,
+            base.WriteMessage(MessageLevel.Info, String.Format(CultureInfo.InvariantCulture,
                 "\r\n    [{0}, version {1}]\r\n    Post-Transform Component. " +
                 "{2}\r\n    http://SHFB.CodePlex.com", fvi.ProductName,
                 fvi.ProductVersion, fvi.LegalCopyright));
+
+            outputPaths = new List<string>();
 
             // The <colorizer> element is required and defines the colorizer
             // file locations.
@@ -205,15 +217,31 @@ namespace SandcastleBuilder.Components
                 throw new ConfigurationErrorsException("You must specify a " +
                     "'copyImage' attribute on the <colorizer> element");
 
-            // This specifies the output and the XPath expression used
-            // to get the filename.  If the base class found them, we will.
+            // This element is obsolete, if found, tell the user to edit and save the configuration
             nav = configuration.SelectSingleNode("outputPath");
-            if(nav != null)
-                outputPath = nav.GetAttribute("value", String.Empty);
 
-            if(String.IsNullOrEmpty(outputPath))
-                throw new ConfigurationErrorsException("You must specify a " +
-                    "'value' attribute on the <outputPath> element");
+            if(nav != null)
+                throw new ConfigurationErrorsException("The PostTransformComponent configuration contains an " +
+                    "obsolete <outputPath> element.  Please edit the configuration to update it with the new " +
+                    "<outputPaths> element.");
+
+            // Get the output paths
+            foreach(XPathNavigator path in configuration.Select("outputPaths/path"))
+            {
+                attr = path.GetAttribute("value", String.Empty);
+
+                if(attr[attr.Length - 1] != '\\')
+                    attr += @"\";
+
+                if(!Directory.Exists(attr))
+                    throw new ConfigurationErrorsException("The output path '" + attr + "' must exist");
+
+                outputPaths.Add(attr);
+            }
+
+            if(outputPaths.Count == 0)
+                throw new ConfigurationErrorsException("You must specify at least one <path> element in the " +
+                    "<outputPaths> element");
 
             // All present.  Make sure they exist.
             stylesheet = Path.GetFullPath(stylesheet);
@@ -230,33 +258,16 @@ namespace SandcastleBuilder.Components
                 copyImage_h = copyImage.Substring(0, pos) + "_h" +
                     copyImage.Substring(pos);
 
-            if(outputPath[outputPath.Length - 1] != '\\')
-                outputPath += @"\";
-
-            // Auto-correct the path if it ends in "html\".  It used to be
-            // that way but now it copies the colorizer files to the common
-            // scripts, styles, and icons folders in the root folder.
-            if(outputPath.EndsWith("html\\", StringComparison.OrdinalIgnoreCase))
-                outputPath = outputPath.Substring(0, outputPath.Length - 5);
+            if(!File.Exists(stylesheet))
+                throw new ConfigurationErrorsException("Could not find stylesheet file: " + stylesheet);
 
             if(!File.Exists(stylesheet))
-                throw new ConfigurationErrorsException("Could not find " +
-                    "stylesheet file: " + stylesheet);
-
-            if(!File.Exists(stylesheet))
-                throw new ConfigurationErrorsException("Could not find " +
-                    "script file: " + scriptFile);
+                throw new ConfigurationErrorsException("Could not find script file: " + scriptFile);
 
             if(!File.Exists(copyImage))
-                throw new ConfigurationErrorsException("Could not find " +
-                    "image file: " + copyImage);
+                throw new ConfigurationErrorsException("Could not find image file: " + copyImage);
 
-            if(!Directory.Exists(outputPath))
-                throw new ConfigurationErrorsException("The output path '" +
-                    outputPath + "' must exist");
-
-            // The logo element is optional.  The file must exist if
-            // specified.
+            // The logo element is optional.  The file must exist if specified.
             nav = configuration.SelectSingleNode("logoFile");
             if(nav != null)
             {
@@ -265,22 +276,21 @@ namespace SandcastleBuilder.Components
                 if(!String.IsNullOrEmpty(logoFilename))
                 {
                     if(!File.Exists(logoFilename))
-                        throw new ConfigurationErrorsException("The logo " +
-                            "file '" + logoFilename + "' must exist");
+                        throw new ConfigurationErrorsException("The logo file '" + logoFilename + "' must exist");
 
                     logoAltText = nav.GetAttribute("altText", String.Empty);
 
                     attr = nav.GetAttribute("height", String.Empty);
+
                     if(!String.IsNullOrEmpty(attr))
                         if(!Int32.TryParse(attr, out logoHeight))
-                            throw new ConfigurationErrorsException("The logo " +
-                                "height must be an integer value");
+                            throw new ConfigurationErrorsException("The logo height must be an integer value");
 
                     attr = nav.GetAttribute("width", String.Empty);
+
                     if(!String.IsNullOrEmpty(attr))
                         if(!Int32.TryParse(attr, out logoWidth))
-                            throw new ConfigurationErrorsException("The logo " +
-                                "width must be an integer value");
+                            throw new ConfigurationErrorsException("The logo width must be an integer value");
 
                     // Ignore them if negative
                     if(logoHeight < 0)
@@ -291,13 +301,14 @@ namespace SandcastleBuilder.Components
 
                     // Placement and alignment are optional
                     attr = nav.GetAttribute("placement", String.Empty);
+
                     if(!String.IsNullOrEmpty(attr))
-                        placement = (LogoPlacement)Enum.Parse(
-                            typeof(LogoPlacement), attr, true);
+                        placement = (LogoPlacement)Enum.Parse(typeof(LogoPlacement), attr, true);
                     else
                         placement = LogoPlacement.Left;
 
                     attr = nav.GetAttribute("alignment", String.Empty);
+
                     if(!String.IsNullOrEmpty(attr))
                         alignment = attr;
                     else
@@ -308,6 +319,8 @@ namespace SandcastleBuilder.Components
         #endregion
 
         #region Apply the component
+        //=====================================================================
+
         /// <summary>
         /// This is implemented to perform the post-transformation tasks.
         /// </summary>
@@ -318,6 +331,7 @@ namespace SandcastleBuilder.Components
         {
             XmlNode head, node, codePreTag, parent, codeBlock;
             XmlAttribute attr;
+            string destStylesheet, destScriptFile, destImageFile;
             int pos;
 
             // Add the version information if possible
@@ -347,54 +361,68 @@ namespace SandcastleBuilder.Components
                 return;
 
             // Only copy the files if needed
-            if(destStylesheet == null)
+            if(!colorizerFilesCopied)
             {
-                destStylesheet = outputPath + @"styles\" +
-                    Path.GetFileName(stylesheet);
-                destScriptFile = outputPath + @"scripts\" +
-                    Path.GetFileName(scriptFile);
-                destImageFile = outputPath + @"icons\" + Path.GetFileName(
-                    CodeBlockComponent.CopyImageLocation);
-
-                if(!Directory.Exists(outputPath + @"styles"))
-                    Directory.CreateDirectory(outputPath + @"styles");
-
-                if(!Directory.Exists(outputPath + @"scripts"))
-                    Directory.CreateDirectory(outputPath + @"scripts");
-
-                if(!Directory.Exists(outputPath + @"icons"))
-                    Directory.CreateDirectory(outputPath + @"icons");
-
-                // All attributes are turned off so that we can delete it later
-                if(!File.Exists(destStylesheet))
+                foreach(string outputPath in outputPaths)
                 {
-                    File.Copy(stylesheet, destStylesheet);
-                    File.SetAttributes(destStylesheet, FileAttributes.Normal);
+                    destStylesheet = outputPath + @"styles\" + Path.GetFileName(stylesheet);
+                    destScriptFile = outputPath + @"scripts\" + Path.GetFileName(scriptFile);
+                    destImageFile = outputPath + @"icons\" + Path.GetFileName(CodeBlockComponent.CopyImageLocation);
+
+                    if(!Directory.Exists(outputPath + @"styles"))
+                        Directory.CreateDirectory(outputPath + @"styles");
+
+                    if(!Directory.Exists(outputPath + @"scripts"))
+                        Directory.CreateDirectory(outputPath + @"scripts");
+
+                    if(!Directory.Exists(outputPath + @"icons"))
+                        Directory.CreateDirectory(outputPath + @"icons");
+
+                    // All attributes are turned off so that we can delete it later
+                    if(!File.Exists(destStylesheet))
+                    {
+                        File.Copy(stylesheet, destStylesheet);
+                        File.SetAttributes(destStylesheet, FileAttributes.Normal);
+                    }
+
+                    if(!File.Exists(destScriptFile))
+                    {
+                        File.Copy(scriptFile, destScriptFile);
+                        File.SetAttributes(destScriptFile, FileAttributes.Normal);
+                    }
+
+                    // Always copy the image files, they may be different.  Also, delete the
+                    // destination file first if it exists as the filename casing may be different.
+                    if(File.Exists(destImageFile))
+                    {
+                        File.SetAttributes(destImageFile, FileAttributes.Normal);
+                        File.Delete(destImageFile);
+                    }
+
+                    File.Copy(copyImage, destImageFile);
+                    File.SetAttributes(destImageFile, FileAttributes.Normal);
+
+                    if(!File.Exists(copyImage_h))
+                        copyImage_h = copyImage;
+
+                    pos = destImageFile.LastIndexOf('.');
+
+                    if(pos == -1)
+                        destImageFile += "_h";
+                    else
+                        destImageFile = destImageFile.Substring(0, pos) + "_h" + destImageFile.Substring(pos);
+
+                    if(File.Exists(destImageFile))
+                    {
+                        File.SetAttributes(destImageFile, FileAttributes.Normal);
+                        File.Delete(destImageFile);
+                    }
+
+                    File.Copy(copyImage_h, destImageFile);
+                    File.SetAttributes(destImageFile, FileAttributes.Normal);
                 }
 
-                if(!File.Exists(destScriptFile))
-                {
-                    File.Copy(scriptFile, destScriptFile);
-                    File.SetAttributes(destScriptFile, FileAttributes.Normal);
-                }
-
-                // Always copy the image files, they may be different
-                File.Copy(copyImage, destImageFile, true);
-                File.SetAttributes(destImageFile, FileAttributes.Normal);
-
-                if(!File.Exists(copyImage_h))
-                    copyImage_h = copyImage;
-
-                pos = destImageFile.LastIndexOf('.');
-
-                if(pos == -1)
-                    destImageFile += "_h";
-                else
-                    destImageFile = destImageFile.Substring(0, pos) + "_h" +
-                        destImageFile.Substring(pos);
-
-                File.Copy(copyImage_h, destImageFile, true);
-                File.SetAttributes(destImageFile, FileAttributes.Normal);
+                colorizerFilesCopied = true;
             }
 
             // Find the <head> section
@@ -418,9 +446,9 @@ namespace SandcastleBuilder.Components
             attr.Value = "stylesheet";
             node.Attributes.Append(attr);
 
-            attr = document.CreateAttribute("href");
-            attr.Value = "../styles/" + Path.GetFileName(stylesheet);
-            node.Attributes.Append(attr);
+            node.InnerXml = String.Format(CultureInfo.InvariantCulture,
+                "<includeAttribute name='href' item='stylePath'><parameter>{0}</parameter></includeAttribute>",
+                Path.GetFileName(stylesheet));
 
             head.AppendChild(node);
 
@@ -431,23 +459,18 @@ namespace SandcastleBuilder.Components
             attr.Value = "text/javascript";
             node.Attributes.Append(attr);
 
-            attr = document.CreateAttribute("src");
-            attr.Value = "../scripts/" + Path.GetFileName(scriptFile);
-            node.Attributes.Append(attr);
-
             // Script tags cannot be self-closing so set their inner text
-            // to an empty string so that they render as an opening and a
-            // closing tag.  Note that if null, InnerText returns an empty
-            // string.  This looks redundant but it isn't.
-            node.InnerText = String.Empty;
+            // to a space so that they render as an opening and a closing tag.
+            node.InnerXml = String.Format(CultureInfo.InvariantCulture,
+                " <includeAttribute name='src' item='scriptPath'><parameter>{0}</parameter></includeAttribute>",
+                Path.GetFileName(scriptFile));
 
             head.AppendChild(node);
 
             // Strip out the Copy Code header and its related table used in the
             // VS2005 and Hana styles.  It doesn't work with the
             // CodeBlockComponent code blocks.
-            XmlNodeList codeSpans = document.SelectNodes(
-                "//span[@class='copyCode']");
+            XmlNodeList codeSpans = document.SelectNodes("//span[@class='copyCode']");
 
             // Handle the Prototype style
             if(codeSpans.Count == 0)
@@ -462,8 +485,7 @@ namespace SandcastleBuilder.Components
                     codePreTag = node.NextSibling.ChildNodes[0].ChildNodes[0];
 
                     // If it doesn't contain a marker, ignore it
-                    if(!codePreTag.InnerXml.StartsWith("@@_SHFB_",
-                      StringComparison.Ordinal))
+                    if(!codePreTag.InnerXml.StartsWith("@@_SHFB_", StringComparison.Ordinal))
                         continue;
 
                     parent = node.ParentNode.ParentNode;
@@ -472,18 +494,21 @@ namespace SandcastleBuilder.Components
                 }
                 else
                 {
+                    // Sometimes we get an empty code div in the VS2005 style and it ends up here.
+                    // If that happens, ignore it.
+                    if(copyCode.ChildNodes.Count == 0)
+                        continue;
+
                     // Prototype
                     parent = copyCode;
                     codePreTag = copyCode.ChildNodes[0];
 
                     // If it doesn't contain a marker, ignore it
-                    if(!codePreTag.InnerXml.StartsWith("@@_SHFB_",
-                      StringComparison.Ordinal))
+                    if(!codePreTag.InnerXml.StartsWith("@@_SHFB_", StringComparison.Ordinal))
                         continue;
                 }
 
-                if(CodeBlockComponent.ColorizedCodeBlocks.TryGetValue(
-                  codePreTag.InnerXml, out codeBlock))
+                if(CodeBlockComponent.ColorizedCodeBlocks.TryGetValue(codePreTag.InnerXml, out codeBlock))
                 {
                     // VS2005 adds an extra span we can get rid of
                     if(parent.Name == "span")
@@ -494,8 +519,7 @@ namespace SandcastleBuilder.Components
                     }
 
                     // Replace the placeholder with the colorized code
-                    codePreTag.ParentNode.ReplaceChild(codeBlock.ChildNodes[1],
-                        codePreTag);
+                    codePreTag.ParentNode.ReplaceChild(codeBlock.ChildNodes[1], codePreTag);
 
                     // Replace the code div with the colorized code container
                     parent.ParentNode.ReplaceChild(codeBlock, parent);
@@ -504,20 +528,30 @@ namespace SandcastleBuilder.Components
                     codeBlock.AppendChild(parent);
                 }
                 else
-                    base.WriteMessage(MessageLevel.Warn, "Unable to locate " +
-                        "colorized code for place holder: " +
+                    base.WriteMessage(MessageLevel.Warn, "Unable to locate colorized code for place holder: " +
                         codePreTag.InnerXml);
             }
 
-            // Swap the literal "Copy" text with an include item so that it
-            // gets localized.
-            codeSpans = document.SelectNodes(
-                "//span[@class='highlight-copycode']");
+            // Swap the literal "Copy" text with an include item so that it gets localized
+            codeSpans = document.SelectNodes("//span[@class='highlight-copycode']");
 
             foreach(XmlNode span in codeSpans)
-                span.InnerXml = span.InnerXml.Replace(
-                    " " + CodeBlockComponent.CopyText,
+            {
+                // Find the "Copy" image element and replace its "src" attribute with an include
+                // item that picks up the correct path.  It is different for MS Help Viewer.
+                var copyImage = span.SelectSingleNode("img");
+
+                if(copyImage != null)
+                {
+                    copyImage.Attributes.Remove(copyImage.Attributes["src"]);
+                    copyImage.InnerXml = String.Format(CultureInfo.InvariantCulture,
+                        "<includeAttribute name='src' item='iconPath'><parameter>{0}</parameter>" +
+                        "</includeAttribute>", Path.GetFileName(CodeBlockComponent.CopyImageLocation));
+                }
+
+                span.InnerXml = span.InnerXml.Replace(" " + CodeBlockComponent.CopyText,
                     " <include item=\"copyCode\"/>");
+            }
 
 /* 1.7.0.0 - Removed - See below.
             // If there are code blocks associated with the Prototype or
@@ -534,6 +568,8 @@ namespace SandcastleBuilder.Components
         #endregion
 
         #region Helper methods
+        //=====================================================================
+
         /// <summary>
         /// This is used to add version information to the topic
         /// </summary>
@@ -551,13 +587,11 @@ namespace SandcastleBuilder.Components
             int idx = 0;
 
             // Prototype style...
-            locationInfo = document.SelectNodes("//include[@item='" +
-                "locationInformation']");
+            locationInfo = document.SelectNodes("//include[@item='locationInformation']");
 
             // ... or VS2005/Hana style?
             if(locationInfo.Count == 0)
-                locationInfo = document.SelectNodes("//include[@item='" +
-                    "assemblyNameAndModule']");
+                locationInfo = document.SelectNodes("//include[@item='assemblyNameAndModule']");
             else
             {
                 // For prototype, move the version information below
@@ -567,15 +601,13 @@ namespace SandcastleBuilder.Components
                 if(footer != null)
                 {
                     footer.ParentNode.RemoveChild(footer);
-                    locationInfo[0].ParentNode.InsertBefore(footer,
-                        locationInfo[0]);
+                    locationInfo[0].ParentNode.InsertBefore(footer, locationInfo[0]);
                 }
             }
 
             foreach(XmlNode location in locationInfo)
             {
-                parameter = document.CreateNode(XmlNodeType.Element,
-                    "parameter", null);
+                parameter = document.CreateNode(XmlNodeType.Element, "parameter", null);
 
                 if(idx < VersionInfoComponent.ItemVersions.Count)
                     parameter.InnerXml = VersionInfoComponent.ItemVersions[idx];
@@ -599,21 +631,29 @@ namespace SandcastleBuilder.Components
             string imgWidth, imgHeight, imgAltText, filename, destFile;
 
             filename = Path.GetFileName(logoFilename);
-            destFile = outputPath + @"images\" + filename;
 
-            // Copy the logo to the images folder if not there already.
-            // All attributes are turned off so that we can delete it later.
-            if(!File.Exists(destFile))
+            if(!logoFileCopied)
             {
-                if(!Directory.Exists(outputPath + @"images"))
-                    Directory.CreateDirectory(outputPath + @"images");
+                foreach(string outputPath in outputPaths)
+                {
+                    destFile = outputPath + @"icons\" + filename;
 
-                File.Copy(logoFilename, destFile);
-                File.SetAttributes(destFile, FileAttributes.Normal);
+                    // Copy the logo to the icons folder if not there already.
+                    // All attributes are turned off so that we can delete it later.
+                    if(!File.Exists(destFile))
+                    {
+                        if(!Directory.Exists(outputPath + @"icons"))
+                            Directory.CreateDirectory(outputPath + @"icons");
+
+                        File.Copy(logoFilename, destFile);
+                        File.SetAttributes(destFile, FileAttributes.Normal);
+                    }
+                }
+
+                logoFileCopied = true;
             }
 
-            imgAltText = (String.IsNullOrEmpty(logoAltText)) ? String.Empty :
-                " alt='" + logoAltText + "'";
+            imgAltText = (String.IsNullOrEmpty(logoAltText)) ? String.Empty : " alt='" + logoAltText + "'";
             imgWidth = (logoWidth == 0) ? String.Empty : " width='" +
                 logoWidth.ToString(CultureInfo.InvariantCulture) + "'";
             imgHeight = (logoHeight == 0) ? String.Empty : " height='" +
@@ -629,38 +669,33 @@ namespace SandcastleBuilder.Components
                 switch(placement)
                 {
                     case LogoPlacement.Left:
-                        div.InnerXml = String.Format(
-                            CultureInfo.InvariantCulture,
+                        div.InnerXml = String.Format(CultureInfo.InvariantCulture,
                             "<table border='0' width='100%' cellpadding='0' " +
                             "cellspacing='0'><tr><td align='center' " +
-                            "style='padding-right: 10px'><img src='../images/" +
-                            "{0}'{1}{2}{3}/></td><td valign='top' " +
-                            "width='100%'>{4}</td></tr></table>", filename,
-                            imgAltText, imgWidth, imgHeight, div.InnerXml);
+                            "style='padding-right: 10px'><img {0}{1}{2}><includeAttribute name='src' " +
+                            "item='iconPath'><parameter>{3}</parameter></includeAttribute></img></td>" +
+                            "<td valign='top' width='100%'>{4}</td></tr></table>", imgAltText, imgWidth,
+                            imgHeight, filename, div.InnerXml);
                         break;
 
                     case LogoPlacement.Right:
-                        div.InnerXml = String.Format(
-                            CultureInfo.InvariantCulture,
+                        div.InnerXml = String.Format(CultureInfo.InvariantCulture,
                             "<table border='0' width='100%' cellpadding='0' " +
                             "cellspacing='0'><tr><td valign='top' " +
                             "width='100%'>{0}</td><td align='center' " +
-                            "style='padding-left: 10px'><img src=" +
-                            "'../images/{1}'{2}{3}{4}/></td></tr></table>",
-                            div.InnerXml, filename, imgAltText, imgWidth,
-                            imgHeight);
+                            "style='padding-left: 10px'><img {1}{2}{3}><includeAttribute name='src' " +
+                            "item='iconPath'><parameter>{4}</parameter></includeAttribute></img>" +
+                            "</td></tr></table>", div.InnerXml, imgAltText, imgWidth, imgHeight, filename);
                         break;
 
                     case LogoPlacement.Above:
-                        div.InnerXml = String.Format(
-                            CultureInfo.InvariantCulture,
+                        div.InnerXml = String.Format(CultureInfo.InvariantCulture,
                             "<table border='0' width='100%' cellpadding='0' " +
                             "cellspacing='0'><tr><td align='{0}' " +
-                            "style='padding-bottom: 5px'>" +
-                            "<img src='../images/{1}'{2}{3}{4}/></td></tr>" +
+                            "style='padding-bottom: 5px'><img {1}{2}{3}><includeAttribute name='src' " +
+                            "item='iconPath'><parameter>{4}</parameter></includeAttribute></img></td></tr>" +
                             "<tr><td valign='top' width='100%'>{5}</td></tr>" +
-                            "</table>", alignment, filename, imgAltText,
-                            imgWidth, imgHeight, div.InnerXml);
+                            "</table>", alignment, imgAltText, imgWidth, imgHeight, filename, div.InnerXml);
                         break;
                 }
             }
@@ -683,18 +718,15 @@ namespace SandcastleBuilder.Components
                         if(div.ChildNodes.Count != 1)
                         {
                             // Insert a new row with a cell spanning all rows
-                            div.InnerXml = String.Format(
-                                CultureInfo.InvariantCulture,
-                                "<tr><td rowspan='4' align='center' " +
-                                "style='width: 1px; padding: 0px'><img " +
-                                "src='../images/{0}'{1}{2}{3}/></td></tr>{4}",
-                                filename, imgAltText, imgWidth, imgHeight,
-                                div.InnerXml);
+                            div.InnerXml = String.Format(CultureInfo.InvariantCulture,
+                                "<tr><td rowspan='4' align='center' style='width: 1px; padding: 0px'>" +
+                                "<img {0}{1}{2}><includeAttribute name='src' item='iconPath'>" +
+                                "<parameter>{3}</parameter></includeAttribute></img></td></tr>{4}",
+                                imgAltText, imgWidth, imgHeight, filename, div.InnerXml);
 
                             attr = document.CreateAttribute("colspan");
                             attr.Value = "2";
-                            div.ChildNodes[4].ChildNodes[0].Attributes.Append(
-                                attr);
+                            div.ChildNodes[4].ChildNodes[0].Attributes.Append(attr);
                         }
                         else
                         {
@@ -706,14 +738,12 @@ namespace SandcastleBuilder.Components
                             bottomTable = devLangsMenu.NextSibling;
                             memberOptionsMenu = memberFrameworksMenu = null;
 
-                            if(bottomTable.Attributes["id"].Value ==
-                              "memberOptionsMenu")
+                            if(bottomTable.Attributes["id"].Value == "memberOptionsMenu")
                             {
                                 memberOptionsMenu = bottomTable;
                                 bottomTable = bottomTable.NextSibling;
 
-                                if(bottomTable.Attributes["id"].Value ==
-                                  "memberFrameworksMenu")
+                                if(bottomTable.Attributes["id"].Value == "memberFrameworksMenu")
                                 {
                                     memberFrameworksMenu = bottomTable;
                                     bottomTable = bottomTable.NextSibling;
@@ -722,18 +752,15 @@ namespace SandcastleBuilder.Components
 
                             gradientTable = bottomTable.NextSibling;
 
-                            divHeader.InnerXml = String.Format(
-                                CultureInfo.InvariantCulture,
+                            divHeader.InnerXml = String.Format(CultureInfo.InvariantCulture,
                                 "<table cellspacing='0' cellpadding='0'><tr>" +
-                                "<td align='center' style='width: 1px; " +
-                                "padding: 0px'><img src='../images/{0}'{1}{2}" +
-                                "{3}/></td><td>{4}{5}{6}{7}{8}</td></tr>" +
-                                "</table>{9}", filename, imgAltText, imgWidth,
-                                imgHeight, div.OuterXml, devLangsMenu.OuterXml,
-                                (memberOptionsMenu == null) ? String.Empty :
-                                    memberOptionsMenu.OuterXml,
-                                (memberFrameworksMenu == null) ? String.Empty :
-                                    memberFrameworksMenu.OuterXml,
+                                "<td align='center' style='width: 1px; padding: 0px'>" +
+                                "<img {0}{1}{2}><includeAttribute name='src' item='iconPath'>" +
+                                "<parameter>{3}</parameter></includeAttribute></img></td>" +
+                                "<td>{4}{5}{6}{7}{8}</td></tr></table>{9}", imgAltText, imgWidth, imgHeight,
+                                filename, div.OuterXml, devLangsMenu.OuterXml,
+                                (memberOptionsMenu == null) ? String.Empty : memberOptionsMenu.OuterXml,
+                                (memberFrameworksMenu == null) ? String.Empty : memberFrameworksMenu.OuterXml,
                                 bottomTable.OuterXml, gradientTable.OuterXml);
                         }
                         break;
@@ -742,24 +769,20 @@ namespace SandcastleBuilder.Components
                         // Hana style?
                         if(div.ChildNodes.Count != 1)
                         {
-                            // For this, we add a second cell to the first row
-                            // that spans three rows.
+                            // For this, we add a second cell to the first row that spans three rows
                             div = div.ChildNodes[0];
-                            div.InnerXml += String.Format(
-                                CultureInfo.InvariantCulture,
-                                "<td rowspan='3' align='center' " +
-                                "style='width: 1px; padding: 0px'>" +
-                                "<img src='../images/{0}'{1}{2}{3}/></td>",
-                                filename, imgAltText, imgWidth, imgHeight);
+                            div.InnerXml += String.Format(CultureInfo.InvariantCulture,
+                                "<td rowspan='3' align='center' style='width: 1px; padding: 0px'>" +
+                                "<img {0}{1}{2}><includeAttribute name='src' item='iconPath'>" +
+                                "<parameter>{3}</parameter></includeAttribute></img></td>",
+                                imgAltText, imgWidth, imgHeight, filename);
 
-                            // For Hana, we need to add a colspan attribute to
-                            // the last row.
+                            // For Hana, we need to add a colspan attribute to the last row
                             div = div.ParentNode;
 
                             attr = document.CreateAttribute("colspan");
                             attr.Value = "2";
-                            div.ChildNodes[3].ChildNodes[0].Attributes.Append(
-                                attr);
+                            div.ChildNodes[3].ChildNodes[0].Attributes.Append(attr);
                         }
                         else
                         {
@@ -771,14 +794,12 @@ namespace SandcastleBuilder.Components
                             bottomTable = devLangsMenu.NextSibling;
                             memberOptionsMenu = memberFrameworksMenu = null;
 
-                            if(bottomTable.Attributes["id"].Value ==
-                              "memberOptionsMenu")
+                            if(bottomTable.Attributes["id"].Value == "memberOptionsMenu")
                             {
                                 memberOptionsMenu = bottomTable;
                                 bottomTable = bottomTable.NextSibling;
 
-                                if(bottomTable.Attributes["id"].Value ==
-                                  "memberFrameworksMenu")
+                                if(bottomTable.Attributes["id"].Value == "memberFrameworksMenu")
                                 {
                                     memberFrameworksMenu = bottomTable;
                                     bottomTable = bottomTable.NextSibling;
@@ -787,29 +808,24 @@ namespace SandcastleBuilder.Components
 
                             gradientTable = bottomTable.NextSibling;
 
-                            divHeader.InnerXml = String.Format(
-                                CultureInfo.InvariantCulture,
-                                "<table cellspacing='0' cellpadding='0'><tr>" +
-                                "<td>{4}{5}{6}{7}{8}</td><td align='center' " +
-                                "style='width: 1px; padding: 0px'><img " +
-                                "src='../images/{0}'{1}{2}{3}/></td></tr>" +
-                                "</table>{9}", filename, imgAltText, imgWidth,
-                                imgHeight, div.OuterXml, devLangsMenu.OuterXml,
-                                (memberOptionsMenu == null) ? String.Empty :
-                                    memberOptionsMenu.OuterXml,
-                                (memberFrameworksMenu == null) ? String.Empty :
-                                    memberFrameworksMenu.OuterXml,
+                            divHeader.InnerXml = String.Format(CultureInfo.InvariantCulture,
+                                "<table cellspacing='0' cellpadding='0'><tr><td>{4}{5}{6}{7}{8}</td>" +
+                                "<td align='center' style='width: 1px; padding: 0px'>" +
+                                "<img {0}{1}{2}><includeAttribute name='src' item='iconPath'>" +
+                                "<parameter>{3}</parameter></includeAttribute></img></td></tr></table>{9}",
+                                imgAltText, imgWidth, imgHeight, filename, div.OuterXml, devLangsMenu.OuterXml,
+                                (memberOptionsMenu == null) ? String.Empty : memberOptionsMenu.OuterXml,
+                                (memberFrameworksMenu == null) ? String.Empty : memberFrameworksMenu.OuterXml,
                                 bottomTable.OuterXml, gradientTable.OuterXml);
                         }
                         break;
 
                     case LogoPlacement.Above:
                         // Add a new first row
-                        div.InnerXml = String.Format(
-                            CultureInfo.InvariantCulture,
-                            "<tr><td align='{0}'><img src='../images/{1}'{2}" +
-                            "{3}{4}/></td></tr>{5}", alignment, filename,
-                            imgAltText, imgWidth, imgHeight, div.InnerXml);
+                        div.InnerXml = String.Format(CultureInfo.InvariantCulture,
+                            "<tr><td align='{0}'><img {1}{2}{3}><includeAttribute name='src' " +
+                            "item='iconPath'><parameter>{4}</parameter></includeAttribute></img></td></tr>{5}",
+                            alignment, imgAltText, imgWidth, imgHeight, filename, div.InnerXml);
                         break;
                 }
             }
@@ -1040,6 +1056,8 @@ Selector.prototype.selectAndSetLanguage = function(data, name, style)
         #endregion
 
         #region Static configuration method for use with SHFB
+        //=====================================================================
+
         /// <summary>
         /// This static method is used by the Sandcastle Help File Builder to
         /// let the component perform its own configuration.
@@ -1048,8 +1066,7 @@ Selector.prototype.selectAndSetLanguage = function(data, name, style)
         /// <returns>A string containing the new configuration XML fragment</returns>
         public static string ConfigureComponent(string currentConfig)
         {
-            using(PostTransformConfigDlg dlg =
-              new PostTransformConfigDlg(currentConfig))
+            using(PostTransformConfigDlg dlg = new PostTransformConfigDlg(currentConfig))
             {
                 if(dlg.ShowDialog() == DialogResult.OK)
                     currentConfig = dlg.Configuration;

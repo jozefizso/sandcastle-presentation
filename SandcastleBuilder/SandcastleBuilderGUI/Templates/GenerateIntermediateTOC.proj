@@ -24,14 +24,14 @@
   <!-- The Generate Intermediate TOC target -->
   <Target Name="GenerateIntermediateTOC">
     <!-- Transform the reflection output based on the presentation style -->
-    <XslTransform Condition="'$(PresentationStyle)' == 'prototype'"
+    <SandcastleBuilder.Utils.MSBuild.XslTransform Condition="'$(PresentationStyle)' == 'prototype'"
       SandcastlePath="$(SandcastlePath)"
       WorkingFolder="$(WorkingFolder)"
       Transformations="ProductionTransforms\CreatePrototypeToc.xsl"
       InputFile="reflection.xml"
       OutputFile="toc.xml" />
 
-    <XslTransform Condition="'$(PresentationStyle)' != 'prototype'"
+    <SandcastleBuilder.Utils.MSBuild.XslTransform Condition="'$(PresentationStyle)' != 'prototype'"
       SandcastlePath="$(SandcastlePath)"
       WorkingFolder="$(WorkingFolder)"
       Transformations="ProductionTransforms\CreateVSToc.xsl"

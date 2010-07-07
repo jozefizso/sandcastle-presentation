@@ -7,7 +7,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7613949a-fbf7-4327-bfad-7c31716e3352}</ProjectGuid>
-    <SHFBSchemaVersion>1.8.0.3</SHFBSchemaVersion>
+    <SHFBSchemaVersion>1.9.0.0</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
          Studio adds them anyway -->
     <AssemblyName>Documentation</AssemblyName>
@@ -16,7 +16,7 @@
     <!-- SHFB properties -->
     <OutputPath>.\Help\</OutputPath>
     <HtmlHelpName>BuildComponents</HtmlHelpName>
-    <ProjectSummary>Sandcastle Standalone Build Components.  Written by Eric Woodruff %28&amp;lt%3ba href=&amp;quot%3bmailto:Eric%40EWoodruff.us%3fSubject=Sandcastle Standalone Build Components&amp;quot%3b&amp;gt%3bEric%40EWoodruff.us&amp;lt%3b/a&amp;gt%3b%29.  For the latest version visit &amp;lt%3ba href=&amp;quot%3bhttp://SHFB.CodePlex.com&amp;quot%3b target=&amp;quot%3b_blank&amp;quot%3b&amp;gt%3bhttp://SHFB.CodePlex.com&amp;lt%3b/a&amp;gt%3b.</ProjectSummary>
+    <ProjectSummary>Sandcastle Standalone Build Components and Tools.  Written by Eric Woodruff %28&amp;lt%3ba href=&amp;quot%3bmailto:Eric%40EWoodruff.us%3fSubject=Sandcastle Standalone Build Components&amp;quot%3b&amp;gt%3bEric%40EWoodruff.us&amp;lt%3b/a&amp;gt%3b%29.  For the latest version visit &amp;lt%3ba href=&amp;quot%3bhttp://SHFB.CodePlex.com&amp;quot%3b target=&amp;quot%3b_blank&amp;quot%3b&amp;gt%3bhttp://SHFB.CodePlex.com&amp;lt%3b/a&amp;gt%3b.</ProjectSummary>
     <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter, AutoDocumentDispose</MissingTags>
     <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
     <HtmlHelp1xCompilerPath>
@@ -29,13 +29,13 @@
     </WorkingPath>
     <BuildLogFile>Help\BuildComponents.log</BuildLogFile>
     <FrameworkVersion>3.5</FrameworkVersion>
-    <HelpTitle>Sandcastle Standalone Build Components Documentation</HelpTitle>
+    <HelpTitle>Sandcastle Standalone Build Components and Tools Documentation</HelpTitle>
     <CopyrightHref>http://www.EWoodruff.us</CopyrightHref>
     <CopyrightText>[v{%40HelpFileVersion}] Copyright \xA9 2006-2010, Eric Woodruff, All rights reserved</CopyrightText>
     <FeedbackEMailAddress>Eric%40EWoodruff.us</FeedbackEMailAddress>
     <PresentationStyle>vs2005</PresentationStyle>
     <SyntaxFilters>CSharp, VisualBasic</SyntaxFilters>
-    <HelpFileVersion>1.8.0.3</HelpFileVersion>
+    <HelpFileVersion>1.9.0.0</HelpFileVersion>
     <ComponentConfigurations>
       <ComponentConfig id="Post-transform Component" enabled="True">
         <component type="SandcastleBuilder.Components.PostTransformComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll" id="Post-transform Component">
@@ -47,27 +47,11 @@
           <colorizer stylesheet="{@SHFBFolder}Colorizer\highlight.css" scriptFile="{@SHFBFolder}Colorizer\highlight.js" copyImage="{@SHFBFolder}Colorizer\CopyCode.gif" />
           <!-- Output path for the files (required).  This should match the
                  output path of the HTML files (see SaveComponent below). -->
-          <outputPath value="Output\html" />
+          <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
           <!-- Logo image file (optional).  Filename is required. The height,
                  width, altText, placement, and alignment attributes are
                  optional. -->
           <logoFile filename="{@ProjectFolder}Media\Sandcastle.jpg" height="68" width="70" altText="Sandcastle Help File Builder" placement="left" alignment="left" />
-        </component>
-      </ComponentConfig>
-      <ComponentConfig id="Cached Framework Comments Index Data" enabled="True">
-        <component id="Cached Framework Comments Index Data" type="SandcastleBuilder.Components.CachedCopyFromIndexComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-          <index name="comments" value="/doc/members/member" key="@name" cache="100">
-{@CachedFrameworkCommentList}
-{@CommentFileList}
-            </index>
-          <copy name="comments" source="*" target="/document/comments" />
-        </component>
-      </ComponentConfig>
-      <ComponentConfig id="Cached MSDN URL References" enabled="True">
-        <component id="Cached MSDN URL References" type="SandcastleBuilder.Components.CachedResolveReferenceLinksComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll" locale="{@Locale}" linkTarget="{@SdkLinkTarget}">
-          <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
-          <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@SDKLinks}" />
-          <targets files="reflection.xml" type="{@ProjectLinks}" />
         </component>
       </ComponentConfig>
       <ComponentConfig id="Cached Reflection Index Data" enabled="True">
@@ -77,6 +61,39 @@
             <data files="reflection.xml" />
           </index>
           <copy name="reflection" source="*" target="/document/reference" />
+        </component>
+      </ComponentConfig>
+      <ComponentConfig id="Cached MSDN URL References" enabled="True">
+        <component id="Cached MSDN URL References" type="SandcastleBuilder.Components.CachedResolveReferenceLinksComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll" locale="{@Locale}" linkTarget="{@SdkLinkTarget}">
+          <helpOutput format="HtmlHelp1">
+            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@HtmlSdkLinkType}" />
+            <targets files="reflection.xml" type="Local" />
+          </helpOutput>
+          <helpOutput format="MSHelp2">
+            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelp2SdkLinkType}" />
+            <targets files="reflection.xml" type="Index" />
+          </helpOutput>
+          <helpOutput format="MSHelpViewer">
+            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelpViewerSdkLinkType}" />
+            <targets files="reflection.xml" type="Id" />
+          </helpOutput>
+          <helpOutput format="Website">
+            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@WebsiteSdkLinkType}" />
+            <targets files="reflection.xml" type="Local" />
+          </helpOutput>
+        </component>
+      </ComponentConfig>
+      <ComponentConfig id="Cached Framework Comments Index Data" enabled="True">
+        <component id="Cached Framework Comments Index Data" type="SandcastleBuilder.Components.CachedCopyFromIndexComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+          <index name="comments" value="/doc/members/member" key="@name" cache="100">
+{@CachedFrameworkCommentList}
+{@CommentFileList}
+            </index>
+          <copy name="comments" source="*" target="/document/comments" />
         </component>
       </ComponentConfig>
     </ComponentConfigurations>
@@ -90,14 +107,17 @@
     </NamespaceSummaries>
     <CleanIntermediates>False</CleanIntermediates>
     <PlugInConfigurations>
-      <PlugInConfig id="Additional Reference Links" enabled="True" xmlns="">
+      <PlugInConfig id="Additional Reference Links" enabled="True">
         <configuration>
           <targets>
-            <target linkType="None" helpFileProject="ReferenceLinks.shfbproj" />
+            <target htmlSdkLinkType="None" help2SdkLinkType="None" helpViewerSdkLinkType="None" websiteSdkLinkType="None" helpFileProject="ReferenceLinks.shfbproj" />
           </targets>
         </configuration>
       </PlugInConfig>
     </PlugInConfigurations>
+    <ProductTitle>Sandcastle Standalone Build Components and Tools</ProductTitle>
+    <VendorName>EWSoftware</VendorName>
+    <HelpFileFormat>HtmlHelp1, MSHelpViewer</HelpFileFormat>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in
        order for Visual Studio to perform the build.  The others are optional
@@ -121,6 +141,7 @@
   <ItemGroup>
     <Folder Include="BuildComponents\" />
     <Folder Include="BuildComponents\VersionHistory\" />
+    <Folder Include="Content\PropertiesWindow\" />
     <Folder Include="Media\" />
     <Folder Include="Content\GettingStarted\" />
     <Folder Include="Content\CompConfig\" />
@@ -166,6 +187,11 @@
     <None Include="BuildComponents\BindingRedirectResolver.aml" />
     <None Include="BuildComponents\VersionHistory\v1.8.0.2.aml" />
     <None Include="BuildComponents\VersionHistory\v1.8.0.3.aml" />
+    <None Include="BuildComponents\VersionHistory\v1.9.0.0.aml" />
+    <None Include="BuildComponents\MSHelpViewerRoot.aml" />
+    <None Include="Content\PropertiesWindow\HelpLibraryManagerLauncher.aml" />
+    <None Include="Content\CompConfig\MSHCComponent.aml" />
+    <None Include="Content\CompConfig\MultiFormatOutputComponent.aml" />
     <None Include="Content\CompConfig\SyntaxFilterFileDefinition.aml" />
     <None Include="Media\Sandcastle.jpg">
       <AlternateText>Sandcastle Help File Builder</AlternateText>

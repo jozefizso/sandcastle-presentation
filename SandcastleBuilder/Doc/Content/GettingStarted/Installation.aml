@@ -2,7 +2,7 @@
 <topic id="8c0c97d0-c968-4c15-9fe9-e8f3a443c50a" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>This topics describes the additional tools that are required to use
+      <para>This topic describes the additional tools that are required to use
 the Sandcastle Help File Builder along with some general configuration
 information.</para>
 	  <autoOutline lead="none" />
@@ -11,15 +11,15 @@ information.</para>
 <section address="Requirements">
   <title>Requirements</title>
   <content><para>The latest version of the Sandcastle Help File Builder can
-always be found at the <token>SHFB</token> CodePlex project site.  In order to
-use the help file builder, the following additional tools are required and
-must be installed prior to building a help file:</para>
+always be found at the <token>SHFB</token> CodePlex project site.  In addition,
+you will need the following:</para>
 
 <list class="bullet">
     <listItem>The <externalLink><linkText>.NET Framework 3.5 SP1</linkText>
   <linkUri>http://www.microsoft.com/downloads/details.aspx?FamilyID=ab99342f-5d1a-413d-8319-81da479ab0d7&amp;DisplayLang=en</linkUri>
   <linkTarget>_blank</linkTarget>
 </externalLink>.</listItem>
+
     <listItem>The latest version of Microsoft's <token>Sandcastle</token>
 (currently the <token>SandcastleVersion</token> release as of
 <token>SHFBBuildDate</token>).
@@ -28,10 +28,18 @@ must be installed prior to building a help file:</para>
   	  <para>This is the set of documentation tools created by Microsoft.  The
 help file builder uses them to produce the help file topics.</para>
 	</alert></listItem>
+</list>
+
+	<para>In order to use the help file builder, the following additional tools
+are required based on the types of help files that you want to produce.  Each
+must be installed prior to building a help file of that particular type:</para>
+
+<list class="bullet">
     <listItem>The <externalLink><linkText>HTML Help Workshop</linkText>
   <linkUri>http://msdn2.microsoft.com/en-us/library/ms669985.aspx</linkUri>
   <linkTarget>_blank</linkTarget>
 </externalLink> for building HTML Help 1 (.chm) help files.</listItem>
+
     <listItem>The MS Help 2 compiler for building MS Help 2 (.HxS) help
 files.  This must be downloaded and installed as part of the <externalLink>
   <linkText>Visual Studio 2005 SDK</linkText>
@@ -43,6 +51,9 @@ files.  This must be downloaded and installed as part of the <externalLink>
   <linkUri>http://www.microsoft.com/downloads/details.aspx?FamilyID=59ec6ec3-4273-48a3-ba25-dc925a45584d&amp;DisplayLang=en</linkUri>
   <linkTarget>_blank</linkTarget>
 </externalLink>.</listItem>
+
+	<listItem>The Help Library Manager and Help Library Agent for installing and
+viewing MS Help Viewer (.mshc) help files.  These are installed as part of Visual Studio 2010.</listItem>
 </list>
 
 	<para>The tools can be installed in any order.  However, be aware that if
@@ -90,16 +101,22 @@ find them useful and it is highly recommended that they be installed as well.</p
 presentation styles from the <token>SandcastleStyles</token> CodePlex project
 site.  This is essential if you will be producing conceptual content as it
 fixes a number of bugs and adds many new features that will make your conceptual
-content appear much better.  The latest release of the patch is also required
-if you will be producing help files that contain F# syntax sections.</listItem>
+content appear much better.</listItem>
 
     <listItem>To view MS Help 2 files without registering them, you can use
-the freeware <externalLink><linkText>H2 Viewer</linkText>
+the <externalLink><linkText>H2 Viewer</linkText>
   <linkUri>http://www.helpware.net/mshelp2/h2viewer.htm</linkUri>
-  <linkTarget>_blank</linkTarget>
-</externalLink>.  You can configure the help file builder to use it for
-viewing Help 2 output via the <link xlink:href="2152ed96-bf69-4b9b-b1a7-4fffc71b3095" />
-dialog.</listItem>
+  <linkTarget>_blank</linkTarget></externalLink> (free for personal use).  You
+can configure the help file builder to use it for viewing Help 2 output via the
+<link xlink:href="2152ed96-bf69-4b9b-b1a7-4fffc71b3095" /> dialog.</listItem>
+
+    <listItem>To view MS Help Viewer files with a full table of content and index
+support rather than in the default browser, you can use the
+<externalLink><linkText>H3 Viewer</linkText>
+<linkUri>http://mshcmigrate.helpmvp.com/viewer</linkUri>
+<linkTarget>_blank</linkTarget></externalLink> (free for personal use).  You
+can configure the help file builder to use it for viewing MS Help Viewer output
+via the <link xlink:href="2152ed96-bf69-4b9b-b1a7-4fffc71b3095" /> dialog.</listItem>
 
     <listItem>To register MS Help 2 files both for testing and as part of your
 product installation, download the shareware tool <externalLink>

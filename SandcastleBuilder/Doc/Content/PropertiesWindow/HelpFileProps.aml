@@ -109,7 +109,7 @@ file.  This name is used during the build process for a couple of other files
 so be sure that you do not specify a path or an extension on this value.  It
 should only specify the name part of the file.  The extension will always be
 <localUri>.chm</localUri> (HTML Help 1), <localUri>.HxS</localUri> (MS Help 2),
-or <localUri>.MSHC</localUri> (MS Help Viewer) and the path is controlled via
+or <localUri>.mshc</localUri> (MS Help Viewer) and the path is controlled via
 the <codeInline>OutputPath</codeInline> property.</para>
 
 <alert class="note">
@@ -419,21 +419,6 @@ determine what action to take.</para>
   </content>
 </section>
 
-<section address="PrjLink">
-  <title>ProjectLinkType</title>
-  <content><para>This property is used to define the type of links used to
-reference other help topics referring to items within the documented
-assemblies.  It can be set to <codeInline>None</codeInline> which renders
-non-clickable links, <codeInline>Local</codeInline> (the default) which renders
-normal links defined with anchor tags, or <codeInline>Index</codeInline> which
-renders MS Help 2 style MS-Help links.  The <codeInline>Index</codeInline>
-option is only useful when generating an MS Help 2 help file.  If you are
-building multiple help file formats and need to use <codeInline>Index</codeInline>
-for the Help 2 file, it will need to be placed in a separate project file.</para>
-
-  </content>
-</section>
-
 <section address="RootNS">
   <title>RootNamespaceContainer and RootNamespaceTitle</title>
   <content><para>The <codeInline>RootNamespaceContainer</codeInline> property
@@ -449,28 +434,17 @@ container from "Namespaces", enter the new name in the
   </content>
 </section>
 
-<section address="SdkLinkType">
-  <title>SdkLinkType and SdkLinkTarget</title>
-  <content><para>This property is used to define the type of links used to
-reference other help topics referring to framework (SDK) help topics.  It can
-be set to <codeInline>None</codeInline> which renders non-clickable links,
-<codeInline>MSDN</codeInline> (the default) which renders links to the online
-MSDN help content for the topic, or <codeInline>Index</codeInline> which
-renders MS Help 2 style MS-Help links.  The <codeInline>Index</codeInline>
-option is only useful when generating an MS Help 2 help file.  If you are
-building multiple help file formats and need to use <codeInline>Index</codeInline>
-for the Help 2 file, it will need to be placed in a separate project file.</para>
-
-	<para>When set to <codeInline>MSDN</codeInline>, the
-<codeInline>SdkLinkTarget</codeInline> property is used to define where MSDN
-links will open in the browser.  This property has no effect if the link type
-is set to <codeInline>None</codeInline> or <codeInline>Index</codeInline>.  The
-default value is <codeInline>Blank</codeInline> to open MSDN links in a new
-window.  It can also be set to <codeInline>Self</codeInline>,
-<codeInline>Parent</codeInline>, or <codeInline>Top</codeInline> which have the
-same effect of replacing the current window's content with the content of the
-MSDN topic. The last two are useful when producing web output as they will
-cause the MSDN links to replace the frameset with the MSDN topic page.</para>
+<section address="SdkLinkTarget">
+  <title>SdkLinkTarget</title>
+  <content><para>When an SDK link type property is set to <codeInline>MSDN</codeInline>,
+the <codeInline>SdkLinkTarget</codeInline> property is used to define where the MSDN
+links will open in the browser.  This property has no effect if the SDK link type
+property for a particular help file format is set to any other value.  The default value
+is <codeInline>Blank</codeInline> to open MSDN links in a new window.  It can also be set
+to <codeInline>Self</codeInline>, <codeInline>Parent</codeInline>, or <codeInline>Top</codeInline>
+which have the same effect of replacing the current window's content with the content of
+the MSDN topic. The last two are useful when producing web output as they will cause the
+MSDN links to replace the frameset with the MSDN topic page.</para>
 
   </content>
 </section>

@@ -1,6 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Topics defaultTopic="90a1d911-0315-4865-a414-58189cca1ecb">
-  <Topic id="90a1d911-0315-4865-a414-58189cca1ecb" visible="True" title="Welcome">
+<Topics>
+  <Topic id="d45c5080-a13f-42a7-bba5-ea6a8193d719" visible="False" isMSHVRoot="true" title="Sancastle Standalone Build Components and Tools">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="Sandcastle Build Components" />
+    </HelpKeywords>
+  </Topic>
+  <Topic id="90a1d911-0315-4865-a414-58189cca1ecb" visible="True" isDefault="true" title="Welcome">
     <HelpKeywords>
       <HelpKeyword index="K" term="Welcome" />
       <HelpKeyword index="K" term="Overview" />
@@ -39,6 +44,11 @@
       <HelpKeyword index="K" term="inherited documentation" />
     </HelpKeywords>
   </Topic>
+  <Topic id="534c4ff1-3bba-4431-a3a6-76dcb2d374f8" visible="True" title="Help Library Manager Launcher">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="Help Library Manager Launcher" />
+    </HelpKeywords>
+  </Topic>
   <Topic id="8dcbb69b-7a1a-4049-8e6b-2bf344efbbc9" visible="True" title="BuildAssembler Components">
     <HelpKeywords>
       <HelpKeyword index="K" term="BuildAssembler components, configuring" />
@@ -74,6 +84,18 @@
     <Topic id="f47527c7-67ce-487d-a2a0-91d1cb08e15e" visible="True" title="JavaScript Declaration Syntax Generator">
       <HelpKeywords>
         <HelpKeyword index="K" term="BuildAssembler components, JavaScript declaration syntax generator" />
+      </HelpKeywords>
+    </Topic>
+    <Topic id="16dc54c2-84bf-4bab-a875-0b1d49c9b1b8" visible="True" title="Microsoft Help Viewer Component">
+      <HelpKeywords>
+        <HelpKeyword index="K" term="build components, Microsoft Help Viewer component" />
+        <HelpKeyword index="K" term="MSHCComponent, configuration settings" />
+      </HelpKeywords>
+    </Topic>
+    <Topic id="92a6e678-48fb-4e6c-a7e5-34f264b01212" visible="True" title="Multi-Format Output Component">
+      <HelpKeywords>
+        <HelpKeyword index="K" term="BuildAssembler components, multi-format output component" />
+        <HelpKeyword index="K" term="MultiFormatOutputComponent, configuration options" />
       </HelpKeywords>
     </Topic>
     <Topic id="f502c07b-8110-477d-8953-73255296206b" visible="True" title="Post-Transform Component">
@@ -149,6 +171,11 @@
       <HelpKeyword index="K" term="History" />
       <HelpKeyword index="K" term="Version History" />
     </HelpKeywords>
+    <Topic id="b6054780-7245-455a-913d-b2ee9e8c9574" visible="True" title="Version 1.9.0.0">
+      <HelpKeywords>
+        <HelpKeyword index="K" term="versions, 1.9.0.0" />
+      </HelpKeywords>
+    </Topic>
     <Topic id="5a570cbb-cfbf-4cc1-931f-132ce9412cad" visible="True" title="Version 1.8.0.3">
       <HelpKeywords>
         <HelpKeyword index="K" term="versions, 1.8.0.3" />

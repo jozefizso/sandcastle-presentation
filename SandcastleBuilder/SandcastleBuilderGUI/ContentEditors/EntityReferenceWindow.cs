@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder
 // File    : EntityReferenceWindow.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 01/29/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 06/05/2009
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to look up code entity references, code
@@ -25,8 +25,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -38,8 +36,6 @@ using SandcastleBuilder.Utils.BuildEngine;
 using SandcastleBuilder.Utils.ConceptualContent;
 using SandcastleBuilder.Utils.InheritedDocumentation;
 using SandcastleBuilder.Utils.MSBuild;
-
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace SandcastleBuilder.Gui.ContentEditors
 {
@@ -140,11 +136,12 @@ namespace SandcastleBuilder.Gui.ContentEditors
         /// comments files.</remarks>
         private void IndexComments()
         {
+            HashSet<string> projectDictionary = new HashSet<string>();
             Collection<string> frameworkLocations = new Collection<string>();
             Dictionary<string, string> cacheName = new Dictionary<string,string>();
             IndexedCommentsCache cache = new IndexedCommentsCache(100);
             MSBuildProject projRef;
-            string path;
+            string path, lastSolution = null;
 
             try
             {
@@ -164,34 +161,51 @@ namespace SandcastleBuilder.Gui.ContentEditors
                     cache.IndexCommentsFiles(Path.GetDirectoryName(file),
                         Path.GetFileName(file), false, null);
 
-                // Also, index the comments files in project documentation
-                // sources.
+                // Also, index the comments files in project documentation sources
                 foreach(DocumentationSource ds in currentProject.DocumentationSources)
-                    foreach(string file in DocumentationSource.Projects(
-                      ds.SourceFile, ds.IncludeSubFolders))
+                    foreach(var sourceProject in DocumentationSource.Projects(ds.SourceFile, ds.IncludeSubFolders,
+                      !String.IsNullOrEmpty(ds.Configuration) ? ds.Configuration : currentProject.Configuration,
+                      !String.IsNullOrEmpty(ds.Platform) ? ds.Platform : currentProject.Platform))
                     {
-                        projRef = new MSBuildProject(file);
-                        projRef.SetConfiguration(
-                            !String.IsNullOrEmpty(ds.Configuration) ?
-                                ds.Configuration : currentProject.Configuration,
-                            !String.IsNullOrEmpty(ds.Platform) ?
-                                ds.Platform : currentProject.Platform,
-                            currentProject.MSBuildOutDir);
+                        // NOTE: This code should be similar to the code in BuildProcess.ValidateDocumentationSources!
 
-                        if(!String.IsNullOrEmpty(projRef.XmlCommentsFile))
-                            cache.IndexCommentsFiles(Path.GetDirectoryName(
-                                projRef.XmlCommentsFile), Path.GetFileName(
-                                projRef.XmlCommentsFile), false, null);
+                        // Solutions are followed by the projects that they contain
+                        if(sourceProject.ProjectFileName.EndsWith(".sln", StringComparison.OrdinalIgnoreCase))
+                        {
+                            lastSolution = sourceProject.ProjectFileName;
+                            continue;
+                        }
+
+                        // Ignore projects that we've already seen
+                        if(projectDictionary.Add(sourceProject.ProjectFileName))
+                        {
+                            projRef = new MSBuildProject(sourceProject.ProjectFileName);
+
+                            // Use the project file configuration and platform properties if they are set.  If not,
+                            // use the documentation source values.  If they are not set, use the SHFB project settings.
+                            projRef.SetConfiguration(
+                                !String.IsNullOrEmpty(sourceProject.Configuration) ? sourceProject.Configuration :
+                                    !String.IsNullOrEmpty(ds.Configuration) ? ds.Configuration : currentProject.Configuration,
+                                !String.IsNullOrEmpty(sourceProject.Platform) ? sourceProject.Platform :
+                                    !String.IsNullOrEmpty(ds.Platform) ? ds.Platform : currentProject.Platform,
+                                currentProject.MSBuildOutDir);
+
+                            // Add Visual Studio solution macros if necessary
+                            if(lastSolution != null)
+                                projRef.SetSolutionMacros(lastSolution);
+
+                            if(!String.IsNullOrEmpty(projRef.XmlCommentsFile))
+                                cache.IndexCommentsFiles(Path.GetDirectoryName(projRef.XmlCommentsFile),
+                                    Path.GetFileName(projRef.XmlCommentsFile), false, null);
+                        }
                     }
 
-                this.Invoke(new IndexingCompleted(this.Completed),
-                    new object[] { cache });
+                this.Invoke(new IndexingCompleted(this.Completed), new object[] { cache });
             }
             catch(Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
-                this.Invoke(new IndexingFailed(this.Failed),
-                    new object[] { ex.Message });
+                this.Invoke(new IndexingFailed(this.Failed), new object[] { ex.Message });
             }
         }
 

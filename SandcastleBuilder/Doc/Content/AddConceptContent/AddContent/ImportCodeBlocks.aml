@@ -18,6 +18,18 @@ colorizing the code. All other colorizer attributes are optional.  The path
 specified can be relative.  If so, it is always assumed to be relative to the
 project file's folder.  See the <link xlink:href="7f03ba39-09f8-4320-bdbd-ed31a3bd885f" />
 help topic for option details.  Below are several examples of its use.</para>
+
+<alert class="warning">
+	<legacyBold>Deprecated</legacyBold>
+	<para>The additional content model of adding extra content to a help file
+has been deprecated.  While it will continue to be supported and will not be
+removed, it will not receive any more features or updates.  Going forward,
+<link xlink:href="3d4edd2d-7883-4508-b9d2-bd7b4d848b0d">conceptual content</link>
+is the preferred method of adding non-reference content to the help file.  The
+additional content feature can still be used to
+<link xlink:href="77d2d693-db84-4ae3-a84c-e33c71f92e9a">override stock content</link>
+and add supporting files to the help file.</para>
+</alert>
     </introduction>
 
 <section>
@@ -76,6 +88,7 @@ from the parent <codeInline>pre</codeInline> tag.</para>
     <relatedTopics>
       <link xlink:href="d80219be-54ba-4c5f-8903-83ef29fbaa00" />
       <link xlink:href="4fd3b2b6-dfad-4513-983b-5e74d2342ff0" />
+      <link xlink:href="4bf6d6d9-ecc1-4e7c-92ae-e011752431f1" />
     </relatedTopics>
 
   </developerConceptualDocument>

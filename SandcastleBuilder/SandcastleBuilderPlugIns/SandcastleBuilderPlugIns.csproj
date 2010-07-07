@@ -59,6 +59,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SandcastleBuilderUtils\Properties\AssemblyInfoShared.cs">
+      <Link>Properties\AssemblyInfoShared.cs</Link>
+    </Compile>
     <Compile Include="AdditionalContentOnlyPlugIn.cs" />
     <Compile Include="AdditionalReferenceLinksConfigDlg.cs">
       <SubType>Form</SubType>

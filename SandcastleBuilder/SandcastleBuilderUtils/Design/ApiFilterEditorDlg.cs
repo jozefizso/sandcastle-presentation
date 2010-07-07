@@ -2,8 +2,8 @@
 // System  : EWSoftware Design Time Attributes and Editors
 // File    : ApiFilterEditorDlg.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 12/06/2009
-// Note    : Copyright 2007-2009, Eric Woodruff, All rights reserved
+// Updated : 06/15/2010
+// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to edit the API filter items.
@@ -593,8 +593,7 @@ namespace SandcastleBuilder.Utils.Design
             NodeInfo nodeInfo;
             ApiFilter filter;
             List<NodeInfo> nodeList = new List<NodeInfo>();
-            Dictionary<string, string> existingIds =
-                new Dictionary<string, string>();
+            HashSet<string> existingIds = new HashSet<string>();
             string fullName;
 
             reflectionInfo = new XmlDocument();
@@ -691,13 +690,12 @@ namespace SandcastleBuilder.Utils.Design
                     fullName = nsNode.Attributes["api"].Value.Substring(2);
 
                     // Ignore overloads as noted above
-                    if(!existingIds.ContainsKey(fullName))
+                    if(existingIds.Add(fullName))
                     {
                         nodeInfo = new NodeInfo(fullName, fullName);
                         nodeInfo.ApiNode = nsNode;
                         nodeInfo.IsProjectExclude = true;
                         nodeList.Add(nodeInfo);
-                        existingIds.Add(fullName, null);
                     }
                 }
 
@@ -896,8 +894,7 @@ namespace SandcastleBuilder.Utils.Design
             ApiFilter filter;
             NodeInfo nodeInfo, parentInfo = (NodeInfo)parentNode.Tag;
             List<NodeInfo> nodeList = new List<NodeInfo>();
-            Dictionary<string, string> existingIds =
-                new Dictionary<string, string>();
+            HashSet<string> existingIds = new HashSet<string>();
             string fullName, memberName;
             int nsLen;
 
@@ -927,7 +924,7 @@ namespace SandcastleBuilder.Utils.Design
                     // Remove the namespace from the type name
                     fullName = typeNode.Attributes["api"].Value.Substring(2);
 
-                    if(!existingIds.ContainsKey(fullName))
+                    if(existingIds.Add(fullName))
                     {
                         if(nsLen == 0)
                             memberName = fullName;
@@ -937,7 +934,6 @@ namespace SandcastleBuilder.Utils.Design
                         nodeInfo = new NodeInfo(memberName, fullName);
                         nodeInfo.ApiNode = typeNode;
                         nodeList.Add(nodeInfo);
-                        existingIds.Add(fullName, null);
                     }
                 }
 
@@ -1007,8 +1003,7 @@ namespace SandcastleBuilder.Utils.Design
             ApiFilter filter;
             NodeInfo nodeInfo, parentInfo = (NodeInfo)parentNode.Tag;
             List<NodeInfo> nodeList = new List<NodeInfo>();
-            Dictionary<string, string> existingIds =
-                new Dictionary<string, string>();
+            HashSet<string> existingIds = new HashSet<string>();
             string fullName, typeName, memberName;
             int pos;
 
@@ -1059,7 +1054,7 @@ namespace SandcastleBuilder.Utils.Design
                     if(typeName == parentInfo.Id)
                     {
                         // Ignore overloads as noted above
-                        if(!existingIds.ContainsKey(fullName))
+                        if(existingIds.Add(fullName))
                         {
                             nodeInfo = new NodeInfo(memberName, fullName);
 
@@ -1069,7 +1064,6 @@ namespace SandcastleBuilder.Utils.Design
                                 "api"].Value + "']");
 
                             nodeList.Add(nodeInfo);
-                            existingIds.Add(fullName, null);
                         }
                     }
                 }
@@ -1142,8 +1136,7 @@ namespace SandcastleBuilder.Utils.Design
             ApiFilter filter;
             NodeInfo nodeInfo, parentInfo = (NodeInfo)parentNode.Tag;
             List<NodeInfo> nodeList = new List<NodeInfo>();
-            Dictionary<string, string> existingIds =
-                new Dictionary<string, string>();
+            HashSet<string> existingIds = new HashSet<string>();
             string fullName, memberName;
             int pos;
 
@@ -1184,12 +1177,11 @@ namespace SandcastleBuilder.Utils.Design
                         memberName = fullName.Substring(pos + 1);
 
                     // Ignore overloads as noted above
-                    if(!existingIds.ContainsKey(fullName))
+                    if(existingIds.Add(fullName))
                     {
                         nodeInfo = new NodeInfo(memberName, fullName);
                         nodeInfo.ApiNode = memberNode;
                         nodeList.Add(nodeInfo);
-                        existingIds.Add(fullName, null);
                     }
                 }
 

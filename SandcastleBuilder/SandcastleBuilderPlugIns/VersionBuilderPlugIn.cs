@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Plug-Ins
 // File    : VersionBuilderPlugIn.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 11/12/2009
-// Note    : Copyright 2007-2009, Eric Woodruff, All rights reserved
+// Updated : 06/27/2010
+// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a plug-in designed to generate version information for
@@ -20,6 +20,7 @@
 // ============================================================================
 // 1.6.0.3  12/01/2007  EFW  Created the code
 // 1.8.0.0  08/13/2008  EFW  Updated to support the new project format
+// 1.9.0.0  06/27/2010  EFW  Added support for /rip option
 //=============================================================================
 
 using System;
@@ -47,6 +48,8 @@ namespace SandcastleBuilder.PlugIns
     public class VersionBuilderPlugIn : IPlugIn
     {
         #region Private data members
+        //=====================================================================
+
         private ExecutionPointCollection executionPoints;
 
         private BuildProcess builder;
@@ -56,12 +59,12 @@ namespace SandcastleBuilder.PlugIns
         private VersionSettings currentVersion;
         private VersionSettingsCollection allVersions;
         private List<string> uniqueLabels;
+        private bool ripOldApis;
 
         #endregion
 
         #region IPlugIn implementation
         //=====================================================================
-        // IPlugIn implementation
 
         /// <summary>
         /// This read-only property returns a friendly name for the plug-in
@@ -80,8 +83,7 @@ namespace SandcastleBuilder.PlugIns
             {
                 // Use the assembly version
                 Assembly asm = Assembly.GetExecutingAssembly();
-                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(
-                    asm.Location);
+                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
 
                 return new Version(fvi.ProductVersion);
             }
@@ -97,9 +99,8 @@ namespace SandcastleBuilder.PlugIns
             {
                 // Use the assembly copyright
                 Assembly asm = Assembly.GetExecutingAssembly();
-                AssemblyCopyrightAttribute copyright =
-                    (AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(
-                        asm, typeof(AssemblyCopyrightAttribute));
+                AssemblyCopyrightAttribute copyright = (AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(
+                    asm, typeof(AssemblyCopyrightAttribute));
 
                 return copyright.Copyright;
             }
@@ -137,16 +138,11 @@ namespace SandcastleBuilder.PlugIns
             get
             {
                 if(executionPoints == null)
-                {
-                    executionPoints = new ExecutionPointCollection();
-
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.GenerateSharedContent,
-                        ExecutionBehaviors.After));
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.ApplyVisibilityProperties,
-                        ExecutionBehaviors.After));
-                }
+                    executionPoints = new ExecutionPointCollection
+                    {
+                        new ExecutionPoint(BuildStep.GenerateSharedContent, ExecutionBehaviors.After),
+                        new ExecutionPoint(BuildStep.ApplyVisibilityProperties, ExecutionBehaviors.After)
+                    };
 
                 return executionPoints;
             }
@@ -161,11 +157,9 @@ namespace SandcastleBuilder.PlugIns
         /// <returns>A string containing the new configuration XML fragment</returns>
         /// <remarks>The configuration data will be stored in the help file
         /// builder project.</remarks>
-        public string ConfigurePlugIn(SandcastleProject project,
-          string currentConfig)
+        public string ConfigurePlugIn(SandcastleProject project, string currentConfig)
         {
-            using(VersionBuilderConfigDlg dlg = new VersionBuilderConfigDlg(
-              project, currentConfig))
+            using(VersionBuilderConfigDlg dlg = new VersionBuilderConfigDlg(project, currentConfig))
             {
                 if(dlg.ShowDialog() == DialogResult.OK)
                     currentConfig = dlg.Configuration;
@@ -184,23 +178,21 @@ namespace SandcastleBuilder.PlugIns
         /// should use to initialize itself.</param>
         /// <exception cref="BuilderException">This is thrown if the plug-in
         /// configuration is not valid.</exception>
-        public void Initialize(BuildProcess buildProcess,
-          XPathNavigator configuration)
+        public void Initialize(BuildProcess buildProcess, XPathNavigator configuration)
         {
             XPathNavigator root, node;
+            string ripOld;
 
             builder = buildProcess;
             allVersions = new VersionSettingsCollection();
             uniqueLabels = new List<string>();
 
-            builder.ReportProgress("{0} Version {1}\r\n{2}",
-                this.Name, this.Version, this.Copyright);
+            builder.ReportProgress("{0} Version {1}\r\n{2}", this.Name, this.Version, this.Copyright);
 
             root = configuration.SelectSingleNode("configuration");
 
             if(root.IsEmptyElement)
-                throw new BuilderException("VBP0002", "The Version Builder " +
-                    "plug-in has not been configured yet");
+                throw new BuilderException("VBP0002", "The Version Builder plug-in has not been configured yet");
 
             // Add an element for the current project.  This one won't have
             // a project to build.
@@ -210,10 +202,14 @@ namespace SandcastleBuilder.PlugIns
             node = root.SelectSingleNode("currentProject");
             if(node != null)
             {
-                currentVersion.FrameworkLabel = node.GetAttribute("label",
-                    String.Empty).Trim();
-                currentVersion.Version = node.GetAttribute("version",
-                    String.Empty).Trim();
+                currentVersion.FrameworkLabel = node.GetAttribute("label", String.Empty).Trim();
+                currentVersion.Version = node.GetAttribute("version", String.Empty).Trim();
+
+                ripOld = node.GetAttribute("ripOldApis", String.Empty);
+
+                // This wasn't in older versions
+                if(!String.IsNullOrEmpty(ripOld))
+                    ripOldApis = Convert.ToBoolean(ripOld, CultureInfo.InvariantCulture);
             }
 
             allVersions.FromXml(builder.CurrentProject, root);
@@ -224,9 +220,8 @@ namespace SandcastleBuilder.PlugIns
                 currentVersion.FrameworkLabel = " ";
 
             if(node == null || allVersions.Count == 1)
-                throw new BuilderException("VBP0003", "A version value and " +
-                    "at least one prior version are required for the " +
-                    "Version Builder plug-in.");
+                throw new BuilderException("VBP0003", "A version value and at least one prior version " +
+                    "are required for the Version Builder plug-in.");
 
             foreach(VersionSettings vs in allVersions)
                 if(!uniqueLabels.Contains(vs.FrameworkLabel))
@@ -258,8 +253,7 @@ namespace SandcastleBuilder.PlugIns
             allVersions.Sort();
 
             // Merge the version information
-            builder.ReportProgress("\r\nPerforming partial builds on prior " +
-                "version projects");
+            builder.ReportProgress("\r\nPerforming partial builds on prior version projects");
 
             // Build each of the projects
             foreach(VersionSettings vs in allVersions)
@@ -270,11 +264,9 @@ namespace SandcastleBuilder.PlugIns
 
                 project = new SandcastleProject(vs.HelpFileProject, true);
 
-                // We'll use a working folder below the current project's
-                // working folder.
+                // We'll use a working folder below the current project's working folder
                 workingPath = builder.WorkingFolder +
-                    vs.HelpFileProject.GetHashCode().ToString("X",
-                    CultureInfo.InvariantCulture) + "\\";
+                    vs.HelpFileProject.GetHashCode().ToString("X", CultureInfo.InvariantCulture) + "\\";
 
                 success = this.BuildProject(project, workingPath);
 
@@ -282,8 +274,7 @@ namespace SandcastleBuilder.PlugIns
                 Directory.SetCurrentDirectory(builder.ProjectFolder);
 
                 if(!success)
-                    throw new BuilderException("VBP0004", "Unable to build " +
-                        "prior version project: " + project.Filename);
+                    throw new BuilderException("VBP0004", "Unable to build prior version project: " + project.Filename);
 
                 // Save the reflection file location as we need it later
                 vs.ReflectionFilename = workingPath + "reflection.org";
@@ -291,8 +282,7 @@ namespace SandcastleBuilder.PlugIns
 
             // Create the Version Builder configuration and script file
             // and run it.
-            builder.ReportProgress("\r\nCreating and running Version " +
-                "Builder script");
+            builder.ReportProgress("\r\nCreating and running Version Builder script");
             builder.RunProcess(this.CreateVersionBuilderScript(), null);
 
             builder.ReportProgress("\r\nVersion information merged\r\n");
@@ -301,7 +291,6 @@ namespace SandcastleBuilder.PlugIns
 
         #region IDisposable implementation
         //=====================================================================
-        // IDisposable implementation
 
         /// <summary>
         /// This handles garbage collection to ensure proper disposal of the
@@ -337,6 +326,8 @@ namespace SandcastleBuilder.PlugIns
         #endregion
 
         #region Helper methods
+        //=====================================================================
+
         /// <summary>
         /// Update the version information items in the shared builder content
         /// file.
@@ -355,32 +346,30 @@ namespace SandcastleBuilder.PlugIns
             string sharedContentFilename, hashValue;
             List<string> uniqueVersions = new List<string>();
 
-            builder.ReportProgress("Removing standard version information " +
-                "items from shared content file");
+            builder.ReportProgress("Removing standard version information items from shared content file");
 
-            sharedContentFilename = builder.WorkingFolder +
-                "SharedBuilderContent.xml";
+            sharedContentFilename = builder.WorkingFolder + "SharedBuilderContent.xml";
             sharedContent = new XmlDocument();
             sharedContent.Load(sharedContentFilename);
 
             root = sharedContent.SelectSingleNode("content");
 
             node = root.SelectSingleNode("item[@id='locationInformation']");
+
             if(node != null)
                 root.RemoveChild(node);
 
             node = root.SelectSingleNode("item[@id='assemblyNameAndModule']");
+
             if(node != null)
                 root.RemoveChild(node);
 
-            builder.ReportProgress("Adding version information items from " +
-                "plug-in settings");
+            builder.ReportProgress("Adding version information items from plug-in settings");
 
             // Add items for each framework label
             foreach(string label in uniqueLabels)
             {
-                hashValue = label.GetHashCode().ToString("X",
-                    CultureInfo.InvariantCulture);
+                hashValue = label.GetHashCode().ToString("X", CultureInfo.InvariantCulture);
 
                 // Label item
                 node = sharedContent.CreateElement("item");
@@ -416,9 +405,7 @@ namespace SandcastleBuilder.PlugIns
 
                     node = sharedContent.CreateElement("item");
                     attr = sharedContent.CreateAttribute("id");
-                    attr.Value = "SHFB_VBPI_" +
-                        vs.Version.GetHashCode().ToString("X",
-                        CultureInfo.InvariantCulture);
+                    attr.Value = "SHFB_VBPI_" + vs.Version.GetHashCode().ToString("X", CultureInfo.InvariantCulture);
                     node.Attributes.Append(attr);
                     node.InnerText = vs.Version;
                     root.AppendChild(node);
@@ -444,21 +431,15 @@ namespace SandcastleBuilder.PlugIns
             try
             {
                 // For the plug-in, we'll override some project settings
-                project.SandcastlePath = new FolderPath(
-                    builder.SandcastleFolder, true, project);
-                project.HtmlHelp1xCompilerPath = new FolderPath(
-                    builder.Help1CompilerFolder, true, project);
-                project.HtmlHelp2xCompilerPath = new FolderPath(
-                    builder.Help2CompilerFolder, true, project);
+                project.SandcastlePath = new FolderPath(builder.SandcastleFolder, true, project);
+                project.HtmlHelp1xCompilerPath = new FolderPath(builder.Help1CompilerFolder, true, project);
+                project.HtmlHelp2xCompilerPath = new FolderPath(builder.Help2CompilerFolder, true, project);
                 project.WorkingPath = new FolderPath(workingPath, true, project);
-                project.OutputPath = new FolderPath(workingPath +
-                    @"..\PartialBuildLog\", true, project);
+                project.OutputPath = new FolderPath(workingPath + @"..\PartialBuildLog\", true, project);
 
                 buildProcess = new BuildProcess(project, true);
 
-                buildProcess.BuildStepChanged +=
-                    new EventHandler<BuildProgressEventArgs>(
-                        buildProcess_BuildStepChanged);
+                buildProcess.BuildStepChanged += buildProcess_BuildStepChanged;
 
                 // Since this is a plug-in, we'll run it directly rather
                 // than in a background thread.
@@ -471,10 +452,8 @@ namespace SandcastleBuilder.PlugIns
             }
             catch(Exception ex)
             {
-                throw new BuilderException("VBP0005", String.Format(
-                    CultureInfo.InvariantCulture, "Fatal error, unable " +
-                    "to compile project '{0}': {1}", project.Filename,
-                    ex.ToString()));
+                throw new BuilderException("VBP0005", String.Format(CultureInfo.InvariantCulture,
+                    "Fatal error, unable to compile project '{0}': {1}", project.Filename, ex.ToString()));
             }
 
             return (lastBuildStep == BuildStep.Completed);
@@ -486,8 +465,7 @@ namespace SandcastleBuilder.PlugIns
         /// </summary>
         /// <param name="sender">The sender of the event</param>
         /// <param name="e">The event arguments</param>
-        private void buildProcess_BuildStepChanged(object sender,
-          BuildProgressEventArgs e)
+        private void buildProcess_BuildStepChanged(object sender, BuildProgressEventArgs e)
         {
             builder.ReportProgress(e.BuildStep.ToString());
             lastBuildStep = e.BuildStep;
@@ -499,8 +477,7 @@ namespace SandcastleBuilder.PlugIns
         /// <returns>The name of the script to run</returns>
         private string CreateVersionBuilderScript()
         {
-            StringBuilder config = new StringBuilder(4096),
-                script = new StringBuilder(4096);
+            StringBuilder config = new StringBuilder(4096), script = new StringBuilder(4096);
             string scriptName;
 
             config.Append("<versions>\r\n");
@@ -512,19 +489,16 @@ namespace SandcastleBuilder.PlugIns
             // reflection.org file that contains everything.
             foreach(string label in uniqueLabels)
             {
-                config.AppendFormat("  <versions name=\"SHFB_VBPI_Lbl_" +
-                    "{0:X}\">\r\n", label.GetHashCode());
+                config.AppendFormat("  <versions name=\"SHFB_VBPI_Lbl_{0:X}\">\r\n", label.GetHashCode());
 
                 // Add info for each related version
                 foreach(VersionSettings vs in allVersions)
                     if(vs.FrameworkLabel == label)
                     {
-                        config.AppendFormat("    <version name=\"SHFB_VBPI_" +
-                            "{0:X}\" file=\"{1:X}.ver\" />\r\n",
+                        config.AppendFormat("    <version name=\"SHFB_VBPI_{0:X}\" file=\"{1:X}.ver\" />\r\n",
                             vs.Version.GetHashCode(), vs.GetHashCode());
 
-                        script.AppendFormat("Copy \"{0}\" \"{1:X}.ver\"\r\n",
-                            vs.ReflectionFilename, vs.GetHashCode());
+                        script.AppendFormat("Copy \"{0}\" \"{1:X}.ver\"\r\n", vs.ReflectionFilename, vs.GetHashCode());
                     }
 
                 config.Append("  </versions>\r\n");
@@ -532,13 +506,11 @@ namespace SandcastleBuilder.PlugIns
 
             config.Append("</versions>\r\n");
 
-            script.AppendFormat("\"{0}ProductionTools\\VersionBuilder.exe\" " +
-                "/config:VersionBuilder.config /out:reflection.org\r\n",
-                builder.SandcastleFolder);
+            script.AppendFormat("\"{0}ProductionTools\\VersionBuilder.exe\" {1} /config:VersionBuilder.config " +
+                "/out:reflection.org\r\n", builder.SandcastleFolder, ripOldApis ? String.Empty : "/rip-");
 
             // Save the files
-            using(StreamWriter sw = new StreamWriter(builder.WorkingFolder +
-              "VersionBuilder.config"))
+            using(StreamWriter sw = new StreamWriter(builder.WorkingFolder + "VersionBuilder.config"))
             {
                 sw.Write(config.ToString());
             }

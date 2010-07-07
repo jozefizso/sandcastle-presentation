@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : ImageReferenceCollection.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 08/07/2008
-// Note    : Copyright 2008, Eric Woodruff, All rights reserved
+// Updated : 06/06/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a collection class used to hold the conceptual content
@@ -19,20 +19,17 @@
 // ============================================================================
 // 1.6.0.7  04/24/2008  EFW  Created the code
 // 1.8.0.0  07/25/2008  EFW  Reworked to support new MSBuild project format
+// 1.9.0.0  06/06/2010  EFW  Added support for multi-format build output
 //=============================================================================
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing.Design;
-using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Xml;
 
 using Microsoft.Build.BuildEngine;
 
-using SandcastleBuilder.Utils;
 using SandcastleBuilder.Utils.BuildEngine;
 
 namespace SandcastleBuilder.Utils.ConceptualContent
@@ -88,7 +85,6 @@ namespace SandcastleBuilder.Utils.ConceptualContent
 
         #region Sort collection
         //=====================================================================
-        // Sort the collection
 
         /// <summary>
         /// This is used to sort the collection
@@ -97,18 +93,15 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// are case-insensitive.</remarks>
         public void Sort()
         {
-            ((List<ImageReference>)base.Items).Sort(
-                delegate(ImageReference x, ImageReference y)
-                {
-                    int result = String.Compare(x.DisplayTitle, y.DisplayTitle,
-                        StringComparison.CurrentCultureIgnoreCase);
+            ((List<ImageReference>)base.Items).Sort((x, y) =>
+            {
+                int result = String.Compare(x.DisplayTitle, y.DisplayTitle, StringComparison.CurrentCultureIgnoreCase);
 
-                    if(result == 0)
-                        result = String.Compare(x.Id, y.Id,
-                            StringComparison.OrdinalIgnoreCase);
+                if(result == 0)
+                    result = String.Compare(x.Id, y.Id, StringComparison.OrdinalIgnoreCase);
 
-                    return result;
-                });
+                return result;
+            });
         }
         #endregion
 
@@ -126,15 +119,13 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// <param name="builder">The build process</param>
         /// <remarks>Images with their <see cref="ImageReference.CopyToMedia" />
         /// property set to true are copied to the media folder immediately.</remarks>
-        public void SaveAsSharedContent(string filename, string imagePath,
-          BuildProcess builder)
+        public void SaveAsSharedContent(string filename, string imagePath, BuildProcess builder)
         {
             XmlWriterSettings settings = new XmlWriterSettings();
             XmlWriter writer = null;
-            string destFile, mediaFolder = builder.WorkingFolder + "Output\\media";
+            string destFile;
 
-            if(!Directory.Exists(mediaFolder))
-                Directory.CreateDirectory(mediaFolder);
+            builder.EnsureOutputFoldersExist("media");
 
             try
             {
@@ -178,25 +169,23 @@ namespace SandcastleBuilder.Utils.ConceptualContent
                             destFile, ir.FullPath);
                     }
 
-                    builder.ReportProgress("    {0} -> {1}", ir.FullPath,
-                        destFile);
+                    builder.ReportProgress("    {0} -> {1}", ir.FullPath, destFile);
 
-                    // The attributes are set to Normal so that it can be
-                    // deleted after the build.
+                    // The attributes are set to Normal so that it can be deleted after the build
                     File.Copy(ir.FullPath, destFile, true);
                     File.SetAttributes(destFile, FileAttributes.Normal);
 
-                    // Copy it to the output media folder if CopyToMedia is true
+                    // Copy it to the output media folders if CopyToMedia is true
                     if(ir.CopyToMedia)
-                    {
-                        destFile = Path.Combine(mediaFolder, ir.Filename);
+                        foreach(string baseFolder in builder.HelpFormatOutputFolders)
+                        {
+                            destFile = Path.Combine(baseFolder + "media", ir.Filename);
 
-                        builder.ReportProgress("    {0} -> {1} (Always copied)",
-                            ir.FullPath, destFile);
+                            builder.ReportProgress("    {0} -> {1} (Always copied)", ir.FullPath, destFile);
 
-                        File.Copy(ir.FullPath, destFile, true);
-                        File.SetAttributes(destFile, FileAttributes.Normal);
-                    }
+                            File.Copy(ir.FullPath, destFile, true);
+                            File.SetAttributes(destFile, FileAttributes.Normal);
+                        }
                 }
 
                 writer.WriteEndElement();   // </stockSharedContentDefinitions>
@@ -221,13 +210,8 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         {
             this.Clear();
 
-            foreach(BuildItem item in
-              projectFile.MSBuildProject.GetEvaluatedItemsByName(
-              BuildAction.Image.ToString()))
-            {
-                this.Add(new ImageReference(new FileItem(new ProjectElement(
-                    projectFile, item))));
-            }
+            foreach(BuildItem item in projectFile.MSBuildProject.GetEvaluatedItemsByName(BuildAction.Image.ToString()))
+                this.Add(new ImageReference(new FileItem(new ProjectElement(projectFile, item))));
 
             this.Sort();
         }
@@ -240,8 +224,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         public ImageReference FindId(string id)
         {
             foreach(ImageReference ir in this)
-                if(String.Compare(ir.Id, id,
-                  StringComparison.OrdinalIgnoreCase) == 0)
+                if(String.Compare(ir.Id, id, StringComparison.OrdinalIgnoreCase) == 0)
                     return ir;
 
             return null;
@@ -255,8 +238,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         public ImageReference FindImageFile(string filename)
         {
             foreach(ImageReference ir in this)
-                if(String.Compare(ir.FullPath, filename,
-                  StringComparison.OrdinalIgnoreCase) == 0)
+                if(String.Compare(ir.FullPath, filename, StringComparison.OrdinalIgnoreCase) == 0)
                     return ir;
 
             return null;

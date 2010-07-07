@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SC_MAY_2008</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\SandcastleBuilder.Utils.xml</DocumentationFile>
@@ -32,14 +32,14 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;SC_MAY_2008</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\SandcastleBuilder.Utils.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseNoDoc|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;SC_MAY_2008</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>bin\Release\SandcastleBuilder.Utils.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -208,7 +208,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ProjectLinkType.cs" />
     <Compile Include="NamingMethod.cs" />
     <Compile Include="VisibleItems.cs" />
     <Compile Include="ReferenceItem.cs" />
@@ -396,6 +395,7 @@
     <None Include="Resources\SpinningWheel.gif" />
     <Compile Include="BuildAction.cs" />
     <Compile Include="BuildComponent\SyntaxFilterInfo.cs" />
+    <Compile Include="ConceptualContent\ApiParentMode.cs" />
     <Compile Include="ConceptualContent\CodeSnippetCollection.cs" />
     <Compile Include="ConceptualContent\ITableOfContents.cs" />
     <Compile Include="ConceptualContent\ResourceItem.cs" />
@@ -434,9 +434,13 @@
     <Compile Include="Design\UserDefinedPropertyTypeConverter.cs" />
     <Compile Include="FileItem.cs" />
     <Compile Include="FileItemCollection.cs" />
+    <Compile Include="HtmlSdkLinkType.cs" />
     <Compile Include="MSBuild\BuildHelpViewerFile.cs" />
+    <Compile Include="MSHelp2SdkLinkType.cs" />
+    <Compile Include="MSHelpViewerSdkLinkType.cs" />
+    <Compile Include="ProjectFileConfiguration.cs" />
+    <Compile Include="Properties\AssemblyInfoShared.cs" />
     <Compile Include="SdkLinkTarget.cs" />
-    <Compile Include="SdkLinkType.cs" />
     <None Include="Resources\ProjectTemplate.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

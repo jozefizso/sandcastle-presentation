@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : BuildProcess.HelpFileUtils.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 01/22/2009
-// Note    : Copyright 2006-2009, Eric Woodruff, All rights reserved
+// Updated : 07/02/2010
+// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the code used to modify the help file project files to
@@ -27,12 +27,16 @@
 // 1.6.0.5  02/04/2008  EFW  Adjusted loading of Help 1 TOC to use an encoding
 //                           based on the chosen language.
 // 1.6.0.7  04/12/2007  EFW  Added support for a split table of contents
+// 1.9.0.0  06/06/2010  EFW  Added support for multi-format build output
+// 1.9.0.0  06/30/2010  EFW  Reworked TOC handling to support parenting of
+//                           API content to a conceptual topic for all formats.
 //=============================================================================
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -41,6 +45,7 @@ using System.Xml.XPath;
 using System.Web;
 
 using SandcastleBuilder.Utils.PlugIn;
+using SandcastleBuilder.Utils.ConceptualContent;
 
 namespace SandcastleBuilder.Utils.BuildEngine
 {
@@ -48,325 +53,332 @@ namespace SandcastleBuilder.Utils.BuildEngine
     {
         #region Private data members
         //=====================================================================
-        // Private data members
-
-        // Regular expressions used for parsing and fix-up
-        private static Regex re1xExtractDefTopic = new Regex(
-            "param name=\"Local\" value=\"(?<Filename>.*)\"",
-            RegexOptions.IgnoreCase);
-
-        private static Regex re2xExtractDefTopic = new Regex(
-            "Url=\"(?<Filename>.*)\"", RegexOptions.IgnoreCase);
 
         private static Regex reInvalidChars = new Regex("[ :.`#<>*?]");
         #endregion
 
+        #region Table of content helper methods
+        //=====================================================================
+
         /// <summary>
-        /// This is called to determine the default topic for the help file
-        /// and insert any additional table of contents entries for the
-        /// additional content files.
+        /// This is used to determine the best placement for the API content
+        /// based on the project settings.
         /// </summary>
-        /// <param name="format">The format of the table of contents
-        /// (HtmlHelp1, MSHelp2, or Website).</param>
-        /// <remarks>In the absence of an additional content item with a
-        /// default topic indicator, the default page is determined by
-        /// extracting the first entry from the generated table of contents
-        /// file.  If an additional content item with a default topic indicator
-        /// has been specified, it will be the used instead.  The default
-        /// topic is not used by MS Help 2 files.</remarks>
-        /// <exception cref="ArgumentException">This is thrown if the
-        /// format is not <b>HtmlHelp1</b>, <b>MSHelp2</b>, or
-        /// <b>Website</b>.</exception>
-        protected void UpdateTableOfContents(HelpFileFormat format)
+        private void DetermineApiContentPlacement()
         {
-            XPathDocument config;
-            XPathNavigator nav;
-            CultureInfo ci;
-            Encoding enc = Encoding.Default;
-            Match m;
+            TocEntryCollection parentCollection;
+            TocEntry apiInsertionPoint, parentTopic;
+            XmlDocument tocXml;
+            int tocOrder = project.TocOrder;
 
-            string tocFile, content, guid, rootEntry;
-            bool tocChanged = false, noContent = false;
-            int codePage, pos;
+            this.ApiTocParentId = null;
+            this.ApiTocOrder = -1;
 
-            if(format != HelpFileFormat.HtmlHelp1 &&
-              format != HelpFileFormat.MSHelp2 &&
-              format != HelpFileFormat.Website)
-                throw new ArgumentException("The format specified must be " +
-                    "a single format, not a combination", "format");
+            tocXml = new XmlDocument();
+            tocXml.Load(workingFolder + "toc.xml");
 
-            this.ReportProgress(BuildStep.UpdateTableOfContents,
-                "Updating table of contents with additional " +
-                "content items and determining default topic...");
+            XmlNodeList topics = tocXml.SelectNodes("topics/topic");
+
+            // Note that in all cases, we only have to set the order on the item where it changes.
+            // The sort order on all subsequent items will increment from there.
+            if(toc != null && toc.Count != 0)
+            {
+                toc.ResetSortOrder();
+
+                // See if a root content container is defined for MSHV output
+                var root = conceptualContent.Topics.FirstOrDefault(t => t.MSHVRootContentContainer != null);
+
+                if(root != null)
+                    this.RootContentContainerId = root.MSHVRootContentContainer.Id;
+
+                if(tocOrder == -1 || root != null)
+                    tocOrder = 0;
+
+                // If building MS Help Viewer output, ensure that the root container ID is valid
+                // and not visible in the TOC if defined.
+                if((project.HelpFileFormat & HelpFileFormat.MSHelpViewer) != 0 &&
+                  !String.IsNullOrEmpty(this.RootContentContainerId) && toc[this.RootContentContainerId] != null)
+                    throw new BuilderException("BE0069", String.Format(CultureInfo.CurrentCulture,
+                        "The project's root content container topic (ID={0}) must be have its Visible property " +
+                        "set to False in the content layout file.", this.RootContentContainerId));
+
+                // Was an insertion point defined in the content layout?
+                apiInsertionPoint = toc.ApiContentInsertionPoint;
+
+                if(apiInsertionPoint != null)
+                {
+                    parentCollection = toc.ApiContentParentCollection;
+                    toc[0].SortOrder = tocOrder;
+
+                    // Insert the API content before, after, or as a child of a conceptual topic
+                    switch(apiInsertionPoint.ApiParentMode)
+                    {
+                        case ApiParentMode.InsertBefore:
+                            parentTopic = toc.ApiContentParent;
+
+                            if(parentTopic == null)
+                            {
+                                this.ApiTocParentId = "**Root**";
+                                this.ApiTocOrder = tocOrder + parentCollection.IndexOf(apiInsertionPoint);
+                            }
+                            else
+                            {
+                                this.ApiTocParentId = toc.ApiContentParent.Id;
+                                this.ApiTocOrder = parentCollection.IndexOf(apiInsertionPoint);
+                            }
+
+                            apiInsertionPoint.SortOrder = this.ApiTocOrder + topics.Count;
+                            break;
+
+                        case ApiParentMode.InsertAfter:
+                            parentTopic = toc.ApiContentParent;
+                            this.ApiTocOrder = parentCollection.IndexOf(apiInsertionPoint) + 1;
+
+                            if(parentTopic == null)
+                            {
+                                this.ApiTocParentId = "**Root**";
+
+                                if(this.ApiTocOrder < parentCollection.Count)
+                                    parentCollection[this.ApiTocOrder].SortOrder = tocOrder + this.ApiTocOrder + topics.Count;
+
+                                this.ApiTocOrder += tocOrder;
+                            }
+                            else
+                            {
+                                this.ApiTocParentId = parentTopic.Id;
+
+                                if(this.ApiTocOrder < parentCollection.Count)
+                                    parentCollection[this.ApiTocOrder].SortOrder = this.ApiTocOrder + topics.Count;
+                            }
+                            break;
+
+                        case ApiParentMode.InsertAsChild:
+                            this.ApiTocParentId = apiInsertionPoint.Id;
+                            this.ApiTocOrder = parentCollection.Count;
+                            break;
+
+                        default:    // Unknown
+                            break;
+                    }
+                }
+                else
+                {
+                    // Base the API sort order on the ContentPlacement property
+                    if(project.ContentPlacement == ContentPlacement.AboveNamespaces)
+                    {
+                        toc[0].SortOrder = tocOrder;
+                        this.ApiTocOrder = tocOrder + toc.Count;
+                    }
+                    else
+                    {
+                        this.ApiTocOrder = tocOrder;
+                        toc[0].SortOrder = tocOrder + topics.Count;
+                    }
+                }
+            }
+            else
+                this.ApiTocOrder = project.TocOrder;
+
+            // Set the sort order on the first API topic if defined
+            if(this.ApiTocOrder != -1 && topics.Count != 0)
+            {
+                XmlAttribute attr = tocXml.CreateAttribute("sortOrder");
+                attr.Value = this.ApiTocOrder.ToString(CultureInfo.InvariantCulture);
+                topics[0].Attributes.Append(attr);
+
+                tocXml.Save(workingFolder + "toc.xml");
+            }
+        }
+
+        /// <summary>
+        /// This combines the conceptual and API intermediate TOC files into
+        /// one file ready for transformation to the help format-specific
+        /// TOC file formats.
+        /// </summary>
+        private void CombineIntermediateTocFiles()
+        {
+            XmlAttribute attr;
+            XmlDocument conceptualXml = null, tocXml;
+            XmlElement docElement;
+            XmlNodeList allNodes;
+            XmlNode node, parent;
+            bool wasModified = false;
+            int insertionPoint;
+
+            this.ReportProgress(BuildStep.CombiningIntermediateTocFiles,
+                "Combining conceptual and API intermediate TOC files...");
 
             if(this.ExecutePlugIns(ExecutionBehaviors.InsteadOf))
                 return;
 
             this.ExecutePlugIns(ExecutionBehaviors.Before);
 
-            // HTML Help 1, MS Help 2, or website?
-            if(format == HelpFileFormat.HtmlHelp1)
+            // Load the TOC files
+            if(toc != null && toc.Count != 0)
             {
-                tocFile = workingFolder + project.HtmlHelpName + ".hhc";
-
-                // For HTML Help 1, we need to use an encoding based on the
-                // selected language.  Get the code page to use based on the
-                // locale ID from the SandcastleHtmlExtract.config file.
-                config = new XPathDocument(Path.GetDirectoryName(
-                    Assembly.GetExecutingAssembly().Location) +
-                    @"\SandcastleHtmlExtract.config");
-
-                nav = config.CreateNavigator().SelectSingleNode(String.Format(
-                    CultureInfo.InvariantCulture,
-                    "/configuration/languages/language[@id='{0}']",
-                    language.LCID));
-
-                // If not found, default to the one for the ANSI code page
-                // based on the specified locale ID.
-                if(nav == null)
-                {
-                    ci = new CultureInfo(language.LCID);
-                    codePage = ci.TextInfo.ANSICodePage;
-
-                    this.ReportWarning("BE0059", "LCID '{0}' not found in " +
-                        "configuration file.  Defaulting to ANSI code page " +
-                        "value of '{1}'.", language.LCID, codePage);
-                }
-                else
-                    codePage = Convert.ToInt32(nav.GetAttribute("codepage",
-                        String.Empty), CultureInfo.InvariantCulture);
-
-                enc = Encoding.GetEncoding(codePage);
-
-                using(StreamReader sr = new StreamReader(tocFile, enc))
-                {
-                    content = sr.ReadToEnd();
-                }
-            }
-            else
-            {
-                if(format == HelpFileFormat.MSHelp2)
-                    tocFile = workingFolder + project.HtmlHelpName + ".hxt";
-                else
-                    tocFile = workingFolder + "WebTOC.xml";
-
-                // When reading the file, use the default encoding but detect
-                // the encoding if byte order marks are present.
-                content = BuildProcess.ReadWithEncoding(tocFile, ref enc);
+                conceptualXml = new XmlDocument();
+                conceptualXml.Load(workingFolder + "_ConceptualTOC_.xml");
             }
 
-            // We only need the default page for HTML Help 1 files and
-            // websites.  Don't bother if an explicit default has been
-            // specified.
-            if(format != HelpFileFormat.MSHelp2 && defaultTopic == null)
+            tocXml = new XmlDocument();
+            tocXml.Load(workingFolder + "toc.xml");
+
+            // Add a root namespace container for the Prototype style?  The Hana
+            // and VS2005 styles add one automatically if requested.
+            if(project.RootNamespaceContainer && presentationParam == "prototype" &&
+              !String.IsNullOrEmpty(namespacesTopic))
             {
-                if(format == HelpFileFormat.HtmlHelp1)
-                    m = re1xExtractDefTopic.Match(content);
-                else
-                    m = re2xExtractDefTopic.Match(content);
+                node = tocXml.CreateElement("topic");
 
-                if(m.Success)
-                    defaultTopic = m.Groups["Filename"].Value;
-                else
+                attr = tocXml.CreateAttribute("id");
+                attr.Value = "R:Project";
+                node.Attributes.Append(attr);
+
+                attr = tocXml.CreateAttribute("file");
+                attr.Value = Path.GetFileNameWithoutExtension(namespacesTopic);
+                node.Attributes.Append(attr);
+
+                allNodes = tocXml.SelectNodes("topics/topic");
+
+                foreach(XmlNode n in allNodes)
                 {
-                    // If there are no reference topics, pick the first
-                    // entry from the TOC.
-                    if(toc != null && toc.Count != 0 &&
-                      !String.IsNullOrEmpty(toc[0].DestinationFile))
-                        defaultTopic = toc[0].DestinationFile;
-                    else
-                        throw new BuilderException("BE0026", "Unable to " +
-                            "determine default topic in '" + tocFile +
-                            "'.  You may need to mark one as the default " +
-                            "topic manually.");
-                }
-            }
+                    n.ParentNode.RemoveChild(n);
 
-            if(format == HelpFileFormat.HtmlHelp1)
-            {
-                // Add the root namespace container if one is wanted.  The
-                // VS2005 and Hana styles do it automatically via the transform.
-                if(project.RootNamespaceContainer &&
-                  presentationParam == "prototype")
-                {
-                    if(namespacesTopic != null)
-                        rootEntry = String.Format(CultureInfo.InvariantCulture,
-                            "<param name=\"Name\" value=\"{0}\">\r\n" +
-                            "<param name=\"Local\" value=\"{1}\">\r\n",
-                            project.RootNamespaceTitle.Length == 0 ? "Namespaces" :
-                                HttpUtility.HtmlEncode(project.RootNamespaceTitle),
-                                namespacesTopic);
-                    else
-                        rootEntry = String.Format(CultureInfo.InvariantCulture,
-                            "<param name=\"Name\" value=\"{0}\">\r\n",
-                            project.RootNamespaceTitle.Length == 0 ? "Namespaces" :
-                                HttpUtility.HtmlEncode(project.RootNamespaceTitle));
-
-                    content = content.Insert(content.IndexOf("<BODY>",
-                        StringComparison.Ordinal) + 8,
-                        "<UL>\r\n<LI><OBJECT type=\"text/sitemap\">\r\n" +
-                        rootEntry + "</OBJECT></LI>\r\n");
-                    content = content.Insert(content.IndexOf("</BODY>",
-                        StringComparison.Ordinal), "</UL>\r\n");
+                    node.AppendChild(n);
                 }
 
-                tocChanged = true;
+                tocXml.DocumentElement.AppendChild(node);
+                wasModified = true;
             }
-            else
+
+            // Merge the conceptual and API TOCs into one?
+            if(conceptualXml != null)
             {
-                // Add the root namespace container if one is wanted.  The
-                // VS2005 and Hana styles do it automatically via the transform.
-                if(project.RootNamespaceContainer &&
-                  presentationParam == "prototype")
+                // Remove the root content container if present as we don't need
+                // it for the other formats.
+                if((project.HelpFileFormat & HelpFileFormat.MSHelpViewer) != 0 &&
+                  !String.IsNullOrEmpty(this.RootContentContainerId))
                 {
-                    tocChanged = true;
-                    guid = Guid.NewGuid().ToString();
+                    docElement = conceptualXml.DocumentElement;
+                    node = docElement.FirstChild;
+                    allNodes = node.SelectNodes("topic");
 
-                    if(namespacesTopic != null)
-                        rootEntry = String.Format(CultureInfo.InvariantCulture,
-                            "<HelpTOCNode Id=\"{0}\" Title=\"{1}\" " +
-                            "Url=\"{2}\">\r\n", guid,
-                            project.RootNamespaceTitle.Length == 0 ? "Namespaces" :
-                                HttpUtility.HtmlEncode(project.RootNamespaceTitle),
-                            format != HelpFileFormat.Website ?  namespacesTopic :
-                                namespacesTopic.Replace('\\', '/'));
-                    else
-                        rootEntry = String.Format(CultureInfo.InvariantCulture,
-                            "<HelpTOCNode Id=\"{0}\" Title=\"{1}\">\r\n", guid,
-                            project.RootNamespaceTitle.Length == 0 ? "Namespaces" :
-                                HttpUtility.HtmlEncode(project.RootNamespaceTitle));
-
-                    pos = content.IndexOf("<HelpTOCNode",
-                        StringComparison.Ordinal);
-
-                    if(pos == -1)
+                    foreach(XmlNode n in allNodes)
                     {
-                        pos = content.IndexOf("/>", StringComparison.Ordinal);
+                        n.ParentNode.RemoveChild(n);
+                        docElement.AppendChild(n);
+                    }
 
-                        if(pos != -1)
+                    node.ParentNode.RemoveChild(node);
+                }
+
+                if(String.IsNullOrEmpty(this.ApiTocParentId))
+                {
+                    // If not parented, the API content is placed above or below the conceptual
+                    // content based on the project's ContentPlacement setting.
+                    if(project.ContentPlacement == ContentPlacement.AboveNamespaces)
+                    {
+                        docElement = conceptualXml.DocumentElement;
+
+                        foreach(XmlNode n in tocXml.SelectNodes("topics/topic"))
                         {
-                            content = content.Replace("/>",
-                                "></HelpTOC>");
-                            pos++;
+                            node = conceptualXml.ImportNode(n, true);
+                            docElement.AppendChild(node);
                         }
+
+                        tocXml = conceptualXml;
+                    }
+                    else
+                    {
+                        docElement = tocXml.DocumentElement;
+
+                        foreach(XmlNode n in conceptualXml.SelectNodes("topics/topic"))
+                        {
+                            node = tocXml.ImportNode(n, true);
+                            docElement.AppendChild(node);
+                        }
+                    }
+                }
+                else
+                {
+                    // Parent the API content to a conceptual topic
+                    parent = conceptualXml.SelectSingleNode("//topic[@id='" + this.ApiTocParentId + "']");
+
+                    // If not found, parent it to the root
+                    if(parent == null)
+                        parent = conceptualXml.DocumentElement;
+
+                    insertionPoint = this.ApiTocOrder;
+
+                    if(insertionPoint == -1 || insertionPoint >= parent.ChildNodes.Count)
+                        insertionPoint = parent.ChildNodes.Count;
+
+                    foreach(XmlNode n in tocXml.SelectNodes("topics/topic"))
+                    {
+                        node = conceptualXml.ImportNode(n, true);
+
+                        if(insertionPoint >= parent.ChildNodes.Count)
+                            parent.AppendChild(node);
                         else
-                            pos = content.IndexOf("</HelpTOC>",
-                                StringComparison.Ordinal);
+                            parent.InsertBefore(node, parent.ChildNodes[insertionPoint]);
+
+                        insertionPoint++;
                     }
 
-                    content = content.Insert(pos, rootEntry);
-                    content = content.Insert(content.IndexOf("</HelpTOC>",
-                        StringComparison.Ordinal), "</HelpTOCNode>\r\n");
+                    tocXml = conceptualXml;
                 }
-            }
 
-            // Update and save table of contents with additional items
-            if(tocChanged || (toc != null && toc.Count != 0))
-            {
-                // The additional entries can go in ahead of the namespace
-                // documentation entries or after them.
-                if(toc != null && toc.Count != 0)
-                    if(format == HelpFileFormat.HtmlHelp1)
-                    {
-                        if(tocAbove != null)
-                        {
-                            pos = content.IndexOf("<UL>",
-                                StringComparison.Ordinal);
-
-                            if(pos == -1)
-                            {
-                                noContent = true;
-                                pos = content.IndexOf("<BODY>",
-                                    StringComparison.Ordinal);
-
-                                // We need to add the UL container too in
-                                // this case.
-                                content = content.Insert(pos + 6, "<UL></UL>");
-                                pos += 4;
-                            }
-
-                            content = content.Insert(pos + 6, tocAbove.ToString());
-                        }
-
-                        if(tocBelow != null)
-                        {
-                            pos = content.LastIndexOf("</UL>",
-                                StringComparison.Ordinal);
-
-                            if(pos == -1 || noContent)
-                                pos = content.IndexOf("</BODY>",
-                                    StringComparison.Ordinal);
-
-                            content = content.Insert(pos, tocBelow.ToString());
-                        }
-                    }
-                    else
-                    {
-                        if(tocAbove != null)
-                        {
-                            pos = content.IndexOf("<HelpTOCNode",
-                                StringComparison.Ordinal);
-
-                            if(pos == -1)
-                            {
-                                pos = content.IndexOf("/>",
-                                    StringComparison.Ordinal);
-
-                                if(pos != -1)
-                                {
-                                    content = content.Replace("/>",
-                                        "></HelpTOC>");
-                                    pos++;
-                                }
-                                else
-                                    pos = content.IndexOf("</HelpTOC>",
-                                        StringComparison.Ordinal);
-                            }
-
-                            content = content.Insert(pos, tocAbove.ToString(format));
-                        }
-
-                        if(tocBelow != null)
-                        {
-                            pos = content.IndexOf("</HelpTOC>",
-                                StringComparison.Ordinal);
-
-                            if(pos == -1)
-                            {
-                                pos = content.IndexOf("/>",
-                                    StringComparison.Ordinal);
-
-                                if(pos != -1)
-                                {
-                                    content = content.Replace("/>",
-                                        "></HelpTOC>");
-                                    pos++;
-                                }
-                            }
-
-                            content = content.Insert(pos, tocBelow.ToString(format));
-                        }
-                    }
-
-                // Write the file back out with the appropriate encoding
-                using(StreamWriter sw = new StreamWriter(tocFile, false, enc))
+                // Fix up empty container nodes by removing the file attribute and setting
+                // the ID attribute to the title attribute value.
+                foreach(XmlNode n in tocXml.SelectNodes("//topic[@title]"))
                 {
-                    sw.Write(content);
+                    attr = n.Attributes["file"];
+
+                    if(attr != null)
+                        n.Attributes.Remove(attr);
+
+                    attr = n.Attributes["id"];
+
+                    if(attr != null)
+                        attr.Value = n.Attributes["title"].Value;
                 }
+
+                wasModified = true;
             }
+
+            // Determine the default topic for Help 1 and website output if one
+            // was not specified in a content layout file.
+            if(defaultTopic == null)
+            {
+                node = tocXml.SelectSingleNode("topics/topic");
+
+                if(node != null)
+                    defaultTopic = @"html\" + node.Attributes["id"].Value + ".htm";
+                else
+                    throw new BuilderException("BE0026", "Unable to determine default topic in " +
+                        "toc.xml.  You may need to mark one as the default topic manually.");
+            }
+
+            if(wasModified)
+                tocXml.Save(workingFolder + "toc.xml");
 
             this.ExecutePlugIns(ExecutionBehaviors.After);
         }
+        #endregion
+
+        #region Content copying methods
+        //=====================================================================
 
         /// <summary>
         /// This is called to create the help project output folder and copy
         /// the standard content files (art, media, scripts, and styles) to the
-        /// help project folder.
+        /// help project folders.
         /// </summary>
-        /// <remarks>This creates the folders <b>Output\</b> and
-        /// <b>Output\html</b> under the working folder and copies the stock
-        /// art, icon, media, script, and style sheet files from the
-        /// <b>{@PresentationPath}\art</b>, <b>{@PresentationPath}\icons</b>,
+        /// <remarks>This creates the base folder <b>Output\</b>, one folder
+        /// for each help file format, and an <b>.\html</b> folder under each of
+        /// those.  It then copies the stock art, icon, media, script, and
+        /// stylesheet files from the <b>{@PresentationPath}\art</b>,
+        /// <b>{@PresentationPath}\icons</b>,
         /// <b>{@PresentationPath}\media</b>,
         /// <b>{@PresentationPath}\scripts</b>, and
         /// <b>{@PresentationPath}\styles</b> folders which are located in the
@@ -374,33 +386,28 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// may or may not exist based on the style.</remarks>
         protected void CopyStandardHelpContent()
         {
-            this.ReportProgress(BuildStep.CopyStandardContent,
-                "Copying standard help content...");
+            this.ReportProgress(BuildStep.CopyStandardContent, "Copying standard help content...");
 
             if(this.ExecutePlugIns(ExecutionBehaviors.InsteadOf))
                 return;
 
             this.ExecutePlugIns(ExecutionBehaviors.Before);
+            this.EnsureOutputFoldersExist("html");
 
-            Directory.CreateDirectory(workingFolder + "Output");
-            Directory.CreateDirectory(workingFolder + @"Output\html");
+            foreach(string baseFolder in this.HelpFormatOutputFolders)
+            {
+                if(Directory.Exists(presentationFolder + "art"))
+                    this.RecursiveCopy(presentationFolder + @"art\*.*", baseFolder + @"art\");
 
-            if(Directory.Exists(presentationFolder + "art"))
-                this.RecursiveCopy(presentationFolder + @"art\*.*",
-                    workingFolder + @"Output\art\");
+                if(Directory.Exists(presentationFolder + "icons"))
+                    this.RecursiveCopy(presentationFolder + @"icons\*.*", baseFolder + @"icons\");
 
-            if(Directory.Exists(presentationFolder + "icons"))
-                this.RecursiveCopy(presentationFolder + @"icons\*.*",
-                    workingFolder + @"Output\icons\");
+                if(Directory.Exists(presentationFolder + "media"))
+                    this.RecursiveCopy(presentationFolder + @"media\*.*", baseFolder + @"media\");
 
-            if(Directory.Exists(presentationFolder + "media"))
-                this.RecursiveCopy(presentationFolder + @"media\*.*",
-                    workingFolder + @"Output\media\");
-
-            this.RecursiveCopy(presentationFolder + @"scripts\*.*",
-                workingFolder + @"Output\scripts\");
-            this.RecursiveCopy(presentationFolder + @"styles\*.*",
-                workingFolder + @"Output\styles\");
+                this.RecursiveCopy(presentationFolder + @"scripts\*.*", baseFolder + @"scripts\");
+                this.RecursiveCopy(presentationFolder + @"styles\*.*", baseFolder + @"styles\");
+            }
 
             this.ExecutePlugIns(ExecutionBehaviors.After);
         }
@@ -458,6 +465,10 @@ namespace SandcastleBuilder.Utils.BuildEngine
                             folder.Substring(dirName.Length + 1) + @"\");
             }
         }
+        #endregion
+
+        #region Other stuff
+        //=====================================================================
 
         /// <summary>
         /// This returns a complete list of files for inclusion in the
@@ -472,8 +483,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// file list.  For HTML Help 1, it returns a list of the filenames.
         /// For MS Help 2, it returns the list formatted with the necessary
         /// XML markup.</remarks>
-        protected string HelpProjectFileList(string folder,
-          HelpFileFormat format)
+        protected string HelpProjectFileList(string folder, HelpFileFormat format)
         {
             StringBuilder sb = new StringBuilder(10240);
             string itemFormat, filename, checkName;
@@ -482,27 +492,23 @@ namespace SandcastleBuilder.Utils.BuildEngine
             if(folder == null)
                 throw new ArgumentNullException("folder");
 
-            string[] files = Directory.GetFiles(folder, "*.*",
-                SearchOption.AllDirectories);
+            string[] files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
 
             if(folder.Length != 0 && folder[folder.Length - 1] != '\\')
                 folder += @"\";
 
             if((format & HelpFileFormat.HtmlHelp1) != 0)
             {
-                if(folder.IndexOf(',') != -1 || folder.IndexOf(".h",
-                  StringComparison.OrdinalIgnoreCase) != -1)
+                if(folder.IndexOf(',') != -1 || folder.IndexOf(".h", StringComparison.OrdinalIgnoreCase) != -1)
                     this.ReportWarning("BE0060", "The file path '{0}' " +
                         "contains a comma or '.h' which may cause the Help 1 " +
                         "compiler to fail.", folder);
 
                 if(project.HtmlHelpName.IndexOf(',') != -1 ||
-                  project.HtmlHelpName.IndexOf(".h",
-                  StringComparison.OrdinalIgnoreCase) != -1)
+                  project.HtmlHelpName.IndexOf(".h", StringComparison.OrdinalIgnoreCase) != -1)
                     this.ReportWarning("BE0060", "The HTMLHelpName property " +
                         "value '{0}' contains a comma or '.h' which may " +
-                        "cause the Help 1 compiler to fail.",
-                        project.HtmlHelpName);
+                        "cause the Help 1 compiler to fail.", project.HtmlHelpName);
 
                 itemFormat = "{0}\r\n";
                 encode = false;
@@ -520,8 +526,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
                     if(checkName.EndsWith(".htm", StringComparison.OrdinalIgnoreCase) ||
                       checkName.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
-                        checkName = checkName.Substring(0,
-                            checkName.LastIndexOf(".htm",
+                        checkName = checkName.Substring(0, checkName.LastIndexOf(".htm",
                             StringComparison.OrdinalIgnoreCase));
 
                     if(checkName.IndexOf(',') != -1 || checkName.IndexOf(".h",
@@ -533,9 +538,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     sb.AppendFormat(itemFormat, filename);
                 }
                 else
-                    sb.AppendFormat(itemFormat,
-                        HttpUtility.HtmlEncode(name.Replace(folder,
-                            String.Empty)));
+                    sb.AppendFormat(itemFormat, HttpUtility.HtmlEncode(name.Replace(folder, String.Empty)));
 
             return sb.ToString();
         }
@@ -546,26 +549,24 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// </summary>
         protected void GenerateWebsite()
         {
-            string destFile;
+            string destFile, webWorkingFolder = String.Format(CultureInfo.InvariantCulture,
+                "{0}Output\\{1}", workingFolder, HelpFileFormat.Website);
 
             // Generate the full-text index for the ASP.NET search option
-            this.ReportProgress(BuildStep.GenerateFullTextIndex,
-                "Generating full-text index for the website...\r\n");
+            this.ReportProgress(BuildStep.GenerateFullTextIndex, "Generating full-text index for the website...\r\n");
 
             if(!this.ExecutePlugIns(ExecutionBehaviors.InsteadOf))
             {
                 this.ExecutePlugIns(ExecutionBehaviors.Before);
 
-                FullTextIndex index = new FullTextIndex(workingFolder +
-                    "StopWordList.txt", language);
-                index.CreateFullTextIndex(workingFolder + "Output");
-                index.SaveIndex(workingFolder + @"Output\fti\");
+                FullTextIndex index = new FullTextIndex(workingFolder + "StopWordList.txt", language);
+                index.CreateFullTextIndex(webWorkingFolder);
+                index.SaveIndex(webWorkingFolder + @"\fti\");
 
                 this.ExecutePlugIns(ExecutionBehaviors.After);
             }
 
-            this.ReportProgress(BuildStep.CopyingWebsiteFiles,
-                "Copying website files to output folder...\r\n");
+            this.ReportProgress(BuildStep.CopyingWebsiteFiles, "Copying website files to output folder...\r\n");
 
             if(this.ExecutePlugIns(ExecutionBehaviors.InsteadOf))
                 return;
@@ -579,8 +580,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
             foreach(string file in Directory.GetFiles(webFolder))
                 if(file.EndsWith("html", StringComparison.OrdinalIgnoreCase) ||
                   file.EndsWith("aspx", StringComparison.OrdinalIgnoreCase))
-                    this.TransformTemplate(Path.GetFileName(file), webFolder,
-                        outputFolder);
+                    this.TransformTemplate(Path.GetFileName(file), webFolder, outputFolder);
                 else
                 {
                     destFile = outputFolder + Path.GetFileName(file);
@@ -589,7 +589,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 }
 
             // Copy the help pages and related content
-            this.RecursiveCopy(workingFolder + @"Output\*.*", outputFolder);
+            this.RecursiveCopy(webWorkingFolder + @"\*.*", outputFolder);
 
             this.GatherBuildOutputFilenames();
             this.ExecutePlugIns(ExecutionBehaviors.After);
@@ -612,8 +612,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
             // When reading the file, use the default encoding but detect the
             // encoding if byte order marks are present.
-            content = BuildProcess.ReadWithEncoding(workingFolder +
-                "WebTOC.xml", ref enc);
+            content = BuildProcess.ReadWithEncoding(workingFolder + "WebTOC.xml", ref enc);
 
             using(StringReader sr = new StringReader(content))
             {
@@ -720,10 +719,9 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 return;
             }
 
-            // The reflection file can contain tens of thousands of entries
-            // for large assemblies.  Dictionary<K, T> is much faster at
-            // lookups than List<T>.
-            Dictionary<string, string> filenames = new Dictionary<string, string>();
+            // The reflection file can contain tens of thousands of entries for large assemblies.
+            // HashSet<T> is much faster at lookups than List<T>.
+            HashSet<string> filenames = new HashSet<string>();
 
             try
             {
@@ -732,19 +730,18 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
                 foreach(XmlNode file in elements)
                 {
-                    originalName = memberName = file.ParentNode.Attributes[
-                        "id"].Value;
+                    originalName = memberName = file.ParentNode.Attributes["id"].Value;
 
                     // Remove parameters
                     idx = memberName.IndexOf('(');
+
                     if(idx != -1)
                         memberName = memberName.Substring(0, idx);
 
                     // Replace invalid filename characters with an underscore
                     // if member names are used as the filenames.
                     if(project.NamingMethod == NamingMethod.MemberName)
-                        newName = memberName = reInvalidChars.Replace(
-                            memberName, "_");
+                        newName = memberName = reInvalidChars.Replace(memberName, "_");
                     else
                         newName = memberName;
 
@@ -753,23 +750,18 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
                     do
                     {
-                        // Hash codes can be used to shorten extremely long
-                        // type and member names.
+                        // Hash codes can be used to shorten extremely long type and member names
                         if(project.NamingMethod == NamingMethod.HashedMemberName)
-                            newName = String.Format(
-                                CultureInfo.InvariantCulture, "{0:X}",
+                            newName = String.Format(CultureInfo.InvariantCulture, "{0:X}",
                                 newName.GetHashCode());
 
-                        // Check for a duplicate (i.e. an overloaded member).
-                        // These will be made unique by adding a counter to
-                        // the end of the name.
-                        duplicate = filenames.ContainsKey(newName);
+                        // Check for a duplicate (i.e. an overloaded member).  These will be made
+                        // unique by adding a counter to the end of the name.
+                        duplicate = filenames.Contains(newName);
 
-                        // VS2005/Hana style bug as of Sept 2007 CTP.
-                        // Overloads pages sometimes result in a duplicate
-                        // reflection file entry but we need to ignore it.
-                        if(duplicate && originalName.StartsWith("Overload:",
-                          StringComparison.Ordinal))
+                        // VS2005/Hana style bug as of Sept 2007 CTP.  Overloads pages sometimes result
+                        // in a duplicate reflection file entry but we need to ignore it.
+                        if(duplicate && originalName.StartsWith("Overload:", StringComparison.Ordinal))
                         {
                             duplicate = false;
                             overloadBugWorkaround = true;
@@ -778,8 +770,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                         if(duplicate)
                         {
                             idx++;
-                            newName = String.Format(
-                                CultureInfo.InvariantCulture, "{0}_{1}",
+                            newName = String.Format(CultureInfo.InvariantCulture, "{0}_{1}",
                                 memberName, idx);
                         }
 
@@ -787,13 +778,12 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
                     // Log duplicates that had unique names created
                     if(idx != 0)
-                        this.ReportProgress("    Unique name {0} generated " +
-                            "for {1}", newName, originalName);
+                        this.ReportProgress("    Unique name {0} generated for {1}", newName, originalName);
 
                     file.Attributes["name"].Value = newName;
 
                     if(!overloadBugWorkaround)
-                        filenames.Add(newName, null);
+                        filenames.Add(newName);
                 }
             }
             catch(Exception ex)
@@ -804,5 +794,30 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
             this.ExecutePlugIns(ExecutionBehaviors.After);
         }
+
+        /// <summary>
+        /// This is used to ensure that all output folders exist based on the
+        /// selected help file format(s).
+        /// </summary>
+        /// <param name="subFolder">The subfolder name or null to ensure that
+        /// the base folders exist</param>
+        /// <remarks>This creates the named folder under the help format
+        /// specific folder beneath the <b>.\Output</b> folder.</remarks>
+        public void EnsureOutputFoldersExist(string subFolder)
+        {
+            if(this.HelpFormatOutputFolders.Count == 0)
+            {
+                foreach(HelpFileFormat value in Enum.GetValues(typeof(HelpFileFormat)))
+                    if((project.HelpFileFormat & value) != 0)
+                        this.HelpFormatOutputFolders.Add(String.Format(CultureInfo.InvariantCulture,
+                            @"{0}Output\{1}\", workingFolder, value));
+            }
+
+            if(!String.IsNullOrEmpty(subFolder))
+                foreach(string baseFolder in this.HelpFormatOutputFolders)
+                    if(!Directory.Exists(baseFolder + subFolder))
+                        Directory.CreateDirectory(baseFolder + subFolder);
+        }
+        #endregion
     }
 }

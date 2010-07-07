@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : DocumentationSource.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 01/03/2010
+// Updated : 06/05/2010
 // Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -22,6 +22,8 @@
 // 1.3.4.0  12/31/2006  EFW  Converted path properties to FilePath objects
 // 1.6.0.7  04/16/2008  EFW  Added support for wildcards
 // 1.8.0.0  06/23/2008  EFW  Rewrote to support the MSBuild project format
+// 1.8.0.4  06/05/2010  EFW  Added support for getting build include status and
+//                           configuration settings from the solution file.
 //=============================================================================
 
 using System;
@@ -33,10 +35,7 @@ using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 
-using Microsoft.Build.BuildEngine;
-
 using SandcastleBuilder.Utils.Design;
-using SandcastleBuilder.Utils.MSBuild;
 
 namespace SandcastleBuilder.Utils
 {
@@ -56,6 +55,17 @@ namespace SandcastleBuilder.Utils
         private FilePath sourceFile;
         private string configuration, platform;
         private bool includeSubFolders;
+
+        // Regular expression used to parse solution files
+        private static Regex reExtractProjectGuids = new Regex(
+            "^Project\\(\"\\{(" +
+            "FAE04EC0-301F-11D3-BF4B-00C04F79EFBC|" +   // C#
+            "F184B08F-C81C-45F6-A57F-5ABD9991F28F|" +   // VB.NET
+            "8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942|" +   // C++
+            "F2A71F9B-5D33-465A-A702-920D77279786|" +   // F#
+            "E6FDF86B-F3D1-11D4-8576-0002A516ECE8" +    // J#
+            ")\\}\"\\) = \".*?\", \"(?!http)" +
+            "(?<Path>.*?proj)\", \"\\{(?<GUID>.*?)\\}\"", RegexOptions.Multiline);
         #endregion
 
         #region Properties
@@ -216,6 +226,60 @@ namespace SandcastleBuilder.Utils
         {
             base.CheckProjectIsEditable();
         }
+
+        /// <summary>
+        /// Extract all project files from the given Visual Studio solution file
+        /// </summary>
+        /// <param name="solutionFile">The Visual Studio solution from which to
+        /// extract the projects.</param>
+        /// <param name="configuration">The configuration to use</param>
+        /// <param name="platform">The platform to use</param>
+        /// <param name="projectFiles">The collection used to return the
+        /// extracted projects.</param>
+        private static void ExtractProjectsFromSolution(string solutionFile,
+          string configuration, string platform, Collection<ProjectFileConfiguration> projectFiles)
+        {
+            Regex reIsInBuild;
+            Match buildMatch;
+            string solutionContent, folder = Path.GetDirectoryName(solutionFile);
+
+            using(StreamReader sr = new StreamReader(solutionFile))
+            {
+                solutionContent = sr.ReadToEnd();
+                sr.Close();
+            }
+
+            // Only add projects that are likely to contain assemblies
+            MatchCollection projects = reExtractProjectGuids.Matches(solutionContent);
+
+            foreach(Match solutionMatch in projects)
+            {
+                // See if the project is included in the build and get the configuration and platform
+                reIsInBuild = new Regex(String.Format(CultureInfo.InvariantCulture,
+                    @"\{{{0}\}}\.{1}\|{2}\.Build\.0\s*=\s*(?<Configuration>.*?)\|(?<Platform>.*)",
+                    solutionMatch.Groups["GUID"].Value, configuration, platform), RegexOptions.IgnoreCase);
+
+                buildMatch = reIsInBuild.Match(solutionContent);
+
+                // If the platform is "AnyCPU" and it didn't match, try "Any CPU" (with a space)
+                if(!buildMatch.Success && platform.Equals("AnyCPU", StringComparison.OrdinalIgnoreCase))
+                {
+                    reIsInBuild = new Regex(String.Format(CultureInfo.InvariantCulture,
+                        @"\{{{0}\}}\.{1}\|Any CPU\.Build\.0\s*=\s*(?<Configuration>.*?)\|(?<Platform>.*)",
+                        solutionMatch.Groups["GUID"].Value, configuration), RegexOptions.IgnoreCase);
+
+                    buildMatch = reIsInBuild.Match(solutionContent);
+                }
+
+                if(buildMatch.Success)
+                    projectFiles.Add(new ProjectFileConfiguration(Path.Combine(folder,
+                      solutionMatch.Groups["Path"].Value))
+                    {
+                        Configuration = buildMatch.Groups["Configuration"].Value.Trim(),
+                        Platform = buildMatch.Groups["Platform"].Value.Trim()
+                    });
+            }
+        }
         #endregion
 
         #region Constructor
@@ -235,8 +299,7 @@ namespace SandcastleBuilder.Utils
           base(project)
         {
             sourceFile = new FilePath(filename, project);
-            sourceFile.PersistablePathChanging += new EventHandler(
-                sourceFile_PersistablePathChanging);
+            sourceFile.PersistablePathChanging += sourceFile_PersistablePathChanging;
             configuration = projConfig;
             platform = projPlatform;
             includeSubFolders = subFolders;
@@ -297,33 +360,23 @@ namespace SandcastleBuilder.Utils
         /// includes wildcard characters, subfolders will be searched as well.
         /// If not, only the top-level folder is searched.</param>
         /// <returns>A list of assemblies matching the wildcard</returns>
-        public static Collection<string> Assemblies(string wildcard,
-          bool includeSubfolders)
+        public static Collection<string> Assemblies(string wildcard, bool includeSubfolders)
         {
             Collection<string> assemblies = new Collection<string>();
             SearchOption searchOpt = SearchOption.TopDirectoryOnly;
-            string[] files;
-            string dirName, ext;
+            string dirName;
 
             dirName = Path.GetDirectoryName(wildcard);
 
             if(Directory.Exists(dirName))
             {
-                if(wildcard.IndexOfAny(new char[] { '*', '?' }) != -1 &&
-                  includeSubfolders)
+                if(wildcard.IndexOfAny(new char[] { '*', '?' }) != -1 && includeSubfolders)
                     searchOpt = SearchOption.AllDirectories;
 
-                files = Directory.GetFiles(dirName, Path.GetFileName(wildcard),
-                    searchOpt);
-
-                foreach(string f in files)
-                {
-                    ext = Path.GetExtension(f).ToLower(
-                        CultureInfo.InvariantCulture);
-
-                    if(ext == ".exe" || ext == ".dll")
+                foreach(string f in Directory.GetFiles(dirName, Path.GetFileName(wildcard), searchOpt))
+                    if(f.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) ||
+                      f.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
                         assemblies.Add(f);
-                }
             }
 
             return assemblies;
@@ -339,26 +392,20 @@ namespace SandcastleBuilder.Utils
         /// includes wildcard characters, subfolders will be searched as well.
         /// If not, only the top-level folder is searched.</param>
         /// <returns>A list of XML comments files matching the wildcard</returns>
-        public static Collection<string> CommentsFiles(string wildcard,
-          bool includeSubfolders)
+        public static Collection<string> CommentsFiles(string wildcard, bool includeSubfolders)
         {
             Collection<string> comments = new Collection<string>();
             SearchOption searchOpt = SearchOption.TopDirectoryOnly;
-            string[] files;
             string dirName;
 
             dirName = Path.GetDirectoryName(wildcard);
 
             if(Directory.Exists(dirName))
             {
-                if(wildcard.IndexOfAny(new char[] { '*', '?' }) != -1 &&
-                  includeSubfolders)
+                if(wildcard.IndexOfAny(new char[] { '*', '?' }) != -1 && includeSubfolders)
                     searchOpt = SearchOption.AllDirectories;
 
-                files = Directory.GetFiles(dirName, Path.GetFileName(wildcard),
-                    searchOpt);
-
-                foreach(string f in files)
+                foreach(string f in Directory.GetFiles(dirName, Path.GetFileName(wildcard), searchOpt))
                     if(f.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
                         comments.Add(f);
             }
@@ -375,85 +422,48 @@ namespace SandcastleBuilder.Utils
         /// <param name="includeSubfolders">If true and the wildcard parameter
         /// includes wildcard characters, subfolders will be searched as well.
         /// If not, only the top-level folder is searched.</param>
+        /// <param name="configuration">The configuration to use</param>
+        /// <param name="platform">The platform to use</param>
         /// <returns>A list of projects matching the wildcard.  Any solution
-        /// files (.sln) found are returned last, each followed by the project
-        /// filenames extracted from it.</returns>
-        public static Collection<string> Projects(string wildcard,
-          bool includeSubfolders)
+        /// files (.sln) found are returned last, each followed by the projects
+        /// extracted from it.</returns>
+        public static Collection<ProjectFileConfiguration> Projects(string wildcard,
+          bool includeSubfolders, string configuration, string platform)
         {
             List<string> solutions = new List<string>();
-            Collection<string> projects = new Collection<string>();
+            Collection<ProjectFileConfiguration> projects = new Collection<ProjectFileConfiguration>();
             SearchOption searchOpt = SearchOption.TopDirectoryOnly;
-            string[] files;
-            string dirName, ext;
+            string dirName;
 
             dirName = Path.GetDirectoryName(wildcard);
 
             if(Directory.Exists(dirName))
             {
-                if(wildcard.IndexOfAny(new char[] { '*', '?' }) != -1 &&
-                  includeSubfolders)
+                if(wildcard.IndexOfAny(new char[] { '*', '?' }) != -1 && includeSubfolders)
                     searchOpt = SearchOption.AllDirectories;
 
-                files = Directory.GetFiles(dirName, Path.GetFileName(wildcard),
-                    searchOpt);
-
-                foreach(string f in files)
+                foreach(string f in Directory.GetFiles(dirName, Path.GetFileName(wildcard), searchOpt))
                 {
-                    ext = Path.GetExtension(f).ToLower(
-                        CultureInfo.InvariantCulture);
-
-                    if(ext == ".sln")
+                    if(f.EndsWith(".sln", StringComparison.OrdinalIgnoreCase))
                         solutions.Add(f);
                     else
-                        if(ext.EndsWith("proj", StringComparison.Ordinal))
-                            projects.Add(f);
+                        if(f.EndsWith("proj", StringComparison.OrdinalIgnoreCase))
+                            projects.Add(new ProjectFileConfiguration(f));
                 }
 
-                // Add each solution followed by the projects it contains
-                foreach(string solution in solutions)
+                // Add solutions last followed by the projects that they contain.
+                // The caller can then set solution specific values in each project
+                // related to the solution.
+                foreach(string s in solutions)
                 {
-                    projects.Add(solution);
-                    ExtractProjectsFromSolution(solution, projects);
+                    projects.Add(new ProjectFileConfiguration(s));
+                    ExtractProjectsFromSolution(s, configuration, platform, projects);
                 }
             }
 
             return projects;
         }
 
-        /// <summary>
-        /// Extract all project filenames from the given Visual Studio solution
-        /// file.
-        /// </summary>
-        /// <param name="solutionFile">The Visual Studio solution from which to
-        /// extract the projects.</param>
-        /// <param name="projectFiles">The collection used to return the
-        /// extracted projects.</param>
-        public static void ExtractProjectsFromSolution(string solutionFile,
-          Collection<string> projectFiles)
-        {
-            string solutionContent, folder = Path.GetDirectoryName(solutionFile);
-
-            using(StreamReader sr = new StreamReader(solutionFile))
-            {
-                solutionContent = sr.ReadToEnd();
-                sr.Close();
-            }
-
-            // Only add projects that are likely to contain assemblies
-            MatchCollection projects = Regex.Matches(solutionContent,
-                "^Project\\(\"\\{(" +
-                "FAE04EC0-301F-11D3-BF4B-00C04F79EFBC|" +   // C#
-                "F184B08F-C81C-45F6-A57F-5ABD9991F28F|" +   // VB.NET
-                "8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942|" +   // C++
-                "F2A71F9B-5D33-465A-A702-920D77279786|" +   // F#
-                "E6FDF86B-F3D1-11D4-8576-0002A516ECE8" +    // J#
-                ")\\}\"\\) = \".*?\", \"(?!http)" +
-                "(?<Path>.*?proj)\", \".*?\"", RegexOptions.Multiline);
-
-            foreach(Match m in projects)
-                projectFiles.Add(Path.Combine(folder, m.Groups["Path"].Value));
-        }
         #endregion
     }
 }
