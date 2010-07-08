@@ -35,7 +35,7 @@
     <FeedbackEMailAddress>Eric%40EWoodruff.us</FeedbackEMailAddress>
     <PresentationStyle>vs2005</PresentationStyle>
     <SyntaxFilters>CSharp, VisualBasic</SyntaxFilters>
-    <HelpFileVersion>1.9.0.0</HelpFileVersion>
+    <HelpFileVersion>1.9.1.0</HelpFileVersion>
     <ComponentConfigurations>
       <ComponentConfig id="Post-transform Component" enabled="True">
         <component type="SandcastleBuilder.Components.PostTransformComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll" id="Post-transform Component">
@@ -187,7 +187,7 @@
     <None Include="BuildComponents\BindingRedirectResolver.aml" />
     <None Include="BuildComponents\VersionHistory\v1.8.0.2.aml" />
     <None Include="BuildComponents\VersionHistory\v1.8.0.3.aml" />
-    <None Include="BuildComponents\VersionHistory\v1.9.0.0.aml" />
+    <None Include="BuildComponents\VersionHistory\v1.9.1.0.aml" />
     <None Include="BuildComponents\MSHelpViewerRoot.aml" />
     <None Include="Content\PropertiesWindow\HelpLibraryManagerLauncher.aml" />
     <None Include="Content\CompConfig\MSHCComponent.aml" />

@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : BuildProcess.HelpFileUtils.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/02/2010
+// Updated : 07/07/2010
 // Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -235,7 +235,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 node.Attributes.Append(attr);
 
                 attr = tocXml.CreateAttribute("file");
-                attr.Value = Path.GetFileNameWithoutExtension(namespacesTopic);
+                attr.Value = namespacesTopic;
                 node.Attributes.Append(attr);
 
                 allNodes = tocXml.SelectNodes("topics/topic");
@@ -353,7 +353,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 node = tocXml.SelectSingleNode("topics/topic");
 
                 if(node != null)
-                    defaultTopic = @"html\" + node.Attributes["id"].Value + ".htm";
+                    defaultTopic = @"html\" + node.Attributes["file"].Value + ".htm";
                 else
                     throw new BuilderException("BE0026", "Unable to determine default topic in " +
                         "toc.xml.  You may need to mark one as the default topic manually.");

@@ -2,7 +2,7 @@
 <topic id="ef1dba5d-bb3b-4d27-9ccf-6f1ec8d1e793" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <autoOutline lead="Version 1.9.0.0 was released on July 6th, 2010" />
+      <autoOutline lead="Version 1.9.1.0 was released on July 7th, 2010" />
     </introduction>
 
 <section address="BreakingChanges">
@@ -202,6 +202,10 @@ uses this to arrange the table of contents based on the project settings.</listI
 to support the new option to remove APIs no longer present in the latest versions.  The
 default is to keep the old APIs so that the plug-in behaves as it did in prior releases.
 It can be changed by editing the plug-in's configuration.</listItem>
+
+		<listItem>When cleaning build output and clearing prior web output, access
+denied errors are now ignored when removing folders rather than aborting the operation.
+A message is logged noting the issue and the file that caused it.</listItem>
 
 		<listItem>Automatic entry of closing brackets, parentheses, and quotes
 in the text editor can be disabled in the <ui>User Preferences</ui> options.  A

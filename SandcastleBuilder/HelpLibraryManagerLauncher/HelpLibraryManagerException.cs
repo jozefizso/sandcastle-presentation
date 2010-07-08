@@ -2,7 +2,7 @@
 // System  : Help Library Manager Launcher
 // File    : HelpLibraryManagerException.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/06/2010
+// Updated : 07/07/2010
 // Note    : Copyright 2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -23,6 +23,7 @@
 using System;
 using System.Globalization;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 namespace SandcastleBuilder.MicrosoftHelpViewer
 {
@@ -121,7 +122,7 @@ namespace SandcastleBuilder.MicrosoftHelpViewer
         /// Constructor
         /// </summary>
         /// <param name="errorCode">The error code associated with the exception</param>
-        /// <overloads>There are four overloads for the constructor</overloads>
+        /// <overloads>There are three overloads for the constructor</overloads>
         public HelpLibraryManagerException(int errorCode) : base(ErrorMessageForCode(errorCode))
         {
             this.ErrorCode = errorCode;
@@ -228,6 +229,20 @@ namespace SandcastleBuilder.MicrosoftHelpViewer
                 default:
                     return "An unknown error occurred in the Help Library Manager launcher process.  ";
             }
+        }
+        #endregion
+
+        #region Method overrides
+        //=====================================================================
+
+        /// <inheritdoc />
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+
+            if(info != null)
+                info.AddValue("ErrorCode", this.ErrorCode);
         }
         #endregion
     }

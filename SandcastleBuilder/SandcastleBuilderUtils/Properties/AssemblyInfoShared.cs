@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder
 // File    : AssemblyInfoShared.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 06/06/2010
+// Updated : 07/07/2010
 // Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -66,6 +66,6 @@ using System.Security.Permissions;
 // and plug-in developers to use the same major, minor, and build numbers
 // as the Sandcastle Help File Builder to indicate with which version their
 // components are compatible.
-[assembly: AssemblyVersion("1.9.0.0")]
+[assembly: AssemblyVersion("1.9.1.0")]
 
 // See AssemblyInfo.cs for project-specific assembly attributes

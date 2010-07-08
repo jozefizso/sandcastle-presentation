@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder
 // File    : MainForm.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/05/2010
+// Updated : 07/07/2010
 // Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -42,7 +42,6 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -1247,12 +1246,12 @@ namespace SandcastleBuilder.Gui
         /// <param name="e">The event arguments</param>
         private void miCleanOutput_Click(object sender, EventArgs e)
         {
+            StringBuilder sb = new StringBuilder(1024);
             string projectFolder, outputFolder;
 
-            // Make sure we start out in the project's output folder
-            // in case the output folder is relative to it.
-            projectFolder = Path.GetDirectoryName(Path.GetFullPath(
-                project.Filename));
+            // Make sure we start out in the project's output folder in case the output folder
+            // is relative to it.
+            projectFolder = Path.GetDirectoryName(Path.GetFullPath(project.Filename));
             Directory.SetCurrentDirectory(projectFolder);
 
             outputFolder = Path.GetFullPath(project.OutputPath);
@@ -1279,41 +1278,52 @@ namespace SandcastleBuilder.Gui
                         Thread.Sleep(1000);
                     }
 
-                    if(project.WorkingPath.Path.Length != 0 &&
-                      Directory.Exists(project.WorkingPath))
+                    if(project.WorkingPath.Path.Length != 0 && Directory.Exists(project.WorkingPath))
                     {
-                        BuildProcess.VerifySafePath("WorkingPath",
-                            project.WorkingPath, projectFolder);
+                        BuildProcess.VerifySafePath("WorkingPath", project.WorkingPath, projectFolder);
                         Directory.Delete(project.WorkingPath, true);
                     }
 
-                    BuildProcess.VerifySafePath("OutputPath", outputFolder,
-                        projectFolder);
+                    BuildProcess.VerifySafePath("OutputPath", outputFolder, projectFolder);
 
                     // Read-only and/or hidden files and folders are ignored
                     // as they are assumed to be under source control.
                     foreach(string file in Directory.GetFiles(outputFolder))
-                        if((File.GetAttributes(file) &
-                          (FileAttributes.ReadOnly |
-                          FileAttributes.Hidden)) == 0)
+                        if((File.GetAttributes(file) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) == 0)
                             File.Delete(file);
+                        else
+                            sb.AppendFormat("Did not delete read-only or hidden file '{0}'\r\n", file);
 
                     foreach(string folder in Directory.GetDirectories(outputFolder))
-                        if((File.GetAttributes(folder) &
-                          (FileAttributes.ReadOnly |
-                          FileAttributes.Hidden)) == 0)
-                            Directory.Delete(folder, true);
+                        try
+                        {
+                            if((File.GetAttributes(folder) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) == 0)
+                                Directory.Delete(folder, true);
+                            else
+                                sb.AppendFormat("Did not delete folder '{0}' as it is read-only or hidden\r\n", folder);
+                        }
+                        catch(IOException ioEx)
+                        {
+                            sb.AppendFormat("Did not delete folder '{0}': {1}\r\n", folder, ioEx.Message);
+                        }
+                        catch(UnauthorizedAccessException uaEx)
+                        {
+                            sb.AppendFormat("Did not delete folder '{0}': {1}\r\n", folder, uaEx.Message);
+                        }
 
                     // Delete the log file too
                     if(File.Exists(project.LogFileLocation))
                         File.Delete(project.LogFileLocation);
+
+                    if(sb.Length != 0)
+                        MessageBox.Show(sb.ToString(), Constants.AppName, MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
                 }
                 catch(Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine(ex.ToString());
-                    MessageBox.Show("Unable to clean output folder.  Reason: " +
-                        ex.Message, Constants.AppName, MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
+                    MessageBox.Show("Unable to clean output folder.  Reason: " + ex.Message, Constants.AppName,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally
                 {

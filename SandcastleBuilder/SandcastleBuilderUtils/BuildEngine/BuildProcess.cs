@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : BuildProcess.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/05/2010
+// Updated : 07/07/2010
 // Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -659,7 +659,22 @@ namespace SandcastleBuilder.Utils.BuildEngine
                         if(!this.ExecutePlugIns(ExecutionBehaviors.InsteadOf))
                         {
                             this.ExecutePlugIns(ExecutionBehaviors.Before);
-                            Directory.Delete(workingFolder, true);
+
+                            try
+                            {
+                                Directory.Delete(workingFolder, true);
+                            }
+                            catch(IOException ioEx)
+                            {
+                                this.ReportProgress("    Not all prior output was removed from '{0}': {1}",
+                                    workingFolder, ioEx.Message);
+                            }
+                            catch(UnauthorizedAccessException uaEx)
+                            {
+                                this.ReportProgress("    Not all prior output was removed from '{0}': {1}",
+                                    workingFolder, uaEx.Message);
+                            }
+
                             this.ExecutePlugIns(ExecutionBehaviors.After);
                         }
                     }
@@ -921,6 +936,12 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 // Alter the help topic filenames if necessary
                 this.ModifyHelpTopicFilenames();
 
+                // Backup the original reflection file for reference and save the changed file
+                File.Copy(reflectionFile, Path.ChangeExtension(reflectionFile, ".bak"), true);
+
+                reflectionInfo.Save(reflectionFile);
+                commentsFiles.Save();
+
                 // Copy the standard help file content
                 this.CopyStandardHelpContent();
 
@@ -984,12 +1005,6 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     this.ExecutePlugIns(ExecutionBehaviors.After);
                 }
 
-                // Backup the original reflection file for reference and save the changed file
-                File.Copy(reflectionFile, Path.ChangeExtension(reflectionFile, ".bak"), true);
-
-                reflectionInfo.Save(reflectionFile);
-                commentsFiles.Save();
-
                 // The June 2007 CTP removed the root namespace container from the TOC so we'll get
                 // the default project page filename from the refelection information file.
                 XmlNode defTopic = apisNode.SelectSingleNode("api[@id='R:Project']/file/@name");
@@ -1000,7 +1015,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
                     // Use it as the default topic if one wasn't specified explicitly in the additional content
                     if(defaultTopic == null)
-                        defaultTopic = namespacesTopic;
+                        defaultTopic = @"html\" + namespacesTopic + ".htm";
                 }
 
                 // Create the Sandcastle configuration file
@@ -1074,14 +1089,11 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 {
                     this.ReportProgress("\r\nClearing any prior web output");
 
-                    // Purge all files and folders from the output path except
-                    // for the working folder and the build log.  This is done
-                    // first as the CHM and HxS files end up in the same output
-                    // folder.  However, the website output is built last so
-                    // that unnecessary files are not compiled into the CHM and
-                    // HxS files.  Read-only and/or hidden files and folders
-                    // are ignored as they are assumed to be under source
-                    // control.
+                    // Purge all files and folders from the output path except for the working folder
+                    // and the build log.  This is done first as the CHM and HxS files end up in the
+                    // same output folder.  However, the website output is built last so that unnecessary
+                    // files are not compiled into the CHM and HxS files.  Read-only and/or hidden files
+                    // and folders are ignored as they are assumed to be under source control.
                     foreach(string file in Directory.GetFiles(outputFolder))
                         if(!file.EndsWith(Path.GetFileName(this.LogFilename), StringComparison.Ordinal))
                             if((File.GetAttributes(file) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) == 0)
@@ -1090,11 +1102,23 @@ namespace SandcastleBuilder.Utils.BuildEngine
                                 this.ReportProgress("    Ignoring read-only/hidden file {0}", file);
 
                     foreach(string folder in Directory.GetDirectories(outputFolder))
-                        if(!folder.EndsWith("Working", StringComparison.Ordinal))
-                            if((File.GetAttributes(folder) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) == 0)
-                                Directory.Delete(folder, true);
-                            else
-                                this.ReportProgress("    Ignoring read-only/hidden folder {0}", folder);
+                        try
+                        {
+                            // Ignore the working folder
+                            if(!folder.EndsWith("Working", StringComparison.Ordinal))
+                              if((File.GetAttributes(folder) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) == 0)
+                                    Directory.Delete(folder, true);
+                                else
+                                    this.ReportProgress("    Ignoring read-only/hidden folder {0}", folder);
+                        }
+                        catch(IOException ioEx)
+                        {
+                            this.ReportProgress("    Ignoring folder '{0}': {1}", folder, ioEx.Message);
+                        }
+                        catch(UnauthorizedAccessException uaEx)
+                        {
+                            this.ReportProgress("    Ignoring folder '{0}': {1}", folder, uaEx.Message);
+                        }
                 }
 
                 if((project.HelpFileFormat & (HelpFileFormat.HtmlHelp1 | HelpFileFormat.Website)) != 0)
@@ -1273,6 +1297,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
                         // Copy the launcher utility
                         File.Copy(shfbFolder + "HelpLibraryManagerLauncher.exe", workingFolder + "HelpLibraryManagerLauncher.exe");
+                        File.SetAttributes(workingFolder + "HelpLibraryManagerLauncher.exe", FileAttributes.Normal);
 
                         scriptFile = this.TransformTemplate("BuildHelpViewerFile.proj", templateFolder, workingFolder);
 
@@ -1313,7 +1338,22 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     if(!this.ExecutePlugIns(ExecutionBehaviors.InsteadOf))
                     {
                         this.ExecutePlugIns(ExecutionBehaviors.Before);
-                        Directory.Delete(workingFolder, true);
+
+                        try
+                        {
+                            Directory.Delete(workingFolder, true);
+                        }
+                        catch(IOException ioEx)
+                        {
+                            this.ReportProgress("    Not all build output was removed from '{0}': {1}",
+                                workingFolder, ioEx.Message);
+                        }
+                        catch(UnauthorizedAccessException uaEx)
+                        {
+                            this.ReportProgress("    Not all build output was removed from '{0}': {1}",
+                                workingFolder, uaEx.Message);
+                        }
+
                         this.ExecutePlugIns(ExecutionBehaviors.After);
                     }
                 }

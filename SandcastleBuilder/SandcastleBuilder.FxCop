@@ -19,7 +19,6 @@
   <SearchGlobalAssemblyCache>False</SearchGlobalAssemblyCache>
   <DeadlockDetectionTimeout>120</DeadlockDetectionTimeout>
   <IgnoreGeneratedCode>False</IgnoreGeneratedCode>
-  <TargetFrameworkVersion>0.0</TargetFrameworkVersion>
  </ProjectOptions>
  <Targets>
   <AssemblyReferenceDirectories>
@@ -192,6 +191,102 @@
             </Messages>
            </Member>
           </Members>
+         </Type>
+        </Types>
+       </Namespace>
+      </Namespaces>
+     </Module>
+    </Modules>
+   </Target>
+   <Target Name="$(ProjectDir)/HelpLibraryManagerLauncher/bin/Debug/HelpLibraryManagerLauncher.exe">
+    <Modules>
+     <Module Name="helplibrarymanagerlauncher.exe">
+      <Namespaces>
+       <Namespace Name="SandcastleBuilder.MicrosoftHelpViewer">
+        <Types>
+         <Type Name="HelpLibraryManager">
+          <Members>
+           <Member Name="#FindLocaleFor(System.String,System.String)">
+            <Messages>
+             <Message TypeName="NormalizeStringsToUppercase" Category="Microsoft.Globalization" CheckId="CA1308" Status="Excluded" Created="2010-07-07 20:02:02Z">
+              <Issue Name="ToUpperInvariant">
+               <Item>'HelpLibraryManager.FindLocaleFor(string, string)'</Item>
+               <Item>'string.ToLowerInvariant()'</Item>
+              </Issue>
+              <Notes>
+               <User Name="EWOODRUFF">
+                <Note Id="129" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#GetRegistryValue(System.String,System.String)">
+            <Messages>
+             <Message Id="SandcastleBuilder.MicrosoftHelpViewer.HelpLibraryManager.RegCloseKey(System.UIntPtr)" TypeName="DoNotIgnoreMethodResults" Category="Microsoft.Usage" CheckId="CA1806" Status="Excluded" Created="2010-07-07 20:02:02Z">
+              <Issue Name="HResultOrErrorCode">
+               <Item>'HelpLibraryManager.GetRegistryValue(string, string)'</Item>
+               <Item>'HelpLibraryManager.RegCloseKey(UIntPtr)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="EWOODRUFF">
+                <Note Id="126" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RegCloseKey(System.UIntPtr)">
+            <Messages>
+             <Message TypeName="MovePInvokesToNativeMethodsClass" Category="Microsoft.Design" CheckId="CA1060" Created="2010-07-07 20:02:02Z">
+              <Issue>
+               <Item>'HelpLibraryManager.RegCloseKey(UIntPtr)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RegOpenKeyEx(System.UIntPtr,System.String,System.UInt32,System.Int32,System.UIntPtr&amp;)">
+            <Messages>
+             <Message TypeName="MovePInvokesToNativeMethodsClass" Category="Microsoft.Design" CheckId="CA1060" Created="2010-07-07 20:02:02Z">
+              <Issue>
+               <Item>'HelpLibraryManager.RegOpenKeyEx(UIntPtr, string, uint, int, out UIntPtr)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RegQueryValueEx(System.UIntPtr,System.String,System.IntPtr,System.UInt32&amp;,System.Text.StringBuilder,System.UInt32&amp;)">
+            <Messages>
+             <Message TypeName="MovePInvokesToNativeMethodsClass" Category="Microsoft.Design" CheckId="CA1060" Created="2010-07-07 20:02:02Z">
+              <Issue>
+               <Item>'HelpLibraryManager.RegQueryValueEx(UIntPtr, string, IntPtr, out uint, StringBuilder, ref uint)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="HelpLibraryManagerException">
+          <Messages>
+           <Message TypeName="ImplementStandardExceptionConstructors" Category="Microsoft.Design" CheckId="CA1032" Status="Excluded" Created="2010-07-07 20:02:02Z">
+            <Issue Name="MissingConstructor">
+             <Item>'HelpLibraryManagerException'</Item>
+             <Item>public HelpLibraryManagerException()</Item>
+            </Issue>
+            <Issue Name="MissingConstructor">
+             <Item>'HelpLibraryManagerException'</Item>
+             <Item>public HelpLibraryManagerException(String)</Item>
+            </Issue>
+            <Issue Name="MissingConstructor">
+             <Item>'HelpLibraryManagerException'</Item>
+             <Item>public HelpLibraryManagerException(String, Exception)</Item>
+            </Issue>
+            <Notes>
+             <User Name="EWOODRUFF">
+              <Note Id="128" />
+             </User>
+            </Notes>
+           </Message>
+          </Messages>
          </Type>
         </Types>
        </Namespace>
@@ -1852,6 +1947,22 @@
          </Type>
          <Type Name="Topic">
           <Members>
+           <Member Name="#IsMSHVRootContentContainer">
+            <Messages>
+             <Message Id="MSHV" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Status="Excluded" Created="2010-07-07 20:02:02Z">
+              <Issue Name="Member">
+               <Item>MSHV</Item>
+               <Item>'Topic.IsMSHVRootContentContainer'</Item>
+               <Item>Mshv</Item>
+              </Issue>
+              <Notes>
+               <User Name="EWOODRUFF">
+                <Note Id="127" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
            <Member Name="#Keywords">
             <Messages>
              <Message TypeName="DoNotNestGenericTypesInMemberSignatures" Category="Microsoft.Design" CheckId="CA1006" Status="Excluded" Created="2008-05-08 19:53:05Z">
@@ -1926,6 +2037,22 @@
               <Notes>
                <User Name="EWOODRUFF">
                 <Note Id="65" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#MSHVRootContentContainer">
+            <Messages>
+             <Message Id="MSHV" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Status="Excluded" Created="2010-07-07 20:02:02Z">
+              <Issue Name="Member">
+               <Item>MSHV</Item>
+               <Item>'TopicCollection.MSHVRootContentContainer'</Item>
+               <Item>Mshv</Item>
+              </Issue>
+              <Notes>
+               <User Name="EWOODRUFF">
+                <Note Id="127" />
                </User>
               </Notes>
              </Message>
@@ -3070,6 +3197,25 @@
            </Member>
           </Members>
          </Type>
+         <Type Name="LaunchMSHelpViewerDlg">
+          <Members>
+           <Member Name="#LaunchMSHelpViewerDlg_Load(System.Object,System.EventArgs)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2010-07-07 20:02:02Z">
+              <Issue>
+               <Item>'LaunchMSHelpViewerDlg.LaunchMSHelpViewerDlg_Load(object, EventArgs)'</Item>
+               <Item>'Exception'</Item>
+              </Issue>
+              <Notes>
+               <User Name="EWOODRUFF">
+                <Note Id="102" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
          <Type Name="MainForm">
           <Members>
            <Member Name="#KillWebServer()">
@@ -3135,6 +3281,21 @@
               <Notes>
                <User Name="EWOODRUFF">
                 <Note Id="106" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#miLaunchHlm_Click(System.Object,System.EventArgs)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2010-07-07 20:02:02Z">
+              <Issue>
+               <Item>'MainForm.miLaunchHlm_Click(object, EventArgs)'</Item>
+               <Item>'Exception'</Item>
+              </Issue>
+              <Notes>
+               <User Name="EWOODRUFF">
+                <Note Id="102" />
                </User>
               </Notes>
              </Message>
@@ -4114,6 +4275,94 @@
             </Messages>
            </Member>
           </Members>
+         </Type>
+        </Types>
+       </Namespace>
+       <Namespace Name="SandcastleBuilder.MicrosoftHelpViewer">
+        <Types>
+         <Type Name="HelpLibraryManager">
+          <Members>
+           <Member Name="#FindLocaleFor(System.String,System.String)">
+            <Messages>
+             <Message TypeName="NormalizeStringsToUppercase" Category="Microsoft.Globalization" CheckId="CA1308" Status="Excluded" Created="2010-07-07 20:02:02Z">
+              <Issue Name="ToUpperInvariant">
+               <Item>'HelpLibraryManager.FindLocaleFor(string, string)'</Item>
+               <Item>'string.ToLowerInvariant()'</Item>
+              </Issue>
+              <Notes>
+               <User Name="EWOODRUFF">
+                <Note Id="129" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#GetRegistryValue(System.String,System.String)">
+            <Messages>
+             <Message Id="SandcastleBuilder.MicrosoftHelpViewer.HelpLibraryManager.RegCloseKey(System.UIntPtr)" TypeName="DoNotIgnoreMethodResults" Category="Microsoft.Usage" CheckId="CA1806" Status="Excluded" Created="2010-07-07 20:02:02Z">
+              <Issue Name="HResultOrErrorCode">
+               <Item>'HelpLibraryManager.GetRegistryValue(string, string)'</Item>
+               <Item>'HelpLibraryManager.RegCloseKey(UIntPtr)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="EWOODRUFF">
+                <Note Id="126" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RegCloseKey(System.UIntPtr)">
+            <Messages>
+             <Message TypeName="MovePInvokesToNativeMethodsClass" Category="Microsoft.Design" CheckId="CA1060" Created="2010-07-07 20:02:02Z">
+              <Issue>
+               <Item>'HelpLibraryManager.RegCloseKey(UIntPtr)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RegOpenKeyEx(System.UIntPtr,System.String,System.UInt32,System.Int32,System.UIntPtr&amp;)">
+            <Messages>
+             <Message TypeName="MovePInvokesToNativeMethodsClass" Category="Microsoft.Design" CheckId="CA1060" Created="2010-07-07 20:02:02Z">
+              <Issue>
+               <Item>'HelpLibraryManager.RegOpenKeyEx(UIntPtr, string, uint, int, out UIntPtr)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RegQueryValueEx(System.UIntPtr,System.String,System.IntPtr,System.UInt32&amp;,System.Text.StringBuilder,System.UInt32&amp;)">
+            <Messages>
+             <Message TypeName="MovePInvokesToNativeMethodsClass" Category="Microsoft.Design" CheckId="CA1060" Created="2010-07-07 20:02:02Z">
+              <Issue>
+               <Item>'HelpLibraryManager.RegQueryValueEx(UIntPtr, string, IntPtr, out uint, StringBuilder, ref uint)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="HelpLibraryManagerException">
+          <Messages>
+           <Message TypeName="ImplementStandardExceptionConstructors" Category="Microsoft.Design" CheckId="CA1032" Status="Excluded" Created="2010-07-07 20:02:02Z">
+            <Issue Name="MissingConstructor">
+             <Item>'HelpLibraryManagerException'</Item>
+             <Item>public HelpLibraryManagerException()</Item>
+            </Issue>
+            <Issue Name="MissingConstructor">
+             <Item>'HelpLibraryManagerException'</Item>
+             <Item>public HelpLibraryManagerException(String)</Item>
+            </Issue>
+            <Issue Name="MissingConstructor">
+             <Item>'HelpLibraryManagerException'</Item>
+             <Item>public HelpLibraryManagerException(String, Exception)</Item>
+            </Issue>
+            <Notes>
+             <User Name="EWOODRUFF">
+              <Note Id="128" />
+             </User>
+            </Notes>
+           </Message>
+          </Messages>
          </Type>
         </Types>
        </Namespace>
@@ -5554,6 +5803,7 @@
     <Note Id="99" Modified="2008-01-12 21:49:18Z">This is an enumerated type</Note>
     <Note Id="100" Modified="2010-06-22 21:04:36Z">The base class doesn't implement IDisposable in the Sandcastle May 2008 release and earlier.</Note>
     <Note Id="101" Modified="2008-01-12 22:00:04Z">It relates to what it's for so it's okay</Note>
+    <Note Id="102" Modified="2010-07-07 20:02:16Z">The error is reported</Note>
     <Note Id="103" Modified="2008-01-12 22:44:21Z">Not used so probably not worth doing</Note>
     <Note Id="104" Modified="2008-09-21 01:31:16Z">Okay as is</Note>
     <Note Id="105" Modified="2008-09-27 02:23:47Z">Okay as is</Note>
@@ -5577,6 +5827,10 @@
     <Note Id="123" Modified="2010-06-22 21:06:44Z">The base class doesn't implement IDisposable in the Sandcastle May 2008 release and earlier.</Note>
     <Note Id="124" Modified="2010-06-22 21:07:24Z">These are the MSBuild task interface properties and must remain instance-based.</Note>
     <Note Id="125" Modified="2010-06-22 21:08:12Z">Lowercase is preferred</Note>
+    <Note Id="126" Modified="2010-07-07 20:02:22Z">Okay as is</Note>
+    <Note Id="127" Modified="2010-07-07 20:02:35Z">Okay as is</Note>
+    <Note Id="128" Modified="2010-07-07 20:02:52Z">The parameterless constructor servers no purpose in this case.</Note>
+    <Note Id="129" Modified="2010-07-07 20:02:59Z">Lowercase is preferred</Note>
    </User>
   </Notes>
   <Rules>
@@ -5658,11 +5912,17 @@
    <Rule TypeName="ImplementSerializationConstructors" Category="Microsoft.Usage" CheckId="CA2229">
     <Resolution Name="CreateMagicConstructor">Add a constructor to {0} with the following signature: 'protected {0}(SerializationInfo info, StreamingContext context)'.</Resolution>
    </Rule>
+   <Rule TypeName="ImplementStandardExceptionConstructors" Category="Microsoft.Design" CheckId="CA1032">
+    <Resolution Name="MissingConstructor">Add the following constructor to {0}: {1}.</Resolution>
+   </Rule>
    <Rule TypeName="MarkMembersAsStatic" Category="Microsoft.Performance" CheckId="CA1822">
     <Resolution Name="Default">The 'this' parameter (or 'Me' in Visual Basic) of {0} is never used. Mark the member as static (or Shared in Visual Basic) or use 'this'/'Me' in the method body or at least one property accessor, if appropriate.</Resolution>
    </Rule>
    <Rule TypeName="MembersShouldNotExposeCertainConcreteTypes" Category="Microsoft.Design" CheckId="CA1059">
     <Resolution Name="Xml">Modify member {0} so that it no longer exposes the concrete type {1}. Use IXPathNavigable to represent XML data sources.</Resolution>
+   </Rule>
+   <Rule TypeName="MovePInvokesToNativeMethodsClass" Category="Microsoft.Design" CheckId="CA1060">
+    <Resolution Name="Default">Because it is a P/Invoke method, {0} should be defined in a class named NativeMethods, SafeNativeMethods, or UnsafeNativeMethods.</Resolution>
    </Rule>
    <Rule TypeName="NestedTypesShouldNotBeVisible" Category="Microsoft.Design" CheckId="CA1034">
     <Resolution Name="Default">Do not nest type {0}. Alternatively, change its accessibility so that it is not externally visible.</Resolution>
