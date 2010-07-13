@@ -14,8 +14,7 @@
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>SandcastleBuilderMRefBuilder.snk</AssemblyOriginatorKeyFile>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
+    <FileUpgradeFlags></FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
     <PublishUrl>http://localhost/SandcastleBuilder.MRefBuilder/</PublishUrl>
@@ -118,24 +117,24 @@
     <CodeAnalysisRuleDirectories>;C:\Program Files\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CommandLine, Version=2.5.10626.0, Culture=neutral, PublicKeyToken=0b1f36dea51a29e2, processorArchitecture=MSIL">
+    <Reference Include="CommandLine, Version=2.6.10621.1, Culture=neutral, PublicKeyToken=ba59f1362a302f1c">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(DXROOT)\ProductionTools\CommandLine.dll</HintPath>
+      <HintPath>..\..\..\Sandcastle\ProductionTools\CommandLine.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MrefBuilder, Version=2.5.10626.0, Culture=neutral, PublicKeyToken=0b1f36dea51a29e2, processorArchitecture=MSIL">
+    <Reference Include="MrefBuilder, Version=2.6.10621.1, Culture=neutral, PublicKeyToken=ba59f1362a302f1c">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(DXROOT)\ProductionTools\MrefBuilder.exe</HintPath>
+      <HintPath>..\..\..\Sandcastle\ProductionTools\MrefBuilder.exe</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="CCI, Version=2.5.10626.0, Culture=neutral, PublicKeyToken=0b1f36dea51a29e2, processorArchitecture=MSIL">
+    <Reference Include="CCI, Version=2.6.10621.1, Culture=neutral, PublicKeyToken=ba59f1362a302f1c">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(DXROOT)\ProductionTools\CCI.dll</HintPath>
+      <HintPath>..\..\..\Sandcastle\ProductionTools\CCI.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Reflection, Version=2.5.10626.0, Culture=neutral, PublicKeyToken=0b1f36dea51a29e2, processorArchitecture=MSIL">
+    <Reference Include="Reflection, Version=2.6.10621.1, Culture=neutral, PublicKeyToken=ba59f1362a302f1c">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(DXROOT)\ProductionTools\Reflection.dll</HintPath>
+      <HintPath>..\..\..\Sandcastle\ProductionTools\Reflection.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />

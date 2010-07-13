@@ -16,7 +16,7 @@ if not exist Output\html mkdir Output\html
 if not exist Output\icons mkdir Output\icons
 if not exist Output\scripts mkdir Output\scripts
 if not exist Output\styles mkdir Output\styles
-if not exist Output\media mkdir Output\media
+REM: if not exist Output\media mkdir Output\media
 
 REM Mirror (sync) the contents of the resource folders to the Output
 

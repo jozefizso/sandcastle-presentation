@@ -85,7 +85,7 @@
         <Copy SourceFiles="@(IconFiles)" DestinationFiles="@(IconFiles->'$(OutputDir)\icons\%(RecursiveDir)%(FileName)%(Extension)')" />
         <Copy SourceFiles="@(ScriptFiles)" DestinationFiles="@(ScriptFiles->'$(OutputDir)\scripts\%(RecursiveDir)%(FileName)%(Extension)')" />
         <Copy SourceFiles="@(StyleFiles)" DestinationFiles="@(StyleFiles->'$(OutputDir)\styles\%(RecursiveDir)%(FileName)%(Extension)')" />
-        <MakeDir Directories="$(OutputDir)\html;$(OutputDir)\media;$(OutputDir)\intellisense" />
+        <MakeDir Directories="$(OutputDir)\html;$(OutputDir)\intellisense" />
     </Target>
 
     <Target Name="ReflectionData" DependsOnTargets="Template" Inputs="$(OutputAssembly)" Outputs="reflection.xml">
@@ -144,6 +144,14 @@
         <Exec Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\CreateHxc.xsl"        $(OutputDir)\toc.xml /out:"$(OutputDir)\test.HxC" /arg:fileNamePrefix=test' />
         <Exec Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\TocToHxSContents.xsl" $(OutputDir)\toc.xml /out:"$(OutputDir)\test.HxT"' />
         <Exec Command='"$(ToolsPath)\Microsoft Help 2.0 SDK\hxcomp.exe" -p $(OutputDir)\test.hxc' IgnoreExitCode="true" />
+    </Target>
+
+    <Target Name="MSHC"
+            Inputs="$(OutputDir)\manifest.xml;reflection.xml;$(Comments)"
+            Outputs="$(DocumentationDir)\html\*.htm;$(OutputDir)\toc.xml"
+            DependsOnTargets="Clean;FxReflection;Compile;Manifest" Condition="'$(PresentationStyle)' == 'vs2005'">
+        <Exec Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\CreateVSToc.xsl" reflection.xml /out:"toc.xml"' />
+        <Exec Command='"$(ProductionTools)\BuildAssembler.exe" /config:"$(Presentation)\configuration\sandcastle-mshc.config" "$(OutputDir)\manifest.xml"' />
     </Target>
 
 </Project>

@@ -1,4 +1,4 @@
-<%@ Page Language="C#" MasterPageFile="~/site.master" Title="Main Website" %>
+<%@ Page Language="C#" MasterPageFile="site.master" Title="Main Website" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainBody" Runat="Server">
 <h1>Sandcastle API Web Output Sample</h1>

@@ -10,6 +10,11 @@ goto End
 goto End
 )
 
+:CheckParam3
+@if {%3} == {} (
+@echo please specify target type, it should be either html/chm/hxs/mshc
+goto End
+)
 
 
 REM ********** Set path for .net framework2.0, sandcastle,hhc,hxcomp****************************
@@ -51,9 +56,6 @@ XslTransform /xsl:"%DXROOT%\ProductionTransforms\ReflectionToManifest.xsl"  refl
 
 call "%DXROOT%\Presentation\%1\copyOutput.bat"
 
-REM ********** Call BuildAssembler ****************************
-BuildAssembler /config:"%DXROOT%\Presentation\%1\configuration\sandcastle.config" manifest.xml
-
 REM **************Generate an intermediate Toc file that simulates the Whidbey TOC format.
 
 if {%1} == {prototype} (
@@ -62,17 +64,25 @@ XslTransform /xsl:"%DXROOT%\ProductionTransforms\createPrototypetoc.xsl" reflect
 XslTransform /xsl:"%DXROOT%\ProductionTransforms\createvstoc.xsl" reflection.xml /out:toc.xml 
 )
 
+REM ********** Call BuildAssembler ****************************
+if {%3} == {mshc} (
+BuildAssembler /config:"%DXROOT%\Presentation\%1\configuration\sandcastle-mshc.config" manifest.xml
+) else (
+BuildAssembler /config:"%DXROOT%\Presentation\%1\configuration\sandcastle.config" manifest.xml
+)
+
 REM ************ Generate CHM help project ******************************
 
+if {%3} == {chm} (
 if not exist chm mkdir chm
 if not exist chm\html mkdir chm\html
 if not exist chm\icons mkdir chm\icons
 if not exist chm\scripts mkdir chm\scripts
 if not exist chm\styles mkdir chm\styles
-if not exist chm\media mkdir chm\media
+REM: if not exist chm\media mkdir chm\media
 
 xcopy output\icons\* chm\icons\ /y /r
-xcopy output\media\* chm\media\ /y /r
+REM: xcopy output\media\* chm\media\ /y /r
 xcopy output\scripts\* chm\scripts\ /y /r
 xcopy output\styles\* chm\styles\ /y /r
 
@@ -81,10 +91,11 @@ ChmBuilder.exe /project:%2 /html:Output\html /lcid:1033 /toc:Toc.xml /out:Chm
 DBCSFix.exe /d:Chm /l:1033 
 
 hhc chm\%2.hhp
-
+)
 
 REM ************ Generate HxS help project **************************************
 
+if {%3} == {hxs} (
 call "%DXROOT%\Presentation\shared\copyhavana.bat" %2
 
 XslTransform /xsl:"%DXROOT%\ProductionTransforms\CreateHxc.xsl" toc.xml /arg:fileNamePrefix=%2 /out:Output\%2.HxC
@@ -93,5 +104,6 @@ XslTransform /xsl:"%DXROOT%\ProductionTransforms\TocToHxSContents.xsl" toc.xml /
 
 :: If you need to generate hxs, please uncomment the following line. Make sure "Microsoft Help 2.0 SDK" is installed on your machine.
 ::hxcomp.exe -p output\%2.hxc
+)
 
 :End
