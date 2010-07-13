@@ -19,10 +19,10 @@ if not exist chm\html mkdir chm\html
 if not exist chm\icons mkdir chm\icons
 if not exist chm\scripts mkdir chm\scripts
 if not exist chm\styles mkdir chm\styles
-if not exist chm\media mkdir chm\media
+REM: if not exist chm\media mkdir chm\media
 
 xcopy output\icons\* chm\icons\ /y /r
-xcopy output\media\* chm\media\ /y /r
+REM: xcopy output\media\* chm\media\ /y /r
 xcopy output\scripts\* chm\scripts\ /y /r
 xcopy output\styles\* chm\styles\ /y /r
 

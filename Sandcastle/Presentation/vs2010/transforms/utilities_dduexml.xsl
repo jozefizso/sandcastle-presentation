@@ -14,14 +14,16 @@
 
   <!-- the Remarks section includes content from these nodes, excluding the xaml sections are captured in the xaml syntax processing -->
   <xsl:template name="HasRemarksContent">
+    <xsl:param name="node" />
+    
     <xsl:choose>
       <xsl:when test="/document/reference/attributes/attribute/type[@api='T:System.Security.Permissions.HostProtectionAttribute']">true</xsl:when>
-      <xsl:when test="normalize-space(ddue:content)">true</xsl:when>
-      <xsl:when test="normalize-space(../ddue:notesForImplementers)">true</xsl:when>
-      <xsl:when test="normalize-space(../ddue:notesForCallers)">true</xsl:when>
-      <xsl:when test="normalize-space(../ddue:notesForInheritors)">true</xsl:when>
-      <xsl:when test="normalize-space(../ddue:platformNotes)">true</xsl:when>
-      <xsl:when test="normalize-space(ddue:sections/ddue:section[not(
+      <xsl:when test="normalize-space($node/ddue:remarks/ddue:content)">true</xsl:when>
+      <xsl:when test="normalize-space($node/ddue:notesForImplementers)">true</xsl:when>
+      <xsl:when test="normalize-space($node/ddue:notesForCallers)">true</xsl:when>
+      <xsl:when test="normalize-space($node/ddue:notesForInheritors)">true</xsl:when>
+      <xsl:when test="normalize-space($node/ddue:platformNotes)">true</xsl:when>
+      <xsl:when test="normalize-space($node/ddue:remarks/ddue:sections/ddue:section[not(
                 starts-with(@address,'xamlValues') or 
                 starts-with(@address,'xamlTextUsage') or 
                 starts-with(@address,'xamlAttributeUsage') or 
@@ -35,40 +37,10 @@
   </xsl:template>
   
 	<xsl:template match="ddue:remarks">
-    <xsl:variable name="hasRemarks">
-      <xsl:call-template name="HasRemarksContent"/>
-    </xsl:variable>
-    <xsl:if test="$hasRemarks='true'">
-      <xsl:choose>
-        <xsl:when test="not($group = 'namespace')">
-          <xsl:call-template name="section">
-            <xsl:with-param name="toggleSwitch" select="'remarks'"/>
-            <xsl:with-param name="title"><include item="remarksTitle" /></xsl:with-param>
-            <xsl:with-param name="content">
-              <!-- HostProtectionAttribute -->
-              <xsl:if test="/document/reference/attributes/attribute/type[@api='T:System.Security.Permissions.HostProtectionAttribute']">
-                <xsl:call-template name="hostProtectionContent" />
-              </xsl:if>
-              <xsl:apply-templates />
-              <xsl:apply-templates select="../ddue:notesForImplementers"/>
-              <xsl:apply-templates select="../ddue:notesForCallers"/>
-              <xsl:apply-templates select="../ddue:notesForInheritors"/>
-              <xsl:apply-templates select="../ddue:platformNotes"/>
-              <include item="mshelpKTable">
-                <parameter>
-                  <xsl:text>tt_</xsl:text>
-                  <xsl:value-of select="$key"/>
-                </parameter>
-              </include>
-            </xsl:with-param>
-          </xsl:call-template>
-        </xsl:when>
-        <xsl:otherwise>
-          <xsl:apply-templates />
-        </xsl:otherwise>
-      </xsl:choose>
-    </xsl:if>
-	</xsl:template>
+    <xsl:call-template name="WriteRemarksSection">
+      <xsl:with-param name="node" select=".." />
+    </xsl:call-template>
+  </xsl:template>
 
 	<xsl:template match="ddue:codeExamples">
 		<xsl:if test="normalize-space(.)">
@@ -166,25 +138,25 @@
 
   <xsl:template match="ddue:notesForImplementers">
     <p/>
-    <b>
+    <span class="label">
       <include item="NotesForImplementers"/>
-    </b>
+    </span>
     <xsl:apply-templates/>
   </xsl:template>
 
   <xsl:template match="ddue:notesForCallers">
     <p/>
-    <b>
+    <span class="label">
       <include item="NotesForCallers"/>
-    </b>
+    </span>
     <xsl:apply-templates/>
   </xsl:template>
 
   <xsl:template match="ddue:notesForInheritors">
     <p/>
-    <b>
+    <span class="label">
       <include item="NotesForInheritors"/>
-    </b>
+    </span>
     <xsl:apply-templates/>
   </xsl:template>
 
@@ -203,6 +175,10 @@
         </include>
       </p>
     </xsl:for-each>
+  </xsl:template>
+
+  <xsl:template match="ddue:platformNotes/ddue:platformNote/ddue:content/ddue:para">
+    <xsl:apply-templates />
   </xsl:template>
 
   <xsl:template match="ddue:schemaHierarchy">
@@ -239,6 +215,9 @@
               <xsl:when test="@language = 'js' or @language = 'jscript#' or @language = 'jscript' or @language = 'JScript'">
                 <xsl:text>JScript</xsl:text>
               </xsl:when>
+              <xsl:when test="@language = 'f#' or @language = 'fs' or @language = 'F#'" >
+                <xsl:text>FSharp</xsl:text>
+              </xsl:when>
               <xsl:when test="@language = 'xml'">
                 <xsl:text>xmlLang</xsl:text>
               </xsl:when>
@@ -250,6 +229,9 @@
               </xsl:when>
               <xsl:when test="@language = 'xaml' or @language = 'XAML'">
                 <xsl:text>XAML</xsl:text>
+              </xsl:when>
+              <xsl:when test="@language = 'javascript' or @language = 'JavaScript'">
+                <xsl:text>JavaScript</xsl:text>
               </xsl:when>
               <xsl:otherwise>
                 <xsl:text>other</xsl:text>
@@ -356,6 +338,9 @@
         <xsl:when test="@language = 'js' or @language = 'jscript#' or @language = 'jscript' or @language = 'JScript'">
           <xsl:text>JScript</xsl:text>
         </xsl:when>
+        <xsl:when test="@language = 'f#' or @language = 'fs' or @language = 'F#'">
+          <xsl:text>FSharp</xsl:text>
+        </xsl:when>
         <xsl:when test="@language = 'xml'">
           <xsl:text>xmlLang</xsl:text>
         </xsl:when>
@@ -379,6 +364,7 @@
 
     <xsl:variable name="titleName" select="../../ddue:title"/>
 
+<!-- 'Output' was translated in JPN file, so the following code does not work.
     <xsl:choose>
       <xsl:when test="(($titleName = 'Output') or ($titleName = 'Input') or ($titleName = 'SampleOutput'))">
         <div class="code">
@@ -405,11 +391,16 @@
         </xsl:call-template>
       </xsl:otherwise>
     </xsl:choose>
+-->
+
+    <xsl:call-template name="codeSection">
+      <xsl:with-param name="codeLang" select="$codeLang" />
+    </xsl:call-template>
 
 	</xsl:template>
 
 	<xsl:template match="ddue:sampleCode">
-		<div><b><xsl:value-of select="@language"/></b></div>
+		<div><span class="label"><xsl:value-of select="@language"/></span></div>
 		<div class="code"><pre><xsl:apply-templates /></pre></div>
 	</xsl:template>
 
@@ -431,6 +422,7 @@
             <xsl:choose>
               <xsl:when test="@class='tip'">
                 <img class="note">
+                  <includeAttribute name="alt" item="tipAltText" />
                   <includeAttribute name="title" item="tipAltText" />
                   <includeAttribute item="iconPath" name="src">
                     <parameter>alert_note.gif</parameter>
@@ -440,6 +432,7 @@
               </xsl:when>
               <xsl:when test="@class='caution' or @class='warning'">
                 <img class="note">
+                  <includeAttribute name="alt" item="cautionAltText" />
                   <includeAttribute name="title" item="cautionAltText" />
                   <includeAttribute item="iconPath" name="src">
                     <parameter>alert_caution.gif</parameter>
@@ -449,6 +442,7 @@
               </xsl:when>
               <xsl:when test="@class='security note'">
                 <img class="note">
+                  <includeAttribute name="alt" item="securityAltText" />
                   <includeAttribute name="title" item="securityAltText" />
                   <includeAttribute item="iconPath" name="src">
                     <parameter>alert_security.gif</parameter>
@@ -458,6 +452,7 @@
               </xsl:when>
               <xsl:when test="@class='important'">
                 <img class="note">
+                  <includeAttribute name="alt" item="importantAltText" />
                   <includeAttribute name="title" item="importantAltText" />
                   <includeAttribute item="iconPath" name="src">
                     <parameter>alert_caution.gif</parameter>
@@ -467,6 +462,7 @@
               </xsl:when>
               <xsl:when test="@class='visual basic note'">
                 <img class="note">
+                  <includeAttribute name="alt" item="visualBasicAltText" />
                   <includeAttribute name="title" item="visualBasicAltText" />
                   <includeAttribute item="iconPath" name="src">
                     <parameter>alert_note.gif</parameter>
@@ -476,6 +472,7 @@
               </xsl:when>
               <xsl:when test="@class='visual c# note'">
                 <img class="note">
+                  <includeAttribute name="alt" item="visualC#AltText" />
                   <includeAttribute name="title" item="visualC#AltText" />
                   <includeAttribute item="iconPath" name="src">
                     <parameter>alert_note.gif</parameter>
@@ -485,6 +482,7 @@
               </xsl:when>
               <xsl:when test="@class='visual c++ note'">
                 <img class="note">
+                  <includeAttribute name="alt" item="visualC++AltText" />
                   <includeAttribute name="title" item="visualC++AltText" />
                   <includeAttribute item="iconPath" name="src">
                     <parameter>alert_note.gif</parameter>
@@ -494,6 +492,7 @@
               </xsl:when>
               <xsl:when test="@class='visual j# note'">
                 <img class="note">
+                  <includeAttribute name="alt" item="visualJ#AltText" />
                   <includeAttribute name="title" item="visualJ#AltText" />
                   <includeAttribute item="iconPath" name="src">
                     <parameter>alert_note.gif</parameter>
@@ -503,6 +502,7 @@
               </xsl:when>
               <xsl:when test="@class='note'">
                 <img class="note">
+                  <includeAttribute name="alt" item="noteAltText" />
                   <includeAttribute name="title" item="noteAltText" />
                   <includeAttribute item="iconPath" name="src">
                     <parameter>alert_note.gif</parameter>
@@ -512,6 +512,7 @@
               </xsl:when>
               <xsl:otherwise>
                 <img class="note">
+                  <includeAttribute name="alt" item="noteAltText" />
                   <includeAttribute name="title" item="noteAltText" />
                   <includeAttribute item="iconPath" name="src">
                     <parameter>alert_note.gif</parameter>
@@ -536,8 +537,8 @@
   </xsl:template>
 
   <xsl:template match="ddue:section">
-    <xsl:param name="showChangedHistoryTable" select="false()"/>
-    <xsl:if test="descendant::ddue:content[normalize-space(.)]">
+    <!-- display the section only if it has content (text or media)-->
+    <xsl:if test="descendant::ddue:content[normalize-space(.)] or descendant::ddue:mediaLink">
       
       <xsl:apply-templates select="@address" />
       <!-- Count all the possible ancestor root nodes -->
@@ -562,8 +563,8 @@
       <xsl:variable name="a19" select="count(ancestor::ddue:section)" />
       <xsl:variable name="total" select="$a1+$a2+$a3+$a4+$a5+$a6+$a7+$a8+$a9+$a10+$a11+$a12+$a13+$a14+$a15+$a16+$a17+$a18+$a19" />
       <xsl:choose>
-        <!-- This lets not to display changed table section unless the template is called -->
-        <xsl:when test="ddue:title = 'Change History' and not($showChangedHistoryTable)" />
+        <!-- Don't render the 'Change History' section here; it's handled in the writeChangeHistorySection template. -->
+        <xsl:when test="ddue:title = 'Change History'" />
 
         <xsl:when test="$total = 0">
           <xsl:variable name="sectionCount">
@@ -620,15 +621,13 @@
 	</xsl:template>
   
 	<xsl:template match="ddue:mediaLink|ddue:mediaLinkInline">
-		<span class="media">
-      <xsl:if test="ddue:caption">
-        <div class="caption">
-          <xsl:apply-templates select="ddue:caption" />
-        </div>
-        <br />
-      </xsl:if>
-      <artLink target="{ddue:image/@xlink:href}" />
-    </span>
+    <xsl:if test="ddue:caption">
+      <div class="caption">
+        <xsl:apply-templates select="ddue:caption" />
+      </div>
+      <br />
+    </xsl:if>
+    <artLink target="{ddue:image/@xlink:href}" />
 	</xsl:template>
 
 	<xsl:template match="ddue:procedure">
@@ -736,12 +735,16 @@
                 <span class="cs">null</span>
                 <span class="vb">Nothing</span>
                 <span class="cpp">nullptr</span>
+                <span class="fs">unit</span>
               </span>
             </xsl:when>
             <!-- need to comment out special handling for static, virtual, true, and false 
                  until UE teams review authored content to make sure the auto-text works with the authored text.
                  For example, auto-text with authored content like the following will result in bad customer experience. 
-                   <languageKeyword>static</languageKeyword> (<languageKeyword>Shared</languageKeyword> in Visual Basic)  -->
+                   <languageKeyword>static</languageKeyword> (<languageKeyword>Shared</languageKeyword> in Visual Basic)
+                  
+                 This also needs to have F# added should it be uncommented. 
+                   -->
             <!--
             <xsl:when test="$word='static' or $word='Shared'">
               <span class="cs">static</span>
@@ -868,7 +871,7 @@
   <xsl:template match="ddue:codeFeaturedElement">
     <xsl:if test="normalize-space(.)">
       <!--<xsl:if test="count(preceding::ddue:codeFeaturedElement) &gt; 0"><br/></xsl:if>-->
-      <b><xsl:apply-templates/></b>
+      <span class="label"><xsl:apply-templates/></span>
     </xsl:if>
   </xsl:template>
 
@@ -1263,6 +1266,7 @@
           <tr>
             <th align="left">
               <img class="note">
+                <includeAttribute name="alt" item="noteAltText" />
                 <includeAttribute name="title" item="noteAltText" />
                 <includeAttribute item="iconPath" name="src">
                   <parameter>alert_note.gif</parameter>
@@ -1279,14 +1283,14 @@
                     <xsl:value-of select="concat($subgroup, 'Lower')"/>
                   </parameter>
                   <parameter>
-                    <b>
+                    <span class="label">
                       <xsl:for-each select="/document/reference/attributes/attribute[type[@api='T:System.Security.Permissions.HostProtectionAttribute']]/assignment">
                         <xsl:value-of select="@name"/>
                         <xsl:if test="position() != last()">
                           <xsl:text> | </xsl:text>
                         </xsl:if>
                       </xsl:for-each>
-                    </b>
+                    </span>
                   </parameter>
                 </include>
               </p>
@@ -1296,46 +1300,140 @@
       </div>
    </xsl:template>
 
+  <!-- Display a date to show when the topic was last updated. -->
   <xsl:template name="writeFreshnessDate">
+    <!-- The $ChangedHistoryDate param is from the authored changeHistory table, if any. -->
     <xsl:param name="ChangedHistoryDate" />
-
+    <!-- Determine whether the authored date is a valid date string.  -->
+    <xsl:variable name="validChangeHistoryDate">
+      <xsl:choose>
+        <xsl:when test="normalize-space($ChangedHistoryDate)=''"/>
+        <xsl:when test="ddue:IsValidDate(normalize-space($ChangedHistoryDate)) = 'true'">
+          <xsl:value-of select="normalize-space($ChangedHistoryDate)"/>
+        </xsl:when>
+      </xsl:choose>
+    </xsl:variable>
     <xsl:choose>
-      <xsl:when test="normalize-space($RTMReleaseDate) = ''" />
-      <xsl:when test="normalize-space($ChangedHistoryDate) = ''">
-        <include item="UpdateTitle">
-          <parameter>
-            <xsl:value-of select="$RTMReleaseDate"/>
-          </parameter>
-        </include>
+      <!-- display nothing if the 'changeHistoryOptions' argument is set to 'omit' -->
+      <xsl:when test="$changeHistoryOptions = 'omit'"/>
+
+      <!-- if it's a valid date, display the freshness line. -->
+      <xsl:when test="normalize-space($validChangeHistoryDate)">
+        <p>
+          <include item="UpdateTitle">
+            <parameter>
+              <xsl:value-of select="normalize-space($validChangeHistoryDate)"/>
+            </parameter>
+          </include>
+        </p>
       </xsl:when>
-      <xsl:otherwise>
-        <xsl:variable name="date" select="ddue:CompareDate($RTMReleaseDate, $ChangedHistoryDate)"/>
-        <xsl:choose>
-          <xsl:when test="$date = 'notValidDate'" />
-          <xsl:otherwise>
-            <include item="UpdateTitle">
-              <parameter>
-                <xsl:value-of select="$date"/>
-              </parameter>
-            </include>
-          </xsl:otherwise>
-        </xsl:choose>
-      </xsl:otherwise>
+      
+      <!-- use a default date if no ChangedHistoryDate and the 'changeHistoryOptions' argument is set to 'showDefaultFreshnessDate' -->
+      <xsl:when test="$changeHistoryOptions = 'showDefaultFreshnessDate'">
+        <p>
+          <include item="UpdateTitle">
+            <parameter>
+              <include item="defaultFreshnessDate"/>
+            </parameter>
+          </include>
+        </p>
+      </xsl:when>
     </xsl:choose>
   </xsl:template>
 
-  <!-- Process the markup added by MTMarkup tool -->
+  <xsl:template name="writeChangeHistorySection">
+    <xsl:if test="$changeHistoryOptions!='omit'">
+      <!-- conceptual authored content is in /document/topic/*; mref content is in /document/comments/ddue:dduexml. -->
+      <xsl:for-each select="/document/comments/ddue:dduexml | /document/topic/*">
+        <!-- Get the change history section content, which can be in changeHistory or a section with title='Change History'. -->
+        <xsl:variable name="changeHistoryContent">
+          <xsl:choose>
+            <xsl:when test="ddue:changeHistory/ddue:content/ddue:table/ddue:row/ddue:entry[normalize-space(.)]">
+              <xsl:apply-templates select="ddue:changeHistory/ddue:content"/>
+            </xsl:when>
+            <xsl:when test=".//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row/ddue:entry[normalize-space(.)]">
+              <xsl:apply-templates select=".//ddue:section[ddue:title = 'Change History']/ddue:content"/>
+            </xsl:when>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:if test="normalize-space($changeHistoryContent)">
+          <xsl:call-template name="section">
+            <xsl:with-param name="toggleSwitch" select="'changeHistory'"/>
+            <xsl:with-param name="title">
+              <include item="changeHistory" />
+            </xsl:with-param>
+            <xsl:with-param name="content">
+              <xsl:copy-of select="$changeHistoryContent" />
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:if>
+      </xsl:for-each>
+    </xsl:if>
+  </xsl:template>
+
   <xsl:template match="ddue:span">
     <xsl:choose>
+      <!-- Process the markup added by MTMarkup tool -->
       <xsl:when test="@class='tgtSentence' or @class='srcSentence'">
         <span>
           <xsl:copy-of select="@*" />
           <xsl:apply-templates />
         </span>
+     </xsl:when>
+      <!-- fix bug 361746 - use copy-of, so that span class="keyword", "literal" and "comment" 
+            nodes are copied to preserve code colorization in snippets -->
+      <xsl:when test="@class='keyword' or @class='literal' or @class='comment'">
+        <xsl:copy-of select="."/>
       </xsl:when>
     </xsl:choose>
   </xsl:template>
 
+  <!-- Don't render the changeHistory section here; it's handled in the writeChangeHistorySection template. -->
+  <xsl:template match="ddue:changeHistory"/>
+
+  <xsl:template name="WriteRemarksSection">
+    <xsl:param name="node" />
+
+    <xsl:variable name="hasRemarks">
+      <xsl:call-template name="HasRemarksContent">
+        <xsl:with-param name="node" select="$node" />
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:if test="$hasRemarks='true'">
+      <xsl:choose>
+        <xsl:when test="not($group = 'namespace')">
+          <xsl:call-template name="section">
+            <xsl:with-param name="toggleSwitch" select="'remarks'"/>
+            <xsl:with-param name="title">
+              <include item="remarksTitle" />
+            </xsl:with-param>
+            <xsl:with-param name="content">
+              <xsl:apply-templates select="$node/ddue:remarks/*" />
+              <!-- HostProtectionAttribute -->
+              <xsl:if test="/document/reference/attributes/attribute/type[@api='T:System.Security.Permissions.HostProtectionAttribute']">
+                <xsl:call-template name="hostProtectionContent" />
+              </xsl:if>
+              <xsl:apply-templates select="$node/ddue:notesForImplementers"/>
+              <xsl:apply-templates select="$node/ddue:notesForCallers"/>
+              <xsl:apply-templates select="$node/ddue:notesForInheritors"/>
+              <xsl:apply-templates select="$node/ddue:platformNotes"/>
+              <include item="mshelpKTable">
+                <parameter>
+                  <xsl:text>tt_</xsl:text>
+                  <xsl:value-of select="$key"/>
+                </parameter>
+              </include>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:apply-templates select="$node/ddue:remarks/*" />
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:if>
+  </xsl:template>
+               
   <!-- Project information -->
   <xsl:template name="projectTitle">
     <xsl:choose>
