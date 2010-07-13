@@ -1,0 +1,45 @@
+@echo off
+setlocal
+
+REM ********** Set path for extensions (current vs2010 presentation project) *******************
+
+set DXROOT=%DXROOT:~0,-1%
+set DXROOTEXT=%~dp0..\..
+set VS2010P=%DXROOTEXT%\Presentation\vs2010
+
+
+REM ********** Set path for .net framework2.0, sandcastle,hhc,hxcomp****************************
+
+set PATH=%windir%\Microsoft.NET\Framework\v2.0.50727;%DXROOT%\ProductionTools;%PATH%
+set TOOLSPATH=%ProgramFiles%
+if exist "%ProgramFiles% (x86)" set TOOLSPATH=%ProgramFiles(x86)%
+set PATH=%TOOLSPATH%\HTML Help Workshop;%TOOLSPATH%\Microsoft Help 2.0 SDK;%PATH%
+
+call "%VS2010P%\CleanOutput.bat"
+
+REM ********** Call MRefBuilder ****************************
+
+REM MRefBuilder test.dll /out:reflection.org
+
+REM ********** Apply Transforms ****************************
+
+set ApplyVSDocModel=%DXROOT%\ProductionTransforms\ApplyVSDocModel.xsl
+set AddFiendlyFilenames=%DXROOT%\ProductionTransforms\AddFriendlyFilenames.xsl
+set ReflectionToManifest=%DXROOT%\ProductionTransforms\ReflectionToManifest.xsl
+set SandcastleConfig=%DXROOTEXT%\Presentation\vs2010\configuration\sandcastle-javadoc.config
+
+REM create model and file names
+XslTransform /xsl:"%ApplyVSDocModel%" javadoc-refl.xml /xsl:"%AddFiendlyFilenames%" /out:full-reflection.xml /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=false
+REM create manifest
+XslTransform /xsl:"%ReflectionToManifest%" full-reflection.xml /out:manifest-javadoc.xml
+
+call "%VS2010P%\CopyOutput.bat"
+
+REM ********** Call BuildAssembler ****************************
+BuildAssembler /config:"%SandcastleConfig%" manifest-javadoc.xml
+
+REM **************Generate an intermediate Toc file that simulates the Whidbey TOC format.
+
+REM XslTransform /xsl:"%DXROOT%\ProductionTransforms\createvstoc.xsl" reflection.xml /out:toc.xml 
+
+endlocal

@@ -1,0 +1,77 @@
+﻿<Project DefaultTargets="Transform" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <!-- Sandcastle Help File Builder Tasks.  http://www.codeplex.com/SHFB -->
+  <UsingTask TaskName="SandcastleBuilder.Utils.MSBuild.XslTransform"
+    AssemblyFile="$(SHFBROOT)\SandcastleBuilder.Utils.dll" />
+
+  <!-- Task properties -->
+  <PropertyGroup>
+    <PresentationStyle>{@PresentationParam}</PresentationStyle>
+    <ProjectNodeParam>{@IncludeProjectNode}</ProjectNodeParam>
+    <SandcastlePath>{@SandcastlePath}</SandcastlePath>
+    <WorkingFolder>{@HtmlEncWorkingFolder}</WorkingFolder>
+  </PropertyGroup>
+
+  <!-- This defines the dependencies for the Transform target -->
+  <PropertyGroup>
+    <TransformDependsOn>
+      BeforeTransformManifest;
+      TransformManifest;
+      AfterTransformManifest
+    </TransformDependsOn>
+  </PropertyGroup>
+
+  <Choose>
+    <When Condition="'$(PresentationStyle)' == 'vs2005'">
+      <PropertyGroup>
+        <Transformations>ProductionTransforms\ApplyVSDocModel.xsl;ProductionTransforms\AddGuidFilenames.xsl</Transformations>
+        <Arguments>IncludeAllMembersTopic=true;IncludeInheritedOverloadTopics=true;$(ProjectNodeParam)</Arguments>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(PresentationStyle)' == 'hana'">
+      <PropertyGroup>
+        <Transformations>ProductionTransforms\ApplyVSDocModel.xsl;ProductionTransforms\AddGuidFilenames.xsl</Transformations>
+        <Arguments>IncludeAllMembersTopic=false;IncludeInheritedOverloadTopics=true;$(ProjectNodeParam)</Arguments>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(PresentationStyle)' == 'prototype'">
+      <PropertyGroup>
+        <Transformations>ProductionTransforms\ApplyPrototypeDocModel.xsl;ProductionTransforms\AddGuidFilenames.xsl</Transformations>
+        <Arguments></Arguments>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <Transformations>ProductionTransforms\ApplyVSDocModel.xsl;ProductionTransforms\AddFriendlyFilenames.xsl</Transformations>
+        <Arguments>IncludeAllMembersTopic=true;IncludeInheritedOverloadTopics=false;$(ProjectNodeParam)</Arguments>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
+  <Target Name="Transform" DependsOnTargets="$(TransformDependsOn)" />
+
+  <!-- The Transform Manifest target -->
+  <Target Name="TransformManifest">
+    <!-- Transform the reflection output based on the presentation style -->
+    
+    <XslTransform
+      SandcastlePath="$(SandcastlePath)"
+      WorkingFolder="$(WorkingFolder)"
+      Transformations="$(Transformations)"
+      Arguments="$(Arguments)"
+      InputFile="reflection.org"
+      OutputFile="reflection.xml" />
+
+    <!-- Generate the topic manifest -->
+    <XslTransform
+      SandcastlePath="$(SandcastlePath)"
+      WorkingFolder="$(WorkingFolder)"
+      Transformations="ProductionTransforms\ReflectionToManifest.xsl"
+      InputFile="reflection.xml"
+      OutputFile="manifest.xml" />
+  </Target>
+
+  <!-- The following targets may be overridden or replaced to perform
+       additional processing. -->
+  <Target Name="BeforeTransformManifest" />
+  <Target Name="AfterTransformManifest" />
+</Project>

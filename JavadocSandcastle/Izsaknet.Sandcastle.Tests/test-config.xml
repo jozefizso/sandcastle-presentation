@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<component type="Izsaknet.Sandcastle.ResolveJavadocLinksComponent" assembly="%VS2010P%\Izsaknet.Sandcastle.dll">
+  <!--<targets base="%DXROOT%\Data\Reflection" recurse="true" files="*.xml" type="msdn" />-->
+  <targets resolver="javadoc" config="Izsaknet.Sandcastle.Tests.dll.config" type="external" />
+  <targets files=".\full-reflection.xml" type="local" />
+</component>

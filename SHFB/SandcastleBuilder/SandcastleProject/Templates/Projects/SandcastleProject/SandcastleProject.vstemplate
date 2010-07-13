@@ -1,0 +1,20 @@
+﻿<VSTemplate xmlns="http://schemas.microsoft.com/developer/vstemplate/2005"
+            Version="2.0.0"
+            Type="Project"
+  >
+  <TemplateData>
+    <Name>Sandcastle Documentation Project</Name>
+    <Description>A project for creating documentation using Sandcastle toolset.</Description>
+    <Icon>SandcastleProject.ico</Icon>
+    <ProjectType>SandcastleProject</ProjectType>
+    <SortOrder>30</SortOrder>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>Documentation</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <Project File="SandcastleProject.shfbproj" ReplaceParameters="true">
+    </Project>
+  </TemplateContent>
+</VSTemplate>

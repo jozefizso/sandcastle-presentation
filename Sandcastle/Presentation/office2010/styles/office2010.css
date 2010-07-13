@@ -1,0 +1,178 @@
+/*
+ * Sandcastle - Office 2010 style
+ *
+ * (based on the Office 2010 Help and Support theme)
+ */
+
+body {
+    font-family: "Segoe UI", Arial;
+    font-size: 10pt;
+    margin: 0;
+    padding: 0;
+}
+
+/*** Links */
+a {
+    color: #4685DF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline !important;
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+img {
+    border: 0 none;
+}
+
+/*** Header */
+div.breadcrumbs {
+    font-size: 9pt;
+    background: #F2F2F2;
+    line-height: 13pt;
+    padding: 3px 10px;
+    border-bottom:1px solid #B6B6B6;
+}
+
+
+div.headerContent {
+    background: white url('../images/clv14titlebarbg.png') bottom left repeat-x;
+    padding: 8px 5px 10px;
+    border-top: 3px solid #FCA822;
+    border-bottom: 1px solid #E2E2E2;
+}
+
+/*** Search */
+div.Search {
+	width:256px;
+	margin-left:13px;
+	margin-right:13px;
+	height:24px;
+	padding-top:13px;
+	border-width:0
+}
+
+.LT_image {
+	float:left;
+	top:0
+}
+
+.RT_image {
+	float:left;
+	top:0
+}
+
+.SearchButton {
+	margin-left:1px;
+	vertical-align:middle;
+	margin-top:2px;
+	border:solid 0 #000;
+	text-decoration:none;
+	cursor:pointer;
+	border-width:0;
+	position:relative;
+	overflow:hidden;
+	width:19px;
+	height:19px;
+	display:inline-block
+}
+
+.SearchButton img, .SearchButton input {
+	position:absolute;
+	margin:0;
+	padding:0;
+	width:auto;
+	height:auto
+}
+
+.SearchPanel {
+	float:left;
+	font-style:italic
+}
+
+.SearchBox {
+	float:left;
+	padding-left:1px;
+	padding-right:1px;
+	padding-top:4px;
+	display:inline;
+	width:226px;
+	line-height:12px;
+	font-size:11px;
+	border-width:0;
+	margin-top:1px;
+	margin-bottom:1px;
+	height:16px
+}
+
+.cl_lt_search {
+	background:url('../Images/msdn2010branding-stripe1.png') no-repeat scroll -256px -3px;
+	width:2px;
+	height:23px;
+	overflow:hidden
+}
+
+.cl_rt_search {
+	background:url('../Images/msdn2010branding-stripe1.png') no-repeat scroll -264px -3px;
+	width:2px;
+	height:23px;
+	overflow:hidden
+}
+
+.cl_search_icon {
+	top:-3px;
+	left:-272px
+}
+
+.cl_slice_Search {
+	background:url('../Images/msdn2010branding-stripe.png') repeat-x scroll 0 -29px;
+	height:23px
+}
+
+
+/*** Titles */
+h1.title  {
+    color: #232323;
+    font-size: 1.6em;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    font-weight: normal;
+}
+
+.LW_CollapsibleArea_Title {
+    border-bottom: 1px solid #FFC200;
+    color: #454545;
+    font-size: 1.4em;
+    font-weight: normal;
+    margin: 0 0 10px;
+    padding: 25px 0 10px;
+}
+
+.LW_CollapsibleArea_HrDiv {
+    display: none;
+}
+
+/*** Content layout */
+div.contentPlaceHolder {
+    margin: 15px 15px 0;
+}
+
+div.content {
+    padding: 20px 20px 0;
+    width: 395px;
+}
+
+/*** Footer */
+div.footer {
+    border-top: 1px solid #CCCCCC;
+    margin: 10px 0;
+    font-size: 9pt;
+}
+
+div.footerLogoContainer {
+    margin: 3px;
+}
