@@ -109,7 +109,7 @@ namespace SandcastleBuilder.Utils
         /// <summary>The default platform</summary>
         public const string DefaultPlatform = "AnyCPU";
         /// <summary>MS Build tools version to be used by the project.</summary>
-        public const string DefaultMSBuildTools = "3.5";
+        public const string DefaultMSBuildTools = "4.0";
 
         public const string SHFBSchemaVersionElement = "SHFBSchemaVersion";
 
@@ -2298,10 +2298,10 @@ namespace SandcastleBuilder.Utils
                 // Ensure that we use the correct build engine for the project
                 ////if(msBuildProject.ToolsVersion != "3.5")
                 ////    msBuildProject.DefaultToolsVersion = "3.5";
-                Debug.Assert(
-                    msBuildProject.ToolsVersion == "3.5",
-                    @"msBuildProject.ToolsVersion == ""3.5""",
-                    "MSBuild project must use tools from version 3.5.");
+                ////Debug.Assert(
+                ////    msBuildProject.ToolsVersion == "3.5",
+                ////    @"msBuildProject.ToolsVersion == ""3.5""",
+                ////    "MSBuild project must use tools from version 3.5.");
 
                 loadingProperties = true;
                 ////projectCache = msBuildProject.EvaluatedProperties;
