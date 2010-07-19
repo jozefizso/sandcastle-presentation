@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : BuildComponentManager.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 11/10/2009
-// Note    : Copyright 2007-2009, Eric Woodruff, All rights reserved
+// Updated : 03/07/2010
+// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the class that manages the set of third party build
@@ -21,6 +21,7 @@
 // 1.8.0.0  10/06/2008  EFW  Changed the default location of custom components
 // 1.8.0.3  07/04/2009  EFW  Merged build component and plug-in folder
 // 1.8.0.3  11/10/2009  EFW  Added support for custom syntax filter components
+// 1.8.0.4  03/07/2010  EFW  Added support for SHFBCOMPONENTROOT
 //=============================================================================
 
 using System;
@@ -205,28 +206,37 @@ namespace SandcastleBuilder.Utils.BuildComponent
             XPathDocument configFile;
             XPathNavigator navConfig;
             BuildComponentInfo info;
+            string componentPath;
 
             SetPaths();
 
             buildComponents = new Dictionary<string, BuildComponentInfo>();
 
-            if(Directory.Exists(buildComponentFolder))
-                allFiles.AddRange(Directory.GetFiles(buildComponentFolder,
-                    "*.components", SearchOption.AllDirectories));
+            // Give precedence to components in the optional SHFBCOMPONENTROOT
+            // environment variable folder.
+            componentPath = Environment.ExpandEnvironmentVariables("%SHFBCOMPONENTROOT%");
+
+            if(!String.IsNullOrEmpty(componentPath) && Directory.Exists(componentPath))
+                allFiles.AddRange(Directory.GetFiles(componentPath, "*.components",
+                    SearchOption.AllDirectories));
 
             // Add the standard component config file and any third-party
-            // component config files in the installation folder too.  This
+            // component config files in the installation folder.  This
             // allows for XCOPY deployments of SHFB to build servers.
             allFiles.AddRange(Directory.GetFiles(shfbFolder, "*.components",
                 SearchOption.AllDirectories));
+
+            // Finally, check the common app data build components folder
+            if(Directory.Exists(buildComponentFolder))
+                allFiles.AddRange(Directory.GetFiles(buildComponentFolder,
+                    "*.components", SearchOption.AllDirectories));
 
             foreach(string file in allFiles)
             {
                 configFile = new XPathDocument(file);
                 navConfig = configFile.CreateNavigator();
 
-                foreach(XPathNavigator component in navConfig.Select(
-                  "components/component"))
+                foreach(XPathNavigator component in navConfig.Select("components/component"))
                 {
                     info = new BuildComponentInfo(component);
 

@@ -22,7 +22,6 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Xml;
 using System.Xml.XPath;
 
 using SandcastleBuilder.Utils;
@@ -38,6 +37,8 @@ namespace Test.PlugIns
     public class TestPlugIn : SandcastleBuilder.Utils.PlugIn.IPlugIn
     {
         #region Private data members
+        //=====================================================================
+
         private ExecutionPointCollection executionPoints;
 
         private BuildProcess builder;
@@ -45,7 +46,6 @@ namespace Test.PlugIns
 
         #region IPlugIn implementation
         //=====================================================================
-        // IPlugIn implementation
 
         /// <summary>
         /// This read-only property returns a friendly name for the plug-in
@@ -126,14 +126,16 @@ namespace Test.PlugIns
             get
             {
                 if(executionPoints == null)
-                {
-                    executionPoints = new ExecutionPointCollection();
-
-                    // TODO: Modify this to set your execution points
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.ValidatingDocumentationSources,
-                        ExecutionBehaviors.Before));
-                }
+                    executionPoints = new ExecutionPointCollection
+                    {
+                        // TODO: Modify this to set your execution points
+                        new ExecutionPoint(
+                            BuildStep.ValidatingDocumentationSources,
+                            ExecutionBehaviors.Before),
+                        new ExecutionPoint(
+                            BuildStep.GenerateReflectionInfo,
+                            ExecutionBehaviors.Before)
+                    };
 
                 return executionPoints;
             }
@@ -191,7 +193,6 @@ namespace Test.PlugIns
 
         #region IDisposable implementation
         //=====================================================================
-        // IDisposable implementation
 
         /// <summary>
         /// This handles garbage collection to ensure proper disposal of the

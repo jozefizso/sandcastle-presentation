@@ -276,11 +276,6 @@ text and HTML encoded).  This is useful for build components that need paths
 relative to the project.</entry>
   </row>
   <row>
-    <entry>{@ProjectLinks}</entry>
-    <entry>This tag expands to the value of the
-<codeInline>ProjectLinkType</codeInline> project option.</entry>
-  </row>
-  <row>
     <entry>{@ResourceItemFiles}</entry>
     <entry>This tag expands to a list of the resource item files in the project
 that contain project overrides for the Sandcastle resource items used in the
@@ -300,9 +295,10 @@ This will be the path that the help builder found or the
 instead.</entry>
   </row>
   <row>
-    <entry>{@SDKLinks}</entry>
-    <entry>This tag expands to the value of the
-<codeInline>SdkLinkType</codeInline> project option.</entry>
+    <entry>{@HtmlSdkLinkType}, {@MSHelp2SdkLinkType},
+{@MSHelpViewerSdkLinkType}, and {@WebsiteSdkLinkType}</entry>
+    <entry>These tags expands to the value of the matching named project
+properties.</entry>
   </row>
   <row>
     <entry>{@SHFBFolder}</entry>

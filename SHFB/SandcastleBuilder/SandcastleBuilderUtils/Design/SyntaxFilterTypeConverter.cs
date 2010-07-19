@@ -2,8 +2,8 @@
 // System  : EWSoftware Design Time Attributes and Editors
 // File    : SyntaxFilterTypeConverter.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 11/10/2009
-// Note    : Copyright 2009, Eric Woodruff, All rights reserved
+// Updated : 01/15/2010
+// Note    : Copyright 2009-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a type converter that ensures the syntax filter values
@@ -64,12 +64,12 @@ namespace SandcastleBuilder.Utils.Design
                     if(definedFilters.Count == allFilters.Count)
                         filterIds = "All";
                     else
-                        if(definedFilters.Count == allFilters.Where(
-                          af => af.Id.IndexOf("usage", StringComparison.OrdinalIgnoreCase) == -1).Count())
+                        if(definedFilters.Count == allFilters.Count(
+                          af => af.Id.IndexOf("usage", StringComparison.OrdinalIgnoreCase) == -1))
                             filterIds = "AllButUsage";
                         else
-                            if(definedFilters.All(f => f.Id == "CSharp" ||
-                              f.Id == "VisualBasic" || f.Id == "CPlusPlus"))
+                            if(definedFilters.Count == 3 && (definedFilters.All(df => df.Id == "CSharp" ||
+                              df.Id == "VisualBasic" || df.Id == "CPlusPlus")))
                                 filterIds = "Standard";
                             else
                                 filterIds = String.Join(", ", definedFilters.Select(f => f.Id).ToArray());

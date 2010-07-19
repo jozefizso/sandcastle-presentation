@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Plug-Ins
 // File    : AdditionalReferenceLinksPlugIn.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 11/12/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 06/12/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a plug-in designed to add additional reference link
@@ -21,6 +21,7 @@
 // ============================================================================
 // 1.6.0.5  02/25/2008  EFW  Created the code
 // 1.8.0.0  08/13/2008  EFW  Updated to support the new project format
+// 1.9.0.0  06/07/2010  EFW  Added support for multi-format build output
 //=============================================================================
 
 using System;
@@ -48,6 +49,8 @@ namespace SandcastleBuilder.PlugIns
     public class AdditionalReferenceLinksPlugIn : IPlugIn
     {
         #region Private data members
+        //=====================================================================
+
         private ExecutionPointCollection executionPoints;
 
         private BuildProcess builder;
@@ -59,7 +62,6 @@ namespace SandcastleBuilder.PlugIns
 
         #region IPlugIn implementation
         //=====================================================================
-        // IPlugIn implementation
 
         /// <summary>
         /// This read-only property returns a friendly name for the plug-in
@@ -78,8 +80,7 @@ namespace SandcastleBuilder.PlugIns
             {
                 // Use the assembly version
                 Assembly asm = Assembly.GetExecutingAssembly();
-                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(
-                    asm.Location);
+                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
 
                 return new Version(fvi.ProductVersion);
             }
@@ -95,9 +96,8 @@ namespace SandcastleBuilder.PlugIns
             {
                 // Use the assembly copyright
                 Assembly asm = Assembly.GetExecutingAssembly();
-                AssemblyCopyrightAttribute copyright =
-                    (AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(
-                        asm, typeof(AssemblyCopyrightAttribute));
+                AssemblyCopyrightAttribute copyright = (AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(
+                    asm, typeof(AssemblyCopyrightAttribute));
 
                 return copyright.Copyright;
             }
@@ -136,16 +136,11 @@ namespace SandcastleBuilder.PlugIns
             get
             {
                 if(executionPoints == null)
-                {
-                    executionPoints = new ExecutionPointCollection();
-
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.ApplyVisibilityProperties,
-                        ExecutionBehaviors.After));
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.MergeCustomConfigs,
-                        ExecutionBehaviors.After));
-                }
+                    executionPoints = new ExecutionPointCollection
+                    {
+                        new ExecutionPoint(BuildStep.ApplyVisibilityProperties, ExecutionBehaviors.After),
+                        new ExecutionPoint(BuildStep.MergeCustomConfigs, ExecutionBehaviors.After),
+                    };
 
                 return executionPoints;
             }
@@ -163,8 +158,7 @@ namespace SandcastleBuilder.PlugIns
         public string ConfigurePlugIn(SandcastleProject project,
           string currentConfig)
         {
-            using(AdditionalReferenceLinksConfigDlg dlg =
-              new AdditionalReferenceLinksConfigDlg(project, currentConfig))
+            using(AdditionalReferenceLinksConfigDlg dlg = new AdditionalReferenceLinksConfigDlg(project, currentConfig))
             {
                 if(dlg.ShowDialog() == DialogResult.OK)
                     currentConfig = dlg.Configuration;
@@ -183,16 +177,14 @@ namespace SandcastleBuilder.PlugIns
         /// should use to initialize itself.</param>
         /// <exception cref="BuilderException">This is thrown if the plug-in
         /// configuration is not valid.</exception>
-        public void Initialize(BuildProcess buildProcess,
-          XPathNavigator configuration)
+        public void Initialize(BuildProcess buildProcess, XPathNavigator configuration)
         {
             XPathNavigator root;
 
             builder = buildProcess;
             otherLinks = new ReferenceLinkSettingsCollection();
 
-            builder.ReportProgress("{0} Version {1}\r\n{2}",
-                this.Name, this.Version, this.Copyright);
+            builder.ReportProgress("{0} Version {1}\r\n{2}", this.Name, this.Version, this.Copyright);
 
             root = configuration.SelectSingleNode("configuration");
 
@@ -222,8 +214,7 @@ namespace SandcastleBuilder.PlugIns
             if(context.BuildStep == BuildStep.ApplyVisibilityProperties)
             {
                 // Merge the additional reference links information
-                builder.ReportProgress("Performing partial builds on " +
-                    "additional targets' projects");
+                builder.ReportProgress("Performing partial builds on additional targets' projects");
 
                 // Build each of the projects
                 foreach(ReferenceLinkSettings vs in otherLinks)
@@ -232,8 +223,7 @@ namespace SandcastleBuilder.PlugIns
 
                     // We'll use a working folder below the current project's
                     // working folder.
-                    workingPath = builder.WorkingFolder +
-                        vs.HelpFileProject.GetHashCode().ToString("X",
+                    workingPath = builder.WorkingFolder + vs.HelpFileProject.GetHashCode().ToString("X",
                         CultureInfo.InvariantCulture) + "\\";
 
                     success = this.BuildProject(project, workingPath);
@@ -268,8 +258,7 @@ namespace SandcastleBuilder.PlugIns
                     sw.Write(sb.ToString());
                 }
 
-                builder.ReportProgress("\r\nTransforming reference " +
-                    "reflection files...");
+                builder.ReportProgress("\r\nTransforming reference reflection files...");
                 builder.RunProcess(workingPath, null);
                 return;
             }
@@ -295,15 +284,15 @@ namespace SandcastleBuilder.PlugIns
         /// <param name="isConceptual">True if it is the conceptual
         /// configuration file or false if it is the reference configuration
         /// file.</param>
-        private void MergeReflectionInfo(string configFilename,
-          bool isConceptual)
+        private void MergeReflectionInfo(string configFilename, bool isConceptual)
         {
             XmlDocument configFile;
             XmlAttribute attr;
+            XmlNodeList matchingComponents;
             XmlNode component, target;
+            HelpFileFormat helpFormat;
 
-            builder.ReportProgress("\r\nAdding references to {0}...",
-                configFilename);
+            builder.ReportProgress("\r\nAdding references to {0}...", configFilename);
             configFile = new XmlDocument();
             configFile.Load(configFilename);
 
@@ -313,14 +302,12 @@ namespace SandcastleBuilder.PlugIns
                 // multiple copies of this component type but we only need the
                 // first one.  This only appears in the reference build's
                 // configuration file.
-                component = configFile.SelectSingleNode(
-                    "configuration/dduetools/builder/components/component[@type=" +
+                component = configFile.SelectSingleNode("configuration/dduetools/builder/components/component[@type=" +
                     "'Microsoft.Ddue.Tools.CopyFromIndexComponent']/index");
 
                 // If not found, try for the cached version
                 if(component == null)
-                    component = configFile.SelectSingleNode(
-                        "configuration/dduetools/builder/components/component[" +
+                    component = configFile.SelectSingleNode("configuration/dduetools/builder/components/component[" +
                         "@id='Cached Reflection Index Data']/index");
 
                 if(component == null)
@@ -343,38 +330,56 @@ namespace SandcastleBuilder.PlugIns
             }
 
             // Add them to the Resolve Reference Links component
-            component = configFile.SelectSingleNode(
-                "configuration/dduetools/builder/components/component[@type=" +
-                "'Microsoft.Ddue.Tools.ResolveReferenceLinksComponent2']");
+            matchingComponents = configFile.SelectNodes(
+                "//component[@type='Microsoft.Ddue.Tools.ResolveReferenceLinksComponent2']");
 
             // If not found, try for the cached version
-            if(component == null)
-                component = configFile.SelectSingleNode(
-                    "configuration/dduetools/builder/components/component[" +
-                    "@id='Cached MSDN URL References']");
+            if(matchingComponents.Count == 0)
+                matchingComponents = configFile.SelectNodes("//component[@id='Cached MSDN URL References']");
 
-            if(component == null)
-                throw new BuilderException("ARL0005", "Unable to locate " +
-                    "Resolve Reference Links component in " + configFilename);
+            if(matchingComponents.Count == 0)
+                throw new BuilderException("ARL0005", "Unable to locate Resolve Reference Links component in " +
+                    configFilename);
 
-            foreach(ReferenceLinkSettings vs in otherLinks)
-                if(!String.IsNullOrEmpty(vs.ReflectionFilename))
-                {
-                    target = configFile.CreateElement("targets");
+            foreach(XmlNode match in matchingComponents)
+                foreach(ReferenceLinkSettings vs in otherLinks)
+                    if(!String.IsNullOrEmpty(vs.ReflectionFilename))
+                    {
+                        target = configFile.CreateElement("targets");
 
-                    attr = configFile.CreateAttribute("files");
-                    attr.Value = vs.ReflectionFilename;
-                    target.Attributes.Append(attr);
+                        attr = configFile.CreateAttribute("files");
+                        attr.Value = vs.ReflectionFilename;
+                        target.Attributes.Append(attr);
 
-                    attr = configFile.CreateAttribute("type");
-                    attr.Value = vs.LinkType.ToString().ToLower(
-                        CultureInfo.InvariantCulture);
-                    target.Attributes.Append(attr);
+                        attr = configFile.CreateAttribute("type");
 
-                    // Keep the current project's stuff listed last so that it
-                    // takes precedence.
-                    component.InsertAfter(target, component.ChildNodes[0]);
-                }
+                        helpFormat = (HelpFileFormat)Enum.Parse(typeof(HelpFileFormat),
+                            match.ParentNode.Attributes["format"].Value, true);
+
+                        switch(helpFormat)
+                        {
+                            case HelpFileFormat.HtmlHelp1:
+                                attr.Value = vs.HtmlSdkLinkType.ToString();
+                                break;
+
+                            case HelpFileFormat.MSHelp2:
+                                attr.Value = vs.MSHelp2SdkLinkType.ToString();
+                                break;
+
+                            case HelpFileFormat.MSHelpViewer:
+                                attr.Value = vs.MSHelpViewerSdkLinkType.ToString();
+                                break;
+
+                            default:
+                                attr.Value = vs.WebsiteSdkLinkType.ToString();
+                                break;
+                        }
+
+                        target.Attributes.Append(attr);
+
+                        // Keep the current project's stuff listed last so that it takes precedence
+                        match.InsertAfter(target, match.ChildNodes[0]);
+                    }
 
             configFile.Save(configFilename);
         }
@@ -382,7 +387,6 @@ namespace SandcastleBuilder.PlugIns
 
         #region IDisposable implementation
         //=====================================================================
-        // IDisposable implementation
 
         /// <summary>
         /// This handles garbage collection to ensure proper disposal of the
@@ -418,6 +422,8 @@ namespace SandcastleBuilder.PlugIns
         #endregion
 
         #region Helper methods
+        //=====================================================================
+
         /// <summary>
         /// This is called to build a project
         /// </summary>
@@ -435,21 +441,15 @@ namespace SandcastleBuilder.PlugIns
             try
             {
                 // For the plug-in, we'll override some project settings
-                project.SandcastlePath = new FolderPath(
-                    builder.SandcastleFolder, true, project);
-                project.HtmlHelp1xCompilerPath = new FolderPath(
-                    builder.Help1CompilerFolder, true, project);
-                project.HtmlHelp2xCompilerPath = new FolderPath(
-                    builder.Help2CompilerFolder, true, project);
+                project.SandcastlePath = new FolderPath(builder.SandcastleFolder, true, project);
+                project.HtmlHelp1xCompilerPath = new FolderPath(builder.Help1CompilerFolder, true, project);
+                project.HtmlHelp2xCompilerPath = new FolderPath(builder.Help2CompilerFolder, true, project);
                 project.WorkingPath = new FolderPath(workingPath, true, project);
-                project.OutputPath = new FolderPath(workingPath +
-                    @"..\PartialBuildLog\", true, project);
+                project.OutputPath = new FolderPath(workingPath + @"..\PartialBuildLog\", true, project);
 
                 buildProcess = new BuildProcess(project, true);
 
-                buildProcess.BuildStepChanged +=
-                    new EventHandler<BuildProgressEventArgs>(
-                        buildProcess_BuildStepChanged);
+                buildProcess.BuildStepChanged += buildProcess_BuildStepChanged;
 
                 // Since this is a plug-in, we'll run it directly rather
                 // than in a background thread.
@@ -462,10 +462,8 @@ namespace SandcastleBuilder.PlugIns
             }
             catch(Exception ex)
             {
-                throw new BuilderException("ARL0006", String.Format(
-                    CultureInfo.InvariantCulture, "Fatal error, unable " +
-                    "to compile project '{0}': {1}", project.Filename,
-                    ex.ToString()));
+                throw new BuilderException("ARL0006", String.Format(CultureInfo.InvariantCulture,
+                    "Fatal error, unable to compile project '{0}': {1}", project.Filename, ex.ToString()));
             }
 
             return (lastBuildStep == BuildStep.Completed);
@@ -477,8 +475,7 @@ namespace SandcastleBuilder.PlugIns
         /// </summary>
         /// <param name="sender">The sender of the event</param>
         /// <param name="e">The event arguments</param>
-        private void buildProcess_BuildStepChanged(object sender,
-          BuildProgressEventArgs e)
+        private void buildProcess_BuildStepChanged(object sender, BuildProgressEventArgs e)
         {
             builder.ReportProgress(e.BuildStep.ToString());
             lastBuildStep = e.BuildStep;

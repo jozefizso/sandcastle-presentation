@@ -2,8 +2,8 @@
 // System  : EWSoftware Design Time Attributes and Editors
 // File    : SyntaxFilterValueEditor.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 11/10/2009
-// Note    : Copyright 2009, Eric Woodruff, All rights reserved
+// Updated : 01/15/2010
+// Note    : Copyright 2009-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a type editor that displays a checked list box as the
@@ -22,12 +22,10 @@
 //=============================================================================
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
-using System.Globalization;
 using System.Linq;
 using System.Security.Permissions;
 using System.Windows.Forms;
@@ -113,12 +111,12 @@ namespace SandcastleBuilder.Utils.Design
                     if(definedFilters.Count == allFilters.Count)
                         filterIds = "All";
                     else
-                        if(definedFilters.Count == allFilters.Where(
-                          af => af.Id.IndexOf("usage", StringComparison.OrdinalIgnoreCase) == -1).Count())
+                        if(definedFilters.Count == allFilters.Count(
+                          af => af.Id.IndexOf("usage", StringComparison.OrdinalIgnoreCase) == -1))
                             filterIds = "AllButUsage";
                         else
-                            if(definedFilters.All(f => f.Id == "CSharp" ||
-                              f.Id == "VisualBasic" || f.Id == "CPlusPlus"))
+                            if(definedFilters.Count == 3 && (definedFilters.All(f => f.Id == "CSharp" ||
+                              f.Id == "VisualBasic" || f.Id == "CPlusPlus")))
                                 filterIds = "Standard";
 
                     value = filterIds;

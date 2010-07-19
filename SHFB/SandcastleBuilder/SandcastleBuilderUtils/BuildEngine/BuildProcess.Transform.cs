@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : BuildProcess.Transform.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 12/06/2009
-// Note    : Copyright 2006-2009, Eric Woodruff, All rights reserved
+// Updated : 07/05/2010
+// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the code used to transform and generate the files used
@@ -38,6 +38,7 @@
 // 1.8.0.3  11/10/2009  EFW  Updated to support custom language syntax filters
 // 1.8.0.3  12/06/2009  EFW  Removed support for ShowFeedbackControl.  Added
 //                           support for resource item files.
+// 1.9.0.0  06/06/2010  EFW  Added support for multi-format build output
 //=============================================================================
 
 using System;
@@ -45,6 +46,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -62,7 +64,6 @@ namespace SandcastleBuilder.Utils.BuildEngine
     {
         #region Private data members
         //=====================================================================
-        // Private data members
 
         // A stack used to check for circular build component dependencies
         private Stack<string> mergeStack;
@@ -102,12 +103,14 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 while(reField.IsMatch(templateText))
                     templateText = reField.Replace(templateText, fieldMatchEval);
             }
+            catch(BuilderException )
+            {
+                throw;
+            }
             catch(Exception ex)
             {
-                throw new BuilderException("BE0018", String.Format(
-                    CultureInfo.CurrentCulture,
-                    "Unable to transform template text '{0}': {1}",
-                    templateText, ex.Message), ex);
+                throw new BuilderException("BE0018", String.Format(CultureInfo.CurrentCulture,
+                    "Unable to transform template text '{0}': {1}", templateText, ex.Message), ex);
             }
 
             return templateText;
@@ -123,8 +126,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// <param name="destFolder">The folder in which to save the
         /// transformed file</param>
         /// <returns>The path to the transformed file</returns>
-        public string TransformTemplate(string template,
-          string sourceFolder, string destFolder)
+        public string TransformTemplate(string template, string sourceFolder, string destFolder)
         {
             Encoding enc = Encoding.Default;
             string templateText, transformedFile;
@@ -138,20 +140,17 @@ namespace SandcastleBuilder.Utils.BuildEngine
             if(destFolder == null)
                 throw new ArgumentNullException("destFolder");
 
-            if(sourceFolder.Length != 0 &&
-              sourceFolder[sourceFolder.Length - 1] != '\\')
+            if(sourceFolder.Length != 0 && sourceFolder[sourceFolder.Length - 1] != '\\')
                 sourceFolder += @"\";
 
-            if(destFolder.Length != 0 &&
-              destFolder[destFolder.Length - 1] != '\\')
+            if(destFolder.Length != 0 && destFolder[destFolder.Length - 1] != '\\')
                 destFolder += @"\";
 
             try
             {
                 // When reading the file, use the default encoding but
                 // detect the encoding if byte order marks are present.
-                templateText = BuildProcess.ReadWithEncoding(
-                    sourceFolder + template, ref enc);
+                templateText = BuildProcess.ReadWithEncoding(sourceFolder + template, ref enc);
 
                 // Use a regular expression to find and replace all field
                 // tags with a matching value from the project.  They can
@@ -162,18 +161,19 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 transformedFile = destFolder + template;
 
                 // Write the file back out using its original encoding
-                using(StreamWriter sw = new StreamWriter(transformedFile,
-                    false, enc))
+                using(StreamWriter sw = new StreamWriter(transformedFile, false, enc))
                 {
                     sw.Write(templateText);
                 }
             }
+            catch(BuilderException )
+            {
+                throw;
+            }
             catch(Exception ex)
             {
-                throw new BuilderException("BE0019", String.Format(
-                    CultureInfo.CurrentCulture,
-                    "Unable to transform template '{0}': {1}", template,
-                    ex.Message), ex);
+                throw new BuilderException("BE0019", String.Format(CultureInfo.CurrentCulture,
+                    "Unable to transform template '{0}': {1}", template, ex.Message), ex);
             }
 
             return transformedFile;
@@ -191,8 +191,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// addition, if the template is an XML file and it contains an
         /// encoding identifier in the XML tag, the file is read using
         /// that encoding.</remarks>
-        public static string ReadWithEncoding(string filename,
-          ref Encoding encoding)
+        public static string ReadWithEncoding(string filename, ref Encoding encoding)
         {
             Encoding fileEnc;
             string content;
@@ -216,8 +215,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 {
                     encoding = fileEnc;
 
-                    using(StreamReader sr = new StreamReader(filename,
-                      encoding, true))
+                    using(StreamReader sr = new StreamReader(filename, encoding, true))
                     {
                         content = sr.ReadToEnd();
                     }
@@ -234,29 +232,27 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// <returns>The string to use as the replacement</returns>
         private string OnFieldMatch(Match match)
         {
+            BuildProperty buildProp;
             FileItemCollection fileItems;
             StringBuilder sb;
             string replaceWith, fieldName;
             string[] parts;
 
-            fieldName = match.Groups["Field"].Value.ToLower(
-                CultureInfo.InvariantCulture);
+            fieldName = match.Groups["Field"].Value.ToLower(CultureInfo.InvariantCulture);
 
             switch(fieldName)
             {
                 case "appdatafolder":
                     // This folder should exist if used
                     replaceWith = FolderPath.TerminatePath(Path.Combine(
-                        Environment.GetFolderPath(
-                        Environment.SpecialFolder.CommonApplicationData),
+                        Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
                         Constants.ProgramDataFolder));
                     break;
 
                 case "localdatafolder":
                     // This folder may not exist and we may need to create it
                     replaceWith = FolderPath.TerminatePath(Path.Combine(
-                        Environment.GetFolderPath(
-                        Environment.SpecialFolder.LocalApplicationData),
+                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                         Constants.ProgramDataFolder));
 
                     if(!Directory.Exists(replaceWith))
@@ -273,6 +269,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
                 case "projectfolder":
                     replaceWith = Path.GetDirectoryName(originalProjectName);
+
                     if(replaceWith.Length == 0)
                         replaceWith = Directory.GetCurrentDirectory();
 
@@ -280,8 +277,8 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     break;
 
                 case "htmlencprojectfolder":
-                    replaceWith = HttpUtility.HtmlEncode(Path.GetDirectoryName(
-                        originalProjectName));
+                    replaceWith = HttpUtility.HtmlEncode(Path.GetDirectoryName(originalProjectName));
+
                     if(replaceWith.Length == 0)
                         replaceWith = HttpUtility.HtmlEncode(
                             Directory.GetCurrentDirectory());
@@ -344,22 +341,24 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     replaceWith = HttpUtility.HtmlEncode(project.HtmlHelpName);
                     break;
 
+                case "helpviewersetupname":
+                    // Help viewer setup names cannot contain periods so we'll replace them with underscores
+                    replaceWith = HttpUtility.HtmlEncode(project.HtmlHelpName.Replace('.', '_'));
+                    break;
+
                 case "frameworkcommentlist":
                 case "cachedframeworkcommentlist":
                 case "importframeworkcommentlist":
-                    replaceWith = this.FrameworkCommentList(
-                        match.Groups["Field"].Value.ToLower(
-                            CultureInfo.InvariantCulture));
+                    replaceWith = this.FrameworkCommentList(match.Groups["Field"].Value.ToLower(
+                        CultureInfo.InvariantCulture));
                     break;
 
                 case "commentfilelist":
-                    replaceWith = commentsFiles.CommentFileList(workingFolder,
-                        false);
+                    replaceWith = commentsFiles.CommentFileList(workingFolder, false);
                     break;
 
                 case "inheritedcommentfilelist":
-                    replaceWith = commentsFiles.CommentFileList(workingFolder,
-                        true);
+                    replaceWith = commentsFiles.CommentFileList(workingFolder, true);
                     break;
 
                 case "helptitle":
@@ -373,8 +372,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 case "scripthelptitle":
                     // This is used when the title is passed as a parameter
                     // to a JavaScript function.
-                    replaceWith = HttpUtility.HtmlEncode(
-                        project.HelpTitle).Replace("'", @"\'");
+                    replaceWith = HttpUtility.HtmlEncode(project.HelpTitle).Replace("'", @"\'");
                     break;
 
                 case "urlenchelptitle": // Just replace &, <, >, and " for  now
@@ -400,8 +398,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     break;
 
                 case "langid":
-                    replaceWith = language.LCID.ToString(
-                        CultureInfo.InvariantCulture);
+                    replaceWith = language.LCID.ToString(CultureInfo.InvariantCulture);
                     break;
 
                 case "language":
@@ -414,23 +411,20 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     break;
 
                 case "locale":
-                    replaceWith = language.Name.ToLower(
-                        CultureInfo.InvariantCulture);
+                    replaceWith = language.Name.ToLower(CultureInfo.InvariantCulture);
                     break;
 
                 case "copyright":
                     // Include copyright info if there is a copyright HREF or
                     // copyright text.
-                    if(project.CopyrightHref.Length != 0 ||
-                      project.CopyrightText.Length != 0)
+                    if(project.CopyrightHref.Length != 0 || project.CopyrightText.Length != 0)
                         replaceWith = "<include item=\"copyright\"/>";
                     else
                         replaceWith = String.Empty;
                     break;
 
                 case "copyrightinfo":
-                    if(project.CopyrightHref.Length == 0 &&
-                      project.CopyrightText.Length == 0)
+                    if(project.CopyrightHref.Length == 0 && project.CopyrightText.Length == 0)
                         replaceWith = String.Empty;
                     else
                         if(project.CopyrightHref.Length == 0)
@@ -439,35 +433,26 @@ namespace SandcastleBuilder.Utils.BuildEngine
                             if(project.CopyrightText.Length == 0)
                                 replaceWith = project.CopyrightHref;
                             else
-                                replaceWith = String.Format(
-                                    CultureInfo.CurrentCulture, "{0} ({1})",
-                                    project.DecodedCopyrightText,
-                                    project.CopyrightHref);
+                                replaceWith = String.Format(CultureInfo.CurrentCulture, "{0} ({1})",
+                                    project.DecodedCopyrightText, project.CopyrightHref);
                     break;
 
                 case "htmlenccopyrightinfo":
-                    if(project.CopyrightHref.Length == 0 &&
-                      project.CopyrightText.Length == 0)
+                    if(project.CopyrightHref.Length == 0 && project.CopyrightText.Length == 0)
                         replaceWith = String.Empty;
                     else
                         if(project.CopyrightHref.Length == 0)
-                            replaceWith = "<p/>" + HttpUtility.HtmlEncode(
-                                project.DecodedCopyrightText);
+                            replaceWith = "<p/>" + HttpUtility.HtmlEncode(project.DecodedCopyrightText);
                         else
                             if(project.CopyrightText.Length == 0)
-                                replaceWith = String.Format(
-                                    CultureInfo.CurrentCulture,
+                                replaceWith = String.Format(CultureInfo.CurrentCulture,
                                     "<p/><a href='{0}' target='_blank'>{0}</a>",
-                                    HttpUtility.HtmlEncode(
-                                        project.CopyrightHref));
+                                    HttpUtility.HtmlEncode(project.CopyrightHref));
                             else
-                                replaceWith = String.Format(
-                                    CultureInfo.CurrentCulture,
+                                replaceWith = String.Format(CultureInfo.CurrentCulture,
                                     "<p/><a href='{0}' target='_blank'>{1}</a>",
-                                    HttpUtility.HtmlEncode(
-                                        project.CopyrightHref),
-                                    HttpUtility.HtmlEncode(
-                                        project.DecodedCopyrightText));
+                                    HttpUtility.HtmlEncode(project.CopyrightHref),
+                                    HttpUtility.HtmlEncode(project.DecodedCopyrightText));
                     break;
 
                 case "copyrighthref":
@@ -478,8 +463,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     if(project.CopyrightHref.Length == 0)
                         replaceWith = String.Empty;
                     else
-                        replaceWith = String.Format(
-                            CultureInfo.CurrentCulture,
+                        replaceWith = String.Format(CultureInfo.CurrentCulture,
                             "<a href='{0}' target='_blank'>{0}</a>",
                             HttpUtility.HtmlEncode(project.CopyrightHref));
                     break;
@@ -495,8 +479,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     if(project.CopyrightText.Length == 0)
                         replaceWith = String.Empty;
                     else
-                        replaceWith = HttpUtility.HtmlEncode(
-                            project.DecodedCopyrightText);
+                        replaceWith = HttpUtility.HtmlEncode(project.DecodedCopyrightText);
                     break;
 
                 case "comments":
@@ -520,8 +503,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     if(project.FeedbackEMailAddress.Length == 0)
                         replaceWith = String.Empty;
                     else
-                        replaceWith = HttpUtility.UrlEncode(
-                            project.FeedbackEMailAddress);
+                        replaceWith = HttpUtility.UrlEncode(project.FeedbackEMailAddress);
                     break;
 
                 case "htmlencfeedbackemailaddress":
@@ -530,11 +512,9 @@ namespace SandcastleBuilder.Utils.BuildEngine
                         replaceWith = String.Empty;
                     else
                         if(project.FeedbackEMailLinkText.Length == 0)
-                            replaceWith = HttpUtility.HtmlEncode(
-                                project.FeedbackEMailAddress);
+                            replaceWith = HttpUtility.HtmlEncode(project.FeedbackEMailAddress);
                         else
-                            replaceWith = HttpUtility.HtmlEncode(
-                                project.FeedbackEMailLinkText);
+                            replaceWith = HttpUtility.HtmlEncode(project.FeedbackEMailLinkText);
                     break;
 
                 case "headertext":
@@ -546,8 +526,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     break;
 
                 case "indenthtml":
-                    replaceWith = project.IndentHtml.ToString().
-                        ToLower(CultureInfo.InvariantCulture);
+                    replaceWith = project.IndentHtml.ToString().ToLower(CultureInfo.InvariantCulture);
                     break;
 
                 case "preliminary":
@@ -559,18 +538,15 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     break;
 
                 case "defaulttopic":
-                    if(defaultTopic.EndsWith(".topic",
-                      StringComparison.OrdinalIgnoreCase))
+                    if(defaultTopic.EndsWith(".topic", StringComparison.OrdinalIgnoreCase))
                         replaceWith = Path.ChangeExtension(defaultTopic, ".html");
                     else
                         replaceWith = defaultTopic;
                     break;
 
                 case "webdefaulttopic":
-                    if(defaultTopic.EndsWith(".topic",
-                      StringComparison.OrdinalIgnoreCase))
-                        replaceWith = Path.ChangeExtension(defaultTopic,
-                            ".html").Replace('\\', '/');
+                    if(defaultTopic.EndsWith(".topic", StringComparison.OrdinalIgnoreCase))
+                        replaceWith = Path.ChangeExtension(defaultTopic, ".html").Replace('\\', '/');
                     else
                         replaceWith = defaultTopic.Replace('\\', '/');
                     break;
@@ -602,28 +578,33 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     break;
 
                 case "help1xprojectfiles":
-                    replaceWith = this.HelpProjectFileList(workingFolder +
-                        @"Output\", HelpFileFormat.HtmlHelp1);
+                    replaceWith = this.HelpProjectFileList(String.Format(CultureInfo.InvariantCulture,
+                        @"{0}Output\{1}", workingFolder, HelpFileFormat.HtmlHelp1), HelpFileFormat.HtmlHelp1);
                     break;
 
                 case "help2xprojectfiles":
-                    replaceWith = this.HelpProjectFileList(workingFolder +
-                        @"Output\", HelpFileFormat.MSHelp2);
+                    replaceWith = this.HelpProjectFileList(String.Format(CultureInfo.InvariantCulture,
+                        @"{0}Output\{1}", workingFolder, HelpFileFormat.MSHelp2), HelpFileFormat.MSHelp2);
                     break;
 
-                case "projectlinks":
-                    replaceWith = project.ProjectLinkType.ToString().ToLower(
-                        CultureInfo.InvariantCulture);
+                case "htmlsdklinktype":
+                    replaceWith = project.HtmlSdkLinkType.ToString().ToLower(CultureInfo.InvariantCulture);
                     break;
 
-                case "sdklinks":
-                    replaceWith = project.SdkLinkType.ToString().ToLower(
-                        CultureInfo.InvariantCulture);
+                case "mshelp2sdklinktype":
+                    replaceWith = project.MSHelp2SdkLinkType.ToString().ToLower(CultureInfo.InvariantCulture);
+                    break;
+
+                case "mshelpviewersdklinktype":
+                    replaceWith = project.MSHelpViewerSdkLinkType.ToString().ToLower(CultureInfo.InvariantCulture);
+                    break;
+
+                case "websitesdklinktype":
+                    replaceWith = project.WebsiteSdkLinkType.ToString().ToLower(CultureInfo.InvariantCulture);
                     break;
 
                 case "sdklinktarget":
-                    replaceWith = "_" + project.SdkLinkTarget.ToString().ToLower(
-                        CultureInfo.InvariantCulture);
+                    replaceWith = "_" + project.SdkLinkTarget.ToString().ToLower(CultureInfo.InvariantCulture);
                     break;
 
                 case "htmltoc":
@@ -641,53 +622,43 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     break;
 
                 case "autodocumentconstructors":
-                    replaceWith = project.AutoDocumentConstructors.ToString().
-                        ToLower(CultureInfo.InvariantCulture);
+                    replaceWith = project.AutoDocumentConstructors.ToString().ToLower(CultureInfo.InvariantCulture);
                     break;
 
                 case "autodocumentdisposemethods":
-                    replaceWith = project.AutoDocumentDisposeMethods.ToString().
-                        ToLower(CultureInfo.InvariantCulture);
+                    replaceWith = project.AutoDocumentDisposeMethods.ToString().ToLower(CultureInfo.InvariantCulture);
                     break;
 
                 case "showmissingparams":
-                    replaceWith = project.ShowMissingParams.ToString().
-                        ToLower(CultureInfo.InvariantCulture);
+                    replaceWith = project.ShowMissingParams.ToString().ToLower(CultureInfo.InvariantCulture);
                     break;
 
                 case "showmissingremarks":
-                    replaceWith = project.ShowMissingRemarks.ToString().
-                        ToLower(CultureInfo.InvariantCulture);
+                    replaceWith = project.ShowMissingRemarks.ToString().ToLower(CultureInfo.InvariantCulture);
                     break;
 
                 case "showmissingreturns":
-                    replaceWith = project.ShowMissingReturns.ToString().
-                        ToLower(CultureInfo.InvariantCulture);
+                    replaceWith = project.ShowMissingReturns.ToString().ToLower(CultureInfo.InvariantCulture);
                     break;
 
                 case "showmissingsummaries":
-                    replaceWith = project.ShowMissingSummaries.ToString().
-                        ToLower(CultureInfo.InvariantCulture);
+                    replaceWith = project.ShowMissingSummaries.ToString().ToLower(CultureInfo.InvariantCulture);
                     break;
 
                 case "showmissingtypeparams":
-                    replaceWith = project.ShowMissingTypeParams.ToString().
-                        ToLower(CultureInfo.InvariantCulture);
+                    replaceWith = project.ShowMissingTypeParams.ToString().ToLower(CultureInfo.InvariantCulture);
                     break;
 
                 case "showmissingvalues":
-                    replaceWith = project.ShowMissingValues.ToString().
-                        ToLower(CultureInfo.InvariantCulture);
+                    replaceWith = project.ShowMissingValues.ToString().ToLower(CultureInfo.InvariantCulture);
                     break;
 
                 case "showmissingnamespaces":
-                    replaceWith = project.ShowMissingNamespaces.ToString().
-                        ToLower(CultureInfo.InvariantCulture);
+                    replaceWith = project.ShowMissingNamespaces.ToString().ToLower(CultureInfo.InvariantCulture);
                     break;
 
                 case "showmissingincludetargets":
-                    replaceWith = project.ShowMissingIncludeTargets.ToString().
-                        ToLower(CultureInfo.InvariantCulture);
+                    replaceWith = project.ShowMissingIncludeTargets.ToString().ToLower(CultureInfo.InvariantCulture);
                     break;
 
                 case "apifilter":
@@ -703,11 +674,9 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     // Apply a format specifier?
                     if(match.Groups["Format"].Value.Length != 0)
                         replaceWith = String.Format(CultureInfo.CurrentCulture,
-                            "{0:" + match.Groups["Format"].Value + "}",
-                            DateTime.Now);
+                            "{0:" + match.Groups["Format"].Value + "}", DateTime.Now);
                     else
-                        replaceWith = DateTime.Now.ToString(
-                            CultureInfo.CurrentCulture);
+                        replaceWith = DateTime.Now.ToString(CultureInfo.CurrentCulture);
                     break;
 
                 case "includeprojectnode":
@@ -717,18 +686,18 @@ namespace SandcastleBuilder.Utils.BuildEngine
                         replaceWith = String.Empty;
                     break;
 
-                case "generatehelp1files":
+                case "help1folder":
                     if((project.HelpFileFormat & HelpFileFormat.HtmlHelp1) != 0)
-                        replaceWith = "true";
+                        replaceWith = @"Output\" + HelpFileFormat.HtmlHelp1.ToString();
                     else
-                        replaceWith = "false";
+                        replaceWith = String.Empty;
                     break;
 
-                case "generatewebfiles":
+                case "websitefolder":
                     if((project.HelpFileFormat & HelpFileFormat.Website) != 0)
-                        replaceWith = "true";
+                        replaceWith = @"Output\" + HelpFileFormat.Website.ToString();
                     else
-                        replaceWith = "false";
+                        replaceWith = String.Empty;
                     break;
 
                 case "stopwordfile":
@@ -762,8 +731,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                         replaceWith = ns.Trim();
 
                         if(replaceWith.Length != 0)
-                            sb.AppendFormat("{0}|_DEFAULT|{1}|_DEFAULT\r\n",
-                                replaceWith, project.HtmlHelpName);
+                            sb.AppendFormat("{0}|_DEFAULT|{1}|_DEFAULT\r\n", replaceWith, project.HtmlHelpName);
                     }
 
                     replaceWith = sb.ToString();
@@ -794,12 +762,10 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     if(conceptualContent != null)
                         fileItems = conceptualContent.TokenFiles;
                     else
-                        fileItems = new FileItemCollection(project,
-                            BuildAction.Tokens);
+                        fileItems = new FileItemCollection(project, BuildAction.Tokens);
 
                     foreach(FileItem file in fileItems)
-                        sb.AppendFormat("<content file=\"{0}\" />\r\n",
-                            Path.GetFileName(file.FullPath));
+                        sb.AppendFormat("<content file=\"{0}\" />\r\n", Path.GetFileName(file.FullPath));
 
                     replaceWith = sb.ToString();
                     break;
@@ -810,12 +776,10 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     if(conceptualContent != null)
                         fileItems = conceptualContent.CodeSnippetFiles;
                     else
-                        fileItems = new FileItemCollection(project,
-                            BuildAction.CodeSnippets);
+                        fileItems = new FileItemCollection(project, BuildAction.CodeSnippets);
 
                     foreach(FileItem file in fileItems)
-                        sb.AppendFormat("<examples file=\"{0}\" />\r\n",
-                            file.FullPath);
+                        sb.AppendFormat("<examples file=\"{0}\" />\r\n", file.FullPath);
 
                     replaceWith = sb.ToString();
                     break;
@@ -823,15 +787,13 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 case "resourceitemfiles":
                     sb = new StringBuilder(1024);
 
-                    fileItems = new FileItemCollection(project,
-                        BuildAction.ResourceItems);
+                    fileItems = new FileItemCollection(project, BuildAction.ResourceItems);
 
                     // Files are copied and transformed as they may contain
                     // substitution tags.
                     foreach(FileItem file in fileItems)
                     {
-                        sb.AppendFormat("<content file=\"{0}\" />\r\n",
-                            Path.GetFileName(file.FullPath));
+                        sb.AppendFormat("<content file=\"{0}\" />\r\n", Path.GetFileName(file.FullPath));
 
                         this.TransformTemplate(Path.GetFileName(file.FullPath),
                             Path.GetDirectoryName(file.FullPath), workingFolder);
@@ -840,16 +802,92 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     replaceWith = sb.ToString();
                     break;
 
+                case "helpfileformat":
+                    replaceWith = project.HelpFileFormat.ToString();
+                    break;
+
+                case "helpformatoutputpaths":
+                    sb = new StringBuilder(1024);
+
+                    // Add one entry for each help file format being generated
+                    foreach(string baseFolder in this.HelpFormatOutputFolders)
+                        sb.AppendFormat("<path value=\"{0}\" />", baseFolder.Substring(workingFolder.Length));
+
+                    replaceWith = sb.ToString();
+                    break;
+
+                case "catalogproductid":
+                    replaceWith = project.CatalogProductId;
+                    break;
+
+                case "catalogversion":
+                    replaceWith = project.CatalogVersion;
+                    break;
+
+                case "vendorname":
+                    replaceWith = !String.IsNullOrEmpty(project.VendorName) ? project.VendorName : "Vendor Name";
+                    break;
+
+                case "htmlencvendorname":
+                    replaceWith = !String.IsNullOrEmpty(project.VendorName) ?
+                        HttpUtility.HtmlEncode(project.VendorName) : "Vendor Name";
+                    break;
+
+                case "producttitle":
+                    replaceWith = !String.IsNullOrEmpty(project.ProductTitle) ?
+                        project.ProductTitle : project.HelpTitle;
+                    break;
+
+                case "htmlencproducttitle":
+                    replaceWith = !String.IsNullOrEmpty(project.ProductTitle) ?
+                        HttpUtility.HtmlEncode(project.ProductTitle) : HttpUtility.HtmlEncode(project.HelpTitle);
+                    break;
+
+                case "selfbranded":
+                    replaceWith = project.SelfBranded.ToString().ToLower(CultureInfo.InvariantCulture);
+                    break;
+
+                case "topicversion":
+                    replaceWith = HttpUtility.HtmlEncode(project.TopicVersion);
+                    break;
+
+                case "tocparentid":
+                    replaceWith = HttpUtility.HtmlEncode(project.TocParentId);
+                    break;
+
+                case "tocparentversion":
+                    replaceWith = HttpUtility.HtmlEncode(project.TocParentVersion);
+                    break;
+
+                case "apitocparentid":
+                    // If null, empty or it starts with '*', it's parented to the root node
+                    if(!String.IsNullOrEmpty(this.ApiTocParentId) && this.ApiTocParentId[0] != '*')
+                    {
+                        // Ensure that the ID is valid and visible in the TOC
+                        if(!conceptualContent.Topics.Any(t => t[this.ApiTocParentId] != null &&
+                          t[this.ApiTocParentId].Visible))
+                            throw new BuilderException("BE0022", String.Format(CultureInfo.CurrentCulture,
+                                "The project's ApiTocParent property value '{0}' must be associated with a topic in " +
+                                "your project's conceptual content and must have its Visible property set to True in " +
+                                "the content layout file.", this.ApiTocParentId));
+
+                        replaceWith = HttpUtility.HtmlEncode(this.ApiTocParentId);
+                    }
+                    else
+                        if(!String.IsNullOrEmpty(this.RootContentContainerId))
+                            replaceWith = HttpUtility.HtmlEncode(this.RootContentContainerId);
+                        else
+                            replaceWith = HttpUtility.HtmlEncode(project.TocParentId);
+                    break;
+
                 default:
                     // Try for a property in project
                     var prop = project.MSBuildProject.GetPropertyValue(fieldName);
 
                     // If not there, give up
-                    if(String.IsNullOrEmpty(prop))
-                        throw new BuilderException("BE0020", String.Format(
-                            CultureInfo.CurrentCulture,
-                            "Unknown field tag: '{0}'",
-                            match.Groups["Field"].Value));
+                    if (String.IsNullOrEmpty(prop))
+                        throw new BuilderException("BE0020", String.Format(CultureInfo.CurrentCulture,
+                            "Unknown field tag: '{0}'", match.Groups["Field"].Value));
 
                     replaceWith = prop;
                     break;
@@ -871,10 +909,8 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// English version comments files are used.</param>
         /// <param name="version">The framework version for which to get
         /// comments files.</param>
-        public static void GetFrameworkCommentsFiles(
-          Collection<string> frameworkLocations,
-          Dictionary<string, string> cacheName,
-          CultureInfo language, string version)
+        public static void GetFrameworkCommentsFiles(Collection<string> frameworkLocations,
+          Dictionary<string, string> cacheName, CultureInfo language, string version)
         {
             string folder, langFolder;
 
@@ -916,9 +952,14 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     // 3.0/3.5
                     if(version[0] == '3')
                     {
-                        folder = Environment.ExpandEnvironmentVariables(
-                            @"%ProgramFiles%\Reference Assemblies\" +
-                            @"Microsoft\Framework\v3.0\");
+                        // If running on a 64-bit platform, use the x86 folder as that's where the
+                        // comments files will be.
+                        if(Environment.GetEnvironmentVariable("ProgramFiles(x86)") != null)
+                            folder = Environment.ExpandEnvironmentVariables(@"%ProgramFiles(x86)%\Reference " +
+                                @"Assemblies\Microsoft\Framework\v3.0\");
+                        else
+                            folder = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Reference Assemblies\" +
+                                @"Microsoft\Framework\v3.0\");
 
                         // Check for a language-specific set of comments
                         if(Directory.Exists(folder + language.Name))
@@ -941,9 +982,14 @@ namespace SandcastleBuilder.Utils.BuildEngine
                         // 3.5
                         if(version == "3.5")
                         {
-                            folder = Environment.ExpandEnvironmentVariables(
-                                @"%ProgramFiles%\Reference Assemblies\" +
-                                @"Microsoft\Framework\v3.5\");
+                            // If running on a 64-bit platform, use the x86 folder as that's where the
+                            // comments files will be.
+                            if(Environment.GetEnvironmentVariable("ProgramFiles(x86)") != null)
+                                folder = Environment.ExpandEnvironmentVariables(@"%ProgramFiles(x86)%\Reference " +
+                                    @"Assemblies\Microsoft\Framework\v3.5\");
+                            else
+                                folder = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Reference Assemblies\" +
+                                    @"Microsoft\Framework\v3.5\");
 
                             // Check for a language-specific set of comments
                             if(Directory.Exists(folder + language.Name))
@@ -980,8 +1026,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     }
                     else
                         if(Directory.Exists(folder + language.TwoLetterISOLanguageName) &&
-                          File.Exists(Path.Combine(folder +
-                          language.TwoLetterISOLanguageName, "System.xml")))
+                          File.Exists(Path.Combine(folder + language.TwoLetterISOLanguageName, "System.xml")))
                         {
                             folder += language.TwoLetterISOLanguageName;
                             langFolder = language.TwoLetterISOLanguageName + "_";
@@ -1000,8 +1045,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                         // At least in the 4.0 Beta, there are no XML comments files for
                         // the framework.  If that happens, default to using the .NET 3.5
                         // XML comments files.
-                        GetFrameworkCommentsFiles(frameworkLocations, cacheName,
-                            language, "3.5");
+                        GetFrameworkCommentsFiles(frameworkLocations, cacheName, language, "3.5");
                     }
                     break;
             }
@@ -1035,21 +1079,18 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 switch(listType)
                 {
                     case "importframeworkcommentlist":
-                        sb.AppendFormat(CultureInfo.InvariantCulture,
-                            "<import path=\"{0}\" />\r\n", location);
+                        sb.AppendFormat(CultureInfo.InvariantCulture, "<import path=\"{0}\" />\r\n", location);
                         break;
 
                     case "cachedframeworkcommentlist":
                         // Files are cached by language and version
                         sb.AppendFormat(CultureInfo.InvariantCulture,
-                            "<cache files=\"{0}\" cacheFile=\"" +
-                            "{{@LocalDataFolder}}Cache\\{1}.cache\" />\r\n",
+                            "<cache files=\"{0}\" cacheFile=\"{{@LocalDataFolder}}Cache\\{1}.cache\" />\r\n",
                             fileSpec, cacheName[location]);
                         break;
 
                     default:    // "frameworkcommentlist"
-                        sb.AppendFormat(CultureInfo.InvariantCulture,
-                            "<data files=\"{0}\" />\r\n", fileSpec);
+                        sb.AppendFormat(CultureInfo.InvariantCulture, "<data files=\"{0}\" />\r\n", fileSpec);
                         break;
                 }
             }
@@ -1063,24 +1104,21 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// </summary>
         private void MergeComponentConfigurations()
         {
+            Dictionary<string, XmlNode> outputNodes = new Dictionary<string, XmlNode>();
             BuildComponentInfo info;
             BuildComponentConfiguration projectComp;
             XmlDocument config;
-            XmlNode rootNode, configNode;
-            string configName, help2Id, compConfig;
+            XmlNode rootNode, configNode, clone;
+            XmlNodeList outputFormats;
+            string configName, compConfig;
 
-            this.ReportProgress(BuildStep.MergeCustomConfigs,
-                "Merging custom build component configurations");
+            this.ReportProgress(BuildStep.MergeCustomConfigs, "Merging custom build component configurations");
 
-            // Reset the adjusted instance values to match the configuration
-            // instance values.
-            foreach(BuildComponentInfo component in
-              BuildComponentManager.BuildComponents.Values)
+            // Reset the adjusted instance values to match the configuration instance values
+            foreach(BuildComponentInfo component in BuildComponentManager.BuildComponents.Values)
             {
-                component.ReferenceBuildPosition.AdjustedInstance =
-                    component.ReferenceBuildPosition.Instance;
-                component.ConceptualBuildPosition.AdjustedInstance =
-                    component.ConceptualBuildPosition.Instance;
+                component.ReferenceBuildPosition.AdjustedInstance = component.ReferenceBuildPosition.Instance;
+                component.ConceptualBuildPosition.AdjustedInstance = component.ConceptualBuildPosition.Instance;
             }
 
             if(this.ExecutePlugIns(ExecutionBehaviors.InsteadOf))
@@ -1093,71 +1131,62 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
             config = new XmlDocument();
             config.Load(configName);
-            rootNode = config.SelectSingleNode("configuration/dduetools/" +
-                "builder/components");
+            rootNode = config.SelectSingleNode("configuration/dduetools/builder/components");
             mergeStack = new Stack<string>();
 
             foreach(string id in project.ComponentConfigurations.Keys)
             {
                 projectComp = project.ComponentConfigurations[id];
 
-                if(!BuildComponentManager.BuildComponents.TryGetValue(id,
-                  out info))
-                    throw new BuilderException("BE0021", String.Format(
-                        CultureInfo.InvariantCulture, "The project " +
-                        "contains a reference to a custom build " +
+                if(!BuildComponentManager.BuildComponents.TryGetValue(id, out info))
+                    throw new BuilderException("BE0021", String.Format(CultureInfo.InvariantCulture,
+                        "The project contains a reference to a custom build " +
                         "component '{0}' that could not be found.", id));
 
-                if(info.ReferenceBuildPosition.Place ==
-                  ComponentPosition.Placement.NotUsed)
-                {
-                    this.ReportProgress("    Skipping component '{0}', " +
-                        "not used in reference build", id);
-                    continue;
-                }
-
-                if(projectComp.Enabled)
-                {
-                    configNode = config.CreateDocumentFragment();
-                    compConfig = projectComp.Configuration;
-
-                    // Replace template tags.  They may be nested.
-                    while(reField.IsMatch(compConfig))
-                        compConfig = reField.Replace(compConfig, fieldMatchEval);
-
-                    configNode.InnerXml = compConfig;
-                    this.MergeComponent(id, info, rootNode, configNode, false);
-                }
+                if(info.ReferenceBuildPosition.Place == ComponentPosition.Placement.NotUsed)
+                    this.ReportProgress("    Skipping component '{0}', not used in reference build", id);
                 else
-                    this.ReportProgress("    The configuration for '{0}' is " +
-                        "disabled and will not be used.", id);
+                    if(projectComp.Enabled)
+                    {
+                        compConfig = projectComp.Configuration;
+
+                        // Replace template tags.  They may be nested.
+                        while(reField.IsMatch(compConfig))
+                            compConfig = reField.Replace(compConfig, fieldMatchEval);
+
+                        configNode = config.CreateDocumentFragment();
+                        configNode.InnerXml = compConfig;
+                        outputNodes.Clear();
+
+                        foreach(XmlNode match in configNode.SelectNodes("//helpOutput"))
+                        {
+                            outputNodes.Add(match.Attributes["format"].Value, match);
+                            match.ParentNode.RemoveChild(match);
+                        }
+
+                        // Is it output format specific?
+                        if(outputNodes.Count == 0)
+                        {
+                            // Replace the component in the file
+                            this.MergeComponent(id, info, rootNode, configNode, false);
+                        }
+                        else
+                        {
+                            // Replace the component in each output format node
+                            outputFormats = rootNode.SelectNodes(
+                                "component[@id='Multi-format Output Component']/helpOutput");
+
+                            foreach(XmlNode format in outputFormats)
+                            {
+                                clone = configNode.Clone();
+                                clone.FirstChild.InnerXml = outputNodes[format.Attributes["format"].Value].InnerXml;
+                                this.MergeComponent(id, info, format, clone, false);
+                            }
+                        }
+                    }
+                    else
+                        this.ReportProgress("    The configuration for '{0}' is disabled and will not be used.", id);
             }
-
-            // If there are help attributes to add, merge the
-            // MSHelpAttrComponent configuration too.
-            help2Id = "MS Help 2 Attributes";
-
-            if(project.HelpAttributes.Count != 0)
-            {
-                if(!BuildComponentManager.BuildComponents.TryGetValue(
-                  help2Id, out info))
-                    throw new BuilderException("BE0022", String.Format(
-                        CultureInfo.InvariantCulture, "Unable to locate the " +
-                        "'{0}' build component information", help2Id));
-
-                configNode = config.CreateDocumentFragment();
-                compConfig = info.DefaultConfiguration;
-
-                // Replace template tags.  They may be nested.
-                while(reField.IsMatch(compConfig))
-                    compConfig = reField.Replace(compConfig, fieldMatchEval);
-
-                configNode.InnerXml = compConfig;
-                this.MergeComponent(help2Id, info, rootNode, configNode, false);
-            }
-            else
-                this.ReportProgress("    No additional help attributes " +
-                    "defined.  The '{0}' component was not added.", help2Id);
 
             config.Save(configName);
 
@@ -1169,54 +1198,68 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
                 config = new XmlDocument();
                 config.Load(configName);
-                rootNode = config.SelectSingleNode("configuration/dduetools/" +
-                    "builder/components");
+                rootNode = config.SelectSingleNode("configuration/dduetools/builder/components");
                 mergeStack.Clear();
 
                 foreach(string id in project.ComponentConfigurations.Keys)
                 {
                     projectComp = project.ComponentConfigurations[id];
 
-                    if(!BuildComponentManager.BuildComponents.TryGetValue(id,
-                      out info))
-                        throw new BuilderException("BE0021", String.Format(
-                            CultureInfo.InvariantCulture, "The project " +
-                            "contains a reference to a custom build " +
+                    if(!BuildComponentManager.BuildComponents.TryGetValue(id, out info))
+                        throw new BuilderException("BE0021", String.Format(CultureInfo.InvariantCulture,
+                            "The project contains a reference to a custom build " +
                             "component '{0}' that could not be found.", id));
 
-                    if(info.ConceptualBuildPosition.Place ==
-                      ComponentPosition.Placement.NotUsed)
-                    {
-                        this.ReportProgress("    Skipping component '{0}', " +
-                            "not used in conceptual build", id);
-                        continue;
-                    }
-
-                    if(projectComp.Enabled)
-                    {
-                        configNode = config.CreateDocumentFragment();
-                        compConfig = projectComp.Configuration;
-
-                        // Replace template tags.  They may be nested.
-                        while(reField.IsMatch(compConfig))
-                            compConfig = reField.Replace(compConfig,
-                                fieldMatchEval);
-
-                        configNode.InnerXml = compConfig;
-                        this.MergeComponent(id, info, rootNode, configNode,
-                            false);
-                    }
+                    if(info.ConceptualBuildPosition.Place == ComponentPosition.Placement.NotUsed)
+                        this.ReportProgress("    Skipping component '{0}', not used in conceptual build", id);
                     else
-                        this.ReportProgress("    The configuration for '{0}' " +
-                            "is disabled and will not be used.", id);
+                        if(projectComp.Enabled)
+                        {
+                            compConfig = projectComp.Configuration;
+
+                            // Replace template tags.  They may be nested.
+                            while(reField.IsMatch(compConfig))
+                                compConfig = reField.Replace(compConfig, fieldMatchEval);
+
+                            configNode = config.CreateDocumentFragment();
+                            configNode.InnerXml = compConfig;
+                            outputNodes.Clear();
+
+                            foreach(XmlNode match in configNode.SelectNodes("//helpOutput"))
+                            {
+                                outputNodes.Add(match.Attributes["format"].Value, match);
+                                match.ParentNode.RemoveChild(match);
+                            }
+
+                            // Is it output format specific?
+                            if(outputNodes.Count == 0)
+                            {
+                                // Replace the component in the file
+                                this.MergeComponent(id, info, rootNode, configNode, true);
+                            }
+                            else
+                            {
+                                // Replace the component in each output format node
+                                outputFormats = rootNode.SelectNodes(
+                                    "component[@id='Multi-format Output Component']/helpOutput");
+
+                                foreach(XmlNode format in outputFormats)
+                                {
+                                    clone = configNode.Clone();
+                                    clone.FirstChild.InnerXml = outputNodes[format.Attributes["format"].Value].InnerXml;
+                                    this.MergeComponent(id, info, format, clone, true);
+                                }
+                            }
+                        }
+                        else
+                            this.ReportProgress("    The configuration for '{0}' is disabled and will not be used.", id);
                 }
 
                 // Remove the example component if there are no snippets file
                 if(conceptualContent.CodeSnippetFiles.Count == 0)
                 {
                     this.ReportProgress("    Removing unused ExampleComponent.");
-                    configNode = rootNode.SelectSingleNode("component[" +
-                        "@type = 'Microsoft.Ddue.Tools.ExampleComponent']");
+                    configNode = rootNode.SelectSingleNode("component[@type = 'Microsoft.Ddue.Tools.ExampleComponent']");
 
                     if(configNode != null)
                         configNode.ParentNode.RemoveChild(configNode);
@@ -1240,8 +1283,8 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// <param name="isConceptualConfig">True if this is a conceptual
         /// content configuration file or false if it is a reference build
         /// configuration file.</param>
-        private void MergeComponent(string id, BuildComponentInfo info,
-          XmlNode rootNode, XmlNode configNode, bool isConceptualConfig)
+        private void MergeComponent(string id, BuildComponentInfo info, XmlNode rootNode, XmlNode configNode,
+          bool isConceptualConfig)
         {
             BuildComponentInfo depInfo;
             ComponentPosition position;
@@ -1253,8 +1296,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
             if(info.Dependencies.Count != 0)
                 foreach(string dependency in info.Dependencies)
                 {
-                    node = rootNode.SelectSingleNode("component[@id='" +
-                        dependency + "']");
+                    node = rootNode.SelectSingleNode("component[@id='" + dependency + "']");
 
                     // If it's already there or would create a circular
                     // dependency, ignore it.
@@ -1262,8 +1304,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                         continue;
 
                     // Add the dependency with a default configuration
-                    if(!BuildComponentManager.BuildComponents.TryGetValue(
-                      dependency, out depInfo))
+                    if(!BuildComponentManager.BuildComponents.TryGetValue(dependency, out depInfo))
                         throw new BuilderException("BE0023", String.Format(
                             CultureInfo.InvariantCulture, "The project contains " +
                             "a reference to a custom build component '{0}' that " +
@@ -1271,33 +1312,27 @@ namespace SandcastleBuilder.Utils.BuildEngine
                             id, dependency));
 
                     node = rootNode.OwnerDocument.CreateDocumentFragment();
-                    node.InnerXml = reField.Replace(depInfo.DefaultConfiguration,
-                        fieldMatchEval);
+                    node.InnerXml = reField.Replace(depInfo.DefaultConfiguration, fieldMatchEval);
 
-                    this.ReportProgress("    Merging '{0}' dependency for " +
-                        "'{1}'", dependency, id);
+                    this.ReportProgress("    Merging '{0}' dependency for '{1}'", dependency, id);
 
                     mergeStack.Push(dependency);
-                    this.MergeComponent(dependency, depInfo, rootNode, node,
-                        isConceptualConfig);
+                    this.MergeComponent(dependency, depInfo, rootNode, node, isConceptualConfig);
                     mergeStack.Pop();
                 }
 
-            position = (!isConceptualConfig) ? info.ReferenceBuildPosition :
-                info.ConceptualBuildPosition;
+            position = (!isConceptualConfig) ? info.ReferenceBuildPosition : info.ConceptualBuildPosition;
 
             // Find all matching components by ID or type name
             if(!String.IsNullOrEmpty(position.Id))
             {
                 replaceId = position.Id;
-                matchingNodes = rootNode.SelectNodes("component[@id='" +
-                    replaceId + "']");
+                matchingNodes = rootNode.SelectNodes("component[@id='" + replaceId + "']");
             }
             else
             {
                 replaceId = position.TypeName;
-                matchingNodes = rootNode.SelectNodes("component[@type='" +
-                    replaceId + "']");
+                matchingNodes = rootNode.SelectNodes("component[@type='" + replaceId + "']");
             }
 
             // If replacing another component, search for that by ID or
@@ -1306,29 +1341,23 @@ namespace SandcastleBuilder.Utils.BuildEngine
             {
                 if(matchingNodes.Count < position.AdjustedInstance)
                 {
-                    this.ReportProgress("    Could not find configuration " +
-                        "'{0}' (instance {1}) to replace with configuration " +
-                        "for '{2}' so it will be omitted.", replaceId,
-                        position.AdjustedInstance, id);
+                    this.ReportProgress("    Could not find configuration '{0}' (instance {1}) to replace with " +
+                        "configuration for '{2}' so it will be omitted.", replaceId, position.AdjustedInstance, id);
 
                     // If it's a dependency, that's a problem
                     if(mergeStack.Count != 0)
-                        throw new BuilderException("BE0024", "Unable to add " +
-                            "dependent configuration: " + id);
+                        throw new BuilderException("BE0024", "Unable to add dependent configuration: " + id);
 
                     return;
                 }
 
-                rootNode.ReplaceChild(configNode,
-                    matchingNodes[position.AdjustedInstance - 1]);
+                rootNode.ReplaceChild(configNode, matchingNodes[position.AdjustedInstance - 1]);
 
-                this.ReportProgress("    Replaced configuration for '{0}' " +
-                    "(instance {1}) with configuration for '{2}'", replaceId,
-                    position.AdjustedInstance, id);
+                this.ReportProgress("    Replaced configuration for '{0}' (instance {1}) with configuration " +
+                    "for '{2}'", replaceId, position.AdjustedInstance, id);
 
                 // Adjust instance values on matching components
-                foreach(BuildComponentInfo component in
-                  BuildComponentManager.BuildComponents.Values)
+                foreach(BuildComponentInfo component in BuildComponentManager.BuildComponents.Values)
                   if(!isConceptualConfig)
                   {
                     if(((!String.IsNullOrEmpty(component.ReferenceBuildPosition.Id) &&
@@ -1357,8 +1386,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
             if(node != null)
             {
-                this.ReportProgress("    Replacing default configuration " +
-                    "for '{0}' with the custom configuration", id);
+                this.ReportProgress("    Replacing default configuration for '{0}' with the custom configuration", id);
                 rootNode.ReplaceChild(configNode, node);
                 return;
             }
@@ -1368,46 +1396,36 @@ namespace SandcastleBuilder.Utils.BuildEngine
             {
                 case ComponentPosition.Placement.Start:
                     rootNode.InsertBefore(configNode, rootNode.ChildNodes[0]);
-                    this.ReportProgress("    Added configuration for '{0}' " +
-                        "to the start of the configuration file", id);
+                    this.ReportProgress("    Added configuration for '{0}' to the start of the configuration file", id);
                     break;
 
                 case ComponentPosition.Placement.End:
                     rootNode.InsertAfter(configNode,
                         rootNode.ChildNodes[rootNode.ChildNodes.Count - 1]);
-                    this.ReportProgress("    Added configuration for '{0}' " +
-                        "to the end of the configuration file", id);
+                    this.ReportProgress("    Added configuration for '{0}' to the end of the configuration file", id);
                     break;
 
                 case ComponentPosition.Placement.Before:
                     if(matchingNodes.Count < position.AdjustedInstance)
-                        this.ReportProgress("    Could not find configuration " +
-                            "'{0}' (instance {1}) to add configuration " +
-                            "for '{2}' so it will be omitted.", replaceId,
-                            position.AdjustedInstance, id);
+                        this.ReportProgress("    Could not find configuration '{0}' (instance {1}) to add " +
+                            "configuration for '{2}' so it will be omitted.", replaceId, position.AdjustedInstance, id);
                     else
                     {
-                        rootNode.InsertBefore(configNode,
-                            matchingNodes[position.AdjustedInstance - 1]);
-                        this.ReportProgress("    Added configuration for '{0}' " +
-                            "before '{1}' (instance {2})", id, replaceId,
-                            position.AdjustedInstance);
+                        rootNode.InsertBefore(configNode, matchingNodes[position.AdjustedInstance - 1]);
+                        this.ReportProgress("    Added configuration for '{0}' before '{1}' (instance {2})",
+                            id, replaceId, position.AdjustedInstance);
                     }
                     break;
 
                 default:    // After
                     if(matchingNodes.Count < position.AdjustedInstance)
-                        this.ReportProgress("    Could not find configuration " +
-                            "'{0}' (instance {1}) to add configuration " +
-                            "for '{2}' so it will be omitted.", replaceId,
-                            position.AdjustedInstance, id);
+                        this.ReportProgress("    Could not find configuration '{0}' (instance {1}) to add " +
+                            "configuration for '{2}' so it will be omitted.", replaceId, position.AdjustedInstance, id);
                     else
                     {
-                        rootNode.InsertAfter(configNode,
-                            matchingNodes[position.AdjustedInstance - 1]);
-                        this.ReportProgress("    Added configuration for '{0}' " +
-                            "after '{1}' (instance {2})", id, replaceId,
-                            position.AdjustedInstance);
+                        rootNode.InsertAfter(configNode, matchingNodes[position.AdjustedInstance - 1]);
+                        this.ReportProgress("    Added configuration for '{0}' after '{1}' (instance {2})",
+                            id, replaceId, position.AdjustedInstance);
                     }
                     break;
             }

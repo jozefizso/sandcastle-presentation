@@ -129,6 +129,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SandcastleBuilderUtils\Properties\AssemblyInfoShared.cs">
+      <Link>Properties\AssemblyInfoShared.cs</Link>
+    </Compile>
     <Compile Include="OptionInfo.cs" />
     <Compile Include="SandcastleHtmlExtract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

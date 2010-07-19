@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : ConvertFromSandcastleGui.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 11/10/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 06/20/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a class used to convert project files created by Stephan
@@ -136,9 +136,12 @@ namespace SandcastleBuilder.Utils.Conversion
                                 break;
 
                             case "msdnlinks":
-                                if(String.Compare(value, "false",
-                                  StringComparison.OrdinalIgnoreCase) == 0)
-                                    project.SdkLinkType = SdkLinkType.None;
+                                if(String.Compare(value, "false", StringComparison.OrdinalIgnoreCase) == 0)
+                                {
+                                    project.HtmlSdkLinkType = project.WebsiteSdkLinkType = HtmlSdkLinkType.None;
+                                    project.MSHelp2SdkLinkType = MSHelp2SdkLinkType.Index;
+                                    project.MSHelpViewerSdkLinkType = MSHelpViewerSdkLinkType.Id;
+                                }
                                 break;
 
                             case "outputtype":

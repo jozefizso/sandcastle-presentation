@@ -33,8 +33,6 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-using Microsoft.Build.BuildEngine;
-
 namespace SandcastleBuilder.Utils
 {
     /// <summary>

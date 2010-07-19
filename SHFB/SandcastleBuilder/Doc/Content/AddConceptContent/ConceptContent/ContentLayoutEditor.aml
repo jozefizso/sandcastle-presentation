@@ -64,19 +64,33 @@ right clicking within the tree control.  The commands (from left to right)
 and their associated context menu options perform the following actions:</para>
 
 <definitionTable>
-  <definedTerm>Mark as Default Topic</definedTerm>
-  <definition>This will mark the selected topic as the default topic for the
+  <definedTerm>Toggle Default Topic</definedTerm>
+  <definition><para>This will mark the selected topic as the default topic for the
 help file.  The default topic option acts as a toggle.  Click it once on a
 topic to set it as the default.  Clicking it again on the same topic turns it
 off and no topic will be selected as the default topic.  In such cases, the
-root namespaces page will be the default topic for the help file.</definition>
+root namespaces page will be the default topic for the help file.</para>
 
-  <definedTerm>Split Table of Contents</definedTerm>
-  <definition>This is used to indicate that the table of contents should be
-split by the API content.  It is only valid on table of contents entries that
-appear at the root level.  All table of contents entries prior to the entry with
-this marker will appear before the API content.  The entry with the marker and
-all entries following it will appear after the API content.</definition>
+<alert class="note">
+  <para>This option only has an effect on Help 1, Help 2, and Website output.
+MS Help Viewer does not support the specification of a default page.</para>
+</alert>
+
+</definition>
+
+  <definedTerm>Set API Insertion Point</definedTerm>
+  <definition><para>This is used to indicate that the API (reference) content for the
+help file should be inserted relative to the selected topic.  The following options
+are available:</para>
+
+<list class="bullet">
+  <listItem>Insert the API content after the selected topic.  This is the default action
+if you click the toolbar button.</listItem>
+  <listItem>Insert the API content before the selected topic.</listItem>
+  <listItem>Insert the API content as a child of the selected topic.  The API content
+topics are added as sub-topics of the selected topic.  If the selected topic already
+contains sub-topics, the API topics will appear after them.</listItem>
+</list></definition>
 
   <definedTerm>Move Up</definedTerm>
   <definition>This will move the selected topic up in the order of topics at
@@ -139,6 +153,24 @@ tree will also open it for editing.</definition>
 options:</para>
 
 <definitionTable>
+  <definedTerm>Toggle MS Help Viewer Root Container</definedTerm>
+  <definition>This option is useful if you are generating multiple help file formats
+from one project file including MS Help Viewer output.  By default, all topics in
+the MS Help Viewer output are listed as root elements in their parent topic.  If you
+would prefer them to be grouped under a common root container topic, add a topic
+to the content layout file and use this option to mark it as the root container.
+The root container must have its <codeInline>Visible</codeInline> property set to
+False so that it is not included in the table of contents.  This prevents it from
+appearing in the other help file formats.  It will be added automatically to the
+MS Help Viewer output when that format is built.  If you want a root container to
+appear in all formats, simply add it as a normal topic in the content layout file
+and manually add all of the other topics to it as sub-topics.  This option acts
+as a toggle.  If not set, it is enabled on the topic.  If already enabled, it is
+turned off.  Note that turning it off will not make the topic visible.  If you
+want it to be visible after turning the option off, you must change the <codeInline>Visible</codeInline>
+property manually.  For more information, see the <link xlink:href="ba42b2c2-985d-46f1-ba4c-3d921edcafe3" />
+topic.</definition>
+
   <definedTerm>Associate Topic File</definedTerm>
   <definition>The layout file tracks topics by their unique ID rather than by
 filename.  This option allows you to associate a different topic file with a
@@ -206,6 +238,11 @@ files in the content layout file.  If you choose to include HTML files, there
 are some conditions to be aware of and some requirements to be met:</para>
 
 <list class="bullet">
+	<listItem>Including HTML files in a content layout file used for MS Help
+Viewer output is unsupported.  While you may be able to include the necessary
+metadata manually, the help file builder will be unable to use it.  Content for
+MS Help Viewer output should be limited to MAML content files only.</listItem>
+
 	<listItem>Each HTML topic included in a content layout file must have two
 <codeInline>meta</codeInline> elements in the <codeInline>head</codeInline>
 section that define the file's unique ID and revision number.  For example:

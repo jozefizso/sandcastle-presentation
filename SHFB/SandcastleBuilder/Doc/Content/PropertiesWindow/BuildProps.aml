@@ -118,7 +118,7 @@ large help files.</listItem>
 
     <listItem><localUri>TOC.css</localUri> - This is the style sheet used for
 the index pages.</listItem>
-    
+
     <listItem><localUri>TOC.js</localUri> - This JavaScript file is used by
 the index pages.  It contains the code used to implement a basic tree view
 with collapsible and expandable nodes, a splitter bar, and Ajax calls to load
@@ -128,6 +128,11 @@ child table of contents nodes dynamically and perform keyword searches.</listIte
 contain the table of contents information.  This file is generated during the
 build and will contain the same entries as the help file's table of contents in
 a matching layout.</listItem>
+
+    <listItem><localUri>favicon.ico</localUri> - This is used as the Favorites
+icon for the help website.  You can override it with your own icon by
+including a file called <localUri>favicon.ico</localUri> in the root folder of
+your project.</listItem>
 
     <listItem><localUri>*.gif, *.png, *.bmp</localUri> - Several image files
 are copied that represent the collapsed, expanded, and item nodes in the table

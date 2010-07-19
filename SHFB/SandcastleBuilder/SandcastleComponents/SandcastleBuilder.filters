@@ -47,12 +47,8 @@
   </filter>
 
   <filter id="FSharp" sortOrder="50" alternateNames="fs, f#, fsscript">
-    <!-- generator type="Microsoft.Ddue.Tools.FSharpDeclarationSyntaxGenerator"
-      assembly="{@SandcastlePath}ProductionTools\SyntaxComponents.dll" / -->
-    <!-- This is temporarily being distributed with SHFB since it is only
-         in the July 2009 source code release of Sandcastle. -->
-    <generator type="SandcastleBuilder.Components.FSharpDeclarationSyntaxGenerator"
-      assembly="{@SHFBFolder}SandcastleBuilder.Components.dll" />
+    <generator type="Microsoft.Ddue.Tools.FSharpDeclarationSyntaxGenerator"
+      assembly="{@SandcastlePath}ProductionTools\SyntaxComponents.dll" />
     <language label="FSharp" name="FSharp" style="fs" />
   </filter>
 

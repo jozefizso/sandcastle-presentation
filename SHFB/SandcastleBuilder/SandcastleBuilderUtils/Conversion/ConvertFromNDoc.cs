@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : ConvertFromNDoc.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 11/10/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 06/20/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a class used to convert NDoc 1.x project files to the
@@ -432,9 +432,17 @@ namespace SandcastleBuilder.Utils.Conversion
 
                             case "SdkLinksOnWeb":
                                 if(child.GetAttribute("value", String.Empty) == "True")
-                                    project.SdkLinkType = SdkLinkType.Msdn;
+                                {
+                                    project.HtmlSdkLinkType = project.WebsiteSdkLinkType = HtmlSdkLinkType.Msdn;
+                                    project.MSHelp2SdkLinkType = MSHelp2SdkLinkType.Msdn;
+                                    project.MSHelpViewerSdkLinkType = MSHelpViewerSdkLinkType.Msdn;
+                                }
                                 else
-                                    project.SdkLinkType = SdkLinkType.None;
+                                {
+                                    project.HtmlSdkLinkType = project.WebsiteSdkLinkType = HtmlSdkLinkType.None;
+                                    project.MSHelp2SdkLinkType = MSHelp2SdkLinkType.Index;
+                                    project.MSHelpViewerSdkLinkType = MSHelpViewerSdkLinkType.Id;
+                                }
                                 break;
 
                             default:

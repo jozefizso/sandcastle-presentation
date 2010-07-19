@@ -2,12 +2,12 @@
 // System  : Sandcastle Help File Builder MSBuild Tasks
 // File    : BuildHelpViewerFile.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 10/27/2009
-// Note    : Copyright 2009, Eric Woodruff, All rights reserved
+// Updated : 06/19/2010
+// Note    : Copyright 2009-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the MSBuild task used to compress the help content into
-// a Microsoft Help Container (a ZIP file with a .MSHC extension).
+// a Microsoft Help Container (a ZIP file with a .mshc extension).
 //
 // This code is published under the Microsoft Public License (Ms-PL).  A copy
 // of the license should be distributed with the code.  It can also be found
@@ -32,7 +32,7 @@ namespace SandcastleBuilder.Utils.MSBuild
 {
     /// <summary>
     /// This task is used to compress the help content into a Microsoft Help
-    /// Container (a ZIP file with a .MSHC extension).
+    /// Container (a ZIP file with a .mshc extension).
     /// </summary>
     public class BuildHelpViewerFile : Task
     {
@@ -97,9 +97,8 @@ namespace SandcastleBuilder.Utils.MSBuild
                 // relative to the root.
                 zip.AddDirectory(this.WorkingFolder, null);
 
-                // Save it to the output folder with a .MSHC extension
-                zip.Save(Path.Combine(this.OutputFolder, this.HtmlHelpName) +
-                    ".mshc");
+                // Save it to the output folder with a .mshc extension
+                zip.Save(Path.Combine(this.OutputFolder, this.HtmlHelpName) + ".mshc");
             }
 
             return true;

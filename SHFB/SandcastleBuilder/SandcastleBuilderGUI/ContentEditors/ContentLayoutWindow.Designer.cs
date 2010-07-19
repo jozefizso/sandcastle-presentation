@@ -35,7 +35,12 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.miPasteAsChild = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsTopics = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.miDefaultTopic = new System.Windows.Forms.ToolStripMenuItem();
-            this.miSplitToc = new System.Windows.Forms.ToolStripMenuItem();
+            this.miMarkAsMSHVRoot = new System.Windows.Forms.ToolStripMenuItem();
+            this.miApiContent = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCtxInsertApiAfter = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCtxInsertApiBefore = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCtxInsertApiAsChild = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCtxClearInsertionPoint = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.miMoveUp = new System.Windows.Forms.ToolStripMenuItem();
             this.miMoveDown = new System.Windows.Forms.ToolStripMenuItem();
@@ -59,9 +64,9 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
             this.miAddEmptyChild = new System.Windows.Forms.ToolStripMenuItem();
-            this.tsbAddChildTopic = new System.Windows.Forms.ToolStripSplitButton();
             this.miAssociateTopic = new System.Windows.Forms.ToolStripMenuItem();
             this.miClearTopic = new System.Windows.Forms.ToolStripMenuItem();
+            this.miRefreshAssociations = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
             this.miDelete = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem7 = new System.Windows.Forms.ToolStripSeparator();
@@ -73,10 +78,14 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.miSortTopics = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.miHelp = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsbAddChildTopic = new System.Windows.Forms.ToolStripSplitButton();
             this.pgProps = new SandcastleBuilder.Utils.Controls.CustomPropertyGrid();
             this.tsTopics = new System.Windows.Forms.ToolStrip();
-            this.tsbDefaultTopic = new System.Windows.Forms.ToolStripButton();
-            this.tsbSplitTOC = new System.Windows.Forms.ToolStripButton();
+            this.tsbApiInsertionPoint = new System.Windows.Forms.ToolStripSplitButton();
+            this.miInsertApiAfter = new System.Windows.Forms.ToolStripMenuItem();
+            this.miInsertApiBefore = new System.Windows.Forms.ToolStripMenuItem();
+            this.miInsertApiAsChild = new System.Windows.Forms.ToolStripMenuItem();
+            this.miClearApiInsertionPoint = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.tsbMoveUp = new System.Windows.Forms.ToolStripButton();
             this.tsbMoveDown = new System.Windows.Forms.ToolStripButton();
@@ -96,7 +105,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.txtFindId = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.miRefreshAssociations = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsbDefaultTopic = new System.Windows.Forms.ToolStripButton();
             this.cmsTopics.SuspendLayout();
             this.cmsNewSiblingTopic.SuspendLayout();
             this.cmsNewChildTopic.SuspendLayout();
@@ -143,13 +152,18 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.ilImages.Images.SetKeyName(7, "Copy.bmp");
             this.ilImages.Images.SetKeyName(8, "Paste.bmp");
             this.ilImages.Images.SetKeyName(9, "Delete.bmp");
-            this.ilImages.Images.SetKeyName(10, "SplitTOC.bmp");
-            this.ilImages.Images.SetKeyName(11, "DefaultAndSplit.bmp");
+            this.ilImages.Images.SetKeyName(10, "InsertApiAfter.bmp");
+            this.ilImages.Images.SetKeyName(11, "InsertApiBefore.bmp");
+            this.ilImages.Images.SetKeyName(12, "InsertApiAsChild.bmp");
+            this.ilImages.Images.SetKeyName(13, "DefaultApiAfter.bmp");
+            this.ilImages.Images.SetKeyName(14, "DefaultApiBefore.bmp");
+            this.ilImages.Images.SetKeyName(15, "DefaultApiAsChild.bmp");
+            this.ilImages.Images.SetKeyName(16, "RootContentContainer.bmp");
             // 
             // miPasteAsChild
             // 
             this.miPasteAsChild.Name = "miPasteAsChild";
-            this.miPasteAsChild.Size = new System.Drawing.Size(232, 26);
+            this.miPasteAsChild.Size = new System.Drawing.Size(326, 26);
             this.sbStatusBarText.SetStatusBarText(this.miPasteAsChild, "Paste the topic in the clipboard as a sibling of the selected item");
             this.miPasteAsChild.Text = "&Paste as Child";
             this.miPasteAsChild.Click += new System.EventHandler(this.tsbPaste_ButtonClick);
@@ -159,7 +173,8 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.cmsTopics.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F);
             this.cmsTopics.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miDefaultTopic,
-            this.miSplitToc,
+            this.miMarkAsMSHVRoot,
+            this.miApiContent,
             this.toolStripMenuItem1,
             this.miMoveUp,
             this.miMoveDown,
@@ -182,7 +197,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.toolStripSeparator11,
             this.miHelp});
             this.cmsTopics.Name = "ctxTasks";
-            this.cmsTopics.Size = new System.Drawing.Size(233, 504);
+            this.cmsTopics.Size = new System.Drawing.Size(327, 508);
             // 
             // miDefaultTopic
             // 
@@ -190,27 +205,79 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.miDefaultTopic.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.miDefaultTopic.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.miDefaultTopic.Name = "miDefaultTopic";
-            this.miDefaultTopic.Size = new System.Drawing.Size(232, 26);
+            this.miDefaultTopic.Size = new System.Drawing.Size(326, 26);
             this.sbStatusBarText.SetStatusBarText(this.miDefaultTopic, "Mark the selected topic as the default topic");
-            this.miDefaultTopic.Text = "Mark as De&fault Topic";
+            this.miDefaultTopic.Text = "Toggle De&fault Topic";
             this.miDefaultTopic.Click += new System.EventHandler(this.tsbDefaultTopic_Click);
             // 
-            // miSplitToc
+            // miMarkAsMSHVRoot
             // 
-            this.miSplitToc.Image = global::SandcastleBuilder.Gui.Properties.Resources.SplitTOC;
-            this.miSplitToc.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.miSplitToc.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.miSplitToc.Name = "miSplitToc";
-            this.miSplitToc.Size = new System.Drawing.Size(232, 26);
-            this.sbStatusBarText.SetStatusBarText(this.miSplitToc, "Split the table of contents so that API content appears immediately before the sel" +
-                    "ected topic");
-            this.miSplitToc.Text = "Split Ta&ble of Content";
-            this.miSplitToc.Click += new System.EventHandler(this.tsbSplitTOC_Click);
+            this.miMarkAsMSHVRoot.Image = global::SandcastleBuilder.Gui.Properties.Resources.RootContentContainer;
+            this.miMarkAsMSHVRoot.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.miMarkAsMSHVRoot.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.miMarkAsMSHVRoot.Name = "miMarkAsMSHVRoot";
+            this.miMarkAsMSHVRoot.Size = new System.Drawing.Size(326, 26);
+            this.sbStatusBarText.SetStatusBarText(this.miMarkAsMSHVRoot, "Mark the selected topic as the root content container for MS Help Viewer output");
+            this.miMarkAsMSHVRoot.Text = "Toggle MS Help Viewer Root Container";
+            this.miMarkAsMSHVRoot.Click += new System.EventHandler(this.miMarkAsMSHVRoot_Click);
+            // 
+            // miApiContent
+            // 
+            this.miApiContent.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miCtxInsertApiAfter,
+            this.miCtxInsertApiBefore,
+            this.miCtxInsertApiAsChild,
+            this.miCtxClearInsertionPoint});
+            this.miApiContent.Name = "miApiContent";
+            this.miApiContent.Size = new System.Drawing.Size(326, 26);
+            this.sbStatusBarText.SetStatusBarText(this.miApiContent, "Specify how the API content is inserted relative to the selected topic");
+            this.miApiContent.Text = "API Content Insertion Point";
+            // 
+            // miCtxInsertApiAfter
+            // 
+            this.miCtxInsertApiAfter.Image = global::SandcastleBuilder.Gui.Properties.Resources.InsertApiAfter;
+            this.miCtxInsertApiAfter.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.miCtxInsertApiAfter.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.miCtxInsertApiAfter.Name = "miCtxInsertApiAfter";
+            this.miCtxInsertApiAfter.Size = new System.Drawing.Size(358, 22);
+            this.sbStatusBarText.SetStatusBarText(this.miCtxInsertApiAfter, "Insert the API content after the selected topic");
+            this.miCtxInsertApiAfter.Text = "Insert API content &after selected topic";
+            this.miCtxInsertApiAfter.Click += new System.EventHandler(this.ApiInsertionPoint_Click);
+            // 
+            // miCtxInsertApiBefore
+            // 
+            this.miCtxInsertApiBefore.Image = global::SandcastleBuilder.Gui.Properties.Resources.InsertApiBefore;
+            this.miCtxInsertApiBefore.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.miCtxInsertApiBefore.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.miCtxInsertApiBefore.Name = "miCtxInsertApiBefore";
+            this.miCtxInsertApiBefore.Size = new System.Drawing.Size(358, 22);
+            this.sbStatusBarText.SetStatusBarText(this.miCtxInsertApiBefore, "Insert the API content before the selected topic");
+            this.miCtxInsertApiBefore.Text = "Insert API content &before selected topic";
+            this.miCtxInsertApiBefore.Click += new System.EventHandler(this.ApiInsertionPoint_Click);
+            // 
+            // miCtxInsertApiAsChild
+            // 
+            this.miCtxInsertApiAsChild.Image = global::SandcastleBuilder.Gui.Properties.Resources.InsertApiAsChild;
+            this.miCtxInsertApiAsChild.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.miCtxInsertApiAsChild.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.miCtxInsertApiAsChild.Name = "miCtxInsertApiAsChild";
+            this.miCtxInsertApiAsChild.Size = new System.Drawing.Size(358, 22);
+            this.sbStatusBarText.SetStatusBarText(this.miCtxInsertApiAsChild, "Insert the API content as a child of the selected topic");
+            this.miCtxInsertApiAsChild.Text = "Insert API content as a &child of selected topic";
+            this.miCtxInsertApiAsChild.Click += new System.EventHandler(this.ApiInsertionPoint_Click);
+            // 
+            // miCtxClearInsertionPoint
+            // 
+            this.miCtxClearInsertionPoint.Name = "miCtxClearInsertionPoint";
+            this.miCtxClearInsertionPoint.Size = new System.Drawing.Size(358, 22);
+            this.sbStatusBarText.SetStatusBarText(this.miCtxClearInsertionPoint, "Clear the API insertion point");
+            this.miCtxClearInsertionPoint.Text = "Clear the API &insertion point";
+            this.miCtxClearInsertionPoint.Click += new System.EventHandler(this.ApiInsertionPoint_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(229, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(323, 6);
             // 
             // miMoveUp
             // 
@@ -218,7 +285,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.miMoveUp.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.miMoveUp.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.miMoveUp.Name = "miMoveUp";
-            this.miMoveUp.Size = new System.Drawing.Size(232, 26);
+            this.miMoveUp.Size = new System.Drawing.Size(326, 26);
             this.sbStatusBarText.SetStatusBarText(this.miMoveUp, "Move the selected topic up within its group");
             this.miMoveUp.Text = "Move &Up";
             this.miMoveUp.Click += new System.EventHandler(this.tsbMoveItem_Click);
@@ -229,7 +296,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.miMoveDown.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.miMoveDown.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.miMoveDown.Name = "miMoveDown";
-            this.miMoveDown.Size = new System.Drawing.Size(232, 26);
+            this.miMoveDown.Size = new System.Drawing.Size(326, 26);
             this.sbStatusBarText.SetStatusBarText(this.miMoveDown, "Move the selected topic down within its group");
             this.miMoveDown.Text = "Move Do&wn";
             this.miMoveDown.Click += new System.EventHandler(this.tsbMoveItem_Click);
@@ -237,7 +304,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             // toolStripMenuItem9
             // 
             this.toolStripMenuItem9.Name = "toolStripMenuItem9";
-            this.toolStripMenuItem9.Size = new System.Drawing.Size(229, 6);
+            this.toolStripMenuItem9.Size = new System.Drawing.Size(323, 6);
             // 
             // miAddSibling
             // 
@@ -246,7 +313,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.miAddSibling.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.miAddSibling.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.miAddSibling.Name = "miAddSibling";
-            this.miAddSibling.Size = new System.Drawing.Size(232, 26);
+            this.miAddSibling.Size = new System.Drawing.Size(326, 26);
             this.sbStatusBarText.SetStatusBarText(this.miAddSibling, "Add a new topic as a sibling of the selected item");
             this.miAddSibling.Text = "&Add Sibling Topic";
             // 
@@ -262,31 +329,31 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.miAddEmptySibling});
             this.cmsNewSiblingTopic.Name = "cmsNewTopic";
             this.cmsNewSiblingTopic.OwnerItem = this.miAddSibling;
-            this.cmsNewSiblingTopic.Size = new System.Drawing.Size(269, 126);
+            this.cmsNewSiblingTopic.Size = new System.Drawing.Size(262, 136);
             // 
             // miStandardSibling
             // 
             this.miStandardSibling.Name = "miStandardSibling";
-            this.miStandardSibling.Size = new System.Drawing.Size(268, 22);
+            this.miStandardSibling.Size = new System.Drawing.Size(261, 24);
             this.sbStatusBarText.SetStatusBarText(this.miStandardSibling, "Select a standard template");
             this.miStandardSibling.Text = "Standard Templates";
             // 
             // miCustomSibling
             // 
             this.miCustomSibling.Name = "miCustomSibling";
-            this.miCustomSibling.Size = new System.Drawing.Size(268, 22);
+            this.miCustomSibling.Size = new System.Drawing.Size(261, 24);
             this.sbStatusBarText.SetStatusBarText(this.miCustomSibling, "Select a custom template");
             this.miCustomSibling.Text = "Custom Templates";
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(265, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(258, 6);
             // 
             // addExistingTopicFileToolStripMenuItem
             // 
             this.addExistingTopicFileToolStripMenuItem.Name = "addExistingTopicFileToolStripMenuItem";
-            this.addExistingTopicFileToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
+            this.addExistingTopicFileToolStripMenuItem.Size = new System.Drawing.Size(261, 24);
             this.sbStatusBarText.SetStatusBarText(this.addExistingTopicFileToolStripMenuItem, "Add an existing topic file");
             this.addExistingTopicFileToolStripMenuItem.Text = "&Add Existing Topic File...";
             this.addExistingTopicFileToolStripMenuItem.Click += new System.EventHandler(this.AddExistingTopicFile_Click);
@@ -294,7 +361,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             // addAllTopicsInFolderToolStripMenuItem
             // 
             this.addAllTopicsInFolderToolStripMenuItem.Name = "addAllTopicsInFolderToolStripMenuItem";
-            this.addAllTopicsInFolderToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
+            this.addAllTopicsInFolderToolStripMenuItem.Size = new System.Drawing.Size(261, 24);
             this.sbStatusBarText.SetStatusBarText(this.addAllTopicsInFolderToolStripMenuItem, "Add all topics found in a folder and its subfolders");
             this.addAllTopicsInFolderToolStripMenuItem.Text = "Add All Topics in &Folder...";
             this.addAllTopicsInFolderToolStripMenuItem.Click += new System.EventHandler(this.AddAllTopicsInFolder_Click);
@@ -302,7 +369,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(265, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(258, 6);
             // 
             // miAddEmptySibling
             // 
@@ -310,7 +377,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.miAddEmptySibling.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.miAddEmptySibling.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.miAddEmptySibling.Name = "miAddEmptySibling";
-            this.miAddEmptySibling.Size = new System.Drawing.Size(268, 22);
+            this.miAddEmptySibling.Size = new System.Drawing.Size(261, 24);
             this.sbStatusBarText.SetStatusBarText(this.miAddEmptySibling, "Add a container not associated with a topic file");
             this.miAddEmptySibling.Text = "Add &Empty Container Node";
             this.miAddEmptySibling.Click += new System.EventHandler(this.tsbAddTopic_ButtonClick);
@@ -335,7 +402,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.miAddChild.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.miAddChild.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.miAddChild.Name = "miAddChild";
-            this.miAddChild.Size = new System.Drawing.Size(232, 26);
+            this.miAddChild.Size = new System.Drawing.Size(326, 26);
             this.sbStatusBarText.SetStatusBarText(this.miAddChild, "Add a topic as a child of the selected topic");
             this.miAddChild.Text = "Add C&hild Topic";
             // 
@@ -350,32 +417,32 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.toolStripSeparator8,
             this.miAddEmptyChild});
             this.cmsNewChildTopic.Name = "cmsNewTopic";
-            this.cmsNewChildTopic.OwnerItem = this.miAddChild;
-            this.cmsNewChildTopic.Size = new System.Drawing.Size(269, 126);
+            this.cmsNewChildTopic.OwnerItem = this.tsbAddChildTopic;
+            this.cmsNewChildTopic.Size = new System.Drawing.Size(262, 136);
             // 
             // miStandardChild
             // 
             this.miStandardChild.Name = "miStandardChild";
-            this.miStandardChild.Size = new System.Drawing.Size(268, 22);
+            this.miStandardChild.Size = new System.Drawing.Size(261, 24);
             this.sbStatusBarText.SetStatusBarText(this.miStandardChild, "Select a standard template");
             this.miStandardChild.Text = "Standard Templates";
             // 
             // miCustomChild
             // 
             this.miCustomChild.Name = "miCustomChild";
-            this.miCustomChild.Size = new System.Drawing.Size(268, 22);
+            this.miCustomChild.Size = new System.Drawing.Size(261, 24);
             this.sbStatusBarText.SetStatusBarText(this.miCustomChild, "Select a custom template");
             this.miCustomChild.Text = "Custom Templates";
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(265, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(258, 6);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(268, 22);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(261, 24);
             this.sbStatusBarText.SetStatusBarText(this.toolStripMenuItem5, "Add an existing topic file");
             this.toolStripMenuItem5.Text = "&Add Existing Topic File...";
             this.toolStripMenuItem5.Click += new System.EventHandler(this.AddExistingTopicFile_Click);
@@ -383,7 +450,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             // toolStripMenuItem6
             // 
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(268, 22);
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(261, 24);
             this.sbStatusBarText.SetStatusBarText(this.toolStripMenuItem6, "Add all topics found in a folder and its subfolders");
             this.toolStripMenuItem6.Text = "Add All Topics in &Folder...";
             this.toolStripMenuItem6.Click += new System.EventHandler(this.AddAllTopicsInFolder_Click);
@@ -391,7 +458,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(265, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(258, 6);
             // 
             // miAddEmptyChild
             // 
@@ -399,10 +466,125 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.miAddEmptyChild.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.miAddEmptyChild.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.miAddEmptyChild.Name = "miAddEmptyChild";
-            this.miAddEmptyChild.Size = new System.Drawing.Size(268, 22);
+            this.miAddEmptyChild.Size = new System.Drawing.Size(261, 24);
             this.sbStatusBarText.SetStatusBarText(this.miAddEmptyChild, "Add a container not associated with a topic file");
             this.miAddEmptyChild.Text = "Add &Empty Container Node";
             this.miAddEmptyChild.Click += new System.EventHandler(this.tsbAddTopic_ButtonClick);
+            // 
+            // miAssociateTopic
+            // 
+            this.miAssociateTopic.Name = "miAssociateTopic";
+            this.miAssociateTopic.Size = new System.Drawing.Size(326, 26);
+            this.sbStatusBarText.SetStatusBarText(this.miAssociateTopic, "Associate a topic file with the selected entry");
+            this.miAssociateTopic.Text = "Ass&ociate Topic File...";
+            this.miAssociateTopic.Click += new System.EventHandler(this.miAssociateTopic_Click);
+            // 
+            // miClearTopic
+            // 
+            this.miClearTopic.Name = "miClearTopic";
+            this.miClearTopic.Size = new System.Drawing.Size(326, 26);
+            this.sbStatusBarText.SetStatusBarText(this.miClearTopic, "Clear the topic assoicated with the selected entry");
+            this.miClearTopic.Text = "Clear Topic Assoc&iation";
+            this.miClearTopic.Click += new System.EventHandler(this.miClearTopic_Click);
+            // 
+            // miRefreshAssociations
+            // 
+            this.miRefreshAssociations.Name = "miRefreshAssociations";
+            this.miRefreshAssociations.Size = new System.Drawing.Size(326, 26);
+            this.sbStatusBarText.SetStatusBarText(this.miRefreshAssociations, "Refresh the file associations to reflect changes made to the project");
+            this.miRefreshAssociations.Text = "&Refresh Associations";
+            this.miRefreshAssociations.Click += new System.EventHandler(this.miRefreshAssociations_Click);
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(323, 6);
+            // 
+            // miDelete
+            // 
+            this.miDelete.Image = global::SandcastleBuilder.Gui.Properties.Resources.Delete;
+            this.miDelete.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.miDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.miDelete.Name = "miDelete";
+            this.miDelete.Size = new System.Drawing.Size(326, 26);
+            this.sbStatusBarText.SetStatusBarText(this.miDelete, "Delete the selected topic");
+            this.miDelete.Text = "&Delete";
+            this.miDelete.Click += new System.EventHandler(this.tsbDeleteTopic_Click);
+            // 
+            // toolStripMenuItem7
+            // 
+            this.toolStripMenuItem7.Name = "toolStripMenuItem7";
+            this.toolStripMenuItem7.Size = new System.Drawing.Size(323, 6);
+            // 
+            // miCut
+            // 
+            this.miCut.Image = global::SandcastleBuilder.Gui.Properties.Resources.Cut;
+            this.miCut.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.miCut.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.miCut.Name = "miCut";
+            this.miCut.Size = new System.Drawing.Size(326, 26);
+            this.sbStatusBarText.SetStatusBarText(this.miCut, "Cut the selected topic to the clipboard");
+            this.miCut.Text = "&Cut";
+            this.miCut.Click += new System.EventHandler(this.tsbCutCopy_Click);
+            // 
+            // miPaste
+            // 
+            this.miPaste.Image = global::SandcastleBuilder.Gui.Properties.Resources.Paste;
+            this.miPaste.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.miPaste.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.miPaste.Name = "miPaste";
+            this.miPaste.Size = new System.Drawing.Size(326, 26);
+            this.sbStatusBarText.SetStatusBarText(this.miPaste, "Paste the topic on the clipboard as a sibling of the selected topic");
+            this.miPaste.Text = "Pa&ste as Sibling";
+            this.miPaste.Click += new System.EventHandler(this.tsbPaste_ButtonClick);
+            // 
+            // miCopyAsLink
+            // 
+            this.miCopyAsLink.Name = "miCopyAsLink";
+            this.miCopyAsLink.Size = new System.Drawing.Size(326, 26);
+            this.sbStatusBarText.SetStatusBarText(this.miCopyAsLink, "Copy as a topic link");
+            this.miCopyAsLink.Text = "Cop&y as Topic Link";
+            this.miCopyAsLink.Click += new System.EventHandler(this.miCopyAsLink_Click);
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(323, 6);
+            // 
+            // miEditTopic
+            // 
+            this.miEditTopic.Image = global::SandcastleBuilder.Gui.Properties.Resources.PageEdit;
+            this.miEditTopic.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.miEditTopic.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.miEditTopic.Name = "miEditTopic";
+            this.miEditTopic.Size = new System.Drawing.Size(326, 26);
+            this.sbStatusBarText.SetStatusBarText(this.miEditTopic, "Edit the selected topic");
+            this.miEditTopic.Text = "&Edit Topic";
+            this.miEditTopic.Click += new System.EventHandler(this.tsbEditTopic_Click);
+            // 
+            // miSortTopics
+            // 
+            this.miSortTopics.Name = "miSortTopics";
+            this.miSortTopics.Size = new System.Drawing.Size(326, 26);
+            this.sbStatusBarText.SetStatusBarText(this.miSortTopics, "Sort this topics and its siblings by their display title");
+            this.miSortTopics.Text = "Sor&t Topics";
+            this.miSortTopics.Click += new System.EventHandler(this.miSortTopics_Click);
+            // 
+            // toolStripSeparator11
+            // 
+            this.toolStripSeparator11.Name = "toolStripSeparator11";
+            this.toolStripSeparator11.Size = new System.Drawing.Size(323, 6);
+            // 
+            // miHelp
+            // 
+            this.miHelp.Image = global::SandcastleBuilder.Gui.Properties.Resources.About;
+            this.miHelp.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.miHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.miHelp.Name = "miHelp";
+            this.miHelp.Size = new System.Drawing.Size(326, 26);
+            this.sbStatusBarText.SetStatusBarText(this.miHelp, "View help for this form");
+            this.miHelp.Text = "Help";
+            this.miHelp.Click += new System.EventHandler(this.tsbHelp_Click);
             // 
             // tsbAddChildTopic
             // 
@@ -416,113 +598,6 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.sbStatusBarText.SetStatusBarText(this.tsbAddChildTopic, "Add a topic as a child of the selected item");
             this.tsbAddChildTopic.ToolTipText = "Add topic as child of selected item";
             this.tsbAddChildTopic.ButtonClick += new System.EventHandler(this.tsbAddTopic_ButtonClick);
-            // 
-            // miAssociateTopic
-            // 
-            this.miAssociateTopic.Name = "miAssociateTopic";
-            this.miAssociateTopic.Size = new System.Drawing.Size(232, 26);
-            this.sbStatusBarText.SetStatusBarText(this.miAssociateTopic, "Associate a topic file with the selected entry");
-            this.miAssociateTopic.Text = "Ass&ociate Topic File...";
-            this.miAssociateTopic.Click += new System.EventHandler(this.miAssociateTopic_Click);
-            // 
-            // miClearTopic
-            // 
-            this.miClearTopic.Name = "miClearTopic";
-            this.miClearTopic.Size = new System.Drawing.Size(232, 26);
-            this.sbStatusBarText.SetStatusBarText(this.miClearTopic, "Clear the topic assoicated with the selected entry");
-            this.miClearTopic.Text = "Clear Topic Assoc&iation";
-            this.miClearTopic.Click += new System.EventHandler(this.miClearTopic_Click);
-            // 
-            // toolStripMenuItem4
-            // 
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(229, 6);
-            // 
-            // miDelete
-            // 
-            this.miDelete.Image = global::SandcastleBuilder.Gui.Properties.Resources.Delete;
-            this.miDelete.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.miDelete.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.miDelete.Name = "miDelete";
-            this.miDelete.Size = new System.Drawing.Size(232, 26);
-            this.sbStatusBarText.SetStatusBarText(this.miDelete, "Delete the selected topic");
-            this.miDelete.Text = "&Delete";
-            this.miDelete.Click += new System.EventHandler(this.tsbDeleteTopic_Click);
-            // 
-            // toolStripMenuItem7
-            // 
-            this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-            this.toolStripMenuItem7.Size = new System.Drawing.Size(229, 6);
-            // 
-            // miCut
-            // 
-            this.miCut.Image = global::SandcastleBuilder.Gui.Properties.Resources.Cut;
-            this.miCut.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.miCut.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.miCut.Name = "miCut";
-            this.miCut.Size = new System.Drawing.Size(232, 26);
-            this.sbStatusBarText.SetStatusBarText(this.miCut, "Cut the selected topic to the clipboard");
-            this.miCut.Text = "&Cut";
-            this.miCut.Click += new System.EventHandler(this.tsbCutCopy_Click);
-            // 
-            // miPaste
-            // 
-            this.miPaste.Image = global::SandcastleBuilder.Gui.Properties.Resources.Paste;
-            this.miPaste.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.miPaste.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.miPaste.Name = "miPaste";
-            this.miPaste.Size = new System.Drawing.Size(232, 26);
-            this.sbStatusBarText.SetStatusBarText(this.miPaste, "Paste the topic on the clipboard as a sibling of the selected topic");
-            this.miPaste.Text = "Pa&ste as Sibling";
-            this.miPaste.Click += new System.EventHandler(this.tsbPaste_ButtonClick);
-            // 
-            // miCopyAsLink
-            // 
-            this.miCopyAsLink.Name = "miCopyAsLink";
-            this.miCopyAsLink.Size = new System.Drawing.Size(232, 26);
-            this.sbStatusBarText.SetStatusBarText(this.miCopyAsLink, "Copy as a topic link");
-            this.miCopyAsLink.Text = "Cop&y as Topic Link";
-            this.miCopyAsLink.Click += new System.EventHandler(this.miCopyAsLink_Click);
-            // 
-            // toolStripSeparator10
-            // 
-            this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(229, 6);
-            // 
-            // miEditTopic
-            // 
-            this.miEditTopic.Image = global::SandcastleBuilder.Gui.Properties.Resources.PageEdit;
-            this.miEditTopic.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.miEditTopic.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.miEditTopic.Name = "miEditTopic";
-            this.miEditTopic.Size = new System.Drawing.Size(232, 26);
-            this.sbStatusBarText.SetStatusBarText(this.miEditTopic, "Edit the selected topic");
-            this.miEditTopic.Text = "&Edit Topic";
-            this.miEditTopic.Click += new System.EventHandler(this.tsbEditTopic_Click);
-            // 
-            // miSortTopics
-            // 
-            this.miSortTopics.Name = "miSortTopics";
-            this.miSortTopics.Size = new System.Drawing.Size(232, 26);
-            this.sbStatusBarText.SetStatusBarText(this.miSortTopics, "Sort this topics and its siblings by their display title");
-            this.miSortTopics.Text = "Sor&t Topics";
-            this.miSortTopics.Click += new System.EventHandler(this.miSortTopics_Click);
-            // 
-            // toolStripSeparator11
-            // 
-            this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(229, 6);
-            // 
-            // miHelp
-            // 
-            this.miHelp.Image = global::SandcastleBuilder.Gui.Properties.Resources.About;
-            this.miHelp.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.miHelp.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.miHelp.Name = "miHelp";
-            this.miHelp.Size = new System.Drawing.Size(232, 26);
-            this.sbStatusBarText.SetStatusBarText(this.miHelp, "View help for this form");
-            this.miHelp.Text = "Help";
-            this.miHelp.Click += new System.EventHandler(this.tsbHelp_Click);
             // 
             // pgProps
             // 
@@ -540,7 +615,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.tsTopics.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.tsTopics.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsbDefaultTopic,
-            this.tsbSplitTOC,
+            this.tsbApiInsertionPoint,
             this.toolStripSeparator1,
             this.tsbMoveUp,
             this.tsbMoveDown,
@@ -561,30 +636,63 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.tsTopics.Size = new System.Drawing.Size(385, 27);
             this.tsTopics.TabIndex = 3;
             // 
-            // tsbDefaultTopic
+            // tsbApiInsertionPoint
             // 
-            this.tsbDefaultTopic.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbDefaultTopic.Image = global::SandcastleBuilder.Gui.Properties.Resources.DefaultTopic;
-            this.tsbDefaultTopic.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.tsbDefaultTopic.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbDefaultTopic.Name = "tsbDefaultTopic";
-            this.tsbDefaultTopic.Size = new System.Drawing.Size(23, 24);
-            this.sbStatusBarText.SetStatusBarText(this.tsbDefaultTopic, "Toggle the default topic");
-            this.tsbDefaultTopic.ToolTipText = "Toggle the default topic";
-            this.tsbDefaultTopic.Click += new System.EventHandler(this.tsbDefaultTopic_Click);
+            this.tsbApiInsertionPoint.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbApiInsertionPoint.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miInsertApiAfter,
+            this.miInsertApiBefore,
+            this.miInsertApiAsChild,
+            this.miClearApiInsertionPoint});
+            this.tsbApiInsertionPoint.Image = global::SandcastleBuilder.Gui.Properties.Resources.InsertApiAfter;
+            this.tsbApiInsertionPoint.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tsbApiInsertionPoint.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbApiInsertionPoint.Name = "tsbApiInsertionPoint";
+            this.tsbApiInsertionPoint.Size = new System.Drawing.Size(32, 24);
+            this.sbStatusBarText.SetStatusBarText(this.tsbApiInsertionPoint, "Set the API content insertion point");
+            this.tsbApiInsertionPoint.ToolTipText = "Set API insertion point";
+            this.tsbApiInsertionPoint.ButtonClick += new System.EventHandler(this.ApiInsertionPoint_Click);
             // 
-            // tsbSplitTOC
+            // miInsertApiAfter
             // 
-            this.tsbSplitTOC.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbSplitTOC.Image = global::SandcastleBuilder.Gui.Properties.Resources.SplitTOC;
-            this.tsbSplitTOC.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.tsbSplitTOC.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tsbSplitTOC.Name = "tsbSplitTOC";
-            this.tsbSplitTOC.Size = new System.Drawing.Size(23, 24);
-            this.sbStatusBarText.SetStatusBarText(this.tsbSplitTOC, "Split the table of contents so that API entries appear immediately before the sele" +
-                    "cted entry");
-            this.tsbSplitTOC.ToolTipText = "Split the TOC at selected entry";
-            this.tsbSplitTOC.Click += new System.EventHandler(this.tsbSplitTOC_Click);
+            this.miInsertApiAfter.Image = global::SandcastleBuilder.Gui.Properties.Resources.InsertApiAfter;
+            this.miInsertApiAfter.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.miInsertApiAfter.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.miInsertApiAfter.Name = "miInsertApiAfter";
+            this.miInsertApiAfter.Size = new System.Drawing.Size(375, 24);
+            this.sbStatusBarText.SetStatusBarText(this.miInsertApiAfter, "Insert the API content after the selected topic");
+            this.miInsertApiAfter.Text = "Insert API content &after selected topic";
+            this.miInsertApiAfter.Click += new System.EventHandler(this.ApiInsertionPoint_Click);
+            // 
+            // miInsertApiBefore
+            // 
+            this.miInsertApiBefore.Image = global::SandcastleBuilder.Gui.Properties.Resources.InsertApiBefore;
+            this.miInsertApiBefore.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.miInsertApiBefore.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.miInsertApiBefore.Name = "miInsertApiBefore";
+            this.miInsertApiBefore.Size = new System.Drawing.Size(375, 24);
+            this.sbStatusBarText.SetStatusBarText(this.miInsertApiBefore, "Insert the API content before the selected topic");
+            this.miInsertApiBefore.Text = "Insert API content &before selected topic";
+            this.miInsertApiBefore.Click += new System.EventHandler(this.ApiInsertionPoint_Click);
+            // 
+            // miInsertApiAsChild
+            // 
+            this.miInsertApiAsChild.Image = global::SandcastleBuilder.Gui.Properties.Resources.InsertApiAsChild;
+            this.miInsertApiAsChild.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.miInsertApiAsChild.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.miInsertApiAsChild.Name = "miInsertApiAsChild";
+            this.miInsertApiAsChild.Size = new System.Drawing.Size(375, 24);
+            this.sbStatusBarText.SetStatusBarText(this.miInsertApiAsChild, "Insert the API content as a child of the selected topic");
+            this.miInsertApiAsChild.Text = "Insert API content as a &child of selected topic";
+            this.miInsertApiAsChild.Click += new System.EventHandler(this.ApiInsertionPoint_Click);
+            // 
+            // miClearApiInsertionPoint
+            // 
+            this.miClearApiInsertionPoint.Name = "miClearApiInsertionPoint";
+            this.miClearApiInsertionPoint.Size = new System.Drawing.Size(375, 24);
+            this.sbStatusBarText.SetStatusBarText(this.miClearApiInsertionPoint, "Clear the API insertion point");
+            this.miClearApiInsertionPoint.Text = "Clear the API &insertion point";
+            this.miClearApiInsertionPoint.Click += new System.EventHandler(this.ApiInsertionPoint_Click);
             // 
             // toolStripSeparator1
             // 
@@ -675,7 +783,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.tsmiPasteAsSibling.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsmiPasteAsSibling.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsmiPasteAsSibling.Name = "tsmiPasteAsSibling";
-            this.tsmiPasteAsSibling.Size = new System.Drawing.Size(189, 22);
+            this.tsmiPasteAsSibling.Size = new System.Drawing.Size(179, 24);
             this.sbStatusBarText.SetStatusBarText(this.tsmiPasteAsSibling, "Paste the clipboard item as a sibiling of the selected item");
             this.tsmiPasteAsSibling.Text = "Paste as sibling";
             this.tsmiPasteAsSibling.Click += new System.EventHandler(this.tsbPaste_ButtonClick);
@@ -683,7 +791,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             // tsmiPasteAsChild
             // 
             this.tsmiPasteAsChild.Name = "tsmiPasteAsChild";
-            this.tsmiPasteAsChild.Size = new System.Drawing.Size(189, 22);
+            this.tsmiPasteAsChild.Size = new System.Drawing.Size(179, 24);
             this.sbStatusBarText.SetStatusBarText(this.tsmiPasteAsChild, "Paste the clipboard item as a child of the selected item");
             this.tsmiPasteAsChild.Text = "Paste as child";
             this.tsmiPasteAsChild.Click += new System.EventHandler(this.tsbPaste_ButtonClick);
@@ -767,13 +875,17 @@ namespace SandcastleBuilder.Gui.ContentEditors
             this.splitContainer1.SplitterWidth = 8;
             this.splitContainer1.TabIndex = 2;
             // 
-            // miRefreshAssociations
+            // tsbDefaultTopic
             // 
-            this.miRefreshAssociations.Name = "miRefreshAssociations";
-            this.miRefreshAssociations.Size = new System.Drawing.Size(232, 26);
-            this.sbStatusBarText.SetStatusBarText(this.miRefreshAssociations, "Refresh the file associations to reflect changes made to the project");
-            this.miRefreshAssociations.Text = "&Refresh Associations";
-            this.miRefreshAssociations.Click += new System.EventHandler(this.miRefreshAssociations_Click);
+            this.tsbDefaultTopic.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tsbDefaultTopic.Image = global::SandcastleBuilder.Gui.Properties.Resources.DefaultTopic;
+            this.tsbDefaultTopic.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tsbDefaultTopic.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tsbDefaultTopic.Name = "tsbDefaultTopic";
+            this.tsbDefaultTopic.Size = new System.Drawing.Size(23, 24);
+            this.sbStatusBarText.SetStatusBarText(this.tsbDefaultTopic, "Toggle the default topic");
+            this.tsbDefaultTopic.ToolTipText = "Toggle the default topic";
+            this.tsbDefaultTopic.Click += new System.EventHandler(this.tsbDefaultTopic_Click);
             // 
             // ContentLayoutWindow
             // 
@@ -822,10 +934,8 @@ namespace SandcastleBuilder.Gui.ContentEditors
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem9;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private SandcastleBuilder.Utils.Controls.CustomPropertyGrid pgProps;
-        private System.Windows.Forms.ToolStripMenuItem miSplitToc;
+        private System.Windows.Forms.ToolStripMenuItem miApiContent;
         private System.Windows.Forms.ToolStrip tsTopics;
-        private System.Windows.Forms.ToolStripButton tsbDefaultTopic;
-        private System.Windows.Forms.ToolStripButton tsbSplitTOC;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton tsbMoveUp;
         private System.Windows.Forms.ToolStripButton tsbMoveDown;
@@ -871,5 +981,16 @@ namespace SandcastleBuilder.Gui.ContentEditors
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripButton tsbHelp;
         private System.Windows.Forms.ToolStripMenuItem miRefreshAssociations;
+        private System.Windows.Forms.ToolStripSplitButton tsbApiInsertionPoint;
+        private System.Windows.Forms.ToolStripMenuItem miInsertApiBefore;
+        private System.Windows.Forms.ToolStripMenuItem miInsertApiAfter;
+        private System.Windows.Forms.ToolStripMenuItem miInsertApiAsChild;
+        private System.Windows.Forms.ToolStripMenuItem miClearApiInsertionPoint;
+        private System.Windows.Forms.ToolStripMenuItem miCtxInsertApiAfter;
+        private System.Windows.Forms.ToolStripMenuItem miCtxInsertApiBefore;
+        private System.Windows.Forms.ToolStripMenuItem miCtxInsertApiAsChild;
+        private System.Windows.Forms.ToolStripMenuItem miCtxClearInsertionPoint;
+        private System.Windows.Forms.ToolStripMenuItem miMarkAsMSHVRoot;
+        private System.Windows.Forms.ToolStripButton tsbDefaultTopic;
     }
 }

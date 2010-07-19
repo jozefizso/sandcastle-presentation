@@ -23,9 +23,9 @@ the reflection data files.</listItem>
 
     <listItem><legacyBold>Cached MSDN URL References</legacyBold> - Caches
 resolved MSDN URLs for the <legacyBold>Resolve Reference Links</legacyBold>
-build component when <codeInline>SdkLinkType</codeInline> is set to
-<codeInline>MSDN</codeInline>. This saves it having to hit the web service in
-every build to get the same information.</listItem>
+build component when any of the <codeInline>*SdkLinkType</codeInline> properties
+are set to <codeInline>MSDN</codeInline>. This saves it having to hit the web
+service in every build to get the same information.</listItem>
 
 </list>
     </introduction>
@@ -78,9 +78,10 @@ occur.  Non-UI projects with base classes that are simpler result in fewer
 lookups and benefit less.</listItem>
 
     <listItem>Using the cached MSDN URL component is, after the initial build,
-almost equivalent to setting the <codeInline>SdkLinkType</codeInline> property
-to <codeInline>None</codeInline> in regards to build time but adds the benefit
-of keeping the actual online links in place.</listItem>
+almost equivalent to setting the <codeInline>*SdkLinkType</codeInline> property
+to <codeInline>None</codeInline>/<codeInline>Index</codeInline>/<codeInline>Id</codeInline>
+ in regards to build time but adds the benefit of keeping the actual online
+links in place.</listItem>
 
     <listItem>That said, the larger the project the less benefit you may see.
 For example, if your project contains 10,000+ topics, it is already going to
@@ -103,16 +104,23 @@ first two cached build components to offset that somewhat.</para>
   <content><para>The examples given below are taken from the Sandcastle Help
 File Builder's configuration file templates.  When used with it, you may
 specify various replacement tags such as <codeInline>{@SHFBFolder}</codeInline>,
-<codeInline>{@LocalDataFolder}</codeInline>, and <codeInline>{@SDKLinks}</codeInline>
-to insert special folder and project option values into the configuration at
-build time. If using the component in your own build scripts, replace the tags
-with an actual absolute or relative path or an appropriate option value.</para>
+and <codeInline>{@LocalDataFolder}</codeInline> to insert special folder and
+project option values into the configuration at build time. If using the
+component in your own build scripts, replace the tags with an actual absolute
+or relative path or an appropriate option value.  The
+<codeInline>{@ProjectLinks}</codeInline> option should be replaced with
+<codeInline>None</codeInline>, <codeInline>Local</codeInline>, or
+<codeInline>Index</codeInline> based on your preferred link type and help file
+format.  The <codeInline>{@SdkLinkType}</codeInline> option should be replaced
+with <codeInline>None</codeInline>, <codeInline>Index</codeInline>,
+<codeInline>Id</codeInline>, or <codeInline>Msdn</codeInline> based on your
+preferred link type and help file format.</para>
 
 <para>When documenting a .NET 3.0 or .NET 3.5 assembly, there are several
 framework comments files.  You can add additional <codeInline>cache</codeInline>
 elements specifying the additional framework comments files.  Be sure to give
 each <codeInline>cacheFile</codeInline> attribute a unique name.</para>
-  
+
 <code lang="xml" title="Cached Reflection Index Data Example">
 &lt;!-- Cached Reflection Index Data component.  This should replace
      the first instance of the CopyFromIndexComponent. --&gt;
@@ -157,8 +165,8 @@ each <codeInline>cacheFile</codeInline> attribute a unique name.</para>
   locale="{@Locale}" linkTarget="{@SdkLinkTarget}"&gt;
     &lt;cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" /&gt;
     &lt;targets base="{@SandcastlePath}Data\Reflection" recurse="true"
-        files="*.xml" type="{@SDKLinks}" /&gt;
-    &lt;targets files="reflection.xml" type="{@ProjectLinks}" /&gt;
+        files="*.xml" type="{@SDKLinkType}" /&gt;
+    &lt;targets files="reflection.xml" type="{@ProjectLinkType}" /&gt;
 &lt;/component&gt;
 </code>
 

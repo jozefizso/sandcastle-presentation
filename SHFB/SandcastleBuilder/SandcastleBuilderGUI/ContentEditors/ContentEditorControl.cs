@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder
 // File    : ContentEditorControl.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 12/06/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 06/12/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the derived editor control used to edit conceptual
@@ -22,19 +22,13 @@
 //=============================================================================
 
 using System;
-using System.ComponentModel;
 using System.Drawing;
-using System.Globalization;
-using System.IO;
 using System.Windows.Forms;
-
-using SandcastleBuilder.Utils;
-using SandcastleBuilder.Utils.ConceptualContent;
-using SandcastleBuilder.Utils.Design;
 
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Actions;
-using WeifenLuo.WinFormsUI.Docking;
+
+using SandcastleBuilder.Gui.Properties;
 
 namespace SandcastleBuilder.Gui.ContentEditors
 {
@@ -60,23 +54,20 @@ namespace SandcastleBuilder.Gui.ContentEditors
 
             editactions[Keys.Tab] = new InsertClosingElement(oldAction);
 
-            editactions[UnsafeNativeMethods.CharToKeys('"')] =
-                new InsertMatchingCharacter("\"\"");
-            editactions[UnsafeNativeMethods.CharToKeys('<')] =
-                new InsertMatchingCharacter("<>");
-            editactions[UnsafeNativeMethods.CharToKeys('(')] =
-                new InsertMatchingCharacter("()");
-            editactions[UnsafeNativeMethods.CharToKeys('[')] =
-                new InsertMatchingCharacter("[]");
-            editactions[UnsafeNativeMethods.CharToKeys('{')] =
-                new InsertMatchingCharacter("{}");
+            if(Settings.Default.EnterMatching)
+            {
+                editactions[UnsafeNativeMethods.CharToKeys('"')] = new InsertMatchingCharacter("\"\"");
+                editactions[UnsafeNativeMethods.CharToKeys('<')] = new InsertMatchingCharacter("<>");
+                editactions[UnsafeNativeMethods.CharToKeys('(')] = new InsertMatchingCharacter("()");
+                editactions[UnsafeNativeMethods.CharToKeys('[')] = new InsertMatchingCharacter("[]");
+                editactions[UnsafeNativeMethods.CharToKeys('{')] = new InsertMatchingCharacter("{}");
+            }
 
             // By default, Ctrl+B does bracket matching.  I want Ctrl+B for
             // legacy bold.  Move bracket matching to Ctrl + ] to match
             // Visual Studio.
             if(editactions.TryGetValue(Keys.Control | Keys.B, out oldAction))
-                editactions[Keys.Control |
-                    UnsafeNativeMethods.CharToKeys(']')] = oldAction;
+                editactions[Keys.Control | UnsafeNativeMethods.CharToKeys(']')] = oldAction;
 
             editactions[Keys.Control | Keys.B] = new InsertElement("legacyBold");
             editactions[Keys.Control | Keys.F] = new FindText(this);
@@ -141,8 +132,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
         {
             Point p = this.PointToScreen(this.ActiveTextAreaControl.Caret.ScreenPosition);
 
-            this.OnDragDrop(new DragEventArgs(data, 0, p.X, p.Y,
-                DragDropEffects.All, DragDropEffects.All));
+            this.OnDragDrop(new DragEventArgs(data, 0, p.X, p.Y, DragDropEffects.All, DragDropEffects.All));
         }
 
         /// <summary>
@@ -173,11 +163,9 @@ namespace SandcastleBuilder.Gui.ContentEditors
                         textArea.SelectionManager.ClearSelection();
 
                 textArea.Document.Insert(offset, text);
-                textArea.Caret.Position = textArea.Document.OffsetToPosition(
-                    offset + text.Length);
+                textArea.Caret.Position = textArea.Document.OffsetToPosition(offset + text.Length);
                 textArea.Refresh();
-                textArea.Document.RequestUpdate(
-                    new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
+                textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
             }
             finally
             {

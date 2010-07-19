@@ -170,7 +170,7 @@ value separated by a space.</para></listItem>
 
     <listItem>In order to use the code providers, the ASP.NET compiler must be
 able to find them.  You can either copy the
-<legacyBold>EWSoftware.CodeCom.dll</legacyBold> assembly into your project's
+<legacyBold>EWSoftware.CodeDom.dll</legacyBold> assembly into your project's
 <localUri>.\bin</localUri> folder or you can register it in the Global
 Assembly Cache (GAC) so that it is available to any project. To do so, use the
 <legacyBold>gacutil</legacyBold> command line tool as follows replacing the

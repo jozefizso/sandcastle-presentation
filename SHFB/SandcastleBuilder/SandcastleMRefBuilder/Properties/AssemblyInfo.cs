@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder MRefBuilder Components
 // File    : AssemblyInfo.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 01/03/2010
+// Updated : 06/06/2010
 // Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -21,13 +21,6 @@
 
 using System;
 using System.Reflection;
-using System.Resources;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Security.Permissions;
-
-// Resources contained within the assembly are English
-[assembly: NeutralResourcesLanguageAttribute("en")]
 
 //
 // General Information about an assembly is controlled through the following
@@ -36,28 +29,11 @@ using System.Security.Permissions;
 //
 [assembly: AssemblyProduct("Sandcastle Help File Builder MRefBuilder Components")]
 [assembly: AssemblyTitle("Sandcastle Help File Builder MRefBuilder Components")]
-[assembly: AssemblyDescription("A set of components used to extend the " +
-    "features of Sandcastle's MRefBuilder executable.")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Eric Woodruff")]
-[assembly: AssemblyCopyright("Copyright \xA9 2008-2010, Eric Woodruff, All Rights Reserved")]
-[assembly: AssemblyTrademark("Eric Woodruff, All Rights Reserved")]
-[assembly: AssemblyCulture("")]
+[assembly: AssemblyDescription("A set of components used to extend the features " +
+    "of Sandcastle's MRefBuilder tool.")]
+
+// The base Sandcastle component types are not CLS compliant
 [assembly: CLSCompliant(false)]
-[assembly: ComVisible(false)]
 
-// No special permissions are required by this assembly
-[assembly: SecurityPermission(SecurityAction.RequestMinimum, Execution = true)]
-
-//
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("1.8.0.3")]
+// See AssemblyInfoShared.cs for the shared attributes common to all projects
+// in the solution.

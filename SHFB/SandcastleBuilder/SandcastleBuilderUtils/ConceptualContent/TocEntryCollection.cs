@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : TocEntryCollection.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 09/16/2008
-// Note    : Copyright 2006-2008, Eric Woodruff, All rights reserved
+// Updated : 07/02/2010
+// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a collection class used to hold the table of contents
@@ -20,6 +20,7 @@
 // 1.3.0.0  09/17/2006  EFW  Created the code
 // 1.5.0.2  07/03/2007  EFW  Added support for saving as a site map file
 // 1.8.0.0  08/11/2008  EFW  Modified to support the new project format
+// 1.9.0.0  06/15/2010  EFW  Added support for MS Help Viewer TOC format
 //=============================================================================
 
 using System;
@@ -27,6 +28,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -64,37 +66,120 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         {
             get
             {
-                TocEntry defaultTopic = null;
-
                 foreach(TocEntry t in this)
                 {
                     if(t.IsDefaultTopic)
-                        defaultTopic = t;
-                    else
-                        defaultTopic = t.Children.DefaultTopic;
+                        return t;
+
+                    var defaultTopic = t.Children.DefaultTopic;
 
                     if(defaultTopic != null)
-                        break;
+                        return defaultTopic;
                 }
 
-                return defaultTopic;
+                return null;
             }
         }
 
         /// <summary>
-        /// This is used to get the topic at which the table of contents is
-        /// split by the API content.
+        /// This is used to get the topic at which the API table of contents is
+        /// to be inserted or parented.
         /// </summary>
-        /// <value>This will only be valid if it refers to a root level
-        /// topic.  It will return null if a split location has not been
-        /// set at the root level.</value>
-        public TocEntry SplitTocAtTopic
+        /// <value>This will return null if no parent location has been set</value>
+        public TocEntry ApiContentInsertionPoint
         {
             get
             {
                 foreach(TocEntry t in this)
-                    if(t.SplitToc)
+                {
+                    if(t.ApiParentMode != ApiParentMode.None)
                         return t;
+
+                    var childInsertionPoint = t.Children.ApiContentInsertionPoint;
+
+                    if(childInsertionPoint != null)
+                        return childInsertionPoint;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// This is used to get the parent item that will contain the API table
+        /// of contents.
+        /// </summary>
+        /// <returns>The parent item or null if it is the root collection.</returns>
+        public TocEntry ApiContentParent
+        {
+            get
+            {
+                TocEntry apiParent;
+
+                foreach(TocEntry t in this)
+                {
+                    if(t.Children.Any(c => c.ApiParentMode != ApiParentMode.None))
+                        return t;
+
+                    apiParent = t.Children.ApiContentParent;
+
+                    if(apiParent != null)
+                        return apiParent;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// This is used to get the parent collection that contains the item
+        /// where the API table of contents is to be inserted.
+        /// </summary>
+        /// <returns>The parent collection if there is a location defined or
+        /// null if there isn't one.</returns>
+        public TocEntryCollection ApiContentParentCollection
+        {
+            get
+            {
+                TocEntryCollection apiParent;
+
+                foreach(TocEntry t in this)
+                {
+                    if(t.ApiParentMode != ApiParentMode.None)
+                        return this;
+
+                    apiParent = t.Children.ApiContentParentCollection;
+
+                    if(apiParent != null)
+                        return apiParent;
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// This can be used to get a topic by its unique ID (case-insensitive)
+        /// </summary>
+        /// <param name="id">The ID of the item to get.</param>
+        /// <value>Returns the topic with the specified
+        /// <see cref="TocEntry.Id" /> or null if not found.</value>
+        public TocEntry this[string id]
+        {
+            get
+            {
+                TocEntry found;
+
+                foreach(TocEntry t in this)
+                {
+                    if(String.Compare(t.Id, id, StringComparison.OrdinalIgnoreCase) == 0)
+                        return t;
+
+                    found = t.Children[id];
+
+                    if(found != null)
+                        return found;
+                }
 
                 return null;
             }
@@ -132,11 +217,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// <remarks>All top level items and their children are sorted</remarks>
         public void Sort()
         {
-            ((List<TocEntry>)this.Items).Sort(
-                delegate(TocEntry x, TocEntry y)
-                {
-                    return Comparer<TocEntry>.Default.Compare(x, y);
-                });
+            ((List<TocEntry>)this.Items).Sort((x, y) => Comparer<TocEntry>.Default.Compare(x, y));
 
             foreach(TocEntry te in this)
                 te.Children.Sort();
@@ -145,7 +226,6 @@ namespace SandcastleBuilder.Utils.ConceptualContent
 
         #region ToString methods
         //=====================================================================
-        // ToString methods
 
         /// <summary>
         /// Convert the table of contents entry and its children to a string
@@ -161,18 +241,9 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// in the specified help file format.
         /// </summary>
         /// <param name="format">The help file format to use</param>
-        /// <returns>The entries in specified help format</returns>
-        /// <exception cref="ArgumentException">This is thrown if the
-        /// format is not <b>HtmlHelp1</b>, <b>MSHelp2</b>, or
-        /// <b>Website</b>.</exception>
+        /// <returns>The entries in the specified help format</returns>
         public string ToString(HelpFileFormat format)
         {
-            if(format != HelpFileFormat.HtmlHelp1 &&
-              format != HelpFileFormat.MSHelp2 &&
-              format != HelpFileFormat.Website)
-                throw new ArgumentException("The format specified must be " +
-                    "HtmlHelp1, MSHelp2, or Website only", "format");
-
             StringBuilder sb = new StringBuilder(1024);
             this.ConvertToString(format, sb);
             return sb.ToString();
@@ -192,9 +263,39 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         }
         #endregion
 
+        #region Save as intermediate TOC file for conceptual content builds
+        //=====================================================================
+
+        /// <summary>
+        /// This is used to save the TOC information to an intermediate TOC
+        /// file used in the conceptual content build.
+        /// </summary>
+        /// <param name="rootContainerId">The ID of the root container topic if used</param>
+        /// <param name="rootOrder">The TOC order for the root container topic if used</param>
+        /// <param name="filename">The filename to use</param>
+        public void SaveToIntermediateTocFile(string rootContainerId, int rootOrder, string filename)
+        {
+            using(StreamWriter sw = new StreamWriter(filename))
+            {
+                sw.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+                sw.WriteLine("<topics>");
+
+                if(!String.IsNullOrEmpty(rootContainerId))
+                    sw.WriteLine("<topic id=\"{0}\" file=\"{0}\" sortOrder=\"{1}\">",
+                        rootContainerId, rootOrder);
+
+                sw.WriteLine(this.ToString(HelpFileFormat.MSHelpViewer));
+
+                if(!String.IsNullOrEmpty(rootContainerId))
+                    sw.WriteLine("</topic>");
+
+                sw.WriteLine("</topics>");
+            }
+        }
+        #endregion
+
         #region Site map file methods
         //=====================================================================
-        // Site map file methods
 
         /// <summary>
         /// This is used to locate the default topic if one exists
@@ -259,7 +360,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
                         }
 
                         parent.SortOrder = current.SortOrder;
-                        parent.SplitToc = current.SplitToc;
+                        parent.ApiParentMode = current.ApiParentMode;
                         current.IncludePage = false;
                     }
                 }
@@ -349,8 +450,17 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         }
         #endregion
 
-        #region Private helper methods
+        #region Helper methods
         //=====================================================================
+
+        /// <summary>
+        /// Reset the sort order on all items in the collection
+        /// </summary>
+        public void ResetSortOrder()
+        {
+            foreach(TocEntry t in this)
+                t.ResetSortOrder();
+        }
 
         /// <summary>
         /// This is used by contained items to notify the parent that a child
@@ -381,13 +491,11 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// recursively.  If a file with the same name as the folder exists,
         /// it will be associated with the container node.  If no such file
         /// exists, an empty container node is created.</remarks>
-        public void AddTopicsFromFolder(string folder, string basePath,
-          SandcastleProject project)
+        public void AddTopicsFromFolder(string folder, string basePath, SandcastleProject project)
         {
             TocEntry topic, removeTopic;
             string[] files = Directory.GetFiles(folder, "*.htm?");
-            string name, newPath, projectPath = Path.GetDirectoryName(
-                project.Filename);
+            string name, newPath, projectPath = Path.GetDirectoryName(project.Filename);
 
             if(basePath.Length != 0 && basePath[basePath.Length - 1] != '\\')
                 basePath += "\\";
@@ -396,12 +504,10 @@ namespace SandcastleBuilder.Utils.ConceptualContent
             foreach(string file in files)
             {
                 // The file must reside under the project path
-                if(Path.GetDirectoryName(file).StartsWith(projectPath,
-                  StringComparison.OrdinalIgnoreCase))
+                if(Path.GetDirectoryName(file).StartsWith(projectPath, StringComparison.OrdinalIgnoreCase))
                     newPath = file;
                 else
-                    newPath = Path.Combine(projectPath, file.Substring(
-                        basePath.Length));
+                    newPath = Path.Combine(projectPath, file.Substring(basePath.Length));
 
                 // Add the file to the project
                 project.AddFileToProject(file, newPath);

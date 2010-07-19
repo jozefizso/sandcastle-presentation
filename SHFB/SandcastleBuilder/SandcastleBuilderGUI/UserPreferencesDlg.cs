@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder
 // File    : UserPreferencesDlg.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 04/17/2009
-// Note    : Copyright 2007-2009, Eric Woodruff, All rights reserved
+// Updated : 07/05/2010
+// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This form is used to allow the user to modify help file builder preferences
@@ -22,7 +22,6 @@
 //=============================================================================
 
 using System;
-using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -55,18 +54,19 @@ namespace SandcastleBuilder.Gui
             InitializeComponent();
 
             txtHTMLHelp2ViewerPath.Text = Settings.Default.HTMLHelp2ViewerPath;
+            txtMSHelpViewerPath.Text = Settings.Default.MSHelpViewerPath;
             udcASPNetDevServerPort.Value = Settings.Default.ASPNETDevServerPort;
             cboBeforeBuildAction.SelectedIndex = (int)Settings.Default.BeforeBuild;
             chkVerboseLogging.Checked = Settings.Default.VerboseLogging;
             chkOpenHelp.Checked = Settings.Default.OpenHelpAfterBuild;
             chkShowLineNumbers.Checked = Settings.Default.ShowLineNumbers;
+            chkEnterMatching.Checked = Settings.Default.EnterMatching;
             lblBuildExample.BackColor = Settings.Default.BuildOutputBackground;
             lblBuildExample.ForeColor = Settings.Default.BuildOutputForeground;
             lblBuildExample.Font = Settings.Default.BuildOutputFont;
             lblEditorExample.Font = Settings.Default.TextEditorFont;
 
-            lbContentEditors.DisplayMember = lbContentEditors.ValueMember =
-                "EditorDescription";
+            lbContentEditors.DisplayMember = lbContentEditors.ValueMember = "EditorDescription";
 
             if(Settings.Default.ContentFileEditors.Count == 0)
                 pgProps.Enabled = btnDelete.Enabled = false;
@@ -107,8 +107,20 @@ namespace SandcastleBuilder.Gui
 
                 if(!File.Exists(filePath))
                 {
-                    epErrors.SetError(btnSelectViewer, "The viewer " +
-                        "application does not exist");
+                    epErrors.SetError(btnSelectHxSViewer, "The viewer application does not exist");
+                    e.Cancel = true;
+                }
+            }
+
+            filePath = txtMSHelpViewerPath.Text.Trim();
+
+            if(filePath.Length != 0)
+            {
+                txtMSHelpViewerPath.Text = filePath = Path.GetFullPath(filePath);
+
+                if(!File.Exists(filePath))
+                {
+                    epErrors.SetError(btnSelectMSHCViewer, "The viewer application does not exist");
                     e.Cancel = true;
                 }
             }
@@ -121,14 +133,14 @@ namespace SandcastleBuilder.Gui
                     lblBuildExample.ForeColor = SystemColors.WindowText;
                 }
 
-                Settings.Default.HTMLHelp2ViewerPath = filePath;
-                Settings.Default.ASPNETDevServerPort =
-                    (int)udcASPNetDevServerPort.Value;
-                Settings.Default.BeforeBuild =
-                    (BeforeBuildAction)cboBeforeBuildAction.SelectedIndex;
+                Settings.Default.HTMLHelp2ViewerPath = txtHTMLHelp2ViewerPath.Text;
+                Settings.Default.MSHelpViewerPath = txtMSHelpViewerPath.Text;
+                Settings.Default.ASPNETDevServerPort = (int)udcASPNetDevServerPort.Value;
+                Settings.Default.BeforeBuild = (BeforeBuildAction)cboBeforeBuildAction.SelectedIndex;
                 Settings.Default.VerboseLogging = chkVerboseLogging.Checked;
                 Settings.Default.OpenHelpAfterBuild = chkOpenHelp.Checked;
                 Settings.Default.ShowLineNumbers = chkShowLineNumbers.Checked;
+                Settings.Default.EnterMatching = chkEnterMatching.Checked;
                 Settings.Default.BuildOutputBackground = lblBuildExample.BackColor;
                 Settings.Default.BuildOutputForeground = lblBuildExample.ForeColor;
                 Settings.Default.BuildOutputFont = lblBuildExample.Font;
@@ -158,22 +170,28 @@ namespace SandcastleBuilder.Gui
         //=====================================================================
 
         /// <summary>
-        /// Select the MS Help 2 viewer application
+        /// Select a help viewer application
         /// </summary>
         /// <param name="sender">The sender of the event</param>
         /// <param name="e">The event arguments</param>
         private void btnSelectViewer_Click(object sender, EventArgs e)
         {
+            TextBox tb = (sender == btnSelectHxSViewer) ? txtHTMLHelp2ViewerPath : txtMSHelpViewerPath;
+
             using(OpenFileDialog dlg = new OpenFileDialog())
             {
-                dlg.Title = "Select the MS Help 2 viewer application";
+                if(tb == txtHTMLHelp2ViewerPath)
+                    dlg.Title = "Select the MS Help 2 (.HxS) viewer application";
+                else
+                    dlg.Title = "Select the MS Help Viewer (.mshc) viewer application";
+
                 dlg.Filter = "Executable files (*.exe)|*.exe|All Files (*.*)|*.*";
                 dlg.InitialDirectory = Directory.GetCurrentDirectory();
                 dlg.DefaultExt = "exe";
 
                 // If one is selected, use that file
                 if(dlg.ShowDialog() == DialogResult.OK)
-                    txtHTMLHelp2ViewerPath.Text = dlg.FileName;
+                    tb.Text = dlg.FileName;
             }
         }
 

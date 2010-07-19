@@ -24,6 +24,8 @@
         <language from="vbs" to="vbscript"/>
         <language from="htm" to="xml"/>
         <language from="html" to="xml"/>
+        <language from="aspnet" to="xml"/>
+        <language from="asp.net" to="xml"/>
         <language from="xsl" to="xml"/>
         <language from="sql server" to="sql"/>
         <language from="sqlserver" to="sql"/>

@@ -11,7 +11,6 @@ get rid of unwanted items, especially when documenting internal and private
 members.  Information is written to the log file detailing how each property
 affected the build.</para>
 
-
 <alert class="note">
 	<para><legacyBold>Known Limitations</legacyBold></para>
 
@@ -29,9 +28,9 @@ removes the items as it is generating the reflection information file. This
 also applies to some of the other properties in this category.  The trade-off
 is that you must search for and exclude the items manually in the API filter
 search dialog box.</para>
-
 </alert>
 
+		<autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
 
 <section address="ApiFilter">
