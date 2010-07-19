@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : VersionSettingsCollection.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 01/13/2008
-// Note    : Copyright 2007-2008, Eric Woodruff, All rights reserved
+// Updated : 02/07/2010
+// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a collection class used to hold the version settings
@@ -91,25 +91,27 @@ namespace SandcastleBuilder.PlugIns
         //=====================================================================
 
         /// <summary>
-        /// This is used to sort the collection in ascending order by framework
-        /// label and version.
+        /// This is used to sort the collection by framework label in ascending
+        /// order and by version in descending order.
         /// </summary>
+        /// <remarks>The collection must be sorted in descending order by
+        /// version in order for the version builder tool to output the correct
+        /// information.</remarks>
         public void Sort()
         {
-            ((List<VersionSettings>)base.Items).Sort(
-                delegate(VersionSettings x, VersionSettings y)
-                {
-                    int result;
+            ((List<VersionSettings>)base.Items).Sort((x, y) =>
+            {
+                int result;
 
-                    result = String.Compare(x.FrameworkLabel, y.FrameworkLabel,
-                        false, CultureInfo.CurrentCulture);
+                result = String.Compare(x.FrameworkLabel, y.FrameworkLabel,
+                    false, CultureInfo.CurrentCulture);
 
-                    if(result == 0)
-                        result = String.Compare(x.Version, y.Version,
-                        false, CultureInfo.CurrentCulture);
+                if(result == 0)
+                    result = String.Compare(x.Version, y.Version,
+                        false, CultureInfo.CurrentCulture) * -1;
 
-                    return result;
-                });
+                return result;
+            });
         }
         #endregion
     }

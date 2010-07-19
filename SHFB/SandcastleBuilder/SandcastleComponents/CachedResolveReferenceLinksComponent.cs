@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder Components
 // File    : CachedResolveReferenceLinksComponent.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/04/2009
+// Updated : 05/22/2010
 // Compiler: Microsoft Visual C#
 //
 // This file contains a build component that is derived from
@@ -71,7 +71,6 @@ namespace SandcastleBuilder.Components
     {
         #region Private data members
         //=====================================================================
-        // Private data members
 
         private int originalCacheCount;
         private string cacheFile;
@@ -79,6 +78,8 @@ namespace SandcastleBuilder.Components
         #endregion
 
         #region Constructor
+        //=====================================================================
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -200,50 +201,32 @@ namespace SandcastleBuilder.Components
         #endregion
 
         #region Dispose of the component
-#if !SC_MAY_2008
+        //=====================================================================
+
         /// <summary>
         /// This is overriden to save the updated cache when disposed
         /// </summary>
-        /// <param name="disposing">True if managed resources should be
-        /// disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
-#else
-        /// <summary>
-        /// This is overriden to save the updated cache when disposed
-        /// </summary>
-        public override void Dispose()
-#endif
         {
-            BinaryFormatter bf;
-            FileStream fs = null;
-
-            if(msdnCache != null && msdnCache.Count != originalCacheCount)
+            if (disposing)
             {
-                base.WriteMessage(MessageLevel.Info, "MSDN URL cache " +
-                    "updated.  Saving new information to " + cacheFile);
-
-                try
+                if (msdnCache != null && msdnCache.Count != originalCacheCount)
                 {
-                    bf = new BinaryFormatter();
-                    fs = new FileStream(cacheFile, FileMode.Create);
-                    bf.Serialize(fs, msdnCache);
+                    base.WriteMessage(MessageLevel.Info, "MSDN URL cache " +
+                        "updated.  Saving new information to " + cacheFile);
 
-                    base.WriteMessage(MessageLevel.Info, String.Format(
-                        CultureInfo.InvariantCulture, "New cache size: {0} " +
-                        "entries", msdnCache.Count));
-                }
-                finally
-                {
-                    if(fs != null)
-                        fs.Close();
+                    using (FileStream fs = new FileStream(cacheFile, FileMode.Create))
+                    {
+                        BinaryFormatter bf = new BinaryFormatter();
+                        bf.Serialize(fs, msdnCache);
+
+                        base.WriteMessage(MessageLevel.Info, String.Format(
+                            CultureInfo.InvariantCulture, "New cache size: {0} " +
+                            "entries", msdnCache.Count));
+                    }
                 }
             }
-
-#if !SC_MAY_2008
             base.Dispose(disposing);
-#else
-            base.Dispose();
-#endif
         }
         #endregion
     }

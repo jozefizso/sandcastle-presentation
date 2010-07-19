@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder Components
 // File    : JavaScriptDeclarationSyntaxGenerator.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 11/19/2009
+// Updated : 05/22/2010
 // Note    : This is a slightly modified version of the Microsoft
 //           ScriptSharpDeclarationSyntaxGenerator (Copyright 2007-2008
 //           Microsoft Corporation).  My changes are indicated by my initials
@@ -506,13 +506,8 @@ namespace SandcastleBuilder.Components
         public JavaScriptDeclarationSyntaxGenerator(
           XPathNavigator configuration) : base(configuration)
         {
-#if !SC_MAY_2008
             if(String.IsNullOrEmpty(base.Language))
                 base.Language = "JavaScript";
-#else
-            if(String.IsNullOrEmpty(base.language))
-                base.language = "JavaScript";
-#endif
         }
         #endregion
 

@@ -1,0 +1,6 @@
+Sandcastle Releases
+
+Mercurial revision ID                    Tag name                 Sandcastle Release Name
+e04e99851f5c7c995f131c5e4b78d6a5a003a941 Sandcastle_vs2005_r21990 Sandcastle May 2008 Release (Version 2.4.10520) (perhaps with some updates)
+7ab25a2da6a062db5af9be0deb941e900a135f84 Sandcastle_vs2005_r26202 Sandcastle June/July 2009
+34a985c22dfedc6ddb9c04f93137750357bbe6f9 Sandcastle_vs2005_r54478 Sandcastle June 2010

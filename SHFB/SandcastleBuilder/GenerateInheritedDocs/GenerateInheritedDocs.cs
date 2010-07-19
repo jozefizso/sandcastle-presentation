@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder
 // File    : GenerateInheritedDocs.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 05/22/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 06/27/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the console mode tool that scans XML comments files for
@@ -39,11 +39,13 @@ using Microsoft.Build.Utilities;
 
 using SandcastleBuilder.Utils.InheritedDocumentation;
 
-namespace InheritedDocumentation
+namespace SandcastleBuilder.InheritedDocumentation
 {
+    /// <summary>
     /// This class represents the tool that scans XML comments files for
     /// <b>&lt;inheritdoc /&gt;</b> tags and produces a new XML comments
     /// file containing the inherited documentation for use by Sandcastle.
+    /// </summary>
     public class GenerateInheritedDocs : Task
     {
         #region MSBuild task interface
@@ -104,9 +106,8 @@ namespace InheritedDocumentation
             Assembly asm = Assembly.GetExecutingAssembly();
 
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
-            Console.WriteLine("{0}, version {1}\r\n{2}\r\nE-Mail: " +
-                "Eric@EWoodruff.us\r\n", fvi.ProductName, fvi.ProductVersion,
-                fvi.LegalCopyright);
+            Console.WriteLine("{0}, version {1}\r\n{2}\r\nE-Mail: Eric@EWoodruff.us\r\n",
+                fvi.ProductName, fvi.ProductVersion, fvi.LegalCopyright);
 
             if(args.Length != 1)
             {
@@ -165,8 +166,7 @@ namespace InheritedDocumentation
         /// </summary>
         /// <param name="sender">The sender of the event</param>
         /// <param name="e">The event arguments</param>
-        private static void commentsCache_ReportWarning(object sender,
-          CommentsCacheEventArgs e)
+        private static void commentsCache_ReportWarning(object sender, CommentsCacheEventArgs e)
         {
             if(showDupWarning)
                 Console.WriteLine(e.Message);
@@ -193,53 +193,46 @@ namespace InheritedDocumentation
             int cacheSize = 100;
 
             if(!File.Exists(configFile))
-                throw new ArgumentException("Configuration file not found: " +
-                    configFile, "configFile");
+                throw new ArgumentException("Configuration file not found: " + configFile, "configFile");
 
             config = new XPathDocument(configFile);
             navConfig = config.CreateNavigator();
 
             // Show duplicate key warnings?
-            showDupWarning = (navConfig.SelectSingleNode(
-              "configuration/showDuplicateWarning") != null);
+            showDupWarning = (navConfig.SelectSingleNode("configuration/showDuplicateWarning") != null);
 
             // Get the reflection information file
-            element = navConfig.SelectSingleNode(
-                "configuration/reflectionInfo/@file");
+            element = navConfig.SelectSingleNode("configuration/reflectionInfo/@file");
+
             if(element == null || !File.Exists(element.Value))
                 throw new ConfigurationErrorsException("The reflectionFile " +
                     "element is missing or the specified file does not exist");
 
-            Console.WriteLine("Reflection information will be retrieved " +
-                "from '{0}'", element.Value);
+            Console.WriteLine("Reflection information will be retrieved from '{0}'", element.Value);
             xpathDoc = new XPathDocument(element.Value);
             refInfo = xpathDoc.CreateNavigator();
             apisNode = refInfo.SelectSingleNode("reflection/apis");
 
             // Get the inherited documentation filename
-            element = navConfig.SelectSingleNode(
-                "configuration/inheritedDocs/@file");
+            element = navConfig.SelectSingleNode("configuration/inheritedDocs/@file");
+
             if(element == null)
                 throw new ConfigurationErrorsException("The inheritedDocs " +
                     "element does not exist or is not valid");
 
             inheritedDocsFilename = element.Value;
-            Console.WriteLine("Inherited documentation will be written to '{0}'",
-                inheritedDocsFilename);
+            Console.WriteLine("Inherited documentation will be written to '{0}'", inheritedDocsFilename);
 
             // Load the comments file information
-            navComments = navConfig.SelectSingleNode(
-                "configuration/commentsFiles");
+            navComments = navConfig.SelectSingleNode("configuration/commentsFiles");
 
             attrValue = navComments.GetAttribute("cacheSize", String.Empty);
 
             if(attrValue.Length != 0)
-                cacheSize = Convert.ToInt32(attrValue,
-                    CultureInfo.InvariantCulture);
+                cacheSize = Convert.ToInt32(attrValue, CultureInfo.InvariantCulture);
 
             commentsCache = new IndexedCommentsCache(cacheSize);
-            commentsCache.ReportWarning += new EventHandler<CommentsCacheEventArgs>(
-                commentsCache_ReportWarning);
+            commentsCache.ReportWarning += commentsCache_ReportWarning;
 
             foreach(XPathNavigator nav in navComments.Select("*"))
             {
@@ -263,27 +256,22 @@ namespace InheritedDocumentation
                 if(attrValue.Length == 0)
                     recurse = false;
                 else
-                    recurse = Convert.ToBoolean(attrValue,
-                        CultureInfo.InvariantCulture);
+                    recurse = Convert.ToBoolean(attrValue, CultureInfo.InvariantCulture);
 
                 Console.WriteLine("Indexing {0}\\{1}", path, wildcard);
-                commentsCache.IndexCommentsFiles(path, wildcard, recurse,
-                    (nav.Name == "scan") ? commentsFiles : null);
+                commentsCache.IndexCommentsFiles(path, wildcard, recurse, (nav.Name == "scan") ? commentsFiles : null);
             }
 
             if(commentsCache.FilesIndexed == 0 || commentsCache.IndexCount == 0)
-                throw new ConfigurationErrorsException("No comments files " +
-                    "were specified or they did not contain valid " +
-                    "information to index");
+                throw new ConfigurationErrorsException("No comments files were specified or they did not " +
+                    "contain valid information to index");
 
             if(commentsFiles.Count == 0)
-                throw new ConfigurationErrorsException("No comments files " +
-                    "were specified to scan for <inheritdoc /> tags.");
+                throw new ConfigurationErrorsException("No comments files were specified to scan for " +
+                    "<inheritdoc /> tags.");
 
-            Console.WriteLine("Indexed {0} members in {1} file(s).  {2} " +
-                "file(s) to scan for <inheritdoc /> tags.",
-                commentsCache.IndexCount, commentsCache.FilesIndexed,
-                commentsFiles.Count);
+            Console.WriteLine("Indexed {0} members in {1} file(s).  {2} file(s) to scan for <inheritdoc /> tags.",
+                commentsCache.IndexCount, commentsCache.FilesIndexed, commentsFiles.Count);
         }
         #endregion
 
@@ -297,8 +285,7 @@ namespace InheritedDocumentation
         private static void ScanCommentsFiles()
         {
             XmlNode node;
-            Dictionary<string, XPathNavigator> members =
-                new Dictionary<string, XPathNavigator>();
+            Dictionary<string, XPathNavigator> members = new Dictionary<string, XPathNavigator>();
             string name;
 
             // Get a list of all unique members containing an <inheritdoc />
@@ -328,15 +315,12 @@ namespace InheritedDocumentation
             // Add explicit interface implementations that do not have
             // member comments already.
             foreach(XPathNavigator api in apisNode.Select(
-              "api[memberdata/@visibility='private' and " +
-              "proceduredata/@virtual='true']/@id"))
-                if(commentsCache.GetComments(api.Value) == null &&
-                  !members.ContainsKey(api.Value))
+              "api[memberdata/@visibility='private' and proceduredata/@virtual='true']/@id"))
+                if(commentsCache.GetComments(api.Value) == null && !members.ContainsKey(api.Value))
                 {
                     node = inheritedDocs.CreateDocumentFragment();
                     node.InnerXml = String.Format(CultureInfo.InvariantCulture,
-                        "<member name=\"{0}\"><inheritdoc /></member>",
-                        api.Value);
+                        "<member name=\"{0}\"><inheritdoc /></member>", api.Value);
                     docMemberList.AppendChild(node);
                 }
 
@@ -368,15 +352,14 @@ namespace InheritedDocumentation
             // Check for a circular reference
             if(memberStack.Contains(name))
             {
-                StringBuilder sb = new StringBuilder("Circular reference " +
-                    "detected.\r\nDocumentation inheritance stack:\r\n");
+                StringBuilder sb = new StringBuilder("Circular reference detected.\r\n" +
+                    "Documentation inheritance stack:\r\n");
 
                 sb.AppendFormat("    {0}: {1}", memberStack.Count + 1, name);
                 sb.Append("\r\n");
 
                 while(memberStack.Count != 0)
-                    sb.AppendFormat("    {0}: {1}\r\n",
-                        memberStack.Count, memberStack.Pop());
+                    sb.AppendFormat("    {0}: {1}\r\n", memberStack.Count, memberStack.Pop());
 
                 throw new InheritedDocsException(sb.ToString());
             }
@@ -400,8 +383,7 @@ namespace InheritedDocumentation
                 {
                     // Is it in the list of members for which to generate
                     // documentation?
-                    copyMember = docMemberList.SelectSingleNode(
-                        "member[@name='" + cref.Value + "']");
+                    copyMember = docMemberList.SelectSingleNode("member[@name='" + cref.Value + "']");
 
                     // If so, expand its tags now and use it.  If not, try
                     // to get it from the comments cache.
@@ -414,11 +396,9 @@ namespace InheritedDocumentation
                         baseMember = commentsCache.GetComments(cref.Value);
 
                     if(baseMember != null)
-                        MergeComments(baseMember, member.CreateNavigator(),
-                            (filter == null) ? "*" : filter.Value);
+                        MergeComments(baseMember, member.CreateNavigator(), (filter == null) ? "*" : filter.Value);
                     else
-                        Console.WriteLine("SHFB: Warning GID0002: No " +
-                            "comments found for cref '{0}' on member '{1}'",
+                        Console.WriteLine("SHFB: Warning GID0002: No comments found for cref '{0}' on member '{1}'",
                             cref.Value, name);
 
                     continue;
@@ -431,49 +411,39 @@ namespace InheritedDocumentation
 
                 if(apiNode == null)
                 {
-                    Console.WriteLine("SHFB: Warning GID0003: Unable to " +
-                        "locate API ID '{0}'", name);
+                    Console.WriteLine("SHFB: Warning GID0003: Unable to locate API ID '{0}'", name);
                     continue;
                 }
 
                 if(name[0] == 'T')
                 {
                     // Give precedence to base types
-                    foreach(XPathNavigator baseType in apiNode.Select(
-                      "family/ancestors/type/@api"))
+                    foreach(XPathNavigator baseType in apiNode.Select("family/ancestors/type/@api"))
                         sources.Add(baseType.Value);
 
                     // Then hit the interface implementations
-                    foreach(XPathNavigator baseType in apiNode.Select(
-                      "implements/type/@api"))
+                    foreach(XPathNavigator baseType in apiNode.Select("implements/type/@api"))
                         sources.Add(baseType.Value);
                 }
                 else
                 {
-                    // Constructors aren't like normal overrides.  They can
-                    // call base copies that take the same arguments but the
-                    // overrides aren't listed in the reflection info.  We'll
-                    // just search all base types for a matching signature.
+                    // Constructors aren't like normal overrides.  They can call base copies that take the
+                    // same arguments but the overrides aren't listed in the reflection info.  We'll just
+                    // search all base types for a matching signature.
                     if(name.IndexOf("#ctor", StringComparison.Ordinal) != -1 ||
                       name.IndexOf("#cctor", StringComparison.Ordinal) != -1)
                     {
                         if(name.IndexOf("#ctor", StringComparison.Ordinal) != -1)
-                            ctorName = name.Substring(name.IndexOf("#ctor",
-                                StringComparison.Ordinal));
+                            ctorName = name.Substring(name.IndexOf("#ctor", StringComparison.Ordinal));
                         else
-                            ctorName = name.Substring(name.IndexOf("#cctor",
-                                StringComparison.Ordinal));
+                            ctorName = name.Substring(name.IndexOf("#cctor", StringComparison.Ordinal));
 
-                        baseMember = apiNode.SelectSingleNode(
-                            "containers/type/@api");
-                        apiNode = apisNode.SelectSingleNode("api[@id='" +
-                            baseMember.Value + "']");
+                        baseMember = apiNode.SelectSingleNode("containers/type/@api");
+                        apiNode = apisNode.SelectSingleNode("api[@id='" + baseMember.Value + "']");
 
-                        foreach(XPathNavigator baseType in apiNode.Select(
-                          "family/ancestors/type/@api"))
+                        foreach(XPathNavigator baseType in apiNode.Select("family/ancestors/type/@api"))
                         {
-                            baseMemberName = String.Format(
-                                CultureInfo.InvariantCulture, "M:{0}.{1}",
+                            baseMemberName = String.Format(CultureInfo.InvariantCulture, "M:{0}.{1}",
                                 baseType.Value.Substring(2), ctorName);
 
                             if(commentsCache.GetComments(baseMemberName) != null)
@@ -486,16 +456,14 @@ namespace InheritedDocumentation
                     else
                     {
                         // Give precedence to an override
-                        baseMember = apiNode.SelectSingleNode(
-                            "overrides/member/@api");
+                        baseMember = apiNode.SelectSingleNode("overrides/member/@api");
 
                         if(baseMember != null)
                             sources.Add(baseMember.Value);
 
                         // Then hit implementations.  There should only be one
                         // but just in case, look for more.
-                        foreach(XPathNavigator baseType in apiNode.Select(
-                          "implements/member/@api"))
+                        foreach(XPathNavigator baseType in apiNode.Select("implements/member/@api"))
                             sources.Add(baseType.Value);
                     }
                 }
@@ -505,8 +473,7 @@ namespace InheritedDocumentation
                 {
                     // Is it in the list of members for which to generate
                     // documentation?
-                    copyMember = docMemberList.SelectSingleNode(
-                        "member[@name='" + baseName + "']");
+                    copyMember = docMemberList.SelectSingleNode("member[@name='" + baseName + "']");
 
                     // If so, expand its tags now and use it.  If not, try
                     // to get it from the comments cache.
@@ -520,15 +487,13 @@ namespace InheritedDocumentation
 
                     if(baseMember != null)
                     {
-                        MergeComments(baseMember, member.CreateNavigator(),
-                            (filter == null) ? "*" : filter.Value);
+                        MergeComments(baseMember, member.CreateNavigator(), (filter == null) ? "*" : filter.Value);
                         commentsFound = true;
                     }
                 }
 
                 if(!commentsFound)
-                    Console.WriteLine("SHFB: Warning GID0004: No comments " +
-                        "found for member '{0}'", name);
+                    Console.WriteLine("SHFB: Warning GID0004: No comments found for member '{0}'", name);
             }
 
             // Now merge documentation nested within other tags
@@ -543,12 +508,10 @@ namespace InheritedDocumentation
         /// <param name="fromMember">The member from which to merge comments</param>
         /// <param name="toMember">The member into which the comments merged</param>
         /// <param name="filter">The selection filter</param>
-        private static void MergeComments(XPathNavigator fromMember,
-          XPathNavigator toMember, string filter)
+        private static void MergeComments(XPathNavigator fromMember, XPathNavigator toMember, string filter)
         {
             XPathNavigator duplicate;
-            string[] dupAttrs = new string[] { "cref", "href", "name",
-                "vref", "xref" };
+            string[] dupAttrs = new string[] { "cref", "href", "name", "vref", "xref" };
             string attrValue;
 
             if(String.IsNullOrEmpty(filter))
@@ -586,15 +549,12 @@ namespace InheritedDocumentation
 
                             foreach(string attrName in dupAttrs)
                             {
-                                attrValue = element.GetAttribute(attrName,
-                                    String.Empty);
+                                attrValue = element.GetAttribute(attrName, String.Empty);
 
                                 if(!String.IsNullOrEmpty(attrValue))
                                 {
-                                    duplicate = toMember.SelectSingleNode(
-                                        String.Format(CultureInfo.InvariantCulture,
-                                        "{0}[@{1}='{2}']", element.Name,
-                                        attrName, attrValue));
+                                    duplicate = toMember.SelectSingleNode(String.Format(CultureInfo.InvariantCulture,
+                                        "{0}[@{1}='{2}']", element.Name, attrName, attrValue));
 
                                     if(duplicate != null)
                                         break;
@@ -664,16 +624,14 @@ namespace InheritedDocumentation
                 // Inherit from a member other than the base?
                 cref = inheritTag.Attributes["cref"];
 
-                baseMember = LocateBaseDocumentation(name,
-                    (cref != null) ? cref.Value : null);
+                baseMember = LocateBaseDocumentation(name, (cref != null) ? cref.Value : null);
 
                 if(baseMember != null)
                 {
                     content = inheritedDocs.CreateDocumentFragment();
 
                     // Merge the content
-                    foreach(XPathNavigator element in baseMember.Select(
-                      sb.ToString()))
+                    foreach(XPathNavigator element in baseMember.Select(sb.ToString()))
                     {
                         newNode = inheritedDocs.CreateDocumentFragment();
 
@@ -694,13 +652,11 @@ namespace InheritedDocumentation
                     inheritTag.ParentNode.RemoveChild(inheritTag);
 
                     if(cref != null)
-                        Console.WriteLine("SHFB: Warning GID0005: No " +
-                            "comments found for cref '{0}' on member " +
+                        Console.WriteLine("SHFB: Warning GID0005: No comments found for cref '{0}' on member " +
                             "'{1}' in '{2}'", cref.Value, name, sb);
                     else
-                        Console.WriteLine("SHFB: Warning GID0006: No " +
-                            "comments found for member '{0}' in '{1}'", name,
-                            sb);
+                        Console.WriteLine("SHFB: Warning GID0006: No comments found for member '{0}' in '{1}'",
+                            name, sb);
                 }
             }
         }
@@ -711,8 +667,7 @@ namespace InheritedDocumentation
         /// <param name="name">The member name</param>
         /// <param name="cref">An optional member name from which to inherit
         /// the documentation.</param>
-        private static XPathNavigator LocateBaseDocumentation(string name,
-          string cref)
+        private static XPathNavigator LocateBaseDocumentation(string name, string cref)
         {
             List<string> sources = new List<string>();
             XPathNavigator apiNode, baseMember;
@@ -724,8 +679,7 @@ namespace InheritedDocumentation
             {
                 // Is it in the list of members for which to generate
                 // documentation?
-                copyMember = docMemberList.SelectSingleNode(
-                    "member[@name='" + cref + "']");
+                copyMember = docMemberList.SelectSingleNode("member[@name='" + cref + "']");
 
                 // If so, expand its tags now and use it.  If not, try
                 // to get it from the comments cache.
@@ -745,49 +699,39 @@ namespace InheritedDocumentation
 
             if(apiNode == null)
             {
-                Console.WriteLine("SHFB: Warning GID0003: Unable to locate " +
-                    "API ID '{0}'", name);
+                Console.WriteLine("SHFB: Warning GID0003: Unable to locate API ID '{0}'", name);
                 return null;
             }
 
             if(name[0] == 'T')
             {
                 // Give precedence to base types
-                foreach(XPathNavigator baseType in apiNode.Select(
-                  "family/ancestors/type/@api"))
+                foreach(XPathNavigator baseType in apiNode.Select("family/ancestors/type/@api"))
                     sources.Add(baseType.Value);
 
                 // Then hit the interface implementations
-                foreach(XPathNavigator baseType in apiNode.Select(
-                  "implements/type/@api"))
+                foreach(XPathNavigator baseType in apiNode.Select("implements/type/@api"))
                     sources.Add(baseType.Value);
             }
             else
             {
-                // Constructors aren't like normal overrides.  They can
-                // call base copies that take the same arguments but the
-                // overrides aren't listed in the reflection info.  We'll
-                // just search all base types for a matching signature.
+                // Constructors aren't like normal overrides.  They can call base copies that take the same
+                // arguments but the overrides aren't listed in the reflection info.  We'll just search all
+                // base types for a matching signature.
                 if(name.IndexOf("#ctor", StringComparison.Ordinal) != -1 ||
                   name.IndexOf("#cctor", StringComparison.Ordinal) != -1)
                 {
                     if(name.IndexOf("#ctor", StringComparison.Ordinal) != -1)
-                        ctorName = name.Substring(name.IndexOf("#ctor",
-                            StringComparison.Ordinal));
+                        ctorName = name.Substring(name.IndexOf("#ctor", StringComparison.Ordinal));
                     else
-                        ctorName = name.Substring(name.IndexOf("#cctor",
-                            StringComparison.Ordinal));
+                        ctorName = name.Substring(name.IndexOf("#cctor", StringComparison.Ordinal));
 
-                    baseMember = apiNode.SelectSingleNode(
-                        "containers/type/@api");
-                    apiNode = apisNode.SelectSingleNode("api[@id='" +
-                        baseMember.Value + "']");
+                    baseMember = apiNode.SelectSingleNode("containers/type/@api");
+                    apiNode = apisNode.SelectSingleNode("api[@id='" + baseMember.Value + "']");
 
-                    foreach(XPathNavigator baseType in apiNode.Select(
-                      "family/ancestors/type/@api"))
+                    foreach(XPathNavigator baseType in apiNode.Select("family/ancestors/type/@api"))
                     {
-                        baseMemberName = String.Format(
-                            CultureInfo.InvariantCulture, "M:{0}.{1}",
+                        baseMemberName = String.Format(CultureInfo.InvariantCulture, "M:{0}.{1}",
                             baseType.Value.Substring(2), ctorName);
 
                         if(commentsCache.GetComments(baseMemberName) != null)
@@ -800,16 +744,14 @@ namespace InheritedDocumentation
                 else
                 {
                     // Give precedence to an override
-                    baseMember = apiNode.SelectSingleNode(
-                        "overrides/member/@api");
+                    baseMember = apiNode.SelectSingleNode("overrides/member/@api");
 
                     if(baseMember != null)
                         sources.Add(baseMember.Value);
 
                     // Then hit implementations.  There should only be one
                     // but just in case, look for more.
-                    foreach(XPathNavigator baseType in apiNode.Select(
-                      "implements/member/@api"))
+                    foreach(XPathNavigator baseType in apiNode.Select("implements/member/@api"))
                         sources.Add(baseType.Value);
                 }
             }
@@ -821,8 +763,7 @@ namespace InheritedDocumentation
             {
                 // Is it in the list of members for which to generate
                 // documentation?
-                copyMember = docMemberList.SelectSingleNode(
-                    "member[@name='" + baseName + "']");
+                copyMember = docMemberList.SelectSingleNode("member[@name='" + baseName + "']");
 
                 // If so, expand its tags now and use it.  If not, try
                 // to get it from the comments cache.

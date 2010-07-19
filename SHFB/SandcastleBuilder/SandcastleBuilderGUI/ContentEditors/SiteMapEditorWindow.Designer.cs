@@ -187,7 +187,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             // 
             // miSplitToc
             // 
-            this.miSplitToc.Image = global::SandcastleBuilder.Gui.Properties.Resources.SplitTOC;
+            this.miSplitToc.Image = global::SandcastleBuilder.Gui.Properties.Resources.InsertApiAfter;
             this.miSplitToc.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.miSplitToc.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.miSplitToc.Name = "miSplitToc";
@@ -534,7 +534,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             // tsbSplitTOC
             // 
             this.tsbSplitTOC.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tsbSplitTOC.Image = global::SandcastleBuilder.Gui.Properties.Resources.SplitTOC;
+            this.tsbSplitTOC.Image = global::SandcastleBuilder.Gui.Properties.Resources.InsertApiAfter;
             this.tsbSplitTOC.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.tsbSplitTOC.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tsbSplitTOC.Name = "tsbSplitTOC";

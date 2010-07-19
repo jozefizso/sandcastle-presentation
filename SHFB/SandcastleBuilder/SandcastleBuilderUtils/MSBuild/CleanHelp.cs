@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder MSBuild Tasks
 // File    : CleanHelp.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/17/2009
-// Note    : Copyright 2008, Eric Woodruff, All rights reserved
+// Updated : 07/07/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the MSBuild task used to clean (remove) help file output
@@ -77,59 +77,63 @@ namespace SandcastleBuilder.Utils.MSBuild
 
             try
             {
-                projectPath = Path.GetDirectoryName(Path.GetFullPath(
-                    this.ProjectFile));
+                projectPath = Path.GetDirectoryName(Path.GetFullPath(this.ProjectFile));
 
                 // Make sure we start out in the project's output folder
                 // in case the output folder is relative to it.
-                Directory.SetCurrentDirectory(Path.GetDirectoryName(
-                    Path.GetFullPath(projectPath)));
+                Directory.SetCurrentDirectory(Path.GetDirectoryName(Path.GetFullPath(projectPath)));
 
                 // Clean the working folder
                 if(!String.IsNullOrEmpty(this.WorkingPath))
                 {
                     if(!Path.IsPathRooted(this.WorkingPath))
-                        this.WorkingPath = Path.GetFullPath(Path.Combine(
-                            projectPath, this.WorkingPath));
+                        this.WorkingPath = Path.GetFullPath(Path.Combine(projectPath, this.WorkingPath));
 
                     if(Directory.Exists(this.WorkingPath))
                     {
-                        BuildProcess.VerifySafePath("WorkingPath",
-                            this.WorkingPath, projectPath);
+                        BuildProcess.VerifySafePath("WorkingPath", this.WorkingPath, projectPath);
                         Log.LogMessage("Removing working folder...");
                         Directory.Delete(this.WorkingPath, true);
                     }
                 }
 
                 if(!Path.IsPathRooted(this.OutputPath))
-                    this.OutputPath = Path.GetFullPath(Path.Combine(
-                        projectPath, this.OutputPath));
+                    this.OutputPath = Path.GetFullPath(Path.Combine(projectPath, this.OutputPath));
 
                 if(Directory.Exists(this.OutputPath))
                 {
                     Log.LogMessage("Removing build files...");
-                    BuildProcess.VerifySafePath("OutputPath", this.OutputPath,
-                        projectPath);
+                    BuildProcess.VerifySafePath("OutputPath", this.OutputPath, projectPath);
 
-                    // Read-only and/or hidden files and folders are ignored
-                    // as they are assumed to be under source control.
+                    // Read-only and/or hidden files and folders are ignored as they are assumed to be
+                    // under source control.
                     foreach(string file in Directory.GetFiles(this.OutputPath))
-                        if((File.GetAttributes(file) &
-                          (FileAttributes.ReadOnly |
-                          FileAttributes.Hidden)) == 0)
+                        if((File.GetAttributes(file) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) == 0)
                             File.Delete(file);
+                        else
+                            Log.LogMessage("Skipping read-only or hidden file '{0}'", file);
 
                     Log.LogMessage("Removing build folders...");
 
                     foreach(string folder in Directory.GetDirectories(this.OutputPath))
-                        if((File.GetAttributes(folder) &
-                          (FileAttributes.ReadOnly |
-                          FileAttributes.Hidden)) == 0)
-                            Directory.Delete(folder, true);
+                        try
+                        {
+                            if((File.GetAttributes(folder) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) == 0)
+                                Directory.Delete(folder, true);
+                            else
+                                Log.LogMessage("Skipping folder '{0}' as it is read-only or hidden", folder);
+                        }
+                        catch(IOException ioEx)
+                        {
+                            Log.LogMessage("Did not delete folder '{0}': {1}", folder, ioEx.Message);
+                        }
+                        catch(UnauthorizedAccessException uaEx)
+                        {
+                            Log.LogMessage("Did not delete folder '{0}': {1}", folder, uaEx.Message);
+                        }
 
-                    // Delete the log file too if it it exists
-                    if(!String.IsNullOrEmpty(this.LogFileLocation) &&
-                      File.Exists(this.LogFileLocation))
+                    // Delete the log file too if it exists
+                    if(!String.IsNullOrEmpty(this.LogFileLocation) && File.Exists(this.LogFileLocation))
                     {
                         Log.LogMessage("Removing build log...");
                         File.Delete(this.LogFileLocation);
@@ -140,7 +144,7 @@ namespace SandcastleBuilder.Utils.MSBuild
             {
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
                 Log.LogError(null, "CT0001", "CT0001", "SHFB", 0, 0, 0, 0,
-                  "Unable to clean output folder.  Reason: {0}", ex);
+                    "Unable to clean output folder.  Reason: {0}", ex);
                 return false;
             }
 

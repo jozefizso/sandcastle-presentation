@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : FullTextIndex.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 10/04/2007
-// Note    : Copyright 2007, Eric Woodruff, All rights reserved
+// Updated : 06/15/2010
+// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a class used to create a full-text index used to search
@@ -73,7 +73,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         private static Regex reSplitWords = new Regex(@"\W");
 
         // Exclusion word list
-        private Dictionary<string, string> exclusionWords;
+        private HashSet<string> exclusionWords;
         private CultureInfo lang;
 
         // Index information
@@ -102,12 +102,12 @@ namespace SandcastleBuilder.Utils.BuildEngine
             content = reCondenseWS.Replace(content, " ");
             lang = language;
 
-            exclusionWords = new Dictionary<string, string>();
+            exclusionWords = new HashSet<string>();
             words = reSplitWords.Split(content);
 
             foreach(string word in words)
                 if(word.Length > 2)
-                    exclusionWords.Add(word, null);
+                    exclusionWords.Add(word);
 
             fileList = new List<string>();
             wordDictionary = new Dictionary<string, List<long>>();
@@ -191,8 +191,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 // the common words exclusion list.
                 foreach(string word in words)
                 {
-                    if(word.Length < 3 || Char.IsDigit(word[0]) ||
-                      exclusionWords.ContainsKey(word))
+                    if(word.Length < 3 || Char.IsDigit(word[0]) || exclusionWords.Contains(word))
                         continue;
 
                     // The number of times it occurs helps determine the

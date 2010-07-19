@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : BuildProcess.PurgeItems.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 12/14/2008
-// Note    : Copyright 2006-2008, Eric Woodruff, All rights reserved
+// Updated : 06/15/2010
+// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the code used to purge duplicate topics and other items
@@ -34,10 +34,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-using System.Xml.XPath;
 
 using SandcastleBuilder.Utils.PlugIn;
 
@@ -47,13 +45,12 @@ namespace SandcastleBuilder.Utils.BuildEngine
     {
         #region Private data members
 
-        // A list of members that need to be excluded from the reflection
+        // A set of members that need to be excluded from the reflection
         // information based on the visibility settings.
-        private Dictionary<string, string> excludedMembers;
+        private HashSet<string> excludedMembers;
 
         private static Regex reExcludeElementEntry = new Regex(
-            "<element api=\"([^\n\"]+?)\">.*?</element>|" +
-            "<element api=\"([^\n\"]+?)\" />",
+            "<element api=\"([^\n\"]+?)\">.*?</element>|<element api=\"([^\n\"]+?)\" />",
             RegexOptions.Singleline);
 
         private MatchEvaluator excludeElementEval;
@@ -89,7 +86,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
             // we will get a list of all api and element entries to be
             // removed and we'll remove them using regular expressions and a
             // match evaluator at the end of this method.
-            excludedMembers = new Dictionary<string, string>();
+            excludedMembers = new HashSet<string>();
 
             try
             {
@@ -204,15 +201,14 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 // Now remove unwanted members if any were found
                 if(excludedMembers.Count != 0)
                 {
-                    this.ReportProgress("    Removing previously noted " +
-                        "unwanted APIs and elements");
+                    this.ReportProgress("    Removing previously noted unwanted APIs and elements");
                     apis = apisNode.SelectNodes("*");
 
                     for(int idx = 0; idx < apis.Count; idx++)
                     {
                         api = apis[idx];
 
-                        if(!excludedMembers.ContainsKey(api.Attributes["id"].Value))
+                        if(!excludedMembers.Contains(api.Attributes["id"].Value))
                         {
                             // An XPath sub-query for the <element> entries is
                             // way to slow especially on very large files so
@@ -226,8 +222,8 @@ namespace SandcastleBuilder.Utils.BuildEngine
                             // results for those that contain an unwanted
                             // element and only do it when really necessary.
                             foreach(Match m in matches)
-                                if(excludedMembers.ContainsKey(m.Groups[1].Value) ||
-                                  excludedMembers.ContainsKey(m.Groups[2].Value))
+                                if(excludedMembers.Contains(m.Groups[1].Value) ||
+                                  excludedMembers.Contains(m.Groups[2].Value))
                                 {
                                     api.InnerXml = reExcludeElementEntry.Replace(
                                         api.InnerXml, excludeElementEval);
@@ -242,8 +238,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 }
 
                 // Backup the original for reference and save the changed file
-                File.Copy(reflectionFile, Path.ChangeExtension(reflectionFile,
-                    ".bak"), true);
+                File.Copy(reflectionFile, Path.ChangeExtension(reflectionFile, ".bak"), true);
                 reflectionInfo.Save(reflectionFile);
             }
             catch(BuilderException )
@@ -265,42 +260,43 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// </summary>
         private void RemoveAttributes()
         {
-            Dictionary<string, string> keepAttrs = new Dictionary<string, string>();
             XmlNodeList elements;
             XmlNode typeNode, parent;
-            int idx;
+            int count = 0;
 
-            // These attributes are always kept as they provide useful
-            // information or are used by other components.
-            // SerializableAttribute is also needed but it is an XML attribute
-            // in the apis/api/typedata node rather than an actual attribute
-            // type entry so we can ignore it here.
-            keepAttrs.Add("T:System.FlagsAttribute", null);
-            keepAttrs.Add("T:System.ObsoleteAttribute", null);
-            keepAttrs.Add("T:System.Runtime.CompilerServices.ExtensionAttribute", null);
+            // These attributes are always kept as they provide useful information or are used by
+            // other components.  SerializableAttribute is also needed but it is an XML attribute
+            // in the apis/api/typedata node rather than an actual attribute type entry so we can
+            // ignore it here.
+            HashSet<string> keepAttrs = new HashSet<string>
+            {
+                "T:System.FlagsAttribute",
+                "T:System.ObsoleteAttribute",
+                "T:System.Runtime.CompilerServices.ExtensionAttribute",
 
-            // AjaxDoc/Script# attributes
-            keepAttrs.Add("T:System.AttachedPropertyAttribute", null);
-            keepAttrs.Add("T:System.IgnoreNamespaceAttribute", null);
-            keepAttrs.Add("T:System.IntrinsicPropertyAttribute", null);
-            keepAttrs.Add("T:System.NonScriptableAttribute", null);
-            keepAttrs.Add("T:System.PreserveCaseAttribute", null);
-            keepAttrs.Add("T:System.RecordAttribute", null);
+                // AjaxDoc/Script# attributes
+                "T:System.AttachedPropertyAttribute",
+                "T:System.IgnoreNamespaceAttribute",
+                "T:System.IntrinsicPropertyAttribute",
+                "T:System.NonScriptableAttribute",
+                "T:System.PreserveCaseAttribute",
+                "T:System.RecordAttribute"
+            };
 
             try
             {
                 // Find all of the attribute nodes
                 elements = apisNode.SelectNodes("api/attributes/attribute");
 
-                for(idx = 0; idx < elements.Count; idx++)
+                for(int idx = 0; idx < elements.Count; idx++)
                 {
                     typeNode = elements[idx].SelectSingleNode("type");
 
-                    if(typeNode != null &&
-                      !keepAttrs.ContainsKey(typeNode.Attributes["api"].Value))
+                    if(typeNode != null && !keepAttrs.Contains(typeNode.Attributes["api"].Value))
                     {
                         parent = elements[idx].ParentNode;
                         parent.RemoveChild(elements[idx]);
+                        count++;
 
                         // Remove the parent if it is empty
                         if(parent.ChildNodes.Count == 0)
@@ -308,13 +304,11 @@ namespace SandcastleBuilder.Utils.BuildEngine
                     }
                 }
 
-                this.ReportProgress("    {0} attribute nodes removed",
-                    elements.Count);
+                this.ReportProgress("    {0} attribute nodes removed", count);
             }
             catch(Exception ex)
             {
-                throw new BuilderException("BE0045",
-                    "Error removing attributes nodes: " + ex.Message, ex);
+                throw new BuilderException("BE0045", "Error removing attributes nodes: " + ex.Message, ex);
             }
         }
 
@@ -421,14 +415,12 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
                     for(elementIdx = 0; elementIdx < elements.Count; elementIdx++)
                     {
-                        elements[elementIdx].ParentNode.RemoveChild(
-                            elements[elementIdx]);
+                        elements[elementIdx].ParentNode.RemoveChild(elements[elementIdx]);
                         removed++;
                     }
                 }
 
-                this.ReportProgress("    {0} inherited member elements removed",
-                    removed);
+                this.ReportProgress("    {0} inherited member elements removed", removed);
             }
             catch(Exception ex)
             {
@@ -463,23 +455,18 @@ namespace SandcastleBuilder.Utils.BuildEngine
                         id = node.Attributes["id"].Value;
                     else
                         id = node.Attributes["api"].Value;
- 
-                    if(id != null && !excludedMembers.ContainsKey(id))
-                    {
-                        excludedMembers.Add(id, null);
+
+                    if(id != null && excludedMembers.Add(id))
                         count++;
-                    }
                 }
 
                 if(!String.IsNullOrEmpty(memberDesc))
-                    this.ReportProgress("    {0} {1} noted for removal", count,
-                        memberDesc);
+                    this.ReportProgress("    {0} {1} noted for removal", count, memberDesc);
             }
             catch(Exception ex)
             {
-                throw new BuilderException("BE0048", String.Format(
-                    CultureInfo.CurrentCulture, "Error removing {0}: {1}",
-                    memberDesc, ex.Message), ex);
+                throw new BuilderException("BE0048", String.Format(CultureInfo.CurrentCulture,
+                    "Error removing {0}: {1}", memberDesc, ex.Message), ex);
             }
 
             return count;
@@ -595,8 +582,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// were found with an XPath query on very large files.</remarks>
         private string OnExcludeElement(Match m)
         {
-            if(excludedMembers.ContainsKey(m.Groups[1].Value) ||
-              excludedMembers.ContainsKey(m.Groups[2].Value))
+            if(excludedMembers.Contains(m.Groups[1].Value) || excludedMembers.Contains(m.Groups[2].Value))
                 return String.Empty;
 
             return m.Value;

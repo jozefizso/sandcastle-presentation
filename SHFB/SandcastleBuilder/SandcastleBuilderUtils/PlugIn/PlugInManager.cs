@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : PlugInManager.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 12/06/2009
-// Note    : Copyright 2007-2009, Eric Woodruff, All rights reserved
+// Updated : 03/07/2010
+// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the class that manages the set of known plug-ins.
@@ -63,8 +63,8 @@ namespace SandcastleBuilder.Utils.PlugIn
         #endregion
 
         /// <summary>
-        /// Load the plug-ins found in the .\Plug-Ins folder and its
-        /// subfolders.
+        /// Load the build plug-ins found in the Components and Plug-Ins
+        /// folder and its subfolders.
         /// </summary>
         private static void LoadPlugIns()
         {
@@ -72,23 +72,23 @@ namespace SandcastleBuilder.Utils.PlugIn
             Assembly asm;
             Type[] types;
             PlugInInfo info;
-            string shfbFolder, plugInsFolder;
+            string shfbFolder, plugInsFolder, componentPath;
 
             plugIns = new Dictionary<string, PlugInInfo>();
             asm = Assembly.GetExecutingAssembly();
 
-            // Plug-ins should be located in the EWSoftware\Sandcastle Help
-            // File Builder\Plug-Ins folder under the common application data
-            // folder.
             shfbFolder = asm.Location;
-            shfbFolder = shfbFolder.Substring(0,
-                shfbFolder.LastIndexOf('\\') + 1);
+            shfbFolder = shfbFolder.Substring(0, shfbFolder.LastIndexOf('\\') + 1);
             plugInsFolder = Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.CommonApplicationData),
                 Constants.ComponentsAndPlugInsFolder);
 
-            if(Directory.Exists(plugInsFolder))
-                allFiles.AddRange(Directory.GetFiles(plugInsFolder, "*.plugins",
+            // Give precedence to plug-ins in the optional SHFBCOMPONENTROOT
+            // environment variable folder.
+            componentPath = Environment.ExpandEnvironmentVariables("%SHFBCOMPONENTROOT%");
+
+            if(!String.IsNullOrEmpty(componentPath) && Directory.Exists(componentPath))
+                allFiles.AddRange(Directory.GetFiles(componentPath, "*.plugins",
                     SearchOption.AllDirectories));
 
             // Add the standard plug-ins file and any third-party plug-in
@@ -96,6 +96,11 @@ namespace SandcastleBuilder.Utils.PlugIn
             // deployments of SHFB to build servers.
             allFiles.AddRange(Directory.GetFiles(shfbFolder, "*.plugins",
                 SearchOption.AllDirectories));
+
+            // Finally, check the common app data build components folder
+            if(Directory.Exists(plugInsFolder))
+                allFiles.AddRange(Directory.GetFiles(plugInsFolder, "*.plugins",
+                    SearchOption.AllDirectories));
 
             foreach(string file in allFiles)
             {

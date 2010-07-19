@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : ExecutionPointCollection.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 11/14/2008
-// Note    : Copyright 2007-2008, Eric Woodruff, All rights reserved
+// Updated : 06/12/2010
+// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a collection class that holds execution point information
@@ -21,7 +21,7 @@
 // 1.8.0.1  11/14/2008  EFW  Added execution priority support
 //=============================================================================
 
-using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using SandcastleBuilder.Utils.BuildEngine;
@@ -35,6 +35,19 @@ namespace SandcastleBuilder.Utils.PlugIn
     /// </summary>
     public class ExecutionPointCollection : Collection<ExecutionPoint>
     {
+        /// <summary>
+        /// Add a range of items to the collection
+        /// </summary>
+        /// <param name="range">An enumerable range of items to add</param>
+        /// <returns>The collection to which the items were added</returns>
+        public ExecutionPointCollection AddRange(IEnumerable<ExecutionPoint> range)
+        {
+            foreach(ExecutionPoint item in range)
+                this.Add(item);
+
+            return this;
+        }
+
         /// <summary>
         /// This is used to determine if the collection contains an entry for
         /// the specified build step and behavior.

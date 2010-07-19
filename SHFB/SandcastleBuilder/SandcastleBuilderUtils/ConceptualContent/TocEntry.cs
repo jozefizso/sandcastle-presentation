@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : TocEntry.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 02/11/2009
-// Note    : Copyright 2006-2009, Eric Woodruff, All rights reserved
+// Updated : 07/02/2010
+// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a class representing a table of contents entry.  This is
@@ -23,10 +23,10 @@
 // 1.5.0.2  07/03/2007  EFW  Added support for saving as a site map file
 // 1.6.0.7  04/12/2008  EFW  Added support for a split table of contents
 // 1.8.0.0  08/11/2008  EFW  Modified to support the new project format
+// 1.9.0.0  06/15/2010  EFW  Added support for MS Help Viewer TOC format
 //=============================================================================
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.Globalization;
@@ -47,20 +47,14 @@ namespace SandcastleBuilder.Utils.ConceptualContent
     {
         #region Private data members
         //=====================================================================
-        // Private data members
 
         private IBasePathProvider pathProvider;
-        private TocEntryCollection parent, children;
+        private TocEntryCollection children;
         private FilePath sourceFile;
-        private string destFile, title;
-        private bool isDefaultTopic, includePage, hasLinks, needsColorizing,
-            hasProjectTags, hasCodeBlocks, splitToc;
-        private int sortOrder;
         #endregion
 
         #region Properties
         //=====================================================================
-        // Properties
 
         /// <summary>
         /// This is used to track the topic's parent collection
@@ -68,11 +62,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// <remarks>This is used by the designer to move items around within
         /// the collection.</remarks>
         [Browsable(false)]
-        public TocEntryCollection Parent
-        {
-            get { return parent; }
-            internal set { parent = value; }
-        }
+        public TocEntryCollection Parent { get; internal set; }
 
         /// <summary>
         /// This returns the <see cref="IBasePathProvider" /> for the entry.
@@ -122,22 +112,21 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// This is used to get or set the entry's destination file path.
         /// </summary>
         [Browsable(false)]
-        public string DestinationFile
-        {
-            get { return destFile; }
-            set { destFile = value; }
-        }
+        public string DestinationFile { get; set; }
+
+        /// <summary>
+        /// The ID of the item when it represents a TOC entry from a content
+        /// layout file.
+        /// </summary>
+        [Browsable(false)]
+        public string Id { get; set; }
 
         /// <summary>
         /// This is used to get or set the entry's title in the table of
         /// contents.
         /// </summary>
         [Category("Content Item"), Description("The table of contents title")]
-        public string Title
-        {
-            get { return title; }
-            set { title = value; }
-        }
+        public string Title { get; set; }
 
         /// <summary>
         /// This is used to get or set whether or not the page will appear in
@@ -148,33 +137,21 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// The other options such as <see cref="SortOrder" /> will still have
         /// an effect.</remarks>
         [Browsable(false)]
-        public bool IncludePage
-        {
-            get { return includePage; }
-            set { includePage = value; }
-        }
+        public bool IncludePage { get; set; }
 
         /// <summary>
         /// This is used to get or set whether or not the item is the default
         /// topic for the help file.
         /// </summary>
         [Browsable(false)]
-        public bool IsDefaultTopic
-        {
-            get { return isDefaultTopic; }
-            set { isDefaultTopic = value; }
-        }
+        public bool IsDefaultTopic { get; set; }
 
         /// <summary>
         /// This is used to get or set whether or not the topic has links that
         /// need to be resolved when the file is copied.
         /// </summary>
         [Browsable(false)]
-        public bool HasLinks
-        {
-            get { return hasLinks; }
-            set { hasLinks = value; }
-        }
+        public bool HasLinks { get; set; }
 
         /// <summary>
         /// This is used to get or set whether or not the topic has
@@ -182,33 +159,21 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// attribute to indicate that they should be colorized.
         /// </summary>
         [Browsable(false)]
-        public bool NeedsColorizing
-        {
-            get { return needsColorizing; }
-            set { needsColorizing = value; }
-        }
+        public bool NeedsColorizing { get; set; }
 
         /// <summary>
         /// This is used to get or set whether or not the topic has
         /// <c>&lt;code /&gt;</c> blocks that need expanding.
         /// </summary>
         [Browsable(false)]
-        public bool HasCodeBlocks
-        {
-            get { return hasCodeBlocks; }
-            set { hasCodeBlocks = value; }
-        }
+        public bool HasCodeBlocks { get; set; }
 
         /// <summary>
         /// This is used to get or set whether or not the topic has tags
         /// that should be resolved to project options.
         /// </summary>
         [Browsable(false)]
-        public bool HasProjectTags
-        {
-            get { return hasProjectTags; }
-            set { hasProjectTags = value; }
-        }
+        public bool HasProjectTags { get; set; }
 
         /// <summary>
         /// This is used to get or set whether or not the table of contents is
@@ -220,28 +185,22 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// content.  If used, the <c>ContentPlacement</c> project property
         /// will be ignored.</remarks>
         [Browsable(false)]
-        public bool SplitToc
-        {
-            get { return splitToc; }
-            set { splitToc = value; }
-        }
+        public ApiParentMode ApiParentMode { get; set; }
 
         /// <summary>
         /// This is used to get or set the sort order for the entry within
         /// its group.
         /// </summary>
         /// <value>Entries with identical sort order values will sort by
-        /// title as well.  Items with not specific sort order will sort
+        /// title as well.  Items with no specific sort order will sort
         /// below those with a defined sort order.</value>
         [Browsable(false)]
-        public int SortOrder
-        {
-            get { return sortOrder; }
-            set { sortOrder = value; }
-        }
+        public int SortOrder { get; set; }
         #endregion
 
         #region IComparable<TocEntry> Members
+        //=====================================================================
+
         /// <summary>
         /// Compares this instance to another instance and returns an
         /// indication of their relative values.
@@ -263,14 +222,12 @@ namespace SandcastleBuilder.Utils.ConceptualContent
             if(this.SortOrder > other.SortOrder)
                 return 1;
 
-            return String.Compare(this.Title, other.Title, false,
-                CultureInfo.CurrentCulture);
+            return String.Compare(this.Title, other.Title, false, CultureInfo.CurrentCulture);
         }
         #endregion
 
         #region ICloneable Members
         //=====================================================================
-        // ICloneable implementation
 
         /// <summary>
         /// Clone this table of contents entry
@@ -279,16 +236,16 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         public object Clone()
         {
             TocEntry clone = new TocEntry(pathProvider);
-            clone.DestinationFile = destFile;
-            clone.HasCodeBlocks = hasCodeBlocks;
-            clone.HasLinks = hasLinks;
-            clone.HasProjectTags = hasProjectTags;
-            clone.IncludePage = includePage;
+            clone.DestinationFile = this.DestinationFile;
+            clone.HasCodeBlocks = this.HasCodeBlocks;
+            clone.HasLinks = this.HasLinks;
+            clone.HasProjectTags = this.HasProjectTags;
+            clone.IncludePage = this.IncludePage;
             clone.IsDefaultTopic = false;   // Can't have more than one
-            clone.NeedsColorizing = needsColorizing;
-            clone.SortOrder = sortOrder;
+            clone.NeedsColorizing = this.NeedsColorizing;
+            clone.SortOrder = this.SortOrder;
             clone.SourceFile = (FilePath)sourceFile.Clone();
-            clone.Title = title;
+            clone.Title = this.Title;
 
             foreach(TocEntry child in children)
                 clone.Children.Add((TocEntry)child.Clone());
@@ -301,6 +258,17 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         //=====================================================================
 
         /// <summary>
+        /// Reset the sort order on this item and its children
+        /// </summary>
+        public void ResetSortOrder()
+        {
+            this.SortOrder = -1;
+
+            foreach(TocEntry t in children)
+                t.ResetSortOrder();
+        }
+
+        /// <summary>
         /// Mark the project as dirty if the contained lists change
         /// </summary>
         /// <param name="sender">The sender of the event</param>
@@ -308,8 +276,8 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// <remarks>This may not be the best way to handle this.</remarks>
         private void childList_ListChanged(object sender, ListChangedEventArgs e)
         {
-            if(parent != null)
-                parent.ChildListChanged(this);
+            if(this.Parent != null)
+                this.Parent.ChildListChanged(this);
         }
         #endregion
 
@@ -323,19 +291,17 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         public TocEntry(IBasePathProvider basePathProvider)
         {
             pathProvider = basePathProvider;
-            includePage = true;
-            sortOrder = Int32.MaxValue;
+            this.IncludePage = true;
+            this.SortOrder = Int32.MaxValue;
             children = new TocEntryCollection();
             sourceFile = new FilePath(pathProvider);
 
-            children.ListChanged += new ListChangedEventHandler(
-                childList_ListChanged);
+            children.ListChanged += childList_ListChanged;
         }
         #endregion
 
         #region Equality, hash code, and To String
         //=====================================================================
-        // ToString methods
 
         /// <inheritdoc />
         public override bool Equals(object obj)
@@ -350,7 +316,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
                 this.Title == other.Title &&
                 this.SortOrder == other.SortOrder &&
                 this.IsDefaultTopic == other.IsDefaultTopic &&
-                this.SplitToc == other.SplitToc);
+                this.ApiParentMode == other.ApiParentMode);
         }
 
         /// <summary>
@@ -365,8 +331,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
             if(Object.ReferenceEquals(t1, t2))
                 return true;
 
-            // Check null reference first (cast to object first to avoid
-            // stack overflow).
+            // Check null reference first (cast to object first to avoid stack overflow)
             if(t1 as object == null)
                 return false;
 
@@ -435,11 +400,6 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// format is not <b>HtmlHelp1</b> or <b>MSHelp2</b>.</exception>
         public string ToString(HelpFileFormat format)
         {
-            if(format != HelpFileFormat.HtmlHelp1 &&
-              format != HelpFileFormat.MSHelp2)
-                throw new ArgumentException("The format specified must be " +
-                    "HtmlHelp1 or MSHelp2 only", "format");
-
             StringBuilder sb = new StringBuilder(1024);
             this.ConvertToString(format, sb);
             return sb.ToString();
@@ -454,69 +414,101 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// appended.</param>
         internal void ConvertToString(HelpFileFormat format, StringBuilder sb)
         {
-            string guid, url;
+            string guid, url, orderAttr, titleAttr;
 
-            if(format == HelpFileFormat.HtmlHelp1)
+            switch(format)
             {
-                if(children.Count == 0)
-                    sb.AppendFormat("<LI><OBJECT type=\"text/sitemap\">" +
-                        "\r\n<param name=\"Name\" value=\"{0}\">\r\n" +
-                        "<param name=\"Local\" value=\"{1}\">\r\n" +
-                        "</OBJECT></LI>\r\n", HttpUtility.HtmlEncode(title),
-                        HttpUtility.HtmlEncode(destFile));
-                else
-                {
-                    if(String.IsNullOrEmpty(destFile))
-                        sb.AppendFormat("<LI><OBJECT type=\"text/sitemap\">" +
-                            "\r\n<param name=\"Name\" value=\"{0}\">\r\n" +
-                            "</OBJECT></LI>\r\n",
-                            HttpUtility.HtmlEncode(title));
-                    else
-                        sb.AppendFormat("<LI><OBJECT type=\"text/sitemap\">" +
-                            "\r\n<param name=\"Name\" value=\"{0}\">\r\n" +
+                case HelpFileFormat.HtmlHelp1:
+                    if(children.Count == 0)
+                        sb.AppendFormat("<LI><OBJECT type=\"text/sitemap\">\r\n" +
+                            "<param name=\"Name\" value=\"{0}\">\r\n" +
                             "<param name=\"Local\" value=\"{1}\">\r\n" +
-                            "</OBJECT></LI>\r\n",
-                            HttpUtility.HtmlEncode(title),
-                            HttpUtility.HtmlEncode(destFile));
-
-                    sb.Append("<UL>\r\n");
-                    children.ConvertToString(format, sb);
-                    sb.Append("</UL>\r\n");
-                }
-            }
-            else
-            {
-                if(!String.IsNullOrEmpty(destFile) &&
-                  format == HelpFileFormat.Website)
-                    url = destFile.Replace('\\', '/');
-                else
-                    url = destFile;
-
-                if(children.Count == 0)
-                    sb.AppendFormat("<HelpTOCNode Url=\"{0}\" Title=\"{1}\" />\r\n",
-                        HttpUtility.HtmlEncode(url),
-                        HttpUtility.HtmlEncode(title));
-                else
-                {
-                    // Use a GUID to uniquely identify the entries with
-                    // children.  This allows the ASP.NET web page to find
-                    // them to load the child nodes dynamically.
-                    guid = Guid.NewGuid().ToString();
-
-                    // If there is no file for the root node, define the title
-                    // property instead.
-                    if(String.IsNullOrEmpty(url))
+                            "</OBJECT></LI>\r\n", HttpUtility.HtmlEncode(this.Title),
+                            HttpUtility.HtmlEncode(this.DestinationFile));
+                    else
                     {
-                        sb.AppendFormat("<HelpTOCNode Id=\"{0}\" Title=\"{1}\">\r\n",
-                            guid, HttpUtility.HtmlEncode(title));
+                        if(String.IsNullOrEmpty(this.DestinationFile))
+                            sb.AppendFormat("<LI><OBJECT type=\"text/sitemap\">\r\n" +
+                                "<param name=\"Name\" value=\"{0}\">\r\n" +
+                                "</OBJECT></LI>\r\n",
+                                HttpUtility.HtmlEncode(this.Title));
+                        else
+                            sb.AppendFormat("<LI><OBJECT type=\"text/sitemap\">\r\n" +
+                                "<param name=\"Name\" value=\"{0}\">\r\n" +
+                                "<param name=\"Local\" value=\"{1}\">\r\n" +
+                                "</OBJECT></LI>\r\n",
+                                HttpUtility.HtmlEncode(this.Title),
+                                HttpUtility.HtmlEncode(this.DestinationFile));
+
+                        sb.Append("<UL>\r\n");
+                        children.ConvertToString(format, sb);
+                        sb.Append("</UL>\r\n");
+                    }
+                    break;
+            
+                case HelpFileFormat.MSHelp2:
+                case HelpFileFormat.Website:
+                    if(!String.IsNullOrEmpty(this.DestinationFile) && format == HelpFileFormat.Website)
+                        url = this.DestinationFile.Replace('\\', '/');
+                    else
+                        url = this.DestinationFile;
+
+                    if(children.Count == 0)
+                        sb.AppendFormat("<HelpTOCNode Url=\"{0}\" Title=\"{1}\" />\r\n",
+                            HttpUtility.HtmlEncode(url), HttpUtility.HtmlEncode(this.Title));
+                    else
+                    {
+                        // Use a GUID to uniquely identify the entries with
+                        // children.  This allows the ASP.NET web page to find
+                        // them to load the child nodes dynamically.
+                        guid = Guid.NewGuid().ToString();
+
+                        // If there is no file for the root node, define the title
+                        // property instead.
+                        if(String.IsNullOrEmpty(url))
+                        {
+                            sb.AppendFormat("<HelpTOCNode Id=\"{0}\" Title=\"{1}\">\r\n",
+                                guid, HttpUtility.HtmlEncode(this.Title));
+                        }
+                        else
+                            sb.AppendFormat("<HelpTOCNode Id=\"{0}\" Url=\"{1}\" Title=\"{2}\">\r\n",
+                                guid, url, HttpUtility.HtmlEncode(this.Title));
+
+                        children.ConvertToString(format, sb);
+                        sb.Append("</HelpTOCNode>\r\n");
+                    }
+                    break;
+
+                case HelpFileFormat.MSHelpViewer:
+                    if(String.IsNullOrEmpty(this.DestinationFile))
+                    {
+                        url = this.Id;
+                        titleAttr = String.Format(CultureInfo.InvariantCulture, " title=\"{0}\"", this.Title);
                     }
                     else
-                        sb.AppendFormat("<HelpTOCNode Id=\"{0}\" Url=\"{1}\" Title=\"{2}\">\r\n",
-                            guid, url, HttpUtility.HtmlEncode(title));
+                    {
+                        url = Path.GetFileNameWithoutExtension(this.DestinationFile);
+                        titleAttr = String.Empty;
+                    }
 
-                    children.ConvertToString(format, sb);
-                    sb.Append("</HelpTOCNode>\r\n");
-                }
+                    if(this.SortOrder != -1)
+                        orderAttr = String.Format(CultureInfo.InvariantCulture, " sortOrder=\"{0}\"", this.SortOrder);
+                    else
+                        orderAttr = String.Empty;
+
+                    if(children.Count == 0)
+                        sb.AppendFormat("<topic id=\"{0}\" file=\"{0}\"{1}{2} />\r\n", url, orderAttr, titleAttr);
+                    else
+                    {
+                        sb.AppendFormat("<topic id=\"{0}\" file=\"{0}\"{1}{2}>\r\n", url, orderAttr, titleAttr);
+
+                        children.ConvertToString(format, sb);
+                        sb.Append("</topic>\r\n");
+                    }
+                    break;
+
+                default:
+                    throw new InvalidOperationException("Unknown TOC help format: " + format.ToString());
             }
         }
         #endregion
@@ -541,8 +533,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
 
             if(String.IsNullOrEmpty(innerText))
                 return String.Format(CultureInfo.CurrentCulture,
-                    "<a href=\"{0}\">{1}</a>", path,
-                    this.Title);
+                    "<a href=\"{0}\">{1}</a>", path, this.Title);
 
             return String.Format(CultureInfo.CurrentCulture,
                 "<a href=\"{0}\">{1}</a>", path, innerText);
@@ -551,7 +542,6 @@ namespace SandcastleBuilder.Utils.ConceptualContent
 
         #region Site map methods
         //=====================================================================
-        // Site map methods
 
         /// <summary>
         /// This will load information about the entry from the node and will
@@ -564,7 +554,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
 
             if(site != null)
             {
-                title = site.Attributes["title"].Value;
+                this.Title = site.Attributes["title"].Value;
 
                 if(site.Attributes["url"] == null)
                     sourceFile = new FilePath(pathProvider);
@@ -573,10 +563,11 @@ namespace SandcastleBuilder.Utils.ConceptualContent
                         pathProvider);
 
                 if(site.Attributes["isDefault"] != null)
-                    isDefaultTopic = true;
+                    this.IsDefaultTopic = true;
 
+                // This is legacy stuff so I'm not updating it to support anything else
                 if(site.Attributes["splitToc"] != null)
-                    splitToc = true;
+                    this.ApiParentMode = ApiParentMode.InsertAfter;
 
                 if(site.ChildNodes.Count != 0)
                     foreach(XmlNode childSite in site.ChildNodes)
@@ -602,7 +593,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
                 "siteMapNode", root.NamespaceURI);
 
             attr = root.OwnerDocument.CreateAttribute("title");
-            attr.Value = title;
+            attr.Value = this.Title;
             child.Attributes.Append(attr);
 
             attr = root.OwnerDocument.CreateAttribute("url");
@@ -614,14 +605,15 @@ namespace SandcastleBuilder.Utils.ConceptualContent
 
             child.Attributes.Append(attr);
 
-            if(isDefaultTopic)
+            if(this.IsDefaultTopic)
             {
                 attr = root.OwnerDocument.CreateAttribute("isDefault");
                 attr.Value = "true";
                 child.Attributes.Append(attr);
             }
 
-            if(splitToc)
+            // This is legacy stuff so I'm not updating it to support anything else
+            if(this.ApiParentMode == ApiParentMode.InsertAfter)
             {
                 attr = root.OwnerDocument.CreateAttribute("splitToc");
                 attr.Value = "true";

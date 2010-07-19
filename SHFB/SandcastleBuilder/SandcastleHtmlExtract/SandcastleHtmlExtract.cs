@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder - HTML Extract
 // File    : SandcastleHtmlExtract.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/15/2008
-// Note    : Copyright 2008, Eric Woodruff, All rights reserved
+// Updated : 06/30/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the console mode application used to extract title and
@@ -25,6 +25,7 @@
 //                           website keyword index.
 // 1.7.0.0  06/14/2008  EFW  Fixed bug in handling of TOC nodes without a file
 // 1.8.0.0  07/14/2008  EFW  Added support for running as an MSBuild task
+// 1.9.0.0  06/12/2010  EFW  Added support for multi-format build output
 //=============================================================================
 
 using System;
@@ -79,41 +80,34 @@ namespace SandcastleBuilder.HtmlExtract
         }
 
         /// <summary>
-        /// This is used to specify whether the extract should generate files
-        /// for a Help 1 build.
+        /// This is used to set the HTML Help 1 file folder name containing the
+        /// Help 1 files to be processed.
         /// </summary>
-        /// <value>This property and/or <see cref="GenerateWebFiles" /> should
-        /// be set to true.</value>
-        public bool GenerateHelp1Files
+        /// <value>This is optional.  If not set, no HTML help 1 files will be
+        /// processed.</value>
+        public string Help1Folder
         {
-            get { return generateHelp1Files; }
-            set { generateHelp1Files = value; }
-        }
-
-        /// <summary>
-        /// This is used to specify whether the extract should generate files
-        /// for a website build.
-        /// </summary>
-        /// <value>This property and/or <see cref="GenerateHelp1Files" />
-        /// should be set to true.</value>
-        public bool GenerateWebFiles
-        {
-            get { return generateWebFiles; }
-            set { generateWebFiles = value; }
-        }
-
-        /// <summary>
-        /// This is used to set the HTML output folder name
-        /// </summary>
-        /// <value>This is optional.  If not set, it defaults to
-        /// <b>Output</b>.</value>
-        public string HtmlFolder
-        {
-            get { return htmlFolder; }
+            get { return help1Folder; }
             set
             {
                 if(!String.IsNullOrEmpty(value))
-                    htmlFolder = value;
+                    help1Folder = value;
+            }
+        }
+
+        /// <summary>
+        /// This is used to set the website file folder name containing the
+        /// website files to be processed.
+        /// </summary>
+        /// <value>This is optional.  If not set, no HTML help 1 files will be
+        /// processed.</value>
+        public string WebsiteFolder
+        {
+            get { return websiteFolder; }
+            set
+            {
+                if(!String.IsNullOrEmpty(value))
+                    websiteFolder = value;
             }
         }
 
@@ -176,7 +170,6 @@ namespace SandcastleBuilder.HtmlExtract
 
         #region Title information structure
         //=====================================================================
-        // Title information structure
 
         /// <summary>
         /// This is used to hold title information
@@ -203,7 +196,6 @@ namespace SandcastleBuilder.HtmlExtract
 
         #region Keyword information structure
         //=====================================================================
-        // Keyword information structure
 
         /// <summary>
         /// This is used to hold keyword information
@@ -221,25 +213,23 @@ namespace SandcastleBuilder.HtmlExtract
 
         #region Private data members
         //=====================================================================
-        // Private data members
 
         // Options
-        private static string htmlFolder, outputFolder, projectName, tocFile,
+        private static string outputFolder, help1Folder, websiteFolder, projectName, tocFile,
             localizedFolder, encodingName;
         private static int langId, codePage;
-        private static bool isMSBuildTask, generateHelp1Files, generateWebFiles;
+        private static bool isMSBuildTask;
 
         // Extracted keyword and title information
         private static List<KeywordInfo> keywords;
         private static Dictionary<string, TitleInfo> titles;
 
         // Regular expressions used for title and keyword extraction
-        private static Regex reTitle = new Regex(@"<title>(.*)</title>",
+        private static Regex reTitle = new Regex(@"<title>(.*)</title>", RegexOptions.IgnoreCase);
+        private static Regex reTocTitle = new Regex("<mshelp:toctitle\\s+title=\"([^\"]+)\"[^>]+>",
             RegexOptions.IgnoreCase);
-        private static Regex reTocTitle = new Regex("<mshelp:toctitle" +
-            "\\s+title=\"([^\"]+)\"[^>]+>", RegexOptions.IgnoreCase);
-        private static Regex reKKeyword = new Regex("<mshelp:keyword\\s+" +
-            "index=\"k\"\\s+term=\"([^\"]+)\"[^>]+>", RegexOptions.IgnoreCase);
+        private static Regex reKKeyword = new Regex("<mshelp:keyword\\s+index=\"k\"\\s+term=\"([^\"]+)\"[^>]+>",
+            RegexOptions.IgnoreCase);
         private static Regex reSubEntry = new Regex(@",([^\)\>]+|([^\<\>]*" +
             @"\<[^\<\>]*\>[^\<\>]*)?|([^\(\)]*\([^\(\)]*\)[^\(\)]*)?)$");
 
@@ -250,7 +240,6 @@ namespace SandcastleBuilder.HtmlExtract
 
         #region Main program entry point
         //=====================================================================
-        // Main program entry point
 
         /// <summary>
         /// Main program entry point
@@ -263,15 +252,9 @@ namespace SandcastleBuilder.HtmlExtract
             XPathNavigator nav;
             CultureInfo ci;
             Encoding enc;
-            KeywordInfo kw;
             OptionInfo lastOption = null;
             List<OptionInfo> options = new List<OptionInfo>();
-            string[] fileList;
-            string ext, folder, destFile, mainEntry = String.Empty;
-            int htmlFiles = 0, returnCode = 0;
-
-            if(String.IsNullOrEmpty(htmlFolder))
-                htmlFolder = @"Output";
+            int returnCode = 0;
 
             if(String.IsNullOrEmpty(outputFolder))
                 outputFolder = ".";
@@ -288,9 +271,8 @@ namespace SandcastleBuilder.HtmlExtract
             Assembly asm = Assembly.GetExecutingAssembly();
 
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
-            Console.WriteLine("{0}, version {1}\r\n{2}\r\nE-Mail: " +
-                "Eric@EWoodruff.us\r\n", fvi.ProductName, fvi.ProductVersion,
-                fvi.LegalCopyright);
+            Console.WriteLine("{0}, version {1}\r\n{2}\r\nE-Mail: Eric@EWoodruff.us\r\n", fvi.ProductName,
+                fvi.ProductVersion, fvi.LegalCopyright);
 
             try
             {
@@ -316,86 +298,76 @@ namespace SandcastleBuilder.HtmlExtract
                             ShowHelp();
                             break;
 
-                        case "help1x":
-                            generateHelp1Files = true;
+                        case "help1folder":
+                            help1Folder = option.Value;
+
+                            if(!Directory.Exists(help1Folder))
+                                throw new ArgumentException("The HTML Help 1 folder could not be found");
                             break;
 
-                        case "web":
-                            generateWebFiles = true;
+                        case "websitefolder":
+                            websiteFolder = option.Value;
+
+                            if(!Directory.Exists(websiteFolder))
+                                throw new ArgumentException("The website folder could not be found");
                             break;
 
-                        case "html":
-                            htmlFolder = option.Value;
+                        case "outputfolder":
+                            outputFolder = option.Value;
+                            break;
 
-                            if(!Directory.Exists(htmlFolder))
-                                throw new ArgumentException(
-                                    "The HTML folder could not be found");
+                        case "localizedfolder":
+                            localizedFolder = option.Value;
                             break;
 
                         case "lcid":
                             if(!Int32.TryParse(option.Value, out langId))
-                                throw new ArgumentException(
-                                    "Invalid LCID value");
+                                throw new ArgumentException("Invalid LCID value");
                             break;
 
-                        case "localize":
-                            localizedFolder = option.Value;
-                            break;
-
-                        case "out":
-                            outputFolder = option.Value;
-                            break;
-
-                        case "project":
+                        case "projectname":
                             projectName = option.Value;
                             break;
 
-                        case "toc":
+                        case "tocfile":
                             tocFile = option.Value;
                             break;
 
                         default:
-                            throw new ArgumentException(
-                                "Unknown command line option");
+                            throw new ArgumentException("Unknown command line option");
                     }
                 }
 
                 lastOption = null;
 
-                // -help1x or -web must be specified
-                if(!generateHelp1Files && !generateWebFiles)
+                // -help1Folder or -websiteFolder must be specified
+                if(String.IsNullOrEmpty(help1Folder) && String.IsNullOrEmpty(websiteFolder))
                     throw new InvalidOperationException(isMSBuildTask ?
-                        "The GenerateHelp1Files and/or GenerateWebFiles property must be set to true" :
-                        "-help1x and/or -web must be specified");
+                        "The Help1Folder and/or WebsiteFolder property must be set to true" :
+                        "-help1Folder and/or -websiteFolder must be specified");
 
                 // The project filename must be specified
                 if(String.IsNullOrEmpty(projectName))
                     throw new InvalidOperationException(isMSBuildTask ?
                         "A project name must be specified using the ProjectName property" :
-                        "A project name must be specified using the /project command line option");
+                        "A project name must be specified using the /projectName command line option");
 
                 // The TOC file must exist
                 if(!File.Exists(tocFile))
                     throw new ArgumentException("TOC file not found");
 
-                htmlFolder = Path.GetFullPath(htmlFolder);
-                if(htmlFolder.Length != 0 && htmlFolder[htmlFolder.Length - 1] == '\\')
-                    htmlFolder = htmlFolder.Substring(0, htmlFolder.Length - 1);
-
                 outputFolder = Path.GetFullPath(outputFolder);
+
                 if(outputFolder.Length != 0 && outputFolder[outputFolder.Length - 1] == '\\')
-                    outputFolder = outputFolder.Substring(0,
-                        outputFolder.Length - 1);
+                    outputFolder = outputFolder.Substring(0, outputFolder.Length - 1);
 
                 if(!Directory.Exists(outputFolder))
                     Directory.CreateDirectory(outputFolder);
 
                 // Get the code page to use based on the locale ID
-                config = new XPathDocument(Path.GetDirectoryName(asm.Location) +
-                    @"\SandcastleHtmlExtract.config");
+                config = new XPathDocument(Path.GetDirectoryName(asm.Location) + @"\SandcastleHtmlExtract.config");
 
-                nav = config.CreateNavigator().SelectSingleNode(String.Format(
-                    CultureInfo.InvariantCulture,
+                nav = config.CreateNavigator().SelectSingleNode(String.Format(CultureInfo.InvariantCulture,
                     "/configuration/languages/language[@id='{0}']", langId));
 
                 // If not found, default to the one for the ANSI code page
@@ -407,155 +379,80 @@ namespace SandcastleBuilder.HtmlExtract
                     enc = Encoding.GetEncoding(codePage);
                     encodingName = enc.WebName;
 
-                    Console.WriteLine("SHFB: Warning SHE0001: LCID '{0}' not " +
-                        "found in configuration file.  Defaulting to ANSI " +
-                        "code page value of '{1}', encoding charset '{2}'.",
-                        langId, codePage, encodingName);
+                    Console.WriteLine("SHFB: Warning SHE0001: LCID '{0}' not found in configuration file.  " +
+                        "Defaulting to ANSI code page value of '{1}', encoding charset '{2}'.", langId, codePage,
+                        encodingName);
                 }
                 else
                 {
-                    codePage = Convert.ToInt32(nav.GetAttribute("codepage",
-                        String.Empty), CultureInfo.InvariantCulture);
+                    codePage = Convert.ToInt32(nav.GetAttribute("codepage", String.Empty), CultureInfo.InvariantCulture);
                     encodingName = nav.GetAttribute("charset", String.Empty);
 
-                    Console.WriteLine("Using LCID '{0}', code page '{1}', " +
-                        "encoding charset '{2}'.", langId, codePage,
+                    Console.WriteLine("Using LCID '{0}', code page '{1}', encoding charset '{2}'.", langId, codePage,
                         encodingName);
                 }
 
-                // If localizing, validate the folder and create the regex
-                // patterns that will do the conversions.
-                if(localizedFolder != null)
+                // Parse the HTML Help 1 files and save the keyword index and table of contents
+                if(!String.IsNullOrEmpty(help1Folder))
                 {
-                    localizedFolder = Path.GetFullPath(localizedFolder);
+                    help1Folder = Path.GetFullPath(help1Folder);
+                    Console.WriteLine("\nProcessing Help 1 files in " + help1Folder);
 
-                    if(localizedFolder.Length > 0 &&
-                      localizedFolder[localizedFolder.Length - 1] == '\\')
-                        localizedFolder = localizedFolder.Substring(0,
-                            localizedFolder.Length - 1);
-
-                    if(!Directory.Exists(localizedFolder))
-                        Directory.CreateDirectory(localizedFolder);
-
-                    patterns = new Dictionary<Regex, string>();
-                    destEncoding = Encoding.GetEncoding(encodingName);
-
-                    // Convert unsupported high-order characters to 7-bit ASCII
-                    // equivalents.
-                    patterns.Add(new Regex(@"\u2018|\u2019"), "'");
-                    patterns.Add(new Regex(@"\u201C|\u201D"), "\"");
-                    patterns.Add(new Regex(@"\u2026"), "...");
-
-                    if(langId != 1041)
-                        patterns.Add(new Regex(@"\u00A0"), "&nbsp;");
-                    else
-                        patterns.Add(new Regex(@"\u00A0"), " ");
-
-                    if(encodingName != "Windows-1252")
-                        patterns.Add(new Regex(@"\u2011|\u2013"), "-");
-                    else
-                        patterns.Add(new Regex(@"\u2011|\u2013|\u2014"), "-");
-
-                    // Convert other unsupported high-order characters to named
-                    // entities.
-                    patterns.Add(new Regex(@"\u00A9"), "&copy;");
-                    patterns.Add(new Regex(@"\u00AE"), "&reg;");
-                    patterns.Add(new Regex(@"\u2014"), "&mdash;");
-                    patterns.Add(new Regex(@"\u2122"), "&trade;");
-
-                    // Replace the charset declaration
-                    patterns.Add(new Regex("CHARSET=UTF-8",
-                        RegexOptions.IgnoreCase), "CHARSET=" + encodingName);
-
-                    Console.WriteLine("Localized content will be written " +
-                        "to '{0}'", localizedFolder);
-                }
-
-                // Process all *.htm and *.html files in the given folder and
-                // all of its subfolders.
-                fileList = Directory.GetFiles(htmlFolder, "*.*",
-                  SearchOption.AllDirectories);
-
-                foreach(string file in fileList)
-                {
-                    ext = Path.GetExtension(file).ToLower(
-                        CultureInfo.InvariantCulture);
-
-                    if(ext == ".htm" || ext == ".html")
+                    // If localizing, validate the folder and create the regex patterns that
+                    // will do the conversions.
+                    if(localizedFolder != null)
                     {
-                        ProcessFile(file);
-                        htmlFiles++;
-                    }
-                    else
-                        if(localizedFolder != null)
-                        {
-                            // Copy supporting files only if localizing
-                            destFile = Path.Combine(localizedFolder,
-                                file.Substring(htmlFolder.Length + 1));
-                            folder = Path.GetDirectoryName(destFile);
+                        localizedFolder = Path.GetFullPath(localizedFolder);
 
-                            if(!Directory.Exists(folder))
-                                Directory.CreateDirectory(folder);
+                        if(localizedFolder.Length > 0 && localizedFolder[localizedFolder.Length - 1] == '\\')
+                            localizedFolder = localizedFolder.Substring(0, localizedFolder.Length - 1);
 
-                            File.Copy(file, destFile, true);
-                        }
-                }
+                        if(!Directory.Exists(localizedFolder))
+                            Directory.CreateDirectory(localizedFolder);
 
-                Console.WriteLine("Processed {0} HTML files\r\n" +
-                    "Sorting keywords and generating See Also indices",
-                    htmlFiles);
+                        patterns = new Dictionary<Regex, string>();
+                        destEncoding = Encoding.GetEncoding(encodingName);
 
-                // Sort the keywords
-                keywords.Sort(delegate(KeywordInfo x, KeywordInfo y)
-                {
-                    string subX, subY;
+                        // Convert unsupported high-order characters to 7-bit ASCII equivalents
+                        patterns.Add(new Regex(@"\u2018|\u2019"), "'");
+                        patterns.Add(new Regex(@"\u201C|\u201D"), "\"");
+                        patterns.Add(new Regex(@"\u2026"), "...");
 
-                    if(x.MainEntry != y.MainEntry)
-                        return String.Compare(x.MainEntry, y.MainEntry,
-                            StringComparison.OrdinalIgnoreCase);
+                        if(langId != 1041)
+                            patterns.Add(new Regex(@"\u00A0"), "&nbsp;");
+                        else
+                            patterns.Add(new Regex(@"\u00A0"), " ");
 
-                    subX = x.SubEntry;
-                    subY = y.SubEntry;
+                        if(encodingName != "Windows-1252")
+                            patterns.Add(new Regex(@"\u2011|\u2013"), "-");
+                        else
+                            patterns.Add(new Regex(@"\u2011|\u2013|\u2014"), "-");
 
-                    if(subX == null)
-                        subX = String.Empty;
+                        // Convert other unsupported high-order characters to named entities
+                        patterns.Add(new Regex(@"\u00A9"), "&copy;");
+                        patterns.Add(new Regex(@"\u00AE"), "&reg;");
+                        patterns.Add(new Regex(@"\u2014"), "&mdash;");
+                        patterns.Add(new Regex(@"\u2122"), "&trade;");
 
-                    if(subY == null)
-                        subY = String.Empty;
+                        // Replace the charset declaration
+                        patterns.Add(new Regex("CHARSET=UTF-8",
+                            RegexOptions.IgnoreCase), "CHARSET=" + encodingName);
 
-                    if(subX != subY)
-                        return String.Compare(subX, subY,
-                            StringComparison.OrdinalIgnoreCase);
-
-                    return String.Compare(x.File, y.File,
-                        StringComparison.OrdinalIgnoreCase);
-                });
-
-                // Insert the See Also indices for each sub-entry
-                for(int idx = 0; idx < keywords.Count; idx++)
-                    if(!String.IsNullOrEmpty(keywords[idx].SubEntry))
-                    {
-                        if(idx > 0)
-                            mainEntry = keywords[idx - 1].MainEntry;
-
-                        if(mainEntry != keywords[idx].MainEntry)
-                        {
-                            kw = new KeywordInfo();
-                            kw.MainEntry = keywords[idx].MainEntry;
-                            keywords.Insert(idx, kw);
-                        }
+                        Console.WriteLine("Localized content will be written to '{0}'", localizedFolder);
                     }
 
-                // Save the HTML Help 1 keyword index and table of contents
-                if(generateHelp1Files)
-                {
+                    ParseFiles(help1Folder, localizedFolder);
                     WriteHelp1xKeywordIndex();
                     WriteHelp1xTableOfContents();
                 }
 
-                // Save the website keyword index and table of contents
-                if(generateWebFiles)
+                // Parse the website files and save the keyword index and table of contents
+                if(!String.IsNullOrEmpty(websiteFolder))
                 {
+                    websiteFolder = Path.GetFullPath(websiteFolder);
+                    Console.WriteLine("\nProcessing website files in " + websiteFolder);
+
+                    ParseFiles(websiteFolder, null);
                     WriteWebsiteKeywordIndex();
                     WriteWebsiteTableOfContents();
                 }
@@ -565,11 +462,9 @@ namespace SandcastleBuilder.HtmlExtract
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
 
                 if(lastOption == null)
-                    Console.WriteLine("SHFB: Error SHE0002: Unexpected " +
-                        "error: {0}", ex);
+                    Console.WriteLine("SHFB: Error SHE0002: Unexpected error: {0}", ex);
                 else
-                    Console.WriteLine("SHFB: Error SHE0003: Unexpected error " +
-                        "applying command line option '{0}': {1}",
+                    Console.WriteLine("SHFB: Error SHE0003: Unexpected error applying command line option '{0}': {1}",
                         lastOption.OptionText, ex);
 
                 returnCode = 1;
@@ -587,7 +482,6 @@ namespace SandcastleBuilder.HtmlExtract
 
         #region Show command line help
         //=====================================================================
-        // Show command line help
 
         /// <summary>
         /// This is used to show the command line syntax
@@ -603,44 +497,131 @@ commas, or other special characters.
 
 -help or -?         Show this help.
 
--project=name       Specify the root project name for the CHM table of contents
+-projectName=name   Specify the root project name for the CHM table of contents
                     and keyword index files.  This option is required.
 
--help1x             Generate HTML Help 1 files and/or web site files.  At
--web                least one of these is required.  Both can also be
-                    specified.
-
--html=folder        The folder containing the HTML files to parse.  If not
-                    specified, it defaults to Output\.
+-help1Folder=folder   Generate HTML Help 1 files and/or website files.  At
+-websiteFolder=folder least one of these is required.  Both can also be
+                      specified.
 
 -lcid=IDvalue       The locale ID to use when saving the table of contents
                     and keyword index files.  This is also used to determine
                     the code page to use when rewriting the HTML files if
                     needed.  If not specified, it defaults to 1033 (0x0409).
 
--localize=folder    The folder in which to store localized copies of the HTML
-                    files.  These can be used to build a correctly localized
-                    CHM file.  If omitted, no localized files are generated.
+-localizedFolder=folder The folder in which to store localized copies of the
+                        Help 1 files.  These can be used to build a correctly
+                        localized CHM file.  If omitted, no localized files are
+                        generated.
 
--out=folder         The output folder for the table of contents and keyword
-                    index files.  If not specified, it defaults to the current
-                    folder.
+-outputFolder=folder The output folder for the table of contents and keyword
+                     index files.  If not specified, it defaults to the current
+                     folder.
 
--toc=TOCfile        The intermediate table of contents XML file to use for
+-tocFile=filename   The intermediate table of contents XML file to use for
                     creating the CHM table of contents file.  If not specified,
                     it defaults to toc.xml.");
         }
         #endregion
 
-        #region File parsing method
+        #region File parsing methods
         //=====================================================================
-        // File parsing method
+
+        /// <summary>
+        /// Parse the given set of files to generate title and keyword info
+        /// and localize the files if necessary.
+        /// </summary>
+        /// <param name="fileFolder">The folder containing the files to parse</param>
+        /// <param name="localizedOutputFolder">The folder in which to store localized
+        /// output or null for no localized output.</param>
+        private static void ParseFiles(string fileFolder, string localizedOutputFolder)
+        {
+            KeywordInfo kw;
+            string[] fileList;
+            string ext, folder, destFile, mainEntry = String.Empty;
+            int htmlFiles = 0;
+
+            keywords.Clear();
+            titles.Clear();
+
+            if(fileFolder.Length != 0 && fileFolder[fileFolder.Length - 1] == '\\')
+                fileFolder = fileFolder.Substring(0, fileFolder.Length - 1);
+
+            // Process all *.htm and *.html files in the given folder and all of its subfolders.
+            fileList = Directory.GetFiles(fileFolder, "*.*", SearchOption.AllDirectories);
+
+            foreach(string file in fileList)
+            {
+                ext = Path.GetExtension(file).ToLower(CultureInfo.InvariantCulture);
+
+                if(ext == ".htm" || ext == ".html")
+                {
+                    ProcessFile(fileFolder, file, localizedOutputFolder);
+                    htmlFiles++;
+                }
+                else
+                    if(localizedOutputFolder != null)
+                    {
+                        // Copy supporting files only if localizing
+                        destFile = Path.Combine(localizedOutputFolder, file.Substring(fileFolder.Length + 1));
+                        folder = Path.GetDirectoryName(destFile);
+
+                        if(!Directory.Exists(folder))
+                            Directory.CreateDirectory(folder);
+
+                        File.Copy(file, destFile, true);
+                    }
+            }
+
+            Console.WriteLine("Processed {0} HTML files\r\nSorting keywords and generating See Also indices", htmlFiles);
+
+            // Sort the keywords
+            keywords.Sort((x, y) =>
+            {
+                string subX, subY;
+
+                if(x.MainEntry != y.MainEntry)
+                    return String.Compare(x.MainEntry, y.MainEntry, StringComparison.OrdinalIgnoreCase);
+
+                subX = x.SubEntry;
+                subY = y.SubEntry;
+
+                if(subX == null)
+                    subX = String.Empty;
+
+                if(subY == null)
+                    subY = String.Empty;
+
+                if(subX != subY)
+                    return String.Compare(subX, subY, StringComparison.OrdinalIgnoreCase);
+
+                return String.Compare(x.File, y.File, StringComparison.OrdinalIgnoreCase);
+            });
+
+            // Insert the See Also indices for each sub-entry
+            for(int idx = 0; idx < keywords.Count; idx++)
+                if(!String.IsNullOrEmpty(keywords[idx].SubEntry))
+                {
+                    if(idx > 0)
+                        mainEntry = keywords[idx - 1].MainEntry;
+
+                    if(mainEntry != keywords[idx].MainEntry)
+                    {
+                        kw = new KeywordInfo();
+                        kw.MainEntry = keywords[idx].MainEntry;
+                        keywords.Insert(idx, kw);
+                    }
+                }
+        }
 
         /// <summary>
         /// Parse each file looking for the title and index keywords
         /// </summary>
+        /// <param name="basePath">The base folder path</param>
         /// <param name="sourceFile">The file to parse</param>
-        private static void ProcessFile(string sourceFile)
+        /// <param name="localizedOutputFolder">The folder in which to store localized
+        /// output or null for no localized output.</param>
+        private static void ProcessFile(string basePath, string sourceFile, string localizedOutputFolder)
         {
             Encoding currentEncoding = Encoding.Default;
             MatchCollection matches;
@@ -650,8 +631,7 @@ commas, or other special characters.
             byte[] currentBytes, convertedBytes;
 
             // Read the file in using the proper encoding
-            using(StreamReader sr = new StreamReader(sourceFile,
-              currentEncoding, true))
+            using(StreamReader sr = new StreamReader(sourceFile, currentEncoding, true))
             {
                 content = sr.ReadToEnd();
                 currentEncoding = sr.CurrentEncoding;
@@ -674,12 +654,10 @@ commas, or other special characters.
             key = Path.GetFileNameWithoutExtension(sourceFile);
 
             if(titles.ContainsKey(key))
-                Console.WriteLine("SHFB: Warning SHE0004: The key '{0}' used " +
-                    "for '{1}' is already in use by '{2}'.  '{1}' will be " +
-                    "ignored.", key, sourceFile, titles[key].File);
+                Console.WriteLine("SHFB: Warning SHE0004: The key '{0}' used for '{1}' is already in use by '{2}'.  " +
+                    "'{1}' will be ignored.", key, sourceFile, titles[key].File);
             else
-                titles.Add(key, new TitleInfo(HttpUtility.HtmlDecode(title),
-                    sourceFile));
+                titles.Add(key, new TitleInfo(HttpUtility.HtmlDecode(title), sourceFile));
 
             // Extract K index keywords
             matches = reKKeyword.Matches(content);
@@ -691,8 +669,7 @@ commas, or other special characters.
 
                 if(!String.IsNullOrEmpty(term))
                 {
-                    term = HttpUtility.HtmlDecode(term.Replace(
-                        "%3C", "<").Replace("%3E", ">").Replace("%2C", ","));
+                    term = HttpUtility.HtmlDecode(term.Replace("%3C", "<").Replace("%3E", ">").Replace("%2C", ","));
 
                     // See if there is a sub-entry
                     match = reSubEntry.Match(term);
@@ -700,8 +677,7 @@ commas, or other special characters.
                     if(match.Success)
                     {
                         keyword.MainEntry = term.Substring(0, match.Index);
-                        keyword.SubEntry = term.Substring(
-                            match.Index + 1).TrimStart(new char[] { ' ' });
+                        keyword.SubEntry = term.Substring(match.Index + 1).TrimStart(new char[] { ' ' });
                     }
                     else
                         keyword.MainEntry = term;
@@ -711,26 +687,23 @@ commas, or other special characters.
                 }
             }
 
-            // If localizing, perform the substitutions, convert the encoding,
-            // and save the file to the localized folder.
-            if(localizedFolder != null)
+            // If localizing, perform the substitutions, convert the encoding, and save the
+            // file to the localized folder.
+            if(localizedOutputFolder != null)
             {
                 foreach(KeyValuePair<Regex, string> pair in patterns)
                     content = pair.Key.Replace(content, pair.Value);
 
                 currentBytes = currentEncoding.GetBytes(content);
-                convertedBytes = Encoding.Convert(currentEncoding, destEncoding,
-                    currentBytes);
+                convertedBytes = Encoding.Convert(currentEncoding, destEncoding, currentBytes);
 
-                sourceFile = Path.Combine(localizedFolder,
-                    sourceFile.Substring(htmlFolder.Length + 1));
+                sourceFile = Path.Combine(localizedOutputFolder, sourceFile.Substring(basePath.Length + 1));
                 folder = Path.GetDirectoryName(sourceFile);
 
                 if(!Directory.Exists(folder))
                     Directory.CreateDirectory(folder);
 
-                using(StreamWriter writer = new StreamWriter(sourceFile, false,
-                  destEncoding))
+                using(StreamWriter writer = new StreamWriter(sourceFile, false, destEncoding))
                 {
                     writer.Write(destEncoding.GetString(convertedBytes));
                 }
@@ -738,9 +711,8 @@ commas, or other special characters.
         }
         #endregion
 
-        #region Write HTML Help 1 table of contents
+        #region Write out the HTML Help 1 table of contents
         //=====================================================================
-        // Write HTML Help 1 table of contents
 
         /// <summary>
         /// Write out the HTML Help 1 table of contents
@@ -751,10 +723,9 @@ commas, or other special characters.
             XmlReader reader;
             TitleInfo titleInfo;
             string key, title, htmlFile;
-            int indentCount, baseFolderLength = htmlFolder.Length + 1;
+            int indentCount, baseFolderLength = help1Folder.Length + 1;
 
-            Console.WriteLine(@"Saving HTML Help 1 table of contents to {0}\{1}.hhc",
-                outputFolder, projectName);
+            Console.WriteLine(@"Saving HTML Help 1 table of contents to {0}\{1}.hhc", outputFolder, projectName);
 
             settings = new XmlReaderSettings();
             settings.ConformanceLevel = ConformanceLevel.Fragment;
@@ -763,12 +734,10 @@ commas, or other special characters.
             reader = XmlReader.Create(tocFile, settings);
 
             // Write the table of contents using the appropriate encoding
-            using(StreamWriter writer = new StreamWriter(String.Format(
-              CultureInfo.InvariantCulture, @"{0}\{1}.hhc", outputFolder,
-              projectName), false, Encoding.GetEncoding(codePage)))
+            using(StreamWriter writer = new StreamWriter(String.Format(CultureInfo.InvariantCulture, @"{0}\{1}.hhc",
+              outputFolder, projectName), false, Encoding.GetEncoding(codePage)))
             {
-                writer.WriteLine("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD " +
-                    "HTML/EN\">\r\n");
+                writer.WriteLine("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML/EN\">\r\n");
                 writer.WriteLine("<HTML>");
                 writer.WriteLine("  <BODY>");
 
@@ -780,19 +749,20 @@ commas, or other special characters.
                             {
                                 key = reader.GetAttribute("file");
 
-                                if(key != null && titles.ContainsKey(key))
+                                if(!String.IsNullOrEmpty(key) && titles.ContainsKey(key))
                                 {
                                     titleInfo = titles[key];
                                     title = titleInfo.Title;
-                                    htmlFile = titleInfo.File.Substring(
-                                        baseFolderLength);
+                                    htmlFile = titleInfo.File.Substring(baseFolderLength);
                                 }
                                 else
                                 {
-                                    // Container only topic or unknown element,
-                                    // just use the ID attribute.
+                                    // Container only topic or unknown element, just use the title or ID attribute
                                     htmlFile = null;
-                                    title = reader.GetAttribute("id");
+                                    title = reader.GetAttribute("title");
+
+                                    if(String.IsNullOrEmpty(title))
+                                        title = reader.GetAttribute("id");
 
                                     if(String.IsNullOrEmpty(title))
                                         title = key;
@@ -802,26 +772,18 @@ commas, or other special characters.
                                 title = HttpUtility.HtmlEncode(title);
 
                                 WriteContentLine(writer, indentCount, "<UL>");
-                                WriteContentLine(writer, indentCount,
-                                    "  <LI><OBJECT type=\"text/sitemap\">");
-                                WriteContentLine(writer, indentCount,
-                                    String.Format(CultureInfo.InvariantCulture,
-                                    "    <param name=\"Name\" value=\"{0}\">",
-                                    title));
+                                WriteContentLine(writer, indentCount, "  <LI><OBJECT type=\"text/sitemap\">");
+                                WriteContentLine(writer, indentCount, String.Format(CultureInfo.InvariantCulture,
+                                    "    <param name=\"Name\" value=\"{0}\">", title));
 
                                 if(htmlFile != null)
-                                    WriteContentLine(writer, indentCount,
-                                        String.Format(
-                                        CultureInfo.InvariantCulture,
-                                        "    <param name=\"Local\" " +
-                                        "value=\"{0}\">", htmlFile));
+                                    WriteContentLine(writer, indentCount, String.Format(CultureInfo.InvariantCulture,
+                                        "    <param name=\"Local\" value=\"{0}\">", htmlFile));
 
-                                WriteContentLine(writer, indentCount,
-                                    "  </OBJECT></LI>");
+                                WriteContentLine(writer, indentCount, "  </OBJECT></LI>");
 
                                 if(reader.IsEmptyElement)
-                                    WriteContentLine(writer, indentCount,
-                                        "</UL>");
+                                    WriteContentLine(writer, indentCount, "</UL>");
                             }
                             break;
 
@@ -860,7 +822,6 @@ commas, or other special characters.
 
         #region Write out the HTML Help 1 keyword index
         //=====================================================================
-        // Write out the HTML Help 1 keyword index
 
         /// <summary>
         /// Write out the HTML Help 1 keyword index
@@ -868,20 +829,16 @@ commas, or other special characters.
         private static void WriteHelp1xKeywordIndex()
         {
             string mainEntry;
-            int baseFolderLength = htmlFolder.Length + 1;
+            int baseFolderLength = help1Folder.Length + 1;
             bool inSubEntry = false;
 
-            Console.WriteLine(@"Saving HTML Help 1 keyword index to {0}\{1}.hhk",
-                outputFolder, projectName);
+            Console.WriteLine(@"Saving HTML Help 1 keyword index to {0}\{1}.hhk", outputFolder, projectName);
 
             // Write the keyword index using the appropriate encoding
-            using(StreamWriter writer = new StreamWriter(
-                String.Format(CultureInfo.InvariantCulture, @"{0}\{1}.hhk",
-                outputFolder, projectName), false,
-                Encoding.GetEncoding(codePage)))
+            using(StreamWriter writer = new StreamWriter(String.Format(CultureInfo.InvariantCulture, @"{0}\{1}.hhk",
+              outputFolder, projectName), false, Encoding.GetEncoding(codePage)))
             {
-                writer.WriteLine("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD " +
-                    "HTML/EN\">");
+                writer.WriteLine("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML/EN\">");
                 writer.WriteLine("<HTML>");
                 writer.WriteLine("  <BODY>");
                 writer.WriteLine("    <UL>");
@@ -914,18 +871,14 @@ commas, or other special characters.
 
                     writer.WriteLine("      <LI><OBJECT type=\"text/sitemap\">");
                     writer.WriteLine(String.Format(CultureInfo.InvariantCulture,
-                        "        <param name=\"Name\" value=\"{0}\">",
-                        mainEntry));
+                        "        <param name=\"Name\" value=\"{0}\">", mainEntry));
 
                     if(String.IsNullOrEmpty(info.File))
-                        writer.WriteLine(String.Format(
-                            CultureInfo.InvariantCulture, "        <param " +
-                            "name=\"See Also\" value=\"{0}\">", mainEntry));
+                        writer.WriteLine(String.Format(CultureInfo.InvariantCulture,
+                            "        <param name=\"See Also\" value=\"{0}\">", mainEntry));
                     else
-                        writer.WriteLine(String.Format(
-                            CultureInfo.InvariantCulture, "        <param " +
-                            "name=\"Local\" value=\"{0}\">",
-                            info.File.Substring(baseFolderLength)));
+                        writer.WriteLine(String.Format(CultureInfo.InvariantCulture,
+                            "        <param name=\"Local\" value=\"{0}\">", info.File.Substring(baseFolderLength)));
 
                     writer.WriteLine("      </OBJECT><LI>");
                 }
@@ -937,9 +890,8 @@ commas, or other special characters.
         }
         #endregion
 
-        #region Write website table of contents
+        #region Write out the website table of contents
         //=====================================================================
-        // Write website table of contents
 
         /// <summary>
         /// Write out the website table of contents
@@ -950,10 +902,9 @@ commas, or other special characters.
             XmlReader reader;
             TitleInfo titleInfo;
             string key, title, htmlFile;
-            int indentCount, baseFolderLength = htmlFolder.Length + 1;
+            int indentCount, baseFolderLength = websiteFolder.Length + 1;
 
-            Console.WriteLine(@"Saving website table of contents to {0}\WebTOC.xml",
-                outputFolder);
+            Console.WriteLine(@"Saving website table of contents to {0}\WebTOC.xml", outputFolder);
 
             settings = new XmlReaderSettings();
             settings.ConformanceLevel = ConformanceLevel.Fragment;
@@ -962,9 +913,8 @@ commas, or other special characters.
             reader = XmlReader.Create(tocFile, settings);
 
             // Write the table of contents with UTF-8 encoding
-            using(StreamWriter writer = new StreamWriter(String.Format(
-              CultureInfo.InvariantCulture, @"{0}\WebTOC.xml", outputFolder),
-              false, Encoding.UTF8))
+            using(StreamWriter writer = new StreamWriter(String.Format(CultureInfo.InvariantCulture, @"{0}\WebTOC.xml",
+              outputFolder), false, Encoding.UTF8))
             {
                 writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
                 writer.WriteLine("<HelpTOC>");
@@ -977,57 +927,45 @@ commas, or other special characters.
                             {
                                 key = reader.GetAttribute("file");
 
-                                if(!String.IsNullOrEmpty(key) &&
-                                  titles.ContainsKey(key))
+                                if(!String.IsNullOrEmpty(key) && titles.ContainsKey(key))
                                 {
                                     titleInfo = titles[key];
                                     title = titleInfo.Title;
-                                    htmlFile = titleInfo.File.Substring(
-                                        baseFolderLength).Replace('\\', '/');
+                                    htmlFile = titleInfo.File.Substring(baseFolderLength).Replace('\\', '/');
                                 }
                                 else
                                 {
-                                    // Container only topic or unknown element,
-                                    // just use the title attribute if present.
-                                    // If no title, use the ID.
+                                    // Container only topic or unknown element, just use the title or ID attribute
                                     htmlFile = null;
                                     title = reader.GetAttribute("title");
 
                                     if(String.IsNullOrEmpty(title))
                                         title = reader.GetAttribute("id");
+
+                                    if(String.IsNullOrEmpty(title))
+                                        title = key;
                                 }
 
                                 indentCount = reader.Depth;
                                 title = HttpUtility.HtmlEncode(title);
 
                                 if(reader.IsEmptyElement)
-                                    WriteContentLine(writer, indentCount,
-                                        String.Format(
-                                        CultureInfo.InvariantCulture,
-                                        "<HelpTOCNode Title=\"{0}\" " +
-                                        "Url=\"{1}\" />", title, htmlFile));
+                                    WriteContentLine(writer, indentCount, String.Format(CultureInfo.InvariantCulture,
+                                        "<HelpTOCNode Title=\"{0}\" Url=\"{1}\" />", title, htmlFile));
                                 else
                                     if(htmlFile != null)
-                                        WriteContentLine(writer, indentCount,
-                                            String.Format(
-                                            CultureInfo.InvariantCulture,
-                                            "<HelpTOCNode Id=\"{0}\" " +
-                                            "Title=\"{1}\" Url=\"{2}\">",
+                                        WriteContentLine(writer, indentCount, String.Format(CultureInfo.InvariantCulture,
+                                            "<HelpTOCNode Id=\"{0}\" Title=\"{1}\" Url=\"{2}\">",
                                             Guid.NewGuid(), title, htmlFile));
                                     else
-                                        WriteContentLine(writer, indentCount,
-                                            String.Format(
-                                            CultureInfo.InvariantCulture,
-                                            "<HelpTOCNode Id=\"{0}\" " +
-                                            "Title=\"{1}\">", Guid.NewGuid(),
-                                            title));
+                                        WriteContentLine(writer, indentCount, String.Format(CultureInfo.InvariantCulture,
+                                            "<HelpTOCNode Id=\"{0}\" Title=\"{1}\">", Guid.NewGuid(), title));
                             }
                             break;
 
                         case XmlNodeType.EndElement:
                             if(reader.Name == "topic")
-                                WriteContentLine(writer, reader.Depth,
-                                    "</HelpTOCNode>");
+                                WriteContentLine(writer, reader.Depth, "</HelpTOCNode>");
                             break;
 
                         default:
@@ -1042,7 +980,6 @@ commas, or other special characters.
 
         #region Write out the website keyword index
         //=====================================================================
-        // Write out the website keyword index
 
         /// <summary>
         /// Write out the website keyword index
@@ -1050,15 +987,13 @@ commas, or other special characters.
         private static void WriteWebsiteKeywordIndex()
         {
             string mainEntry;
-            int indentCount = 1, baseFolderLength = htmlFolder.Length + 1;
+            int indentCount = 1, baseFolderLength = websiteFolder.Length + 1;
             bool inSubEntry = false;
 
-            Console.WriteLine(@"Saving website keyword index to {0}\WebKI.xml",
-                outputFolder);
+            Console.WriteLine(@"Saving website keyword index to {0}\WebKI.xml", outputFolder);
 
             // Write the keyword index with UTF-8 encoding
-            using(StreamWriter writer = new StreamWriter(String.Format(
-              CultureInfo.InvariantCulture, @"{0}\WebKI.xml",
+            using(StreamWriter writer = new StreamWriter(String.Format(CultureInfo.InvariantCulture, @"{0}\WebKI.xml",
               outputFolder), false, Encoding.UTF8))
             {
                 writer.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
@@ -1076,10 +1011,8 @@ commas, or other special characters.
                         if(!inSubEntry)
                         {
                             inSubEntry = true;
-                            WriteContentLine(writer, indentCount++,
-                                String.Format(CultureInfo.InvariantCulture,
-                                 "<HelpKINode Title=\"{0}\">",
-                                 HttpUtility.HtmlEncode(mainEntry)));
+                            WriteContentLine(writer, indentCount++, String.Format(CultureInfo.InvariantCulture,
+                                 "<HelpKINode Title=\"{0}\">", HttpUtility.HtmlEncode(mainEntry)));
                         }
 
                         mainEntry = info.SubEntry;
@@ -1088,17 +1021,13 @@ commas, or other special characters.
                         if(inSubEntry)
                         {
                             inSubEntry = false;
-                            WriteContentLine(writer, --indentCount,
-                                "</HelpKINode>");
+                            WriteContentLine(writer, --indentCount, "</HelpKINode>");
                         }
 
                     if(!String.IsNullOrEmpty(info.File))
-                        WriteContentLine(writer, indentCount, String.Format(
-                            CultureInfo.InvariantCulture,
-                            "<HelpKINode Title=\"{0}\" Url=\"{1}\" />",
-                            HttpUtility.HtmlEncode(mainEntry),
-                            info.File.Substring(baseFolderLength).Replace(
-                            '\\', '/')));
+                        WriteContentLine(writer, indentCount, String.Format(CultureInfo.InvariantCulture,
+                            "<HelpKINode Title=\"{0}\" Url=\"{1}\" />", HttpUtility.HtmlEncode(mainEntry),
+                            info.File.Substring(baseFolderLength).Replace('\\', '/')));
                 }
 
                 writer.WriteLine();

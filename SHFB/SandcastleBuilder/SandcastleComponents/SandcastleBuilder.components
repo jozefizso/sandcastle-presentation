@@ -157,10 +157,12 @@
                 scriptFile="{@SHFBFolder}Colorizer\highlight.js"
                 copyImage="{@SHFBFolder}Colorizer\CopyCode.gif" />
 
-            <!-- Base output path for the files (required).  This should match
+            <!-- Base output paths for the files (required).  These should match
                  the parent folder of the output path of the HTML files (see
-                 SaveComponent). -->
-            <outputPath value="Output\" />
+                 each of the SaveComponent instances below). -->
+            <outputPaths>
+{@HelpFormatOutputPaths}
+            </outputPaths>
 
             <!-- Logo image file (optional).  Filename is required. The height,
                  width, altText, placement, and alignment attributes are
@@ -311,10 +313,32 @@
         <!-- Not editable at all -->
         <configureMethod name="-" />
 
+        <!-- This component is output format dependent so a configuration for
+             each output format is provided. -->
         <defaultConfiguration>
-            <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
-            <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@SDKLinks}" />
-            <targets files="reflection.xml" type="{@ProjectLinks}" />
+            <helpOutput format="HtmlHelp1">
+                <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+                <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@HtmlSdkLinkType}" />
+                <targets files="reflection.xml" type="Local" />
+            </helpOutput>
+
+            <helpOutput format="MSHelp2">
+                <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+                <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelp2SdkLinkType}" />
+                <targets files="reflection.xml" type="Index" />
+            </helpOutput>
+
+            <helpOutput format="MSHelpViewer">
+                <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+                <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@MSHelpViewerSdkLinkType}" />
+                <targets files="reflection.xml" type="Id" />
+            </helpOutput>
+
+            <helpOutput format="Website">
+                <cache filename="{@LocalDataFolder}Cache\MsdnUrl.cache" />
+                <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@WebsiteSdkLinkType}" />
+                <targets files="reflection.xml" type="Local" />
+            </helpOutput>
         </defaultConfiguration>
     </component>
 
@@ -357,8 +381,48 @@
         <configureMethod name="-" />
 
         <defaultConfiguration>
-            <targets base="xmlComp" type="{@ProjectLinks}" />
+            <helpOutput format="HtmlHelp1">
+                <targets base="xmlComp" type="Local" />
+            </helpOutput>
+            <helpOutput format="MSHelp2">
+                <targets base="xmlComp" type="Index" />
+            </helpOutput>
+            <helpOutput format="MSHelpViewer">
+                <targets base="xmlComp" type="Id" />
+            </helpOutput>
+            <helpOutput format="Website">
+                <targets base="xmlComp" type="Local" />
+            </helpOutput>
         </defaultConfiguration>
     </component>
+
+    <!-- ****************************************************************** -->
+
+    <component id="Microsoft Help Viewer Transformation Component"
+      type="SandcastleBuilder.Components.MSHCComponent"
+      assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
+        <description>This build component is used to transform a help topic for use in Microsoft Help Viewer by converting the MS Help 2 attributes to the MS Help Viewer format.</description>
+
+        <insert placement="before" type="Microsoft.Ddue.Tools.SaveComponent" />
+
+        <!-- The help file builder project contains properties for this
+             component so we won't show it. -->
+        <hidden />
+
+        <!-- Not editable at all -->
+        <configureMethod name="-" />
+
+        <defaultConfiguration>
+          <data self-branded="{@SelfBranded}" topic-version="{@TopicVersion}" toc-file="{@TocFilename}"
+            toc-parent="{@TocParentId}" toc-parent-version="{@TocParentVersion}" locale="{@Locale}" />
+        </defaultConfiguration>
+    </component>
+
+    <!-- ******************************************************************
+
+    Components not defined in this file due to their unique requirements:
+
+        SandcastleBuilder.Components.MultiFormatOutputComponent
+    -->
 
 </components>

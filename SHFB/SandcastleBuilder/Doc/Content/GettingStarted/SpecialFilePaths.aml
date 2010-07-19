@@ -222,6 +222,32 @@ folder in their settings area to make use of them as well.</para>
   </content>
 </section>
 
+<section address="XCopyDeployment">
+  <title>XCOPY/Build Server Deployment</title>
+  <content>
+  	<para>For use in a build server environment the Sandcastle Help File Builder
+also supports simple XCOPY deployment.  As long as the
+<environmentVariable>SHFBROOT</environmentVariable> environment variable points
+to the location of the help file builder assemblies, it will be able to find
+everything it needs at build time.  In such situations, custom build components
+and plug-ins may also be copied to the help file builder folder or a sub-folder
+beneath it.  When searching for custom build components and plug-ins the
+following search order is used:</para>
+
+<list class="bullet">
+  <listItem>If a <environmentVariable>SHFBCOMPONENTROOT</environmentVariable>
+environment variable is defined (optional), it is searched first.</listItem>
+  <listItem>Next, the help file builder installation folder
+(<environmentVariable>SHFBROOT</environmentVariable>) is searched.</listItem>
+  <listItem>Finally, the common application data folders noted above are searched.</listItem>
+</list>
+
+	<para>If any duplicate components or plug-ins are encountered, the first
+one loaded based on the above search order will be used.</para>
+
+  </content>
+</section>
+
     <relatedTopics>
       <link xlink:href="b772e00e-1705-4062-adb6-774826ce6700" />
       <link xlink:href="3d4edd2d-7883-4508-b9d2-bd7b4d848b0d" />

@@ -19,6 +19,7 @@
     <!-- SHFB properties -->
     <OutputPath>.\Help\</OutputPath>
     <HtmlHelpName>$safeprojectname$</HtmlHelpName>
+    <Language>en-US</Language>
   </PropertyGroup>
 
   <!-- There are no properties for these groups.  AnyCPU needs to appear in

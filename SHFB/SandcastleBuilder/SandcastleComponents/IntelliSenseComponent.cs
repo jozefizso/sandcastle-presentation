@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Components
 // File    : IntelliSenseComponent.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/04/2009
-// Note    : Copyright 2007-2009, Eric Woodruff, All rights reserved
+// Updated : 05/22/2010
+// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a build component that is used to extract the XML
@@ -68,7 +68,6 @@ namespace SandcastleBuilder.Components
     {
         #region Private data members
         //=====================================================================
-        // Private data members
 
         private bool includeNamespaces;
         private string outputFolder, namespacesFilename;
@@ -87,6 +86,8 @@ namespace SandcastleBuilder.Components
         #endregion
 
         #region Constructor
+        //=====================================================================
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -157,6 +158,8 @@ namespace SandcastleBuilder.Components
         #endregion
 
         #region Apply the component
+        //=====================================================================
+
         /// <summary>
         /// This is implemented to extract the IntelliSense comments.
         /// </summary>
@@ -300,35 +303,28 @@ namespace SandcastleBuilder.Components
         #endregion
 
         #region Dispose of the component
-#if !SC_MAY_2008
-        /// <summary>
-        /// Write out closing tags and close all open XML writers when disposed.
-        /// </summary>
-        /// <param name="disposing">True if managed resources should be
-        /// disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-#else
-        /// <summary>
-        /// Write out closing tags and close all open XML writers when disposed.
-        /// </summary>
-        public override void Dispose()
-#endif
-        {
-            foreach(XmlWriter writer in writers.Values)
-            {
-                writer.WriteEndDocument();
-                writer.Close();
-            }
+        //=====================================================================
 
-#if !SC_MAY_2008
+        /// <summary>
+        /// Write out closing tags and close all open XML writers when disposed.
+        /// </summary>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                foreach (XmlWriter writer in writers.Values)
+                {
+                    writer.WriteEndDocument();
+                    writer.Close();
+                }
+            }
             base.Dispose(disposing);
-#else
-            base.Dispose();
-#endif
         }
         #endregion
 
         #region Static configuration method for use with SHFB
+        //=====================================================================
+
         /// <summary>
         /// This static method is used by the Sandcastle Help File Builder to
         /// let the component perform its own configuration.

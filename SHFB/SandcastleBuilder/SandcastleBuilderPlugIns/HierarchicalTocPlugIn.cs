@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Plug-Ins
 // File    : HierarchicalTocPlugIn.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 11/14/2008
-// Note    : Copyright 2008, Eric Woodruff, All rights reserved
+// Updated : 06/22/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a plug-in that can be used to rearrange the table of
@@ -20,15 +20,15 @@
 // ============================================================================
 // 1.6.0.6  03/17/2008  EFW  Created the code
 // 1.8.0.0  07/22/2008  EFW  Fixed bug caused by root namespace container
+// 1.9.0.0  06/22/2010  EFW  Suppressed use in MS Help Viewer output due to
+//                           the way the TOC is generated in those files.
 //=============================================================================
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
@@ -47,6 +47,8 @@ namespace SandcastleBuilder.PlugIns
     public class HierarchicalTocPlugIn : IPlugIn
     {
         #region Private data members
+        //=====================================================================
+
         private ExecutionPointCollection executionPoints;
 
         private BuildProcess builder;
@@ -57,7 +59,6 @@ namespace SandcastleBuilder.PlugIns
 
         #region IPlugIn implementation
         //=====================================================================
-        // IPlugIn implementation
 
         /// <summary>
         /// This read-only property returns a friendly name for the plug-in
@@ -76,8 +77,7 @@ namespace SandcastleBuilder.PlugIns
             {
                 // Use the assembly version
                 Assembly asm = Assembly.GetExecutingAssembly();
-                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(
-                    asm.Location);
+                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
 
                 return new Version(fvi.ProductVersion);
             }
@@ -93,9 +93,8 @@ namespace SandcastleBuilder.PlugIns
             {
                 // Use the assembly copyright
                 Assembly asm = Assembly.GetExecutingAssembly();
-                AssemblyCopyrightAttribute copyright =
-                    (AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(
-                        asm, typeof(AssemblyCopyrightAttribute));
+                AssemblyCopyrightAttribute copyright = (AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(
+                    asm, typeof(AssemblyCopyrightAttribute));
 
                 return copyright.Copyright;
             }
@@ -133,13 +132,10 @@ namespace SandcastleBuilder.PlugIns
             get
             {
                 if(executionPoints == null)
-                {
-                    executionPoints = new ExecutionPointCollection();
-
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.GenerateIntermediateTableOfContents,
-                        ExecutionBehaviors.After));
-                }
+                    executionPoints = new ExecutionPointCollection
+                    {
+                        new ExecutionPoint(BuildStep.GenerateIntermediateTableOfContents, ExecutionBehaviors.After)
+                    };
 
                 return executionPoints;
             }
@@ -154,11 +150,9 @@ namespace SandcastleBuilder.PlugIns
         /// <returns>A string containing the new configuration XML fragment</returns>
         /// <remarks>The configuration data will be stored in the help file
         /// builder project.</remarks>
-        public string ConfigurePlugIn(SandcastleProject project,
-          string currentConfig)
+        public string ConfigurePlugIn(SandcastleProject project, string currentConfig)
         {
-            using(HierarchicalTocConfigDlg dlg = new HierarchicalTocConfigDlg(
-              currentConfig))
+            using(HierarchicalTocConfigDlg dlg = new HierarchicalTocConfigDlg(currentConfig))
             {
                 if(dlg.ShowDialog() == DialogResult.OK)
                     currentConfig = dlg.Configuration;
@@ -175,34 +169,51 @@ namespace SandcastleBuilder.PlugIns
         /// process.</param>
         /// <param name="configuration">The configuration data that the plug-in
         /// should use to initialize itself.</param>
-        public void Initialize(BuildProcess buildProcess,
-          XPathNavigator configuration)
+        public void Initialize(BuildProcess buildProcess, XPathNavigator configuration)
         {
             XPathNavigator root;
             string option;
             builder = buildProcess;
             minParts = 2;
 
-            builder.ReportProgress("{0} Version {1}\r\n{2}",
-                this.Name, this.Version, this.Copyright);
+            builder.ReportProgress("{0} Version {1}\r\n{2}", this.Name, this.Version, this.Copyright);
 
-            // Load the configuration
-            root = configuration.SelectSingleNode("configuration/toc");
-
-            if(root != null)
+            // The Hierarchical TOC plug-in is not compatible with MS Help Viewer output
+            // and there is currently no fix available.  The problem is that the table of
+            // contents is generated off of the help topics when the help viewer file is
+            // installed and, since there are no physical topics for the namespace nodes
+            // added to the intermediate TOC file by the plug-in, they do not appear in the
+            // help file.  Updating the plug-in to support help viewer output would have
+            // required more work than time would allow for this release.    If building
+            // other output formats in which you want to use the plug-in, build them
+            // separately from the MS Help Viewer output.
+            if((builder.CurrentProject.HelpFileFormat & HelpFileFormat.MSHelpViewer) != 0)
             {
-                option = root.GetAttribute("minParts", String.Empty);
-                if(!String.IsNullOrEmpty(option))
-                    minParts = Convert.ToInt32(option,
-                        CultureInfo.InvariantCulture);
+                this.ExecutionPoints.Clear();
 
-                if(minParts < 1)
-                    minParts = 1;
+                builder.ReportWarning("HTP0002", "This build produces MS Help Viewer output with which the " +
+                    "Hierarchical TOC Plug-In is not compatible.  It will not be used in this build.");
+            }
+            else
+            {
+                // Load the configuration
+                root = configuration.SelectSingleNode("configuration/toc");
 
-                option = root.GetAttribute("insertBelow", String.Empty);
-                if(!String.IsNullOrEmpty(option))
-                    insertBelow = Convert.ToBoolean(option,
-                        CultureInfo.InvariantCulture);
+                if(root != null)
+                {
+                    option = root.GetAttribute("minParts", String.Empty);
+
+                    if(!String.IsNullOrEmpty(option))
+                        minParts = Convert.ToInt32(option, CultureInfo.InvariantCulture);
+
+                    if(minParts < 1)
+                        minParts = 1;
+
+                    option = root.GetAttribute("insertBelow", String.Empty);
+
+                    if(!String.IsNullOrEmpty(option))
+                        insertBelow = Convert.ToBoolean(option, CultureInfo.InvariantCulture);
+                }
             }
         }
 
@@ -213,8 +224,7 @@ namespace SandcastleBuilder.PlugIns
         public void Execute(ExecutionContext context)
         {
             List<string> namespaceList = new List<string>();
-            Dictionary<string, XmlNode> namespaceNodes =
-                new Dictionary<string, XmlNode>();
+            Dictionary<string, XmlNode> namespaceNodes = new Dictionary<string, XmlNode>();
             XmlDocument toc;
             XPathNavigator root, navToc;
             XmlAttribute attr;
@@ -223,14 +233,11 @@ namespace SandcastleBuilder.PlugIns
             string name, parent, topicTitle;
             int parentIdx, childIdx, entriesAdded;
 
-            builder.ReportProgress("Retrieving namespace topic title from " +
-                "shared content...");
+            builder.ReportProgress("Retrieving namespace topic title from shared content...");
 
             toc = new XmlDocument();
-            toc.Load(builder.PresentationStyleFolder +
-                @"content\reference_content.xml");
-            tocEntry = toc.SelectSingleNode("content/item[@id=" +
-                "'namespaceTopicTitle']");
+            toc.Load(builder.PresentationStyleFolder + @"content\reference_content.xml");
+            tocEntry = toc.SelectSingleNode("content/item[@id='namespaceTopicTitle']");
 
             if(tocEntry != null)
                 topicTitle = tocEntry.InnerText;
@@ -277,9 +284,8 @@ namespace SandcastleBuilder.PlugIns
 
                         if(!namespaceList.Contains(name))
                         {
-                            if(namespaceList.FindAll(delegate (string ns) {
-                              return ns.StartsWith(name + ".",
-                                StringComparison.Ordinal); }).Count > 0)
+                            if(namespaceList.FindAll(
+                              ns => ns.StartsWith(name + ".", StringComparison.Ordinal)).Count > 0)
                             {
                                 // The nodes will be created later once
                                 // we know where to insert them.
@@ -292,9 +298,7 @@ namespace SandcastleBuilder.PlugIns
             }
 
             // Sort them in reverse order
-            namespaceList.Sort(delegate (string n1, string n2) {
-                    return String.Compare(n2, n1, StringComparison.Ordinal);
-                });
+            namespaceList.Sort((n1, n2) => String.Compare(n2, n1, StringComparison.Ordinal));
 
             // If any container namespaces were added, create nodes for them
             // and insert them before the namespace ahead of them in the list.
@@ -305,8 +309,7 @@ namespace SandcastleBuilder.PlugIns
                     attr = toc.CreateAttribute("id");
 
                     attr.Value = String.Format(CultureInfo.InvariantCulture,
-                        topicTitle, (key.Length > 2) ? key.Substring(2) :
-                        "Global");
+                        topicTitle, (key.Length > 2) ? key.Substring(2) : "Global");
                     tocEntry.Attributes.Append(attr);
 
                     parentIdx = namespaceList.IndexOf(key);
@@ -335,8 +338,7 @@ namespace SandcastleBuilder.PlugIns
                             tocParent.InsertAfter(tocEntry, tocParent.ChildNodes[
                                 tocParent.ChildNodes.Count - entriesAdded - 1]);
                         else
-                            tocParent.InsertBefore(tocEntry,
-                                tocParent.ChildNodes[0]);
+                            tocParent.InsertBefore(tocEntry, tocParent.ChildNodes[0]);
 
                         namespaceList.RemoveAt(childIdx);
                         entriesAdded++;
@@ -352,7 +354,6 @@ namespace SandcastleBuilder.PlugIns
 
         #region IDisposable implementation
         //=====================================================================
-        // IDisposable implementation
 
         /// <summary>
         /// This handles garbage collection to ensure proper disposal of the

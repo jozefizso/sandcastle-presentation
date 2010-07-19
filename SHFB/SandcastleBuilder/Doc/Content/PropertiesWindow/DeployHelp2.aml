@@ -36,7 +36,7 @@ valid set of collection files and creates a configuration file suitable for
 use by <localUri>H2Reg.exe</localUri>.  In order to deploy the generated HTML
 Help 2 files, follow these steps:</para>
 
-<list class="bullet">
+<list class="ordered">
     <listItem>Set the <codeInline>PlugInNamespaces</codeInline> project
 property to a comma separated list of one or more namespaces that your
 collection should be plugged into when deployed.  The default setting will plug
@@ -85,8 +85,7 @@ by executing the following command (lines wrapped for display purposes):</para>
 
     <relatedTopics>
     <link xlink:href="74664b00-b83f-450a-833a-25984ba812e3" />
-    <link xlink:href="7d28bf8f-923f-44c1-83e1-337a416947a1#Help2">MS Help 2
-Category Properties</link>
+    <link xlink:href="d0c2dabd-3caf-4586-b81d-cbd765dec7cf" />
     </relatedTopics>
 
   </developerConceptualDocument>

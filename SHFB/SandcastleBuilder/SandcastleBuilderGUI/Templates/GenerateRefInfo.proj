@@ -40,7 +40,7 @@
          resolve them to absolute paths that can be passed to MRefBuilder
          using the /dep command line option.  Assembly build items are added
          by the build process to define the assemblies to reflect. -->
-    <MRefBuilder
+    <SandcastleBuilder.Utils.MSBuild.MRefBuilder
       DocumentInternals="$(DocInternals)"
       SandcastlePath="$(SandcastlePath)"
       WorkingFolder="$(WorkingFolder)"
@@ -50,7 +50,7 @@
     <!-- Merge duplicate topics (if any) -->
     <Copy SourceFiles="reflection.org" DestinationFiles="reflection.all" />
 
-    <XslTransform
+    <SandcastleBuilder.Utils.MSBuild.XslTransform
       SandcastlePath="$(SandcastlePath)"
       WorkingFolder="$(WorkingFolder)"
       Transformations="ProductionTransforms\MergeDuplicates.xsl"
