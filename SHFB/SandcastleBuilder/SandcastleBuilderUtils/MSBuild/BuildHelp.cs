@@ -309,14 +309,6 @@ namespace SandcastleBuilder.Utils.MSBuild
 
             if(msBuildProject == null)
             {
-                // Create the project and set the configuration and platform
-                // options.
-                ////msBuildProject = new Project(Engine.GlobalEngine);
-                ////msBuildProject.GlobalProperties.SetProperty(
-                ////    ProjectElement.Configuration, configuration);
-                ////msBuildProject.GlobalProperties.SetProperty(
-                ////    ProjectElement.Platform, platform);
-
                 if (!File.Exists(projectFile))
                     throw new BuilderException("BHT0003", "The specified " +
                         "project file does not exist: " + projectFile);
@@ -329,6 +321,8 @@ namespace SandcastleBuilder.Utils.MSBuild
                 if (!String.IsNullOrEmpty(outDir))
                     globalProperties.Add(ProjectElement.OutDir, outDir);
 
+                // Create the project and set the configuration and platform
+                // options.
                 msBuildProject = new Project(
                     projectFile,
                     globalProperties,

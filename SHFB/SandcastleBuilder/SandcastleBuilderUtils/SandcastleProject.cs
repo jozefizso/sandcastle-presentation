@@ -131,7 +131,6 @@ namespace SandcastleBuilder.Utils
 
         // MS Build and property items
         private Project msBuildProject;
-        ////private BuildPropertyGroup projectCache;  // MSBuild property cache
         private bool usingFinalValues;
 
         // Local property info cache
@@ -2265,15 +2264,6 @@ namespace SandcastleBuilder.Utils
         /// <returns>The string to use as the replacement</returns>
         private string OnBuildVarMatch(Match match)
         {
-            //// Get the project property cache if needed
-            ////if(projectCache == null)
-            ////    projectCache = msBuildProject.EvaluatedProperties;
-            
-            ////BuildProperty projProp = projectCache[];
-
-            ////if(projProp != null)
-            ////    return projProp.FinalValue;
-
             return msBuildProject.GetPropertyValue(match.Groups[1].Value);
         }
 
@@ -2282,7 +2272,6 @@ namespace SandcastleBuilder.Utils
         /// </summary>
         private void LoadProperties()
         {
-            ////BuildProperty property;
             Version schemaVersion;
             string helpFileFormat;
             Dictionary<string, string> translateFormat = new Dictionary<string, string> {
@@ -2295,16 +2284,7 @@ namespace SandcastleBuilder.Utils
 
             try
             {
-                // Ensure that we use the correct build engine for the project
-                ////if(msBuildProject.ToolsVersion != "3.5")
-                ////    msBuildProject.DefaultToolsVersion = "3.5";
-                ////Debug.Assert(
-                ////    msBuildProject.ToolsVersion == "3.5",
-                ////    @"msBuildProject.ToolsVersion == ""3.5""",
-                ////    "MSBuild project must use tools from version 3.5.");
-
                 loadingProperties = true;
-                ////projectCache = msBuildProject.EvaluatedProperties;
                 msBuildProject.ReevaluateIfNecessary();
 
                 string versionString = msBuildProject.GetPropertyValue(SHFBSchemaVersionElement);
@@ -2547,13 +2527,6 @@ namespace SandcastleBuilder.Utils
             // cache will be set to null so that this refreshes it when needed.
             // See the MPF ProjectNode class for an example.
 
-            // Get the project property cache if needed
-            ////if(projectCache == null)
-            ////    projectCache = msBuildProject.EvaluatedProperties;
-
-            ////projProp = projectCache[propertyName];
-
-
             msBuildProject.ReevaluateIfNecessary();
             projProp = msBuildProject.GetProperty(propertyName);
 
@@ -2617,9 +2590,6 @@ namespace SandcastleBuilder.Utils
                     val = EscapeValueAttribute.Escape(newValue);
                 
                 msBuildProject.SetProperty(propertyName, newValue);
-
-                // The cache needs to be refreshed
-                ////projectCache = null;
 
                 // Notify everyone of the property change
                 this.OnProjectPropertyChanged(new ProjectPropertyChangedEventArgs(

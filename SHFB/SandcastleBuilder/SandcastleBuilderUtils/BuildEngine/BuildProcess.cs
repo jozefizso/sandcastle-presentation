@@ -809,9 +809,6 @@ namespace SandcastleBuilder.Utils.BuildEngine
                                 ProjectElement.HintPath,
                                 Path.Combine(projectFolder, hintPath.EvaluatedValue));
                         }
-                        ////buildItem = msBuildProject.AddNewItem(item.Name,
-                        ////    item.Include);
-                        ////item.CopyCustomMetadataTo(buildItem);
                     }
 
                     // Add the assemblies to document
@@ -2082,7 +2079,6 @@ AllDone:
                 new Dictionary<string, MSBuildProject>();
 
             MSBuildProject projRef;
-            ////BuildItem buildItem;
             XPathDocument testComments;
             XPathNavigator navComments;
             XmlCommentsFile comments;
