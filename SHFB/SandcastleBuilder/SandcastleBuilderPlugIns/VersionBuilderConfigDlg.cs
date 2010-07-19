@@ -2,8 +2,8 @@
 // System  : EWSoftware Design Time Attributes and Editors
 // File    : VersionBuilderConfigDlg.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 08/13/2008
-// Note    : Copyright 2007-2008, Eric Woodruff, All rights reserved
+// Updated : 06/28/2010
+// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to edit the version builder plug-in
@@ -19,14 +19,13 @@
 // ============================================================================
 // 1.6.0.3  12/01/2007  EFW  Created the code
 // 1.8.0.0  08/13/2008  EFW  Updated to support the new project format
+// 1.9.0.0  06/27/2010  EFW  Added support for /rip option
 //=============================================================================
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
@@ -70,17 +69,16 @@ namespace SandcastleBuilder.PlugIns
         /// <param name="currentProject">The current project</param>
         /// <param name="currentConfig">The current XML configuration
         /// XML fragment</param>
-        public VersionBuilderConfigDlg(SandcastleProject currentProject,
-          string currentConfig)
+        public VersionBuilderConfigDlg(SandcastleProject currentProject, string currentConfig)
         {
             XPathNavigator navigator, root, node;
+            string ripOldApis;
 
             InitializeComponent();
             project = currentProject;
 
             lnkCodePlexSHFB.Links[0].LinkData = "http://SHFB.CodePlex.com";
-            lbVersionInfo.DisplayMember = lbVersionInfo.ValueMember =
-                "ListDescription";
+            lbVersionInfo.DisplayMember = lbVersionInfo.ValueMember = "ListDescription";
 
             items = new VersionSettingsCollection();
 
@@ -99,6 +97,11 @@ namespace SandcastleBuilder.PlugIns
             {
                 txtLabel.Text = node.GetAttribute("label", String.Empty);
                 txtVersion.Text = node.GetAttribute("version", String.Empty);
+                ripOldApis = node.GetAttribute("ripOldApis", String.Empty);
+
+                // This wasn't in earlier versions
+                if(!String.IsNullOrEmpty(ripOldApis))
+                    chkRipOldAPIs.Checked = Convert.ToBoolean(ripOldApis, CultureInfo.InvariantCulture);
             }
 
             items.FromXml(currentProject, root);
@@ -144,8 +147,7 @@ namespace SandcastleBuilder.PlugIns
             using(OpenFileDialog dlg = new OpenFileDialog())
             {
                 dlg.Title = "Select the help file builder project(s)";
-                dlg.Filter = "Sandcastle Help File Builder Project Files " +
-                    "(*.shfbproj)|*.shfbproj|All Files (*.*)|*.*";
+                dlg.Filter = "Sandcastle Help File Builder Project Files (*.shfbproj)|*.shfbproj|All Files (*.*)|*.*";
                 dlg.InitialDirectory = Directory.GetCurrentDirectory();
                 dlg.DefaultExt = "shfbproj";
                 dlg.Multiselect = true;
@@ -189,8 +191,7 @@ namespace SandcastleBuilder.PlugIns
                     if(idx < lbVersionInfo.Items.Count)
                         lbVersionInfo.SelectedIndex = idx;
                     else
-                        lbVersionInfo.SelectedIndex =
-                            lbVersionInfo.Items.Count - 1;
+                        lbVersionInfo.SelectedIndex = lbVersionInfo.Items.Count - 1;
             }
         }
 
@@ -244,8 +245,7 @@ namespace SandcastleBuilder.PlugIns
 
             if(txtVersion.Text.Length == 0)
             {
-                epErrors.SetError(txtVersion, "A version for the containing " +
-                    "project is required");
+                epErrors.SetError(txtVersion, "A version for the containing project is required");
                 isValid = false;
             }
 
@@ -262,16 +262,14 @@ namespace SandcastleBuilder.PlugIns
                 if(projects.ContainsKey(vs.GetHashCode()) ||
                   projects.ContainsValue(vs.HelpFileProject))
                 {
-                    epErrors.SetError(lbVersionInfo, "Label + Version values " +
-                        "and project filenames must be unique");
+                    epErrors.SetError(lbVersionInfo, "Label + Version values and project filenames must be unique");
                     isValid = false;
                     break;
                 }
 
                 if(vs.Version == txtVersion.Text)
                 {
-                    epErrors.SetError(lbVersionInfo, "A prior version cannot " +
-                        "match the current project's version");
+                    epErrors.SetError(lbVersionInfo, "A prior version cannot match the current project's version");
                     isValid = false;
                     break;
                 }
@@ -287,6 +285,7 @@ namespace SandcastleBuilder.PlugIns
             root = config.SelectSingleNode("configuration");
 
             node = root.SelectSingleNode("currentProject");
+
             if(node == null)
             {
                 node = config.CreateNode(XmlNodeType.Element,
@@ -297,10 +296,22 @@ namespace SandcastleBuilder.PlugIns
                 node.Attributes.Append(attr);
                 attr = config.CreateAttribute("version");
                 node.Attributes.Append(attr);
+                attr = config.CreateAttribute("ripOldApis");
+                node.Attributes.Append(attr);
+            }
+            else
+            {
+                // This wasn't in older versions so add it if it is missing
+                if(node.Attributes["ripOldApis"] == null)
+                {
+                    attr = config.CreateAttribute("ripOldApis");
+                    node.Attributes.Append(attr);
+                }
             }
 
             node.Attributes["label"].Value = txtLabel.Text;
             node.Attributes["version"].Value = txtVersion.Text;
+            node.Attributes["ripOldApis"].Value = chkRipOldAPIs.Checked.ToString();
             items.ToXml(config, root);
 
             this.DialogResult = DialogResult.OK;
@@ -321,8 +332,7 @@ namespace SandcastleBuilder.PlugIns
             catch(Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
-                MessageBox.Show("Unable to launch link target.  " +
-                    "Reason: " + ex.Message, Constants.AppName,
+                MessageBox.Show("Unable to launch link target.  Reason: " + ex.Message, Constants.AppName,
                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }

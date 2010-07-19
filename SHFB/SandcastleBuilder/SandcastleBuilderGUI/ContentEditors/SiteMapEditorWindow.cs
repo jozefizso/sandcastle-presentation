@@ -182,7 +182,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
                             defaultNode = node;
 
                         // This is only valid at the root level
-                        if(t.SplitToc)
+                        if(t.ApiParentMode != ApiParentMode.None)
                             splitTocNode = node;
 
                         if(t == firstSelection)
@@ -549,22 +549,21 @@ namespace SandcastleBuilder.Gui.ContentEditors
 
                 splitTocNode = newSplit;
 
-                if(topics.SplitTocAtTopic != null)
-                    topics.SplitTocAtTopic.SplitToc = false;
+                if(topics.ApiContentInsertionPoint != null)
+                    topics.ApiContentInsertionPoint.ApiParentMode = ApiParentMode.None;
 
-                ((TocEntry)splitTocNode.Tag).SplitToc = true;
+                ((TocEntry)splitTocNode.Tag).ApiParentMode = ApiParentMode.InsertAfter;
             }
             else
                 if(splitTocNode != null)
                 {
                     splitTocNode = null;    // Turn it off altogether
 
-                    if(topics.SplitTocAtTopic != null)
-                        topics.SplitTocAtTopic.SplitToc = false;
+                    if(topics.ApiContentInsertionPoint != null)
+                        topics.ApiContentInsertionPoint.ApiParentMode = ApiParentMode.None;
                 }
 
-            this.topics_ListChanged(this, new ListChangedEventArgs(
-                ListChangedType.ItemChanged, -1));
+            this.topics_ListChanged(this, new ListChangedEventArgs(ListChangedType.ItemChanged, -1));
         }
 
         /// <summary>

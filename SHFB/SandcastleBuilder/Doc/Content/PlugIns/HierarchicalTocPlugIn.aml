@@ -5,6 +5,17 @@
     xmlns:xlink="http://www.w3.org/1999/xlink">
 
     <introduction>
+<alert class="note">
+  <para>The Hierarchical TOC plug-in is not compatible with MS Help Viewer output
+and there is currently no fix available.  The problem is that the table of contents is
+generated off of the help topics when the help viewer file is installed and, since there
+are no physical topics for the namespace nodes added to the intermediate TOC file by the
+plug-in, they do not appear in the help file.  Updating the plug-in to support help
+viewer output would have required more work than time would allow for this release.
+If building other output formats in which you want to use the plug-in, build them
+separately from the MS Help Viewer output.</para>
+</alert>
+
       <para>This plug-in can be used to rearrange the table of contents such
 that namespaces are nested within their parent namespaces rather than appearing
 as a flat list of all namespaces at the root level.  The plug-in has two

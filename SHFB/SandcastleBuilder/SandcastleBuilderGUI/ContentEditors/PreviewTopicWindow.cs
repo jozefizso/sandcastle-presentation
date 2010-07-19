@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder
 // File    : PreviewTopicWindow.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 12/30/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 06/07/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to preview a topic.
@@ -18,11 +18,10 @@
 // ============================================================================
 // 1.6.0.7  05/27/2008  EFW  Created the code
 // 1.8.0.0  07/26/2008  EFW  Reworked for use with the new project format
+// 1.9.0.0  06/07/2010  EFW  Added support for multi-format build output
 //=============================================================================
 
 using System;
-using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
@@ -31,7 +30,6 @@ using SandcastleBuilder.Gui.Properties;
 using SandcastleBuilder.Utils;
 using SandcastleBuilder.Utils.BuildEngine;
 using SandcastleBuilder.Utils.ConceptualContent;
-using SandcastleBuilder.Utils.InheritedDocumentation;
 using SandcastleBuilder.Utils.PlugIn;
 
 using WeifenLuo.WinFormsUI.Docking;
@@ -64,8 +62,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
         {
             get
             {
-                FormClosingEventArgs e = new FormClosingEventArgs(
-                    CloseReason.UserClosing, false);
+                FormClosingEventArgs e = new FormClosingEventArgs(CloseReason.UserClosing, false);
 
                 this.PreviewTopicWindow_FormClosing(null, e);
                 return !e.Cancel;
@@ -134,31 +131,29 @@ namespace SandcastleBuilder.Gui.ContentEditors
                 tempPath = Path.GetTempFileName();
 
                 File.Delete(tempPath);
-                tempPath = Path.Combine(Path.GetDirectoryName(tempPath),
-                    "SHFBPartialBuild");
+                tempPath = Path.Combine(Path.GetDirectoryName(tempPath), "SHFBPartialBuild");
 
                 if(!Directory.Exists(tempPath))
                     Directory.CreateDirectory(tempPath);
 
                 tempProject.OutputPath = tempPath;
 
+                // Force website output so that we know where to find the output
+                tempProject.HelpFileFormat = HelpFileFormat.Website;
+
                 // Add the Additional Content Only plug-in or update the it if
                 // already there to only do a preview build.
-                if(tempProject.PlugInConfigurations.TryGetValue(
-                  "Additional Content Only", out pc))
+                if(tempProject.PlugInConfigurations.TryGetValue("Additional Content Only", out pc))
                 {
                     pc.Enabled = true;
                     pc.Configuration = "<configuration previewBuild='true' />";
                 }
                 else
-                    tempProject.PlugInConfigurations.Add(
-                        "Additional Content Only", true,
+                    tempProject.PlugInConfigurations.Add("Additional Content Only", true,
                         "<configuration previewBuild='true' />");
 
                 buildProcess = new BuildProcess(tempProject);
-                buildProcess.BuildStepChanged +=
-                    new EventHandler<BuildProgressEventArgs>(
-                    buildProcess_BuildStepChanged);
+                buildProcess.BuildStepChanged += buildProcess_BuildStepChanged;
 
                 buildThread = new Thread(new ThreadStart(buildProcess.Build));
                 buildThread.Name = "Help file builder thread";
@@ -167,14 +162,11 @@ namespace SandcastleBuilder.Gui.ContentEditors
             }
             catch(Exception ex)
             {
-                Directory.SetCurrentDirectory(Path.GetDirectoryName(
-                    currentProject.Filename));
+                Directory.SetCurrentDirectory(Path.GetDirectoryName(currentProject.Filename));
 
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
-                MessageBox.Show("Unable to build project to preview topic.  " +
-                    "Error: " + ex.Message,
-                    Constants.AppName, MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                MessageBox.Show("Unable to build project to preview topic.  " + "Error: " + ex.Message,
+                    Constants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -192,8 +184,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
                 // Ignore it if we've already shut down or it hasn't
                 // completed yet.
                 if(!this.IsDisposed)
-                    this.Invoke(new EventHandler<BuildProgressEventArgs>(
-                        buildProcess_BuildStepChanged),
+                    this.Invoke(new EventHandler<BuildProgressEventArgs>(buildProcess_BuildStepChanged),
                         new object[] { sender, e });
             }
             else
@@ -203,8 +194,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
                 if(e.HasCompleted)
                 {
                     // Restore the current project's base path
-                    Directory.SetCurrentDirectory(Path.GetDirectoryName(
-                        currentProject.Filename));
+                    Directory.SetCurrentDirectory(Path.GetDirectoryName(currentProject.Filename));
                     lastBuildStep = e.BuildStep;
                 }
             }
@@ -221,8 +211,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
         /// <param name="e">The event arguments</param>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if(e.CloseReason == CloseReason.UserClosing &&
-              this.DockState == DockState.Document)
+            if(e.CloseReason == CloseReason.UserClosing && this.DockState == DockState.Document)
             {
                 this.Hide();
                 e.Cancel = true;
@@ -277,8 +266,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             if(sender == this && tempProject != null)
             {
                 // Delete the temporary project's working files
-                if(!String.IsNullOrEmpty(tempProject.OutputPath) &&
-                  Directory.Exists(tempProject.OutputPath))
+                if(!String.IsNullOrEmpty(tempProject.OutputPath) && Directory.Exists(tempProject.OutputPath))
                     Directory.Delete(tempProject.OutputPath, true);
 
                 GC.Collect(2);
@@ -314,18 +302,13 @@ namespace SandcastleBuilder.Gui.ContentEditors
 
                     if(!String.IsNullOrEmpty(topicFile.Id))
                         path = String.Concat(buildProcess.WorkingFolder,
-                            @"Output\html\", topicFile.Id, ".htm");
+                            @"Output\Website\html\", topicFile.Id, ".htm");
                     else
                     {
                         // If not, try to find it by name
                         files = Directory.GetFiles(buildProcess.WorkingFolder +
-                            @"Output\html\", Path.GetFileNameWithoutExtension(
-                            fileItem.Name) + ".htm", SearchOption.AllDirectories);
-
-                        if(files.Length == 0)
-                            files = Directory.GetFiles(buildProcess.WorkingFolder +
-                                @"Output\html\", Path.GetFileNameWithoutExtension(
-                                fileItem.Name) + ".html", SearchOption.AllDirectories);
+                            @"Output\Website\", Path.GetFileNameWithoutExtension(
+                            fileItem.Name) + ".htm?", SearchOption.AllDirectories);
 
                         if(files.Length != 0)
                             path = files[0];

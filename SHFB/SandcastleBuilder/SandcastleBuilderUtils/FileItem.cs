@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : FileItem.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 12/04/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 04/04/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a class representing a file that is part of the project
@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 
 using Microsoft.Build.BuildEngine;
 
@@ -48,6 +49,8 @@ namespace SandcastleBuilder.Utils
         private string imageId, altText;
         private bool copyToMedia, excludeFromToc;
         private int sortOrder;
+
+        private static Regex reInsertSpaces = new Regex(@"((?<=[a-z0-9])[A-Z](?=[a-z0-9]))|((?<=[A-Za-z])\d+)");
         #endregion
 
         #region Properties
@@ -56,6 +59,9 @@ namespace SandcastleBuilder.Utils
         /// <summary>
         /// This is used to set or get the build action of the item
         /// </summary>
+        /// <value>If set to <b>Image</b>, <see cref="ImageId"/> and
+        /// <see cref="AlternateText" /> will be set to the filename if not
+        /// set already.</value>
         [Category("Build Action"), Description("The build action for this item"),
           RefreshProperties(RefreshProperties.All),
           TypeConverter(typeof(BuildActionEnumConverter))]
@@ -64,8 +70,25 @@ namespace SandcastleBuilder.Utils
             get { return buildAction; }
             set
             {
-                buildAction = value;
+                string baseName;
+
                 base.ProjectElement.ItemName = value.ToString();
+                buildAction = value;
+
+                // Set default ID and description if set to Image
+                if(buildAction == BuildAction.Image)
+                {
+                    baseName = Path.GetFileNameWithoutExtension(includePath);
+
+                    if(String.IsNullOrEmpty(this.ImageId))
+                        this.ImageId = baseName;
+
+                    if(String.IsNullOrEmpty(this.AlternateText))
+                    {
+                        baseName = baseName.Replace("_", " ");
+                        this.AlternateText = reInsertSpaces.Replace(baseName, " $&").Trim();
+                    }
+                }
             }
         }
 
@@ -244,8 +267,8 @@ namespace SandcastleBuilder.Utils
                 if(value != null)
                     value = value.Trim();
 
-                imageId = value;
                 base.ProjectElement.SetMetadata(ProjectElement.ImageId, value);
+                imageId = value;
             }
         }
 
@@ -262,9 +285,8 @@ namespace SandcastleBuilder.Utils
                 if(value != null)
                     value = value.Trim();
 
+                base.ProjectElement.SetMetadata(ProjectElement.AlternateText, value);
                 altText = value;
-                base.ProjectElement.SetMetadata(ProjectElement.AlternateText,
-                    value);
             }
         }
 
@@ -283,9 +305,8 @@ namespace SandcastleBuilder.Utils
             get { return copyToMedia; }
             set
             {
+                base.ProjectElement.SetMetadata(ProjectElement.CopyToMedia, value.ToString(CultureInfo.InvariantCulture));
                 copyToMedia = value;
-                base.ProjectElement.SetMetadata(ProjectElement.CopyToMedia,
-                    value.ToString(CultureInfo.InvariantCulture));
             }
         }
 
@@ -303,9 +324,9 @@ namespace SandcastleBuilder.Utils
             get { return excludeFromToc; }
             set
             {
-                excludeFromToc = value;
                 base.ProjectElement.SetMetadata(ProjectElement.ExcludeFromToc,
                     value.ToString(CultureInfo.InvariantCulture));
+                excludeFromToc = value;
             }
         }
 
@@ -321,9 +342,9 @@ namespace SandcastleBuilder.Utils
             get { return sortOrder; }
             set
             {
-                sortOrder = value;
                 base.ProjectElement.SetMetadata(ProjectElement.SortOrder,
                     value.ToString(CultureInfo.InvariantCulture));
+                sortOrder = value;
             }
         }
         #endregion

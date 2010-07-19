@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Plug-Ins
 // File    : TocExcludePlugIn.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 11/14/2008
-// Note    : Copyright 2008, Eric Woodruff, All rights reserved
+// Updated : 06/13/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a plug-in that can be used to exclude API members from
@@ -24,9 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.XPath;
@@ -46,6 +44,8 @@ namespace SandcastleBuilder.PlugIns
     public class TocExcludePlugIn : IPlugIn
     {
         #region Private data members
+        //=====================================================================
+
         private ExecutionPointCollection executionPoints;
 
         private BuildProcess builder;
@@ -55,7 +55,6 @@ namespace SandcastleBuilder.PlugIns
 
         #region IPlugIn implementation
         //=====================================================================
-        // IPlugIn implementation
 
         /// <summary>
         /// This read-only property returns a friendly name for the plug-in
@@ -74,8 +73,7 @@ namespace SandcastleBuilder.PlugIns
             {
                 // Use the assembly version
                 Assembly asm = Assembly.GetExecutingAssembly();
-                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(
-                    asm.Location);
+                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
 
                 return new Version(fvi.ProductVersion);
             }
@@ -91,9 +89,8 @@ namespace SandcastleBuilder.PlugIns
             {
                 // Use the assembly copyright
                 Assembly asm = Assembly.GetExecutingAssembly();
-                AssemblyCopyrightAttribute copyright =
-                    (AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(
-                        asm, typeof(AssemblyCopyrightAttribute));
+                AssemblyCopyrightAttribute copyright = (AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(
+                    asm, typeof(AssemblyCopyrightAttribute));
 
                 return copyright.Copyright;
             }
@@ -131,19 +128,14 @@ namespace SandcastleBuilder.PlugIns
             get
             {
                 if(executionPoints == null)
-                {
-                    executionPoints = new ExecutionPointCollection();
+                    executionPoints = new ExecutionPointCollection
+                    {
+                        new ExecutionPoint(BuildStep.CopyStandardContent, ExecutionBehaviors.After),
 
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.CopyStandardContent,
-                        ExecutionBehaviors.After));
-
-                    // This one has a slightly higher priority as it removes
-                    // stuff that the other plug-ins don't need to see.
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.GenerateIntermediateTableOfContents,
-                        ExecutionBehaviors.After, 1500));
-                }
+                        // This one has a slightly higher priority as it removes
+                        // stuff that the other plug-ins don't need to see.
+                        new ExecutionPoint(BuildStep.GenerateIntermediateTableOfContents, ExecutionBehaviors.After, 1500)
+                    };
 
                 return executionPoints;
             }
@@ -158,8 +150,7 @@ namespace SandcastleBuilder.PlugIns
         /// <returns>A string containing the new configuration XML fragment</returns>
         /// <remarks>The configuration data will be stored in the help file
         /// builder project.</remarks>
-        public string ConfigurePlugIn(SandcastleProject project,
-          string currentConfig)
+        public string ConfigurePlugIn(SandcastleProject project, string currentConfig)
         {
             MessageBox.Show("This plug-in has no configurable settings",
                 "Table of Contents Exclusion Plug-In", MessageBoxButtons.OK,
@@ -176,13 +167,11 @@ namespace SandcastleBuilder.PlugIns
         /// process.</param>
         /// <param name="configuration">The configuration data that the plug-in
         /// should use to initialize itself.</param>
-        public void Initialize(BuildProcess buildProcess,
-          XPathNavigator configuration)
+        public void Initialize(BuildProcess buildProcess, XPathNavigator configuration)
         {
             builder = buildProcess;
 
-            builder.ReportProgress("{0} Version {1}\r\n{2}",
-                this.Name, this.Version, this.Copyright);
+            builder.ReportProgress("{0} Version {1}\r\n{2}", this.Name, this.Version, this.Copyright);
 
             exclusionList = new List<string>();
         }
@@ -202,16 +191,13 @@ namespace SandcastleBuilder.PlugIns
             // have added to the collection should be there.
             if(context.BuildStep == BuildStep.CopyStandardContent)
             {
-                builder.ReportProgress("Searching for comment members " +
-                    "containing <tocexclude />...");
+                builder.ReportProgress("Searching for comment members containing <tocexclude />...");
 
                 foreach(XmlCommentsFile f in builder.CommentsFiles)
-                    foreach(XmlNode member in f.Members.SelectNodes(
-                      "member[count(.//tocexclude) > 0]/@name"))
+                    foreach(XmlNode member in f.Members.SelectNodes("member[count(.//tocexclude) > 0]/@name"))
                         exclusionList.Add(member.Value);
 
-                builder.ReportProgress("Found {0} members to exclude from " +
-                    "the TOC", exclusionList.Count);
+                builder.ReportProgress("Found {0} members to exclude from the TOC", exclusionList.Count);
                 return;
             }
 
@@ -248,8 +234,7 @@ namespace SandcastleBuilder.PlugIns
                         tocParent = tocEntry.Clone();
                         hasParent = tocParent.MoveToParent();
 
-                        builder.ReportProgress("    Removing '{0}'",
-                            tocEntry.GetAttribute("id", String.Empty));
+                        builder.ReportProgress("    Removing '{0}'", tocEntry.GetAttribute("id", String.Empty));
                         tocEntry.DeleteSelf();
 
                     } while(hasParent && !tocParent.HasChildren);
@@ -262,7 +247,6 @@ namespace SandcastleBuilder.PlugIns
 
         #region IDisposable implementation
         //=====================================================================
-        // IDisposable implementation
 
         /// <summary>
         /// This handles garbage collection to ensure proper disposal of the

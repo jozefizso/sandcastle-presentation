@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : Topic.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 04/19/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 07/02/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a class representing a conceptual content topic.
@@ -18,6 +18,8 @@
 // ============================================================================
 // 1.6.0.7  04/24/2008  EFW  Created the code
 // 1.8.0.0  08/07/2008  EFW  Modified for use with the new project format
+// 1.9.0.0  06/06/2010  EFW  Added support for MS Help Viewer output
+// 1.9.0.0  07/01/2010  EFW  Added support for API parent mode setting
 //=============================================================================
 
 using System;
@@ -44,9 +46,9 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         //=====================================================================
 
         private TopicFile topicFile;
-        private TopicCollection parent, subtopics;
+        private TopicCollection subtopics;
         private string contentId, title, tocTitle, linkText;
-        private bool visible, noFile, isDefaultTopic;
+        private bool noFile;
         private MSHelpAttrCollection helpAttributes;
         private MSHelpKeywordCollection keywords;
         #endregion
@@ -60,11 +62,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// <remarks>This is used by the designer to move items around within
         /// the collection.</remarks>
         [Browsable(false)]
-        public TopicCollection Parent
-        {
-            get { return parent; }
-            internal set { parent = value; }
-        }
+        public TopicCollection Parent { get; internal set; }
 
         /// <summary>
         /// This is used to get or set the topic file information related to
@@ -247,11 +245,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// one of the other topics.</value>
         [Category("Topic"), Description("Indicate whether or not the " +
           "topic is visible in the table of contents"), DefaultValue(true)]
-        public bool Visible
-        {
-            get { return visible; }
-            set { visible = value; }
-        }
+        public bool Visible { get; set; }
 
         /// <summary>
         /// This is used to get the additional attributes that will be added
@@ -328,11 +322,21 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// topic.
         /// </summary>
         [Browsable(false)]
-        public bool IsDefaultTopic
-        {
-            get { return isDefaultTopic; }
-            set { isDefaultTopic = value; }
-        }
+        public bool IsDefaultTopic { get; set; }
+
+        /// <summary>
+        /// This is used to specify how API content is parented to this topic
+        /// or the topic's parent
+        /// </summary>
+        [Browsable(false)]
+        public ApiParentMode ApiParentMode { get; set; }
+
+        /// <summary>
+        /// This is used to get or set whether or not the topic will server as
+        /// the root content container in MS Help Viewer output
+        /// </summary>
+        [Browsable(false)]
+        public bool IsMSHVRootContentContainer { get; set; }
         #endregion
 
         #region Designer methods
@@ -375,10 +379,10 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         public Topic()
         {
             contentId = Guid.NewGuid().ToString();
-            visible = true;
             subtopics = new TopicCollection(null);
             helpAttributes = new MSHelpAttrCollection(null);
             keywords = new MSHelpKeywordCollection();
+            this.Visible = true;
 
             subtopics.ListChanged += new ListChangedEventHandler(
                 childList_ListChanged);
@@ -400,8 +404,8 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// <remarks>This may not be the best way to handle this.</remarks>
         private void childList_ListChanged(object sender, ListChangedEventArgs e)
         {
-            if(parent != null)
-                parent.ChildListChanged(this);
+            if(this.Parent != null)
+                this.Parent.ChildListChanged(this);
         }
         #endregion
 
@@ -417,7 +421,8 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         internal void ReadXml(XmlReader xr)
         {
             Topic newTopic;
-            string guid;
+            string guid, parentMode;
+            bool visible, attrValue;
 
             guid = xr.GetAttribute("id");
 
@@ -432,6 +437,18 @@ namespace SandcastleBuilder.Utils.ConceptualContent
             if(!Boolean.TryParse(xr.GetAttribute("visible"), out visible))
                 visible = true;
 
+            if(Boolean.TryParse(xr.GetAttribute("isDefault"), out attrValue))
+                this.IsDefaultTopic = attrValue;
+
+            if(Boolean.TryParse(xr.GetAttribute("isMSHVRoot"), out attrValue))
+                this.IsMSHVRootContentContainer = attrValue;
+
+            parentMode = xr.GetAttribute("apiParentMode");
+
+            if(!String.IsNullOrEmpty(parentMode))
+                this.ApiParentMode = (ApiParentMode)Enum.Parse(typeof(ApiParentMode), parentMode, true);
+
+            this.Visible = visible;
             this.Title = xr.GetAttribute("title");
             this.TocTitle = xr.GetAttribute("tocTitle");
             this.LinkText = xr.GetAttribute("linkText");
@@ -441,8 +458,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
                 {
                     xr.Read();
 
-                    if(xr.NodeType == XmlNodeType.EndElement &&
-                      xr.Name == "Topic")
+                    if(xr.NodeType == XmlNodeType.EndElement && xr.Name == "Topic")
                         break;
 
                     if(xr.NodeType == XmlNodeType.Element)
@@ -476,11 +492,19 @@ namespace SandcastleBuilder.Utils.ConceptualContent
                 if(contentId != null)
                     xw.WriteAttributeString("id", contentId);
 
-            xw.WriteAttributeString("visible",
-                visible.ToString(CultureInfo.InvariantCulture));
+            xw.WriteAttributeString("visible", this.Visible.ToString(CultureInfo.InvariantCulture));
 
             if(noFile)
-                xw.WriteAttributeString("noFile", "True");
+                xw.WriteAttributeString("noFile", "true");
+
+            if(this.IsDefaultTopic)
+                xw.WriteAttributeString("isDefault", "true");
+
+            if(this.IsMSHVRootContentContainer)
+                xw.WriteAttributeString("isMSHVRoot", "true");
+
+            if(this.ApiParentMode != ApiParentMode.None)
+                xw.WriteAttributeString("apiParentMode", this.ApiParentMode.ToString());
 
             if(title != null)
                 xw.WriteAttributeString("title", title);
@@ -509,24 +533,26 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// component that resolves conceptual links.
         /// </summary>
         /// <param name="folder">The folder in which to place the file</param>
+        /// <param name="builder">The build process</param>
         /// <remarks>The file will be named using the ID and a ".xml"
         /// extension.</remarks>
-        internal void WriteCompanionFile(string folder)
+        internal void WriteCompanionFile(string folder, BuildProcess builder)
         {
             string linkElement = String.Empty;
 
-            if(!noFile)
+            // MS Help Viewer doesn't support empty place holders so we automatically
+            // generate a dummy place holder file for them.
+            if(!noFile || (builder.CurrentProject.HelpFileFormat & HelpFileFormat.MSHelpViewer) != 0)
             {
                 // Link text is optional
                 if(!String.IsNullOrEmpty(linkText))
                     linkElement = String.Format(CultureInfo.InvariantCulture,
-                        "    <linkText>{0}</linkText>\r\n",
-                        HttpUtility.HtmlEncode(linkText));
+                        "    <linkText>{0}</linkText>\r\n", HttpUtility.HtmlEncode(linkText));
 
                 // It's small enough that we'll just write it out as a string
                 // rather than using an XML writer.
-                using(StreamWriter sw = new StreamWriter(Path.Combine(folder,
-                    topicFile.Id + ".cmp.xml"), false, Encoding.UTF8))
+                using(StreamWriter sw = new StreamWriter(Path.Combine(folder, this.Id + ".cmp.xml"),
+                  false, Encoding.UTF8))
                 {
                     sw.WriteLine(
                         "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" +
@@ -535,13 +561,12 @@ namespace SandcastleBuilder.Utils.ConceptualContent
                         "    <title>{1}</title>\r\n" +
                         "{2}" +
                         "  </topic>\r\n" +
-                        "</metadata>\r\n", topicFile.Id,
-                        HttpUtility.HtmlEncode(this.DisplayTitle), linkElement);
+                        "</metadata>\r\n", this.Id, HttpUtility.HtmlEncode(this.DisplayTitle), linkElement);
                 }
             }
 
             foreach(Topic t in subtopics)
-                t.WriteCompanionFile(folder);
+                t.WriteCompanionFile(folder, builder);
         }
 
         /// <summary>
@@ -553,18 +578,19 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// as well.</remarks>
         internal void WriteMetadata(XmlWriter writer, BuildProcess builder)
         {
-            if(!noFile)
+            // MS Help Viewer doesn't support empty place holders so we automatically
+            // generate a dummy place holder file for them.
+            if(!noFile || (builder.CurrentProject.HelpFileFormat & HelpFileFormat.MSHelpViewer) != 0)
             {
                 writer.WriteStartElement("topic");
-                writer.WriteAttributeString("id", topicFile.Id);
+                writer.WriteAttributeString("id", this.Id);
                 writer.WriteAttributeString("revisionNumber",
-                    topicFile.RevisionNumber.ToString(CultureInfo.InvariantCulture));
+                    this.RevisionNumber.ToString(CultureInfo.InvariantCulture));
 
                 // Write out the help file version project property value
                 writer.WriteStartElement("item");
                 writer.WriteAttributeString("id", "PBM_FileVersion");
-                writer.WriteValue(builder.TransformText(
-                    builder.CurrentProject.HelpFileVersion));
+                writer.WriteValue(builder.TransformText(builder.CurrentProject.HelpFileVersion));
                 writer.WriteEndElement();
 
                 // If no title is specified, use the display title
@@ -579,8 +605,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
 
                 // TOC title is optional
                 if(!String.IsNullOrEmpty(tocTitle))
-                    writer.WriteElementString("tableOfContentsTitle",
-                        tocTitle);
+                    writer.WriteElementString("tableOfContentsTitle", tocTitle);
 
                 // The running header text ID is set to "runningHeaderText"
                 // so that it pulls in the shared content item by that name.
@@ -628,10 +653,9 @@ namespace SandcastleBuilder.Utils.ConceptualContent
 
                 // If this is the default topic and the NamedUrlIndex keywords
                 // for DefaultPage and/or HomePage are not present, add them.
-                if(parent.DefaultTopic == this)
+                if(this.IsDefaultTopic)
                 {
-                    if(!keywords.Contains(new MSHelpKeyword("NamedUrlIndex",
-                      "DefaultPage")))
+                    if(!keywords.Contains(new MSHelpKeyword("NamedUrlIndex", "DefaultPage")))
                     {
                         writer.WriteStartElement("keyword");
                         writer.WriteAttributeString("index", "NamedUrlIndex");
@@ -639,8 +663,7 @@ namespace SandcastleBuilder.Utils.ConceptualContent
                         writer.WriteEndElement();
                     }
 
-                    if(!keywords.Contains(new MSHelpKeyword("NamedUrlIndex",
-                      "HomePage")))
+                    if(!keywords.Contains(new MSHelpKeyword("NamedUrlIndex", "HomePage")))
                     {
                         writer.WriteStartElement("keyword");
                         writer.WriteAttributeString("index", "NamedUrlIndex");
@@ -661,20 +684,24 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         /// Write out the <b>BuildAssembler</b> manifest entry
         /// </summary>
         /// <param name="writer">The XML writer to which the entry is written</param>
+        /// <param name="builder">The build process</param>
         /// <remarks>This will recursively write out entries for sub-topics
         /// as well.</remarks>
-        internal void WriteManifest(XmlWriter writer)
+        internal void WriteManifest(XmlWriter writer, BuildProcess builder)
         {
-            // Don't add an entry for empty container nodes or raw HTML files
-            if(!noFile && topicFile.DocumentType != DocumentType.Html)
+            // MS Help Viewer doesn't support empty place holders so we automatically
+            // generate a dummy place holder file for them.  Don't add an entry for
+            // raw HTML files.
+            if((!noFile && topicFile.DocumentType != DocumentType.Html) ||
+              (noFile && (builder.CurrentProject.HelpFileFormat & HelpFileFormat.MSHelpViewer) != 0))
             {
                 writer.WriteStartElement("topic");
-                writer.WriteAttributeString("id", topicFile.Id);
+                writer.WriteAttributeString("id", this.Id);
                 writer.WriteEndElement();
             }
 
             foreach(Topic t in subtopics)
-                t.WriteManifest(writer);
+                t.WriteManifest(writer, builder);
         }
         #endregion
 
@@ -703,12 +730,11 @@ namespace SandcastleBuilder.Utils.ConceptualContent
         public string ToAnchor(string innerText)
         {
             if(String.IsNullOrEmpty(innerText))
-                return String.Format(CultureInfo.CurrentCulture,
-                    "<a href=\"html/{0}.htm\">{1}</a>", contentId,
+                return String.Format(CultureInfo.CurrentCulture, "<a href=\"html/{0}.htm\">{1}</a>", contentId,
                     this.DisplayTitle);
 
-            return String.Format(CultureInfo.CurrentCulture,
-                "<a href=\"html/{0}.htm\">{1}</a>", contentId, innerText);
+            return String.Format(CultureInfo.CurrentCulture, "<a href=\"html/{0}.htm\">{1}</a>", contentId,
+                innerText);
         }
         #endregion
     }

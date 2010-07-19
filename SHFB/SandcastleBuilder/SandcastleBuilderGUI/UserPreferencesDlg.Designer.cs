@@ -35,10 +35,11 @@ namespace SandcastleBuilder.Gui
             this.statusBarTextProvider1 = new SandcastleBuilder.Utils.Controls.StatusBarTextProvider(this.components);
             this.chkVerboseLogging = new System.Windows.Forms.CheckBox();
             this.txtHTMLHelp2ViewerPath = new System.Windows.Forms.TextBox();
-            this.btnSelectViewer = new System.Windows.Forms.Button();
+            this.btnSelectHxSViewer = new System.Windows.Forms.Button();
             this.udcASPNetDevServerPort = new System.Windows.Forms.NumericUpDown();
             this.tabPreferences = new System.Windows.Forms.TabControl();
             this.pgGeneral = new System.Windows.Forms.TabPage();
+            this.chkEnterMatching = new System.Windows.Forms.CheckBox();
             this.chkShowLineNumbers = new System.Windows.Forms.CheckBox();
             this.chkOpenHelp = new System.Windows.Forms.CheckBox();
             this.cboBeforeBuildAction = new System.Windows.Forms.ComboBox();
@@ -63,6 +64,9 @@ namespace SandcastleBuilder.Gui
             this.lbContentEditors = new SandcastleBuilder.Utils.Controls.RefreshableItemListBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.epErrors = new System.Windows.Forms.ErrorProvider(this.components);
+            this.txtMSHelpViewerPath = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.btnSelectMSHCViewer = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.udcASPNetDevServerPort)).BeginInit();
             this.tabPreferences.SuspendLayout();
             this.pgGeneral.SuspendLayout();
@@ -74,7 +78,7 @@ namespace SandcastleBuilder.Gui
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(620, 436);
+            this.btnCancel.Location = new System.Drawing.Point(620, 488);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(88, 32);
             this.statusBarTextProvider1.SetStatusBarText(this.btnCancel, "Cancel: Close without saving preferences");
@@ -87,7 +91,7 @@ namespace SandcastleBuilder.Gui
             // 
             this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Location = new System.Drawing.Point(12, 436);
+            this.btnOK.Location = new System.Drawing.Point(12, 488);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(88, 32);
             this.statusBarTextProvider1.SetStatusBarText(this.btnOK, "OK: Save preferences");
@@ -98,39 +102,39 @@ namespace SandcastleBuilder.Gui
             // 
             // chkVerboseLogging
             // 
-            this.chkVerboseLogging.Location = new System.Drawing.Point(245, 128);
+            this.chkVerboseLogging.Location = new System.Drawing.Point(262, 163);
             this.chkVerboseLogging.Name = "chkVerboseLogging";
             this.chkVerboseLogging.Size = new System.Drawing.Size(292, 24);
             this.statusBarTextProvider1.SetStatusBarText(this.chkVerboseLogging, "Verbose Logging: Check this box to display all output messages.  Uncheck to displ" +
                     "ay summary messages only.");
-            this.chkVerboseLogging.TabIndex = 7;
+            this.chkVerboseLogging.TabIndex = 10;
             this.chkVerboseLogging.Text = "&Build window verbose logging enabled";
             this.chkVerboseLogging.UseVisualStyleBackColor = true;
             // 
             // txtHTMLHelp2ViewerPath
             // 
-            this.txtHTMLHelp2ViewerPath.Location = new System.Drawing.Point(245, 18);
+            this.txtHTMLHelp2ViewerPath.Location = new System.Drawing.Point(262, 18);
             this.txtHTMLHelp2ViewerPath.Name = "txtHTMLHelp2ViewerPath";
             this.txtHTMLHelp2ViewerPath.Size = new System.Drawing.Size(358, 22);
-            this.statusBarTextProvider1.SetStatusBarText(this.txtHTMLHelp2ViewerPath, "MS Help 2 Viewer: Enter the path and filename of the application used to view MS " +
-                    "Help 2 files");
+            this.statusBarTextProvider1.SetStatusBarText(this.txtHTMLHelp2ViewerPath, "MS Help 2 (.HxS) Viewer: Enter the path and filename of the application used to v" +
+                    "iew MS Help 2 files");
             this.txtHTMLHelp2ViewerPath.TabIndex = 1;
             // 
-            // btnSelectViewer
+            // btnSelectHxSViewer
             // 
-            this.btnSelectViewer.Location = new System.Drawing.Point(604, 17);
-            this.btnSelectViewer.Name = "btnSelectViewer";
-            this.btnSelectViewer.Size = new System.Drawing.Size(32, 25);
-            this.statusBarTextProvider1.SetStatusBarText(this.btnSelectViewer, "Select Viewer: Browser for the MS Help 2 viewer application");
-            this.btnSelectViewer.TabIndex = 2;
-            this.btnSelectViewer.Text = "...";
-            this.toolTip1.SetToolTip(this.btnSelectViewer, "Select MS Help 2 viewer application");
-            this.btnSelectViewer.UseVisualStyleBackColor = true;
-            this.btnSelectViewer.Click += new System.EventHandler(this.btnSelectViewer_Click);
+            this.btnSelectHxSViewer.Location = new System.Drawing.Point(621, 17);
+            this.btnSelectHxSViewer.Name = "btnSelectHxSViewer";
+            this.btnSelectHxSViewer.Size = new System.Drawing.Size(32, 25);
+            this.statusBarTextProvider1.SetStatusBarText(this.btnSelectHxSViewer, "Select Viewer: Browser for the MS Help 2 viewer application");
+            this.btnSelectHxSViewer.TabIndex = 2;
+            this.btnSelectHxSViewer.Text = "...";
+            this.toolTip1.SetToolTip(this.btnSelectHxSViewer, "Select MS Help 2 viewer application");
+            this.btnSelectHxSViewer.UseVisualStyleBackColor = true;
+            this.btnSelectHxSViewer.Click += new System.EventHandler(this.btnSelectViewer_Click);
             // 
             // udcASPNetDevServerPort
             // 
-            this.udcASPNetDevServerPort.Location = new System.Drawing.Point(245, 46);
+            this.udcASPNetDevServerPort.Location = new System.Drawing.Point(262, 74);
             this.udcASPNetDevServerPort.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -145,7 +149,7 @@ namespace SandcastleBuilder.Gui
             this.udcASPNetDevServerPort.Size = new System.Drawing.Size(70, 22);
             this.statusBarTextProvider1.SetStatusBarText(this.udcASPNetDevServerPort, "Server Port: Select the port to use when launching the ASP.NET Development Web Se" +
                     "rver");
-            this.udcASPNetDevServerPort.TabIndex = 4;
+            this.udcASPNetDevServerPort.TabIndex = 7;
             this.udcASPNetDevServerPort.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.udcASPNetDevServerPort.Value = new decimal(new int[] {
             1000,
@@ -160,12 +164,16 @@ namespace SandcastleBuilder.Gui
             this.tabPreferences.Location = new System.Drawing.Point(12, 12);
             this.tabPreferences.Name = "tabPreferences";
             this.tabPreferences.SelectedIndex = 0;
-            this.tabPreferences.Size = new System.Drawing.Size(696, 418);
+            this.tabPreferences.Size = new System.Drawing.Size(696, 470);
             this.statusBarTextProvider1.SetStatusBarText(this.tabPreferences, "User preferences");
             this.tabPreferences.TabIndex = 0;
             // 
             // pgGeneral
             // 
+            this.pgGeneral.Controls.Add(this.txtMSHelpViewerPath);
+            this.pgGeneral.Controls.Add(this.label8);
+            this.pgGeneral.Controls.Add(this.btnSelectMSHCViewer);
+            this.pgGeneral.Controls.Add(this.chkEnterMatching);
             this.pgGeneral.Controls.Add(this.chkShowLineNumbers);
             this.pgGeneral.Controls.Add(this.chkOpenHelp);
             this.pgGeneral.Controls.Add(this.cboBeforeBuildAction);
@@ -185,34 +193,46 @@ namespace SandcastleBuilder.Gui
             this.pgGeneral.Controls.Add(this.chkVerboseLogging);
             this.pgGeneral.Controls.Add(this.label2);
             this.pgGeneral.Controls.Add(this.label1);
-            this.pgGeneral.Controls.Add(this.btnSelectViewer);
+            this.pgGeneral.Controls.Add(this.btnSelectHxSViewer);
             this.pgGeneral.Location = new System.Drawing.Point(4, 25);
             this.pgGeneral.Name = "pgGeneral";
             this.pgGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.pgGeneral.Size = new System.Drawing.Size(688, 389);
+            this.pgGeneral.Size = new System.Drawing.Size(688, 441);
             this.statusBarTextProvider1.SetStatusBarText(this.pgGeneral, "General user preferences");
             this.pgGeneral.TabIndex = 0;
             this.pgGeneral.Text = "General Preferences";
             this.pgGeneral.UseVisualStyleBackColor = true;
             // 
+            // chkEnterMatching
+            // 
+            this.chkEnterMatching.AutoSize = true;
+            this.chkEnterMatching.Location = new System.Drawing.Point(92, 384);
+            this.chkEnterMatching.Name = "chkEnterMatching";
+            this.chkEnterMatching.Size = new System.Drawing.Size(349, 21);
+            this.statusBarTextProvider1.SetStatusBarText(this.chkEnterMatching, "Enter Matching: When checked, matching brackets, parentheses, and quotes will be " +
+                    "entered automatically in the text editor");
+            this.chkEnterMatching.TabIndex = 23;
+            this.chkEnterMatching.Text = "E&nter matching brackets, parentheses, and quotes";
+            this.chkEnterMatching.UseVisualStyleBackColor = true;
+            // 
             // chkShowLineNumbers
             // 
             this.chkShowLineNumbers.AutoSize = true;
-            this.chkShowLineNumbers.Location = new System.Drawing.Point(75, 323);
+            this.chkShowLineNumbers.Location = new System.Drawing.Point(92, 358);
             this.chkShowLineNumbers.Name = "chkShowLineNumbers";
             this.chkShowLineNumbers.Size = new System.Drawing.Size(230, 21);
             this.statusBarTextProvider1.SetStatusBarText(this.chkShowLineNumbers, "Show Line Numbers: Check this box to show line numbers in the text editor");
-            this.chkShowLineNumbers.TabIndex = 16;
+            this.chkShowLineNumbers.TabIndex = 19;
             this.chkShowLineNumbers.Text = "Sho&w line numbers in text editor";
             this.chkShowLineNumbers.UseVisualStyleBackColor = true;
             // 
             // chkOpenHelp
             // 
-            this.chkOpenHelp.Location = new System.Drawing.Point(245, 158);
+            this.chkOpenHelp.Location = new System.Drawing.Point(262, 193);
             this.chkOpenHelp.Name = "chkOpenHelp";
             this.chkOpenHelp.Size = new System.Drawing.Size(292, 24);
             this.statusBarTextProvider1.SetStatusBarText(this.chkOpenHelp, "Open Help: Check this to open the help file after a successful build");
-            this.chkOpenHelp.TabIndex = 8;
+            this.chkOpenHelp.TabIndex = 11;
             this.chkOpenHelp.Text = "&Open help file after successful build";
             this.chkOpenHelp.UseVisualStyleBackColor = true;
             // 
@@ -225,37 +245,37 @@ namespace SandcastleBuilder.Gui
             "Save changes to open documents only",
             "Prompt to save all changes",
             "Don\'t save any changes"});
-            this.cboBeforeBuildAction.Location = new System.Drawing.Point(245, 98);
+            this.cboBeforeBuildAction.Location = new System.Drawing.Point(262, 133);
             this.cboBeforeBuildAction.Name = "cboBeforeBuildAction";
             this.cboBeforeBuildAction.Size = new System.Drawing.Size(292, 24);
             this.statusBarTextProvider1.SetStatusBarText(this.cboBeforeBuildAction, "Before Build: Select the action to take before performing a build");
-            this.cboBeforeBuildAction.TabIndex = 6;
+            this.cboBeforeBuildAction.TabIndex = 9;
             // 
             // label7
             // 
-            this.label7.Location = new System.Drawing.Point(118, 98);
+            this.label7.Location = new System.Drawing.Point(135, 133);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(121, 23);
-            this.label7.TabIndex = 5;
+            this.label7.TabIndex = 8;
             this.label7.Text = "B&efore Building";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // btnEditorFont
             // 
-            this.btnEditorFont.Location = new System.Drawing.Point(470, 320);
+            this.btnEditorFont.Location = new System.Drawing.Point(487, 355);
             this.btnEditorFont.Name = "btnEditorFont";
             this.btnEditorFont.Size = new System.Drawing.Size(32, 25);
-            this.btnEditorFont.TabIndex = 18;
+            this.btnEditorFont.TabIndex = 21;
             this.btnEditorFont.Text = "...";
             this.btnEditorFont.UseVisualStyleBackColor = true;
             this.btnEditorFont.Click += new System.EventHandler(this.btnFont_Click);
             // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(335, 321);
+            this.label3.Location = new System.Drawing.Point(352, 356);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(129, 23);
-            this.label3.TabIndex = 17;
+            this.label3.TabIndex = 20;
             this.label3.Text = "&Text Editor Font";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -265,58 +285,58 @@ namespace SandcastleBuilder.Gui
             this.lblEditorExample.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.lblEditorExample.Font = new System.Drawing.Font("Courier New", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblEditorExample.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.lblEditorExample.Location = new System.Drawing.Point(508, 295);
+            this.lblEditorExample.Location = new System.Drawing.Point(525, 330);
             this.lblEditorExample.Name = "lblEditorExample";
             this.lblEditorExample.Size = new System.Drawing.Size(128, 75);
-            this.lblEditorExample.TabIndex = 19;
+            this.lblEditorExample.TabIndex = 22;
             this.lblEditorExample.Text = "Example Text";
             this.lblEditorExample.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // btnBuildFont
             // 
-            this.btnBuildFont.Location = new System.Drawing.Point(470, 230);
+            this.btnBuildFont.Location = new System.Drawing.Point(487, 265);
             this.btnBuildFont.Name = "btnBuildFont";
             this.btnBuildFont.Size = new System.Drawing.Size(32, 25);
-            this.btnBuildFont.TabIndex = 14;
+            this.btnBuildFont.TabIndex = 17;
             this.btnBuildFont.Text = "...";
             this.btnBuildFont.UseVisualStyleBackColor = true;
             this.btnBuildFont.Click += new System.EventHandler(this.btnFont_Click);
             // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(418, 231);
+            this.label4.Location = new System.Drawing.Point(435, 266);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(46, 23);
-            this.label4.TabIndex = 13;
+            this.label4.TabIndex = 16;
             this.label4.Text = "Font";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // btnBuildForeground
             // 
-            this.btnBuildForeground.Location = new System.Drawing.Point(380, 230);
+            this.btnBuildForeground.Location = new System.Drawing.Point(397, 265);
             this.btnBuildForeground.Name = "btnBuildForeground";
             this.btnBuildForeground.Size = new System.Drawing.Size(32, 25);
-            this.btnBuildForeground.TabIndex = 12;
+            this.btnBuildForeground.TabIndex = 15;
             this.btnBuildForeground.Text = "...";
             this.btnBuildForeground.UseVisualStyleBackColor = true;
             this.btnBuildForeground.Click += new System.EventHandler(this.btnColor_Click);
             // 
             // btnBuildBackground
             // 
-            this.btnBuildBackground.Location = new System.Drawing.Point(245, 230);
+            this.btnBuildBackground.Location = new System.Drawing.Point(262, 265);
             this.btnBuildBackground.Name = "btnBuildBackground";
             this.btnBuildBackground.Size = new System.Drawing.Size(32, 25);
-            this.btnBuildBackground.TabIndex = 10;
+            this.btnBuildBackground.TabIndex = 13;
             this.btnBuildBackground.Text = "...";
             this.btnBuildBackground.UseVisualStyleBackColor = true;
             this.btnBuildBackground.Click += new System.EventHandler(this.btnColor_Click);
             // 
             // label5
             // 
-            this.label5.Location = new System.Drawing.Point(283, 231);
+            this.label5.Location = new System.Drawing.Point(300, 266);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(91, 23);
-            this.label5.TabIndex = 11;
+            this.label5.TabIndex = 14;
             this.label5.Text = "Foreground";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -326,38 +346,38 @@ namespace SandcastleBuilder.Gui
             this.lblBuildExample.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.lblBuildExample.Font = new System.Drawing.Font("Courier New", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblBuildExample.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.lblBuildExample.Location = new System.Drawing.Point(508, 205);
+            this.lblBuildExample.Location = new System.Drawing.Point(525, 240);
             this.lblBuildExample.Name = "lblBuildExample";
             this.lblBuildExample.Size = new System.Drawing.Size(128, 75);
-            this.lblBuildExample.TabIndex = 15;
+            this.lblBuildExample.TabIndex = 18;
             this.lblBuildExample.Text = "Example Text";
             this.lblBuildExample.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label6
             // 
-            this.label6.Location = new System.Drawing.Point(65, 231);
+            this.label6.Location = new System.Drawing.Point(82, 266);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(174, 23);
-            this.label6.TabIndex = 9;
+            this.label6.TabIndex = 12;
             this.label6.Text = "B&uild Output Background";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(31, 40);
+            this.label2.Location = new System.Drawing.Point(46, 68);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(208, 47);
-            this.label2.TabIndex = 3;
+            this.label2.Size = new System.Drawing.Size(210, 47);
+            this.label2.TabIndex = 6;
             this.label2.Text = "&ASP.NET Development Web Server Port";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label1
             // 
-            this.label1.Location = new System.Drawing.Point(68, 18);
+            this.label1.Location = new System.Drawing.Point(43, 18);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(171, 23);
+            this.label1.Size = new System.Drawing.Size(213, 23);
             this.label1.TabIndex = 0;
-            this.label1.Text = "MS &Help 2 Viewer Path";
+            this.label1.Text = "MS &Help 2 (.HxS) Viewer Path";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // pgContentEditors
@@ -369,7 +389,7 @@ namespace SandcastleBuilder.Gui
             this.pgContentEditors.Location = new System.Drawing.Point(4, 25);
             this.pgContentEditors.Name = "pgContentEditors";
             this.pgContentEditors.Padding = new System.Windows.Forms.Padding(3);
-            this.pgContentEditors.Size = new System.Drawing.Size(688, 389);
+            this.pgContentEditors.Size = new System.Drawing.Size(688, 441);
             this.statusBarTextProvider1.SetStatusBarText(this.pgContentEditors, "Content file editors");
             this.pgContentEditors.TabIndex = 1;
             this.pgContentEditors.Text = "Content File Editors";
@@ -414,7 +434,7 @@ namespace SandcastleBuilder.Gui
             // 
             this.pgProps.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.pgProps.Location = new System.Drawing.Point(6, 127);
+            this.pgProps.Location = new System.Drawing.Point(6, 179);
             this.pgProps.Name = "pgProps";
             this.pgProps.PropertyNamePaneWidth = 150;
             this.pgProps.Size = new System.Drawing.Size(676, 256);
@@ -432,7 +452,7 @@ namespace SandcastleBuilder.Gui
             this.lbContentEditors.ItemHeight = 16;
             this.lbContentEditors.Location = new System.Drawing.Point(6, 6);
             this.lbContentEditors.Name = "lbContentEditors";
-            this.lbContentEditors.Size = new System.Drawing.Size(638, 115);
+            this.lbContentEditors.Size = new System.Drawing.Size(638, 167);
             this.statusBarTextProvider1.SetStatusBarText(this.lbContentEditors, "Select a content editor item");
             this.lbContentEditors.TabIndex = 0;
             this.lbContentEditors.SelectedIndexChanged += new System.EventHandler(this.lbContentEditors_SelectedIndexChanged);
@@ -441,12 +461,42 @@ namespace SandcastleBuilder.Gui
             // 
             this.epErrors.ContainerControl = this;
             // 
+            // txtMSHelpViewerPath
+            // 
+            this.txtMSHelpViewerPath.Location = new System.Drawing.Point(262, 46);
+            this.txtMSHelpViewerPath.Name = "txtMSHelpViewerPath";
+            this.txtMSHelpViewerPath.Size = new System.Drawing.Size(358, 22);
+            this.statusBarTextProvider1.SetStatusBarText(this.txtMSHelpViewerPath, "MS Help Viewer (.mshc) Viewer: Enter the path and filename of the application use" +
+                    "d to view MS Help Viewer files");
+            this.txtMSHelpViewerPath.TabIndex = 4;
+            // 
+            // label8
+            // 
+            this.label8.Location = new System.Drawing.Point(6, 46);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(250, 23);
+            this.label8.TabIndex = 3;
+            this.label8.Text = "MS Help Viewer (.mshc) Viewer Path";
+            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // btnSelectMSHCViewer
+            // 
+            this.btnSelectMSHCViewer.Location = new System.Drawing.Point(621, 45);
+            this.btnSelectMSHCViewer.Name = "btnSelectMSHCViewer";
+            this.btnSelectMSHCViewer.Size = new System.Drawing.Size(32, 25);
+            this.statusBarTextProvider1.SetStatusBarText(this.btnSelectMSHCViewer, "Select Viewer: Browser for the MS Help Viewer viewer application");
+            this.btnSelectMSHCViewer.TabIndex = 5;
+            this.btnSelectMSHCViewer.Text = "...";
+            this.toolTip1.SetToolTip(this.btnSelectMSHCViewer, "Select MS Help Viewer viewer application");
+            this.btnSelectMSHCViewer.UseVisualStyleBackColor = true;
+            this.btnSelectMSHCViewer.Click += new System.EventHandler(this.btnSelectViewer_Click);
+            // 
             // UserPreferencesDlg
             // 
             this.AcceptButton = this.btnOK;
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(720, 480);
+            this.ClientSize = new System.Drawing.Size(720, 532);
             this.Controls.Add(this.tabPreferences);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOK);
@@ -477,7 +527,7 @@ namespace SandcastleBuilder.Gui
         private System.Windows.Forms.CheckBox chkVerboseLogging;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtHTMLHelp2ViewerPath;
-        private System.Windows.Forms.Button btnSelectViewer;
+        private System.Windows.Forms.Button btnSelectHxSViewer;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.NumericUpDown udcASPNetDevServerPort;
         private System.Windows.Forms.ErrorProvider epErrors;
@@ -503,5 +553,9 @@ namespace SandcastleBuilder.Gui
         private System.Windows.Forms.ComboBox cboBeforeBuildAction;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.CheckBox chkShowLineNumbers;
+        private System.Windows.Forms.CheckBox chkEnterMatching;
+        private System.Windows.Forms.TextBox txtMSHelpViewerPath;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button btnSelectMSHCViewer;
     }
 }

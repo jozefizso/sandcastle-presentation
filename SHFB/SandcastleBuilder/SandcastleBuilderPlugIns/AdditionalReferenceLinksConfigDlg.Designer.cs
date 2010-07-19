@@ -87,7 +87,7 @@ namespace SandcastleBuilder.PlugIns
             this.lbReferences.ItemHeight = 16;
             this.lbReferences.Location = new System.Drawing.Point(12, 35);
             this.lbReferences.Name = "lbReferences";
-            this.lbReferences.Size = new System.Drawing.Size(650, 118);
+            this.lbReferences.Size = new System.Drawing.Size(650, 138);
             this.lbReferences.Sorted = true;
             this.lbReferences.TabIndex = 1;
             this.lbReferences.SelectedIndexChanged += new System.EventHandler(this.lbReferences_SelectedIndexChanged);
@@ -96,10 +96,10 @@ namespace SandcastleBuilder.PlugIns
             // 
             this.pgProps.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.pgProps.Location = new System.Drawing.Point(12, 159);
+            this.pgProps.Location = new System.Drawing.Point(12, 179);
             this.pgProps.Name = "pgProps";
             this.pgProps.PropertyNamePaneWidth = 150;
-            this.pgProps.Size = new System.Drawing.Size(688, 228);
+            this.pgProps.Size = new System.Drawing.Size(688, 257);
             this.pgProps.TabIndex = 4;
             this.pgProps.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.pgProps_PropertyValueChanged);
             // 
@@ -107,7 +107,7 @@ namespace SandcastleBuilder.PlugIns
             // 
             this.lnkCodePlexSHFB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.lnkCodePlexSHFB.Location = new System.Drawing.Point(222, 398);
+            this.lnkCodePlexSHFB.Location = new System.Drawing.Point(222, 447);
             this.lnkCodePlexSHFB.Name = "lnkCodePlexSHFB";
             this.lnkCodePlexSHFB.Size = new System.Drawing.Size(267, 23);
             this.lnkCodePlexSHFB.TabIndex = 6;
@@ -121,7 +121,7 @@ namespace SandcastleBuilder.PlugIns
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(612, 393);
+            this.btnCancel.Location = new System.Drawing.Point(612, 442);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(88, 32);
             this.btnCancel.TabIndex = 7;
@@ -133,7 +133,7 @@ namespace SandcastleBuilder.PlugIns
             // btnOK
             // 
             this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnOK.Location = new System.Drawing.Point(12, 393);
+            this.btnOK.Location = new System.Drawing.Point(12, 442);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(88, 32);
             this.btnOK.TabIndex = 5;
@@ -160,7 +160,7 @@ namespace SandcastleBuilder.PlugIns
             this.AcceptButton = this.btnOK;
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(712, 437);
+            this.ClientSize = new System.Drawing.Size(712, 491);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.lnkCodePlexSHFB);
             this.Controls.Add(this.btnCancel);

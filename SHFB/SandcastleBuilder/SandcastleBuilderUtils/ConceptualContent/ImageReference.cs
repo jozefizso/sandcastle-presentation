@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : ImageReference.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 09/04/2008
-// Note    : Copyright 2008, Eric Woodruff, All rights reserved
+// Updated : 06/06/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a class representing a conceptual content image that can
@@ -23,12 +23,7 @@
 
 using System;
 using System.ComponentModel;
-using System.Drawing.Design;
 using System.Globalization;
-using System.IO;
-using System.Xml;
-
-using SandcastleBuilder.Utils.Design;
 
 namespace SandcastleBuilder.Utils.ConceptualContent
 {
@@ -87,8 +82,8 @@ namespace SandcastleBuilder.Utils.ConceptualContent
 
         /// <summary>
         /// This is used to get or set whether or not to copy the image to the
-        /// <b>.\Output\media</b> folder if it is not referenced in a media
-        /// link.
+        /// <b>.\Output\[HelpFormat]\media</b> folder if it is not referenced
+        /// in a media link.
         /// </summary>
         /// <value>The default is false and the image will not be copied
         /// unless it is referenced in a media link.  If set to true, the

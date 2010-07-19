@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Plug-Ins
 // File    : AdditionalContentOnlyPlugIn.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 10/09/2008
-// Note    : Copyright 2007-2008, Eric Woodruff, All rights reserved
+// Updated : 06/30/2010
+// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a plug-in that can be used to build a help file
@@ -22,9 +22,11 @@
 // 1.5.2.0  09/13/2007  EFW  Created the code
 // 1.6.0.7  05/27/2008  EFW  Modified to support use in conceptual preview
 // 1.8.0.0  08/05/2008  EFW  Modified to support the new project format
+// 1.9.0.0  06/07/2010  EFW  Added support for multi-format build output
 //=============================================================================
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -48,6 +50,8 @@ namespace SandcastleBuilder.PlugIns
     public class AdditionalContentOnlyPlugIn : IPlugIn
     {
         #region Private data members
+        //=====================================================================
+
         private ExecutionPointCollection executionPoints;
 
         private BuildProcess builder;
@@ -56,7 +60,6 @@ namespace SandcastleBuilder.PlugIns
 
         #region IPlugIn implementation
         //=====================================================================
-        // IPlugIn implementation
 
         /// <summary>
         /// This read-only property returns a friendly name for the plug-in
@@ -75,8 +78,7 @@ namespace SandcastleBuilder.PlugIns
             {
                 // Use the assembly version
                 Assembly asm = Assembly.GetExecutingAssembly();
-                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(
-                    asm.Location);
+                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
 
                 return new Version(fvi.ProductVersion);
             }
@@ -92,9 +94,8 @@ namespace SandcastleBuilder.PlugIns
             {
                 // Use the assembly copyright
                 Assembly asm = Assembly.GetExecutingAssembly();
-                AssemblyCopyrightAttribute copyright =
-                    (AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(
-                        asm, typeof(AssemblyCopyrightAttribute));
+                AssemblyCopyrightAttribute copyright = (AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(
+                    asm, typeof(AssemblyCopyrightAttribute));
 
                 return copyright.Copyright;
             }
@@ -133,40 +134,19 @@ namespace SandcastleBuilder.PlugIns
             get
             {
                 if(executionPoints == null)
-                {
-                    executionPoints = new ExecutionPointCollection();
-
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.ValidatingDocumentationSources,
-                        ExecutionBehaviors.InsteadOf));
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.GenerateApiFilter,
-                        ExecutionBehaviors.InsteadOf));
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.GenerateReflectionInfo,
-                        ExecutionBehaviors.InsteadOf));
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.GenerateNamespaceSummaries,
-                        ExecutionBehaviors.InsteadOf));
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.ApplyVisibilityProperties,
-                        ExecutionBehaviors.InsteadOf));
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.GenerateInheritedDocumentation,
-                        ExecutionBehaviors.InsteadOf));
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.TransformReflectionInfo,
-                        ExecutionBehaviors.InsteadOf));
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.ModifyHelpTopicFilenames,
-                        ExecutionBehaviors.InsteadOf));
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.MergeCustomConfigs,
-                        ExecutionBehaviors.After));
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.BuildReferenceTopics,
-                        ExecutionBehaviors.InsteadOf));
-                }
+                    executionPoints = new ExecutionPointCollection
+                    {
+                        new ExecutionPoint(BuildStep.ValidatingDocumentationSources, ExecutionBehaviors.InsteadOf),
+                        new ExecutionPoint(BuildStep.GenerateApiFilter, ExecutionBehaviors.InsteadOf),
+                        new ExecutionPoint(BuildStep.GenerateReflectionInfo, ExecutionBehaviors.InsteadOf),
+                        new ExecutionPoint(BuildStep.GenerateNamespaceSummaries, ExecutionBehaviors.InsteadOf),
+                        new ExecutionPoint(BuildStep.ApplyVisibilityProperties, ExecutionBehaviors.InsteadOf),
+                        new ExecutionPoint(BuildStep.GenerateInheritedDocumentation, ExecutionBehaviors.InsteadOf),
+                        new ExecutionPoint(BuildStep.TransformReflectionInfo, ExecutionBehaviors.InsteadOf),
+                        new ExecutionPoint(BuildStep.ModifyHelpTopicFilenames, ExecutionBehaviors.InsteadOf),
+                        new ExecutionPoint(BuildStep.MergeCustomConfigs, ExecutionBehaviors.After),
+                        new ExecutionPoint(BuildStep.BuildReferenceTopics, ExecutionBehaviors.InsteadOf),
+                    };
 
                 return executionPoints;
             }
@@ -181,12 +161,10 @@ namespace SandcastleBuilder.PlugIns
         /// <returns>A string containing the new configuration XML fragment</returns>
         /// <remarks>The configuration data will be stored in the help file
         /// builder project.</remarks>
-        public string ConfigurePlugIn(SandcastleProject project,
-          string currentConfig)
+        public string ConfigurePlugIn(SandcastleProject project, string currentConfig)
         {
-            MessageBox.Show("This plug-in has no configurable settings",
-                "Additional Content Only Plug-In", MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            MessageBox.Show("This plug-in has no configurable settings", "Additional Content Only Plug-In",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             return currentConfig;
         }
@@ -199,14 +177,12 @@ namespace SandcastleBuilder.PlugIns
         /// process.</param>
         /// <param name="configuration">The configuration data that the plug-in
         /// should use to initialize itself.</param>
-        public void Initialize(BuildProcess buildProcess,
-          XPathNavigator configuration)
+        public void Initialize(BuildProcess buildProcess, XPathNavigator configuration)
         {
             builder = buildProcess;
 
-            builder.ReportProgress("{0} Version {1}\r\n{2}\r\n    This " +
-                "build will only include additional content items.",
-                this.Name, this.Version, this.Copyright);
+            builder.ReportProgress("{0} Version {1}\r\n{2}\r\n    This build will only include " +
+                "additional content items.", this.Name, this.Version, this.Copyright);
 
             if(!builder.CurrentProject.HasItems(BuildAction.ContentLayout) &&
               !builder.CurrentProject.HasItems(BuildAction.SiteMap) &&
@@ -222,33 +198,17 @@ namespace SandcastleBuilder.PlugIns
             if(configuration.GetAttribute("previewBuild", String.Empty) == "true")
             {
                 isPreviewBuild = true;
-                this.ExecutionPoints.Add(new ExecutionPoint(
-                    BuildStep.GenerateIntermediateTableOfContents,
-                    ExecutionBehaviors.InsteadOf));
-                this.ExecutionPoints.Add(new ExecutionPoint(
-                    BuildStep.ExtractingHtmlInfo,
-                    ExecutionBehaviors.InsteadOf));
-                this.ExecutionPoints.Add(new ExecutionPoint(
-                    BuildStep.GenerateHelpFormatTableOfContents,
-                    ExecutionBehaviors.InsteadOf));
-                this.ExecutionPoints.Add(new ExecutionPoint(
-                    BuildStep.UpdateTableOfContents,
-                    ExecutionBehaviors.InsteadOf));
-                this.ExecutionPoints.Add(new ExecutionPoint(
-                    BuildStep.GenerateHelpFileIndex,
-                    ExecutionBehaviors.InsteadOf));
-                this.ExecutionPoints.Add(new ExecutionPoint(
-                    BuildStep.GenerateHelpProject,
-                    ExecutionBehaviors.InsteadOf));
-                this.ExecutionPoints.Add(new ExecutionPoint(
-                    BuildStep.CompilingHelpFile,
-                    ExecutionBehaviors.InsteadOf));
-                this.ExecutionPoints.Add(new ExecutionPoint(
-                    BuildStep.GenerateFullTextIndex,
-                    ExecutionBehaviors.InsteadOf));
-                this.ExecutionPoints.Add(new ExecutionPoint(
-                    BuildStep.CopyingWebsiteFiles,
-                    ExecutionBehaviors.InsteadOf));
+
+                this.ExecutionPoints.AddRange(new [] {
+                    new ExecutionPoint(BuildStep.GenerateIntermediateTableOfContents, ExecutionBehaviors.InsteadOf),
+                    new ExecutionPoint(BuildStep.CombiningIntermediateTocFiles, ExecutionBehaviors.InsteadOf),
+                    new ExecutionPoint(BuildStep.ExtractingHtmlInfo, ExecutionBehaviors.InsteadOf),
+                    new ExecutionPoint(BuildStep.GenerateHelpFormatTableOfContents, ExecutionBehaviors.InsteadOf),
+                    new ExecutionPoint(BuildStep.GenerateHelpFileIndex,  ExecutionBehaviors.InsteadOf),
+                    new ExecutionPoint(BuildStep.GenerateHelpProject, ExecutionBehaviors.InsteadOf),
+                    new ExecutionPoint(BuildStep.CompilingHelpFile, ExecutionBehaviors.InsteadOf),
+                    new ExecutionPoint(BuildStep.GenerateFullTextIndex, ExecutionBehaviors.InsteadOf),
+                    new ExecutionPoint(BuildStep.CopyingWebsiteFiles, ExecutionBehaviors.InsteadOf) });
             }
         }
 
@@ -259,7 +219,8 @@ namespace SandcastleBuilder.PlugIns
         public void Execute(ExecutionContext context)
         {
             XmlDocument config;
-            XPathNavigator navConfig, nav;
+            XPathNavigator navConfig;
+            List<XPathNavigator> deleteTargets = new List<XPathNavigator>();
 
             // Create a dummy reflection.org and reflection.xml file
             if(context.BuildStep == BuildStep.GenerateReflectionInfo)
@@ -267,8 +228,7 @@ namespace SandcastleBuilder.PlugIns
                 // Allow Before step plug-ins to run
                 builder.ExecuteBeforeStepPlugIns();
 
-                using(StreamWriter sw = new StreamWriter(
-                  builder.ReflectionInfoFilename, false, Encoding.UTF8))
+                using(StreamWriter sw = new StreamWriter(builder.ReflectionInfoFilename, false, Encoding.UTF8))
                 {
                     sw.WriteLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
                     sw.WriteLine("<reflection>");
@@ -280,8 +240,7 @@ namespace SandcastleBuilder.PlugIns
                 }
 
                 File.Copy(builder.ReflectionInfoFilename,
-                    Path.ChangeExtension(builder.ReflectionInfoFilename,
-                        ".xml"), true);
+                    Path.ChangeExtension(builder.ReflectionInfoFilename, ".xml"), true);
 
                 // Allow After step plug-ins to run
                 builder.ExecuteAfterStepPlugIns();
@@ -296,30 +255,23 @@ namespace SandcastleBuilder.PlugIns
                     config.Load(builder.WorkingFolder + "conceptual.config");
                     navConfig = config.CreateNavigator();
 
-                    nav = navConfig.SelectSingleNode(
-                        "//targets[@files='reflection.xml']");
+                    XPathNodeIterator allTargets = navConfig.Select("//targets[@files='reflection.xml']");
 
-                    if(nav != null)
-                        nav.DeleteSelf();
+                    foreach(XPathNavigator target in allTargets)
+                        deleteTargets.Add(target);
 
                     // Get rid of the framework targets too in preview build.
                     // This can knock about 20 seconds off the build time.
                     if(isPreviewBuild)
                     {
-                        nav = navConfig.SelectSingleNode(
-                            "//component[@type = 'Microsoft.Ddue.Tools." +
-                            "ResolveReferenceLinksComponent2']/targets[" +
-                            "contains(@base, 'Data\\Reflection')]");
+                        allTargets = navConfig.Select("//targets[contains(@base, 'Data\\Reflection')]");
 
-                        if(nav == null)
-                            nav = navConfig.SelectSingleNode(
-                                "//component[@type = 'SandcastleBuilder." +
-                                "Components.CachedResolveReferenceLinksComponent']" +
-                                "/targets[contains(@base, 'Data\\Reflection')]");
-
-                        if(nav != null)
-                            nav.DeleteSelf();
+                        foreach(XPathNavigator target in allTargets)
+                            deleteTargets.Add(target);
                     }
+
+                    foreach(var t in deleteTargets)
+                        t.DeleteSelf();
 
                     config.Save(builder.WorkingFolder + "conceptual.config");
                 }
@@ -330,7 +282,6 @@ namespace SandcastleBuilder.PlugIns
 
         #region IDisposable implementation
         //=====================================================================
-        // IDisposable implementation
 
         /// <summary>
         /// This handles garbage collection to ensure proper disposal of the

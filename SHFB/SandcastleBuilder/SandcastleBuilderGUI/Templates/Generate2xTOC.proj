@@ -23,7 +23,7 @@
 
   <!-- The Generate MS Help 2.x TOC target -->
   <Target Name="Generate2xTOC">
-    <XslTransform
+    <SandcastleBuilder.Utils.MSBuild.XslTransform
       SandcastlePath="$(SandcastlePath)"
       WorkingFolder="$(WorkingFolder)"
       Transformations="ProductionTransforms\TocToHxSContents.xsl"

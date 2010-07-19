@@ -40,7 +40,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;SC_MAY_2008</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\SandcastleBuilder.Components.xml</DocumentationFile>
@@ -50,7 +50,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;SC_MAY_2008</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\SandcastleBuilder.Components.xml</DocumentationFile>
@@ -58,7 +58,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'ReleaseNoDoc|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;SC_MAY_2008</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>bin\Release\SandcastleBuilder.Components.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -151,6 +151,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SandcastleBuilderUtils\Properties\AssemblyInfoShared.cs">
+      <Link>Properties\AssemblyInfoShared.cs</Link>
+    </Compile>
     <Compile Include="CachedCopyFromIndexComponent.cs" />
     <Compile Include="CachedResolveReferenceLinksComponent.cs" />
     <Compile Include="CodeBlockComponent.cs" />
@@ -161,7 +164,6 @@
       <DependentUpon>CodeBlockConfigDlg.cs</DependentUpon>
     </Compile>
     <Compile Include="ConceptualLinkInfo.cs" />
-    <Compile Include="FSharpDeclarationSyntaxGenerator.cs" />
     <Compile Include="IntelliSenseComponent.cs" />
     <Compile Include="IntelliSenseConfigDlg.cs">
       <SubType>Form</SubType>
@@ -170,7 +172,9 @@
       <DependentUpon>IntelliSenseConfigDlg.cs</DependentUpon>
     </Compile>
     <Compile Include="JavaScriptDeclarationSyntaxGenerator.cs" />
+    <Compile Include="MSHCComponent.cs" />
     <Compile Include="MSHelpAttrComponent.cs" />
+    <Compile Include="MultiFormatOutputComponent.cs" />
     <Compile Include="PostTransformComponent.cs" />
     <Compile Include="PostTransformConfigDlg.cs">
       <SubType>Form</SubType>

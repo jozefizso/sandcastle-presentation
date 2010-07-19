@@ -98,7 +98,8 @@ failing with an <codeInline>HHC6003</codeInline> error stating that
             <listItem><link xlink:href="#NotLoading">Why doesn't my compiled
 help file load?</link></listItem>
             <listItem><link xlink:href="#NotLoading">Why do all of the help
-file topics display a "Page not found" error?</link></listItem>
+file topics display a "Page not found" or "This program cannot display the
+webpage" error?</link></listItem>
             <listItem><link xlink:href="#EmptyHelp">Why doesn't my help file
 contain any/all of the classes from the assembly?</link></listItem>
             <listItem><link xlink:href="#NoComments">The help file is built
@@ -195,9 +196,6 @@ code or a page in an external web site?</link></listItem>
 
     <listItem><legacyBold>Other</legacyBold>
         <list class="bullet">
-            <listItem><link xlink:href="#SharpDevelop">I use SharpDevelop 3.x
-or later. How do I update the copy of the help file builder that is distributed
-with it?</link></listItem>
             <listItem><link xlink:href="717ca8cf-1a2f-4e63-a8a9-f836825f3509">How
 can I make a donation to help support the Sandcastle Help File Builder project?</link></listItem>
         </list>
@@ -519,17 +517,20 @@ the property to make sure that it is set appropriately for your assembly.</defin
 
     <definedTerm address="Proxy">My build fails because I am behind a proxy
 server and it cannot connect to the MSDN web service.  How do I fix it?</definedTerm>
-    <definition><para>If the <codeInline>SdkLinkType</codeInline> property is
-set to <codeInline>MSDN</codeInline>, <application>BuildAssembler</application>
-will attempt to contact the MSDN web service to resolve links to SDK topics.
-If you are behind a proxy server, this will most likely fail and will abort the
-build process with an error similar to "<legacyBold>HTTP status 407: Proxy
-Authentication Required</legacyBold>".  The simplest fix is to set the
-<codeInline>SdkLinkType</codeInline> property to <codeInline>None</codeInline>.
-The downside is that you will not get links to online SDK content.  If you are
-building an MS Help 2 (HxS) file, you can set the option to <codeInline>Index</codeInline>
-so that it generates links to the local help content when merged with the
-collection.</para>
+    <definition><para>If the SDK link type project property related to the
+help file format you are building is set to <codeInline>MSDN</codeInline>,
+<application>BuildAssembler</application> will attempt to contact the MSDN web
+service to resolve links to SDK topics. If you are behind a proxy server, this
+will most likely fail and will abort the build process with an error similar
+to "<legacyBold>HTTP status 407: Proxy Authentication Required</legacyBold>".
+The simplest fix is to set the <codeInline>HtmlSdkLinkType</codeInline> and
+<codeInline>WebsiteSdkLinkType</codeInline> properties to <codeInline>None</codeInline>,
+the <codeInline>MsHelp2SdkLinkType</codeInline> property to <codeInline>Index</codeInline>,
+and the <codeInline>MSHelpViewerSdkLinkType</codeInline> property to
+<codeInline>Id</codeInline>. The downside for the HTML Help 1 and website formats
+is that you will not get links to online SDK content.  For the MS Help 2 and
+MS Help Viewer formats, the noted value generates links to the local help
+content when merged with the collection.</para>
 
 	<para>It has been reported that creating a <localUri>BuildAssembler.exe.config</localUri>
 file in the same folder as <application>BuildAssembler.exe</application> (the
@@ -572,13 +573,17 @@ proxy server:</para>
     <definedTerm address="BAHang">My builds seem to hang during the
 <application>BuildAssembler</application> step.  Why?</definedTerm>
     <definition>If your builds seem to hang during the <application>BuildAssembler</application>
-step, setting the <codeInline>SdkLinkType</codeInline> property to
-<codeInline>None</codeInline> will get it to run faster with the side-effect
-that you will not have links to online SDK content. The only other alternative
-is to be patient and wait for it to finish.  On a slow connection, it can take
-a very long time.  If you are building an MS Help 2 (HxS) file, you can set the
-option to <codeInline>Index</codeInline> so that it generates links to the
-local help content when merged with the collection.</definition>
+step, set the <codeInline>HtmlSdkLinkType</codeInline> and
+<codeInline>WebsiteSdkLinkType</codeInline> properties to <codeInline>None</codeInline>,
+the <codeInline>MsHelp2SdkLinkType</codeInline> property to <codeInline>Index</codeInline>,
+and the <codeInline>MSHelpViewerSdkLinkType</codeInline> property to
+<codeInline>Id</codeInline>.  This will get it to run faster with the side-effect
+that you will not have links to online SDK content for the HTML Help 1 and
+website help formats. The only other alternative is to be patient and wait for
+it to finish.  On a slow connection, it can take a very long time.  If you are
+building an MS Help 2 (HxS) or MS Help Viewer (MSHC) file, you can set the
+related option as noted above so that it generates links to the local help
+content when merged with the collection.</definition>
 
     <definedTerm address="OutOfMemory">I'm getting an Out of Memory exception
 during a very large build.  How do I prevent it?</definedTerm>
@@ -633,7 +638,8 @@ regsvr32 C:\Windows\System\itcc.dll
 
 <definitionTable>
     <definedTerm address="NotLoading">Why doesn't my compiled help file load? /
-Why do all of the help file topics display a "Page not found" error?</definedTerm>
+Why do all of the help file topics display a "Page not found" or "This program
+cannot display the webpage" error?</definedTerm>
     <definition><para>For an MS Help 2 file (.HxS), you need a separate viewer
 to load the help file or you need to integrate it into an existing collection.
 See the <link xlink:href="c18d6cb6-e4e4-4944-84ee-f867aa6cfb0d" /> topic for a
@@ -981,43 +987,14 @@ a website link.</para></definition>
   </content>
 </section>
 
+<!--
 <section address="SecOther">
   <title>Other</title>
   <content>
 
-<definitionTable>
-    <definedTerm address="SharpDevelop">I use SharpDevelop 3.x or later.  How
-do I update the copy of the help file builder that is distributed with it?</definedTerm>
-    <definition><para>To upgrade the copy of the help file builder included with
-SharpDevelop, do the following:</para>
-
-    <list class="bullet">
-        <listItem>Download and install the latest version of Sandcastle from
-Microsoft.  See the <link xlink:href="c18d6cb6-e4e4-4944-84ee-f867aa6cfb0d" />
-topic for the location.</listItem>
-
-        <listItem>Go to the Sandcastle Help File Builder project site on
-<externalLink>
-  <linkText>CodePlex</linkText>
-  <linkUri>http://shfb.codeplex.com</linkUri>
-  <linkTarget>_blank</linkTarget>
-</externalLink>.</listItem>
-
-        <listItem>Select the <ui>Releases</ui> page and download the
-<legacyBold>SharpDevelop SHFB Distribution</legacyBold> zip file for the
-current release of the help file builder.</listItem>
-
-        <listItem>Delete the existing content of the <localUri>.\bin\Tools\SHFB</localUri>
-folder under the main SharpDevelop installation folder and then extract the
-contents of the zip file into it.  Usually, the folder will be something like
-<localUri>C:\Program Files\SharpDevelop\x.x\bin\Tools\SHFB</localUri> where
-"x.x" is the current SharpDevelop version number.</listItem>
-
-    </list></definition>
-</definitionTable>
-
   </content>
 </section>
+-->
 
     <relatedTopics>
     <link xlink:href="8c0c97d0-c968-4c15-9fe9-e8f3a443c50a" />

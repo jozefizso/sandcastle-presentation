@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder
 // File    : ContentLayoutWindow.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 01/21/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 07/03/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to edit the conceptual content items.
@@ -18,23 +18,21 @@
 // ============================================================================
 // 1.6.0.7  04/24/2008  EFW  Created the code
 // 1.8.0.0  09/04/2008  EFW  Reworked for use with the new project format
+// 1.9.0.0  07/10/2010  EFW  Added support for parenting API content anywhere
 //=============================================================================
 
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Design;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-using System.Xml.XPath;
 
 using SandcastleBuilder.Utils;
 using SandcastleBuilder.Utils.ConceptualContent;
-using SandcastleBuilder.Utils.Design;
 
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -49,7 +47,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
         //=====================================================================
 
         private TopicCollection topics;
-        private TreeNode defaultNode, splitTocNode, firstNode;
+        private TreeNode defaultNode, apiInsertionNode, rootContainerNode, firstNode;
         private Topic firstSelection;
         private static object cutClipboard, copyClipboard;
 
@@ -202,13 +200,15 @@ namespace SandcastleBuilder.Gui.ContentEditors
         private void LoadTopics(Topic selectedEntry)
         {
             TreeNode node;
+            Topic defTopic = topics.DefaultTopic, apiTopic = topics.ApiContentInsertionPoint,
+                rootContainer = topics.MSHVRootContentContainer;
 
             try
             {
                 tvContent.SuspendLayout();
                 tvContent.Nodes.Clear();
 
-                defaultNode = splitTocNode = firstNode = null;
+                defaultNode = apiInsertionNode = rootContainerNode = firstNode = null;
                 firstSelection = selectedEntry;
 
                 if(topics.Count != 0)
@@ -219,12 +219,14 @@ namespace SandcastleBuilder.Gui.ContentEditors
                         node.Name = t.Id;
                         node.Tag = t;
 
-                        if(topics.DefaultTopic == t)
+                        if(t == defTopic)
                             defaultNode = node;
 
-                        // This is only valid at the root level
-                        if(topics.SplitTocAtTopic == t)
-                            splitTocNode = node;
+                        if(t == apiTopic)
+                            apiInsertionNode = node;
+
+                        if(t == rootContainer)
+                            rootContainerNode = node;
 
                         if(t == firstSelection)
                             firstNode = node;
@@ -233,24 +235,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
                             this.AddChildren(t.Subtopics, node);
                     }
 
-                    if(defaultNode != null)
-                    {
-                        defaultNode.ToolTipText = "Default topic";
-                        defaultNode.ImageIndex = defaultNode.SelectedImageIndex = 1;
-                    }
-
-                    if(splitTocNode != null)
-                    {
-                        splitTocNode.ToolTipText = "Split Table of Contents";
-                        splitTocNode.ImageIndex = splitTocNode.SelectedImageIndex = 10;
-                    }
-
-                    if(defaultNode != null && defaultNode == splitTocNode)
-                    {
-                        defaultNode.ToolTipText = "Default topic/Split TOC";
-                        defaultNode.ImageIndex = defaultNode.SelectedImageIndex = 11;
-                    }
-
+                    this.UpdateDefaultAndApiNodeImages();
                     tvContent.ExpandAll();
 
                     if(firstNode != null)
@@ -281,6 +266,8 @@ namespace SandcastleBuilder.Gui.ContentEditors
         private void AddChildren(TopicCollection children, TreeNode root)
         {
             TreeNode node;
+            Topic defTopic = topics.DefaultTopic, apiTopic = topics.ApiContentInsertionPoint,
+                rootContainer = topics.MSHVRootContentContainer;
 
             foreach(Topic t in children)
             {
@@ -288,8 +275,14 @@ namespace SandcastleBuilder.Gui.ContentEditors
                 node.Name = t.Id;
                 node.Tag = t;
 
-                if(topics.DefaultTopic == t)
+                if(t == defTopic)
                     defaultNode = node;
+
+                if(t == apiTopic)
+                    apiInsertionNode = node;
+
+                if(t == rootContainer)
+                    rootContainerNode = node;
 
                 if(t == firstSelection)
                     firstNode = node;
@@ -312,38 +305,85 @@ namespace SandcastleBuilder.Gui.ContentEditors
 
             if(tvContent.Nodes.Count == 0)
             {
-                miDefaultTopic.Enabled = miSplitToc.Enabled =
-                    miMoveUp.Enabled = miMoveDown.Enabled =
-                    miAddChild.Enabled = miDelete.Enabled =
-                    miCut.Enabled = miCopyAsLink.Enabled =
-                    tsbDefaultTopic.Enabled = tsbSplitTOC.Enabled =
-                    tsbAddChildTopic.Enabled = tsbDeleteTopic.Enabled =
-                    tsbMoveUp.Enabled = tsbMoveDown.Enabled = tsbCut.Enabled =
-                    tsbEditTopic.Enabled = miEditTopic.Enabled =
-                    pgProps.Enabled = false;
+                miDefaultTopic.Enabled = miMarkAsMSHVRoot.Enabled = miApiContent.Enabled = miMoveUp.Enabled =
+                    miMoveDown.Enabled = miAddChild.Enabled = miDelete.Enabled = miCut.Enabled = miCopyAsLink.Enabled =
+                    tsbDefaultTopic.Enabled = tsbApiInsertionPoint.Enabled = tsbAddChildTopic.Enabled =
+                    tsbDeleteTopic.Enabled = tsbMoveUp.Enabled = tsbMoveDown.Enabled = tsbCut.Enabled =
+                    tsbEditTopic.Enabled = miEditTopic.Enabled = pgProps.Enabled = false;
 
                 pgProps.SelectedObject = null;
             }
             else
             {
-                miDefaultTopic.Enabled = miAddChild.Enabled =
-                    miDelete.Enabled = miCut.Enabled = miCopyAsLink.Enabled =
-                    tsbDefaultTopic.Enabled = tsbAddChildTopic.Enabled =
-                    tsbDeleteTopic.Enabled = tsbCut.Enabled =
-                    pgProps.Enabled = true;
+                miAddChild.Enabled = miDelete.Enabled = miCut.Enabled = miCopyAsLink.Enabled =
+                    tsbAddChildTopic.Enabled = tsbDeleteTopic.Enabled = tsbCut.Enabled = pgProps.Enabled = true;
 
-                tsbEditTopic.Enabled = miEditTopic.Enabled =
-                    (((Topic)current.Tag).TopicFile != null);
-                tsbSplitTOC.Enabled = miSplitToc.Enabled =
-                    (current.Parent == null);
-                tsbMoveDown.Enabled = miMoveDown.Enabled =
-                    (current.NextNode != null);
-                tsbMoveUp.Enabled = miMoveUp.Enabled =
-                    (current.PrevNode != null);
+                tsbDefaultTopic.Enabled = miDefaultTopic.Enabled = tsbApiInsertionPoint.Enabled =
+                    miApiContent.Enabled = (current != rootContainerNode);
+                miMarkAsMSHVRoot.Enabled = (current == rootContainerNode || (current != rootContainerNode &&
+                    current != defaultNode && current != apiInsertionNode));
+                tsbEditTopic.Enabled = miEditTopic.Enabled = (((Topic)current.Tag).TopicFile != null);
+                tsbMoveUp.Enabled = miMoveUp.Enabled = (current.PrevNode != null);
+                tsbMoveDown.Enabled = miMoveDown.Enabled = (current.NextNode != null);
 
                 if(pgProps.SelectedObject != current.Tag)
                     pgProps.SelectedObject = current.Tag;
             }
+        }
+
+        /// <summary>
+        /// This is used to update the tree node images for the default and
+        /// API insertion point nodes.
+        /// </summary>
+        private void UpdateDefaultAndApiNodeImages()
+        {
+            int apiInsImage = 0;
+            string apiInsDesc = String.Empty;
+
+            if(defaultNode != null)
+            {
+                defaultNode.ToolTipText = "Default topic";
+                defaultNode.ImageIndex = defaultNode.SelectedImageIndex = 1;
+
+                if(defaultNode == apiInsertionNode)
+                {
+                    apiInsDesc = "Default topic / ";
+                    apiInsImage = 3;
+                }
+            }
+
+            if(apiInsertionNode != null)
+            {
+                switch(((Topic)apiInsertionNode.Tag).ApiParentMode)
+                {
+                    case ApiParentMode.InsertAfter:
+                        apiInsDesc += "Insert API content after topic";
+                        apiInsImage += 10;
+                        break;
+
+                    case ApiParentMode.InsertBefore:
+                        apiInsDesc += "Insert API content before topic";
+                        apiInsImage += 11;
+                        break;
+
+                    default:
+                        apiInsDesc += "Insert API content as child of topic";
+                        apiInsImage += 12;
+                        break;
+                }
+
+                apiInsertionNode.ToolTipText = apiInsDesc;
+                apiInsertionNode.ImageIndex = apiInsertionNode.SelectedImageIndex = apiInsImage;
+            }
+
+            if(rootContainerNode != null)
+            {
+                rootContainerNode.ToolTipText = "MS Help Viewer root container";
+                rootContainerNode.ImageIndex = rootContainerNode.SelectedImageIndex = 16;
+            }
+
+            if(tvContent.SelectedNode != null)
+                this.UpdateControlStatus();
         }
         #endregion
 
@@ -531,92 +571,119 @@ namespace SandcastleBuilder.Gui.ContentEditors
         private void tsbDefaultTopic_Click(object sender, EventArgs e)
         {
             TreeNode newDefault = tvContent.SelectedNode;
+            Topic t;
 
-            if(defaultNode != null && defaultNode == splitTocNode)
+            if(defaultNode != null)
             {
-                defaultNode.ToolTipText = "Split Table of Contents";
-                defaultNode.ImageIndex = defaultNode.SelectedImageIndex = 10;
+                defaultNode.ToolTipText = null;
+                defaultNode.ImageIndex = defaultNode.SelectedImageIndex = 0;
+                ((Topic)defaultNode.Tag).IsDefaultTopic = false;
             }
-            else
-                if(defaultNode != null)
-                {
-                    defaultNode.ToolTipText = null;
-                    defaultNode.ImageIndex = defaultNode.SelectedImageIndex = 0;
-                }
 
             if(defaultNode != newDefault)
             {
-                if(newDefault == splitTocNode)
-                {
-                    newDefault.ToolTipText = "Default topic/Split TOC";
-                    newDefault.ImageIndex = newDefault.SelectedImageIndex = 11;
-                }
-                else
-                {
-                    newDefault.ToolTipText = "Default topic";
-                    newDefault.ImageIndex = newDefault.SelectedImageIndex = 1;
-                }
-
                 defaultNode = newDefault;
-                topics.DefaultTopic = (Topic)defaultNode.Tag;
+                t = (Topic)defaultNode.Tag;
+                t.IsDefaultTopic = t.Visible = true;
             }
             else
                 if(defaultNode != null)
-                {
-                    defaultNode = null;     // Turn it off altogether
-                    topics.DefaultTopic = null;
-                }
+                    defaultNode = null;
 
-            this.topics_ListChanged(this, new ListChangedEventArgs(
-                ListChangedType.ItemChanged, -1));
+            this.UpdateDefaultAndApiNodeImages();
+            this.topics_ListChanged(this, new ListChangedEventArgs(ListChangedType.ItemChanged, -1));
         }
 
         /// <summary>
-        /// Set the selected node as the split TOC location
+        /// Mark the selected topic as the MS Help Viewer root content container
         /// </summary>
         /// <param name="sender">The sender of the event</param>
         /// <param name="e">The sender of the event</param>
-        private void tsbSplitTOC_Click(object sender, EventArgs e)
+        private void miMarkAsMSHVRoot_Click(object sender, EventArgs e)
         {
-            TreeNode newSplit = tvContent.SelectedNode;
+            TreeNode newRoot = tvContent.SelectedNode;
+            Topic t;
 
-            if(splitTocNode != null && defaultNode == splitTocNode)
+            if(rootContainerNode != null)
             {
-                splitTocNode.ToolTipText = "Default topic";
-                splitTocNode.ImageIndex = splitTocNode.SelectedImageIndex = 1;
+                rootContainerNode.ToolTipText = null;
+                rootContainerNode.ImageIndex = rootContainerNode.SelectedImageIndex = 0;
+                ((Topic)rootContainerNode.Tag).IsMSHVRootContentContainer = false;
+            }
+
+            if(rootContainerNode != newRoot)
+            {
+                // The root container cannot match the default topic or API insertion point
+                if(newRoot == defaultNode || newRoot == apiInsertionNode)
+                {
+                    MessageBox.Show("The root container cannot match the default topic or API insertion point",
+                        Constants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
+                }
+
+                // The root container must not be visible and cannot have any children that are
+                // visible as they wont' show up otherwise.
+                t = (Topic)newRoot.Tag;
+
+                if(t.Subtopics.Any(st => st.Visible))
+                {
+                    MessageBox.Show("The root container cannot contain any visible sub-topics", Constants.AppName,
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
+                }
+
+                if(t.Visible && MessageBox.Show("The root container must be marked as not visible.  Is this okay?",
+                  Constants.AppName, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) ==
+                  DialogResult.No)
+                    return;
+
+                rootContainerNode = newRoot;
+                t.IsMSHVRootContentContainer = true;
+                t.Visible = false;
+                pgProps.Refresh();
             }
             else
-                if(splitTocNode != null)
-                {
-                    splitTocNode.ToolTipText = null;
-                    splitTocNode.ImageIndex = splitTocNode.SelectedImageIndex = 0;
-                }
+                if(rootContainerNode != null)
+                    rootContainerNode = null;
 
-            if(splitTocNode != newSplit)
+            this.UpdateDefaultAndApiNodeImages();
+            this.topics_ListChanged(this, new ListChangedEventArgs(ListChangedType.ItemChanged, -1));
+        }
+
+        /// <summary>
+        /// Set or clear the insertion point
+        /// </summary>
+        /// <param name="sender">The sender of the event</param>
+        /// <param name="e">The sender of the event</param>
+        private void ApiInsertionPoint_Click(object sender, EventArgs e)
+        {
+            TreeNode newInsertionPoint = tvContent.SelectedNode;
+            Topic t = (Topic)newInsertionPoint.Tag;
+
+            if(apiInsertionNode != null)
             {
-                if(newSplit == defaultNode)
-                {
-                    newSplit.ToolTipText = "Default topic/Split TOC";
-                    newSplit.ImageIndex = newSplit.SelectedImageIndex = 11;
-                }
+                apiInsertionNode.ToolTipText = null;
+                apiInsertionNode.ImageIndex = apiInsertionNode.SelectedImageIndex = 0;
+                ((Topic)apiInsertionNode.Tag).ApiParentMode = ApiParentMode.None;
+                apiInsertionNode = null;
+            }
+
+            if(sender != miClearApiInsertionPoint && sender != miCtxClearInsertionPoint)
+            {
+                apiInsertionNode = newInsertionPoint;
+                t.Visible = true;
+
+                if(sender == tsbApiInsertionPoint || sender == miInsertApiAfter || sender == miCtxInsertApiAfter)
+                    t.ApiParentMode = ApiParentMode.InsertAfter;
                 else
-                {
-                    newSplit.ToolTipText = "Split Table of Contents";
-                    newSplit.ImageIndex = newSplit.SelectedImageIndex = 10;
-                }
-
-                splitTocNode = newSplit;
-                topics.SplitTocAtTopic = (Topic)splitTocNode.Tag;
+                    if(sender == miInsertApiBefore || sender == miCtxInsertApiBefore)
+                        t.ApiParentMode = ApiParentMode.InsertBefore;
+                    else
+                        t.ApiParentMode = ApiParentMode.InsertAsChild;
             }
-            else
-                if(splitTocNode != null)
-                {
-                    splitTocNode = null;    // Turn it off altogether
-                    topics.SplitTocAtTopic = null;
-                }
 
-            this.topics_ListChanged(this, new ListChangedEventArgs(
-                ListChangedType.ItemChanged, -1));
+            this.UpdateDefaultAndApiNodeImages();
+            this.topics_ListChanged(this, new ListChangedEventArgs(ListChangedType.ItemChanged, -1));
         }
 
         /// <summary>

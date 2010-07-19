@@ -28,11 +28,11 @@ the <codeInline>TransformComponent</codeInline>.</para>
      the TransformComponent. --&gt;
 &lt;component type="SandcastleBuilder.Components.MSHelpAttrComponent"
   assembly="{@SHFBFolder}SandcastleBuilder.Components.dll"&gt;
-    &lt;!-- Additional attributes (required) --&gt;
+    &lt;!-- Additional attributes.  If no attributes are specified,
+         the component will do nothing. --&gt;
     &lt;attributes&gt;
-        &lt;!-- At least one attribute element must be defined.  The
-             "name" attribute is required.  The "value" attribute is
-             optional. --&gt;
+        &lt;!-- The "name" attribute is required.  The "value" attribute
+             is optional. --&gt;
         &lt;attribute name="DocSet" value="NETFramework" / &gt;
         &lt;attribute name="DocSet" value="{@HtmlHelpName}" / &gt;
         &lt;attribute name="TargetOS" value="Windows" / &gt;
@@ -48,10 +48,11 @@ appropriate value.  If using the component in your own build scripts, replace
 the tag with a relative or absolute path to the component assembly.</para>
 
 <para>There must be at least one <codeInline>attribute</codeInline> element
-within the <codeInline>attributes</codeInline> element.  Each
-<codeInline>attribute</codeInline> element has a <codeInline>name</codeInline>
-and <codeInline>value</codeInline> attribute that specify the name and value of
-the <codeInline>MSHelp:Attr</codeInline> entry added to each topic.</para>
+within the <codeInline>attributes</codeInline> element for the component to do
+anything.  Each <codeInline>attribute</codeInline> element has a
+<codeInline>name</codeInline> and <codeInline>value</codeInline> attribute
+that specify the name and value of the <codeInline>MSHelp:Attr</codeInline>
+entry added to each topic.</para>
 
 <alert class="tip">
   <para>For filtering to work correctly in Help 2 files, you should add the

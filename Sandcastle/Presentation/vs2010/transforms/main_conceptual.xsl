@@ -15,12 +15,15 @@
               indent="yes"/>
 
   <xsl:param name="RTMReleaseDate" />
+  <xsl:param name="changeHistoryOptions" />
   
 
   <xsl:include href="html_conceptual.xsl"/>
   
 	<xsl:include href="utilities_dduexml.xsl" />
   <xsl:include href="seeAlsoSection.xsl" />
+  <xsl:include href="conceptualMetadataHelp30.xsl"/>
+  <xsl:include href="conceptualMetadataHelp20.xsl"/>
   <xsl:include href="miranda.xsl" />
 
   <xsl:variable name="hasSeeAlsoSection" select="boolean(count(/document/topic/*/ddue:relatedTopics/*[local-name()!='sampleRef']) > 0)"/>
@@ -39,6 +42,12 @@
 
   
 
+  <xsl:template name="insertNoIndexNoFollow">
+    <xsl:if test="/document/metadata/attribute[@name='NoSearch']">
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW" />
+    </xsl:if>
+  </xsl:template>
+  
   <xsl:template name="nestedKeywordText">
     <xsl:for-each select="keyword[@index='K']">
       <xsl:text>, </xsl:text>
@@ -89,6 +98,18 @@
 
   </xsl:template>
 
+	<xsl:template name="body">
+    <!-- freshness date -->
+    <xsl:call-template name="writeFreshnessDate">
+      <xsl:with-param name="ChangedHistoryDate" select="/document/topic/*//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row[1]/ddue:entry[1] |
+                      /document/topic/*/ddue:changeHistory/ddue:content/ddue:table/ddue:row[1]/ddue:entry[1]" />
+    </xsl:call-template>
+
+		<xsl:apply-templates select="topic" />
+    
+    <!-- changed table section -->
+    <xsl:call-template name="writeChangeHistorySection" />
+	</xsl:template>
 
   <!--<xsl:template match="topic">
     topic
@@ -121,13 +142,30 @@
 
 	<xsl:template match="ddue:returnValue">
     <xsl:if test="normalize-space(.)">
-		<xsl:call-template name="section">
-      <xsl:with-param name="toggleSwitch" select="'returnValue'"/>
-			<xsl:with-param name="title"><include item="returnValueTitle" /></xsl:with-param>
-			<xsl:with-param name="content">
-				<xsl:apply-templates />
-			</xsl:with-param>
-		</xsl:call-template>
+      <xsl:choose>
+        <xsl:when test="(normalize-space(ddue:content)='') and ddue:sections/ddue:section[ddue:title='Property Value']">
+          <xsl:call-template name="section">
+            <xsl:with-param name="toggleSwitch" select="'returnValue'"/>
+            <xsl:with-param name="title">
+              <include item="propertyValueTitle" />
+            </xsl:with-param>
+            <xsl:with-param name="content">
+              <xsl:apply-templates select="ddue:sections/ddue:section[ddue:title='Property Value']/*" />
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="section">
+            <xsl:with-param name="toggleSwitch" select="'returnValue'"/>
+            <xsl:with-param name="title">
+              <include item="returnValueTitle" />
+            </xsl:with-param>
+            <xsl:with-param name="content">
+              <xsl:apply-templates />
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
 	</xsl:template>
 
@@ -216,6 +254,7 @@
           <includeAttribute name="src" item="iconPath">
             <parameter>footer.gif</parameter>
           </includeAttribute>
+          <includeAttribute name="alt" item="footerImage" />
           <includeAttribute name="title" item="footerImage" />
         </img>
       </div>
@@ -285,7 +324,7 @@
         <xsl:if test="starts-with($outlineType,'toplevel') and //ddue:relatedTopics[normalize-space(.)!='']">
           <li>
             <A>
-              <xsl:attribute name="HREF">#seeAlsoSection</xsl:attribute>
+              <xsl:attribute name="HREF">#seeAlsoToggle</xsl:attribute>
               <include item="RelatedTopicsLinkText"/>
             </A>
           </li>
@@ -306,14 +345,6 @@
         <xsl:value-of select="ddue:title" />
       </A>
     </li>
-  </xsl:template>
-
-  <xsl:template name="writeChangedTable">
-    <xsl:if test="/document/topic/*//ddue:section/ddue:title = 'Change History' and (/document/topic/*//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table and /document/topic/*//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row/ddue:entry[normalize-space(.)])">
-      <xsl:apply-templates select="/document/topic/*//ddue:section[ddue:title = 'Change History']">
-        <xsl:with-param name="showChangedHistoryTable" select="true()" />
-      </xsl:apply-templates>
-    </xsl:if>
   </xsl:template>
 
 </xsl:stylesheet>

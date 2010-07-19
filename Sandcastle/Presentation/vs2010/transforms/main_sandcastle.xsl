@@ -7,6 +7,8 @@
   
   <!-- stuff specified to comments authored in DDUEXML -->
 
+	<!-- stuff specified to comments authored in DDUEXML -->
+  <xsl:param name="omitXmlnsBoilerplate" select="'false'" />
   <xsl:include href="html_body_header.xsl"/>
   <xsl:include href="html_body_navigation.xsl"/>
   <xsl:include href="html_body.xsl"/>
@@ -511,6 +513,7 @@
         <includeAttribute item="iconPath" name="src">
           <parameter>alert_note.gif</parameter>
         </includeAttribute>
+        <includeAttribute name="alt" item="noteAltText" />
         <includeAttribute name="title" item="noteAltText" />
       </img>
       <xsl:text> </xsl:text>
@@ -569,5 +572,42 @@
     </xsl:if>
     <xsl:call-template name="memberIntroBoilerplate"/>
   </xsl:template>
-  
+
+  <xsl:template name="codelangAttributes">
+    <xsl:call-template name="mshelpCodelangAttributes">
+      <xsl:with-param name="snippets" select="/document/comments/example/code" />
+    </xsl:call-template>
+  </xsl:template>
+
+  <!-- Footer stuff -->
+
+  <xsl:template name="foot">
+    <div id="footer">
+
+      <div class="footerLine">
+        <img width="100%" height="3px">
+          <includeAttribute name="src" item="iconPath">
+            <parameter>footer.gif</parameter>
+          </includeAttribute>
+          <includeAttribute name="alt" item="footerImage" />
+          <includeAttribute name="title" item="footerImage" />
+        </img>
+      </div>
+      
+      <include item="footer">
+        <parameter>
+          <xsl:value-of select="$key"/>
+        </parameter>
+        <parameter>
+          <xsl:call-template name="topicTitlePlain"/>
+        </parameter>
+        <parameter>
+          <xsl:value-of select="/document/metadata/item[@id='PBM_FileVersion']" />
+        </parameter>
+        <parameter>
+          <xsl:value-of select="/document/metadata/attribute[@name='TopicVersion']" />
+        </parameter>
+      </include>
+    </div>
+  </xsl:template>
 </xsl:stylesheet>

@@ -2,26 +2,32 @@
 <topic id="db8785bc-617c-4b3f-ae1e-2f886b0e3b88" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>Error BE0022: Unable to locate the '<legacyItalic>[name]</legacyItalic>'
-build component information</para>
+      <para>Error BE0022: The project's <codeInline>ApiTocParent</codeInline> property
+value '<legacyItalic>[ID]</legacyItalic>' must be associated with a topic in your
+project's conceptual content and must have its <codeInline>Visible</codeInline> property
+set to <codeInline>True</codeInline> in the content layout file.</para>
     </introduction>
 
     <section>
       <title>Cause</title>
       <content>
-        <para>This error occurs if there is a problem locating a custom build
-component.</para>
+        <para>You specified a value in the project's <codeInline>ApiTocParent</codeInline>
+property but the ID is either not associated with a conceptual content topic in your
+project or the topic's <codeInline>Visible</codeInline> property is not set to True
+in the content layout file.</para>
       </content>
     </section>
 
     <section>
       <title>Solution</title>
       <content>
-        <para>This most likely indicates an internal error in the build
-process.  Open a work item in the <token>SHFB</token> project at CodePlex
-containing the details from the error message and attach a small example
-project with any related files that can be used to duplicate the
-problem.</para>
+        <para>API content can only be parented to a conceptual content topic defined
+within your project.  The given topic must appear in a content layout file and it must
+have its <codeInline>Visible</codeInline> property set to <codeInline>True</codeInline>
+in the content layout file so that it appears in the table of contents.  If your intent
+is to parent the API content to a topic outside of your project, use the
+<codeInline>TocParent</codeInline> project property instead which is intended for that
+purpose.</para>
       </content>
     </section>
 

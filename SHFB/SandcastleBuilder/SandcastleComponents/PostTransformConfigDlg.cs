@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Components
 // File    : PostTransformConfigDlg.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 03/01/2008
-// Note    : Copyright 2006-2008, Eric Woodruff, All rights reserved
+// Updated : 06/06/2010
+// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a form that is used to configure the settings for the
@@ -20,11 +20,11 @@
 // 1.3.3.0  11/24/2006  EFW  Created the code
 // 1.4.0.0  01/31/2007  EFW  Added support for logo placement options and the
 //                           colorizer's "Copy" image filename.
+// 1.9.0.0  06/06/2010  EFW  Removed outputPath as a configurable option as it
+//                           is now represented by multiple paths.
 //=============================================================================
 
 using System;
-using System.Collections;
-using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -40,6 +40,8 @@ namespace SandcastleBuilder.Components
     internal partial class PostTransformConfigDlg : Form
     {
         #region Private data members
+        //=====================================================================
+
         private XmlDocument config;     // The configuration
 
         // Current image information
@@ -49,6 +51,9 @@ namespace SandcastleBuilder.Components
 
         #endregion
 
+        #region Properties
+        //=====================================================================
+
         /// <summary>
         /// This is used to return the configuration information
         /// </summary>
@@ -56,6 +61,10 @@ namespace SandcastleBuilder.Components
         {
             get { return config.OuterXml; }
         }
+        #endregion
+
+        #region Constructor
+        //=====================================================================
 
         /// <summary>
         /// Constructor
@@ -84,9 +93,6 @@ namespace SandcastleBuilder.Components
             txtScriptFile.Text = node.Attributes["scriptFile"].Value;
             txtCopyImage.Text = node.Attributes["copyImage"].Value;
 
-            node = component.SelectSingleNode("outputPath");
-            txtOutputPath.Text = node.Attributes["value"].Value;
-
             node = component.SelectSingleNode("logoFile");
             if(node != null)
             {
@@ -107,14 +113,12 @@ namespace SandcastleBuilder.Components
                 attr = node.Attributes["placement"];
                 if(attr != null)
                     cboPlacement.SelectedIndex = (int)Enum.Parse(
-                        typeof(PostTransformComponent.LogoPlacement),
-                        attr.Value, true);
+                        typeof(PostTransformComponent.LogoPlacement), attr.Value, true);
 
                 attr = node.Attributes["alignment"];
                 if(attr != null)
                     cboAlignment.SelectedIndex = (int)Enum.Parse(
-                        typeof(PostTransformComponent.LogoAlignment),
-                        attr.Value, true);
+                        typeof(PostTransformComponent.LogoAlignment), attr.Value, true);
 
                 try
                 {
@@ -131,6 +135,10 @@ namespace SandcastleBuilder.Components
             else
                 txtLogoFile_Leave(this, EventArgs.Empty);
         }
+        #endregion
+
+        #region Event handlers
+        //=====================================================================
 
         /// <summary>
         /// Close without saving
@@ -177,34 +185,23 @@ namespace SandcastleBuilder.Components
             txtStylesheet.Text = txtStylesheet.Text.Trim();
             txtScriptFile.Text = txtScriptFile.Text.Trim();
             txtCopyImage.Text = txtCopyImage.Text.Trim();
-            txtOutputPath.Text = txtOutputPath.Text.Trim();
             epErrors.Clear();
 
             if(txtStylesheet.Text.Length == 0)
             {
-                epErrors.SetError(txtStylesheet,
-                    "The stylesheet filename is required");
+                epErrors.SetError(txtStylesheet, "The stylesheet filename is required");
                 isValid = false;
             }
 
             if(txtScriptFile.Text.Length == 0)
             {
-                epErrors.SetError(txtScriptFile,
-                    "The script filename is required");
+                epErrors.SetError(txtScriptFile, "The script filename is required");
                 isValid = false;
             }
 
             if(txtCopyImage.Text.Length == 0)
             {
-                epErrors.SetError(txtCopyImage,
-                    "The \"Copy\" image filename is required");
-                isValid = false;
-            }
-
-            if(txtOutputPath.Text.Length == 0)
-            {
-                epErrors.SetError(txtOutputPath,
-                    "The output path is required");
+                epErrors.SetError(txtCopyImage, "The \"Copy\" image filename is required");
                 isValid = false;
             }
 
@@ -218,14 +215,20 @@ namespace SandcastleBuilder.Components
             node.Attributes["scriptFile"].Value = txtScriptFile.Text;
             node.Attributes["copyImage"].Value = txtCopyImage.Text;
 
+            // Auto-correct the configuration if it is still using the old outputPath element
             node = component.SelectSingleNode("outputPath");
-            node.Attributes["value"].Value = txtOutputPath.Text;
+
+            if(node != null)
+            {
+                XmlNode outputPaths = config.CreateNode(XmlNodeType.Element, "outputPaths", null);
+                outputPaths.InnerText = "{@HelpFormatOutputPaths}";
+                component.ReplaceChild(outputPaths, node);
+            }
 
             node = component.SelectSingleNode("logoFile");
             if(node == null)
             {
-                node = config.CreateNode(XmlNodeType.Element,
-                    "logoFile", null);
+                node = config.CreateNode(XmlNodeType.Element, "logoFile", null);
                 component.AppendChild(node);
 
                 attr = config.CreateAttribute("filename");
@@ -289,24 +292,6 @@ namespace SandcastleBuilder.Components
 
             this.DialogResult = DialogResult.OK;
             this.Close();
-        }
-
-        /// <summary>
-        /// Select the base source folder
-        /// </summary>
-        /// <param name="sender">The sender of the event</param>
-        /// <param name="e">The event arguments</param>
-        private void btnSelectFolder_Click(object sender, EventArgs e)
-        {
-            using(FolderBrowserDialog dlg = new FolderBrowserDialog())
-            {
-                dlg.Description = "Select the output folder";
-                dlg.SelectedPath = Directory.GetCurrentDirectory();
-
-                // If selected, set the new folder
-                if(dlg.ShowDialog() == DialogResult.OK)
-                    txtOutputPath.Text = dlg.SelectedPath + @"\";
-            }
         }
 
         /// <summary>
@@ -498,5 +483,6 @@ namespace SandcastleBuilder.Components
             cboAlignment.Enabled = (cboPlacement.SelectedIndex ==
                 (int)PostTransformComponent.LogoPlacement.Above);
         }
+        #endregion
     }
 }

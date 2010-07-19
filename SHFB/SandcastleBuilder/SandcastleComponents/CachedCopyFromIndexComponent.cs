@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder Components
 // File    : CachedCopyFromIndexComponent.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/04/2009
+// Updated : 05/22/2010
 // Compiler: Microsoft Visual C#
 //
 // This file contains a build component that is derived from
@@ -86,12 +86,13 @@ namespace SandcastleBuilder.Components
     {
         #region Private data members
         //=====================================================================
-        // Private data members
 
         private string cacheId;
         #endregion
 
         #region Constructor
+        //=====================================================================
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -123,6 +124,8 @@ namespace SandcastleBuilder.Components
         #endregion
 
         #region Helper methods
+        //=====================================================================
+
         /// <summary>
         /// Load a cached index
         /// </summary>
@@ -241,45 +244,35 @@ namespace SandcastleBuilder.Components
         #endregion
 
         #region Dispose method
-#if !SC_MAY_2008
+        //=====================================================================
+
         /// <summary>
         /// This is used in the debug build to get an idea of how many files
         /// were kept loaded in the cache.
         /// </summary>
-        /// <param name="disposing">True if managed resources should be
-        /// disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
-#else
-        /// <summary>
-        /// This is used in the debug build to get an idea of how many files
-        /// were kept loaded in the cache.
-        /// </summary>
-        public override void Dispose()
-#endif
         {
-            Object cacheData, cache;
-            Type type;
-            FieldInfo field;
+            if (disposing)
+            { 
+                Object cacheData, cache;
+                Type type;
+                FieldInfo field;
 
-            cacheData = BuildComponent.Data[cacheId];
-            type = cacheData.GetType();
-            field = type.GetField("cache", BindingFlags.NonPublic |
-                BindingFlags.Instance);
-            cache = field.GetValue(cacheData);
+                cacheData = BuildComponent.Data[cacheId];
+                type = cacheData.GetType();
+                field = type.GetField("cache", BindingFlags.NonPublic |
+                    BindingFlags.Instance);
+                cache = field.GetValue(cacheData);
 
-            type = cache.GetType();
-            field = type.GetField("count", BindingFlags.NonPublic |
-                BindingFlags.Instance);
+                type = cache.GetType();
+                field = type.GetField("count", BindingFlags.NonPublic |
+                    BindingFlags.Instance);
 
-            this.WriteMessage(MessageLevel.Info, String.Format(
-                CultureInfo.InvariantCulture, "Used \"{0}\" cache entries: {1}",
-                cacheId, field.GetValue(cache).ToString()));
-
-#if !SC_MAY_2008
+                this.WriteMessage(MessageLevel.Info, String.Format(
+                    CultureInfo.InvariantCulture, "Used \"{0}\" cache entries: {1}",
+                    cacheId, field.GetValue(cache).ToString()));
+            }
             base.Dispose(disposing);
-#else
-            base.Dispose();
-#endif
         }
         #endregion
     }
