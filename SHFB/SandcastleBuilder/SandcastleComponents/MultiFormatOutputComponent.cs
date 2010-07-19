@@ -148,13 +148,15 @@ namespace SandcastleBuilder.Components
         /// <summary>
         /// Dispose of the nested components
         /// </summary>
-        public override void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            foreach(IEnumerable<BuildComponent> list in formatComponents.Values)
-                foreach(BuildComponent component in list)
-                    component.Dispose();
-
-            base.Dispose();
+            if (disposing)
+            {
+                foreach (IEnumerable<BuildComponent> list in formatComponents.Values)
+                    foreach (BuildComponent component in list)
+                        component.Dispose();
+            }
+            base.Dispose(disposing);
         }
         #endregion
     }

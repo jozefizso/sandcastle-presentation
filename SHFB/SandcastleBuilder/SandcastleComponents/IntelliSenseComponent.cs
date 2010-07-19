@@ -308,15 +308,17 @@ namespace SandcastleBuilder.Components
         /// <summary>
         /// Write out closing tags and close all open XML writers when disposed.
         /// </summary>
-        public override void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            foreach(XmlWriter writer in writers.Values)
+            if (disposing)
             {
-                writer.WriteEndDocument();
-                writer.Close();
+                foreach (XmlWriter writer in writers.Values)
+                {
+                    writer.WriteEndDocument();
+                    writer.Close();
+                }
             }
-
-            base.Dispose();
+            base.Dispose(disposing);
         }
         #endregion
 
