@@ -24,8 +24,11 @@ you want.</para>
       <content>
         <para>Set the property's path to a different location that is safe to
 erase without warning (i.e. a subfolder under the root project folder) or
-reset it to the default value which will result in a safe path.  See the help
-topic for the indicated property for more information.</para>
+reset it to the default value which will result in a safe path.  If your
+project file is stored in one of the folders noted above, move the project
+file and its related files to a safe location such as a sub-folder under
+My Documents or a sub-folder of the Visual Studio project folder to which it
+relates.  See the help topic for the indicated property for more information.</para>
       </content>
     </section>
 

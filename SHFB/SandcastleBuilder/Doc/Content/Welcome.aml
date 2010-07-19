@@ -44,12 +44,20 @@ it provides a Visual Studio-like project explorer that lets you manage and
 edit the files associated with the project.</listItem>
 
     <listItem>The builder can produce an HTML Help 1 (.chm) file, an MS Help
-2 (.HxS) file, and/or a website.</listItem>
+2 (.HxS) file, MS Help Viewer (.mshc), and/or a website.</listItem>
 
     <listItem>The MS Help 2 output includes a valid set of collection files
 and an <localUri>H2Reg.exe</localUri> configuration file to simplify deployment
 and integration of the help file into existing collections such as those used
 by Visual Studio.</listItem>
+
+	<listItem>The MS Help Viewer output includes a valid help content setup
+file that can be used to install the content in the help viewer using the
+Help Library Manager tool.</listItem>
+
+	<listItem>A Help Library Manager launcher utility is also supplied to ease
+installation and removal of MS Help Viewer content.  This utility is freely
+distributable for use with your product installers.</listItem>
 
     <listItem>The website output contains an HTML and an ASP.NET index page
 with tree view that can be used to navigate the table of contents and a

@@ -39,7 +39,7 @@ namespace SandcastleBuilder.Utils
         HtmlHelp1    = 0x0001,
         /// <summary>MS Help 2 (.HxS) format built with HXCOMP.EXE.</summary>
         MSHelp2      = 0x0002,
-        /// <summary>MS Help Viewer (.MSHC) format, a ZIP file containing the
+        /// <summary>MS Help Viewer (.mshc) format, a ZIP file containing the
         /// help content.</summary>
         MSHelpViewer = 0x0004,
         /// <summary>A website with a basic TOC and search panes.</summary>

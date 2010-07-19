@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : ConvertFromShfbFile.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/07/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 06/20/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a class used to convert version 1.7.0.0 and prior SHFB
@@ -18,14 +18,13 @@
 // Version     Date     Who  Comments
 // ============================================================================
 // 1.8.0.0  07/23/2008  EFW  Created the code
+// 1.9.0.0  06/20/2010  EFW  Removed ProjectLinkType property
 //=============================================================================
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Xml;
 
 namespace SandcastleBuilder.Utils.Conversion
@@ -84,8 +83,7 @@ namespace SandcastleBuilder.Utils.Conversion
         {
             FilePath filePath;
             Version schemaVersion, lastShfbVersion = new Version(1, 7, 0, 0);
-            Dictionary<string, string> renameProps =
-                new Dictionary<string, string>();
+            Dictionary<string, string> renameProps = new Dictionary<string, string>();
 
             object value;
             string version, deps, propName = null, path, dest, filter, helpFileFormat;
@@ -93,18 +91,10 @@ namespace SandcastleBuilder.Utils.Conversion
 
             // Create a list of property names that need renaming due to
             // changes from version to version.
-            renameProps.Add("showAttributes",     // v1.0.0.0 name
-                "DocumentAttributes");
-            renameProps.Add("hhcPath",            // v1.3.3.1 and prior
-                "HtmlHelp1xCompilerPath");
-            renameProps.Add("hxcompPath",         // v1.3.3.1 and prior
-                "HtmlHelp2xCompilerPath");
-            renameProps.Add("projectLinks",       // v1.3.3.1 and prior
-                "ProjectLinkType");
-            renameProps.Add("sdkLinks",           // v1.3.3.1 and prior
-                "SdkLinkType");
-            renameProps.Add("rootNSContainer",    // v1.3.3.1 and prior
-                "RootNamespaceContainer");
+            renameProps.Add("showAttributes", "DocumentAttributes");        // v1.0.0.0 name
+            renameProps.Add("hhcPath", "HtmlHelp1xCompilerPath");           // v1.3.3.1 and prior
+            renameProps.Add("hxcompPath", "HtmlHelp2xCompilerPath");        // v1.3.3.1 and prior
+            renameProps.Add("rootNSContainer", "RootNamespaceContainer");   // v1.3.3.1 and prior
 
             // The HelpFileFormat enum values changed in v1.8.0.3
             Dictionary<string, string> translateFormat = new Dictionary<string, string> {
@@ -129,14 +119,12 @@ namespace SandcastleBuilder.Utils.Conversion
                 version = xr.GetAttribute("schemaVersion");
 
                 if(String.IsNullOrEmpty(version))
-                    throw new BuilderException("CVT0003",
-                        "Invalid or missing schema version");
+                    throw new BuilderException("CVT0003", "Invalid or missing schema version");
 
                 schemaVersion = new Version(version);
 
                 if(schemaVersion > lastShfbVersion)
-                    throw new BuilderException("CVT0004",
-                        "Unrecognized schema version");
+                    throw new BuilderException("CVT0004", "Unrecognized schema version");
 
                 while(!xr.EOF)
                 {
@@ -150,7 +138,30 @@ namespace SandcastleBuilder.Utils.Conversion
                                 break;
 
                             case "PurgeDuplicateTopics":
-                                // This option was removed in v1.6.0.7
+                            case "ShowFeedbackControl":
+                            case "ProjectLinkType":
+                            case "projectLinks":    // ProjectLinkType in v1.3.3.1 and prior
+                                // PurgeDuplicateTopics was removed in v1.6.0.7
+                                // ShowFeedbackControl was removed in v1.8.0.3
+                                // ProjectLinkType was removed in v1.9.0.0
+                                break;
+
+                            case "sdkLinks":        // SdkLinkType in v1.3.3.1 and prior
+                            case "SdkLinkType":
+                                switch(xr.ReadString().ToLowerInvariant())
+                                {
+                                    case "none":
+                                    case "index":
+                                    case "local":
+                                        base.Project.HtmlSdkLinkType = base.Project.WebsiteSdkLinkType =
+                                            HtmlSdkLinkType.None;
+                                        base.Project.MSHelp2SdkLinkType = MSHelp2SdkLinkType.Index;
+                                        base.Project.MSHelpViewerSdkLinkType = MSHelpViewerSdkLinkType.Id;
+                                        break;
+
+                                    default:    // MSDN links
+                                        break;
+                                }
                                 break;
 
                             case "additionalContent":
@@ -188,8 +199,7 @@ namespace SandcastleBuilder.Utils.Conversion
                             case "dependencies":
                                 // The first version used a comma-separated
                                 // string of dependencies.
-                                if(schemaVersion.Major == 1 &&
-                                  schemaVersion.Minor == 0)
+                                if(schemaVersion.Major == 1 && schemaVersion.Minor == 0)
                                 {
                                     deps = xr.ReadString();
 
@@ -272,8 +282,7 @@ namespace SandcastleBuilder.Utils.Conversion
                                 if(renameProps.ContainsKey(propName))
                                     propName = renameProps[propName];
 
-                                value = base.SetProperty(propName,
-                                    xr.ReadString());
+                                value = base.SetProperty(propName, xr.ReadString());
 
                                 filePath = value as FilePath;
 
@@ -346,8 +355,8 @@ namespace SandcastleBuilder.Utils.Conversion
         private void ConvertAdditionalContent()
         {
             Dictionary<string, string> includeFileSpec = new Dictionary<string, string>(),
-                excludeFileSpec = new Dictionary<string, string>(),
-                excludeFiles = new Dictionary<string, string>();
+                excludeFileSpec = new Dictionary<string, string>();
+            HashSet<string> excludeFiles = new HashSet<string>();
             bool exclude;
             string source, dest, destFile;
 
@@ -395,7 +404,7 @@ namespace SandcastleBuilder.Utils.Conversion
             // Add included files less excluded files
             foreach(string fileSpec in excludeFileSpec.Keys)
                 foreach(string file in ExpandWildcard(fileSpec, true))
-                    excludeFiles.Add(file, null);
+                    excludeFiles.Add(file);
 
             // Copy files to the destination folder off of the root of the
             // new project.  Note that this may change the folder layout from
@@ -409,7 +418,7 @@ namespace SandcastleBuilder.Utils.Conversion
                     includeFileSpec[fileSpec]));
 
                 foreach(string file in ExpandWildcard(fileSpec, true))
-                    if(!excludeFiles.ContainsKey(file))
+                    if(!excludeFiles.Contains(file))
                     {
                         // Remove the base path but keep any subfolders
                         destFile = file.Substring(source.Length + 1);

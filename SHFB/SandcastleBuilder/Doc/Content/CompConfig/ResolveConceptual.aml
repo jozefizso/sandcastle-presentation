@@ -70,8 +70,9 @@ builder's folder in the file path.  This is replaced at build time with the
 appropriate value.  If using the component in your own build scripts, replace
 the tag with a relative or absolute path to the component assembly.  The
 <codeInline>{@ProjectLinks}</codeInline> option should be replaced with
-<codeInline>none</codeInline>, <codeInline>local</codeInline>, or
-<codeInline>index</codeInline> based on your preferred link type.</para>
+<codeInline>None</codeInline>, <codeInline>Local</codeInline>, or
+<codeInline>Index</codeInline> based on your preferred link type and help
+file format.</para>
 
   </content>
 </section>

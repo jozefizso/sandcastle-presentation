@@ -37,7 +37,6 @@ namespace SandcastleBuilder.Components
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
             this.lnkCodePlexSHFB = new System.Windows.Forms.LinkLabel();
-            this.btnSelectFolder = new System.Windows.Forms.Button();
             this.btnSelectStylesheet = new System.Windows.Forms.Button();
             this.btnSelectScript = new System.Windows.Forms.Button();
             this.btnSelectLogo = new System.Windows.Forms.Button();
@@ -48,8 +47,6 @@ namespace SandcastleBuilder.Components
             this.txtLogoFile = new System.Windows.Forms.TextBox();
             this.txtAltText = new System.Windows.Forms.TextBox();
             this.txtCopyImage = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.txtOutputPath = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.tabConfig = new System.Windows.Forms.TabControl();
@@ -113,17 +110,6 @@ namespace SandcastleBuilder.Components
             this.lnkCodePlexSHFB.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.toolTip1.SetToolTip(this.lnkCodePlexSHFB, "http://SHFB.CodePlex.com");
             this.lnkCodePlexSHFB.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkCodePlexSHFB_LinkClicked);
-            // 
-            // btnSelectFolder
-            // 
-            this.btnSelectFolder.Location = new System.Drawing.Point(666, 291);
-            this.btnSelectFolder.Name = "btnSelectFolder";
-            this.btnSelectFolder.Size = new System.Drawing.Size(32, 25);
-            this.btnSelectFolder.TabIndex = 11;
-            this.btnSelectFolder.Text = "...";
-            this.toolTip1.SetToolTip(this.btnSelectFolder, "Select output path for colorizer files");
-            this.btnSelectFolder.UseVisualStyleBackColor = true;
-            this.btnSelectFolder.Click += new System.EventHandler(this.btnSelectFolder_Click);
             // 
             // btnSelectStylesheet
             // 
@@ -218,24 +204,6 @@ namespace SandcastleBuilder.Components
             this.txtCopyImage.Size = new System.Drawing.Size(636, 22);
             this.txtCopyImage.TabIndex = 7;
             // 
-            // label1
-            // 
-            this.label1.Location = new System.Drawing.Point(29, 266);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(613, 23);
-            this.label1.TabIndex = 9;
-            this.label1.Text = "&Output path for the colorizer and logo files (should match SaveComponent \'base\' " +
-                "attribute)";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // txtOutputPath
-            // 
-            this.txtOutputPath.Location = new System.Drawing.Point(29, 292);
-            this.txtOutputPath.MaxLength = 256;
-            this.txtOutputPath.Name = "txtOutputPath";
-            this.txtOutputPath.Size = new System.Drawing.Size(636, 22);
-            this.txtOutputPath.TabIndex = 10;
-            // 
             // label2
             // 
             this.label2.Location = new System.Drawing.Point(29, 39);
@@ -271,10 +239,7 @@ namespace SandcastleBuilder.Components
             this.pgGeneral.Controls.Add(this.txtCopyImage);
             this.pgGeneral.Controls.Add(this.txtStylesheet);
             this.pgGeneral.Controls.Add(this.btnSelectScript);
-            this.pgGeneral.Controls.Add(this.label1);
             this.pgGeneral.Controls.Add(this.btnSelectStylesheet);
-            this.pgGeneral.Controls.Add(this.txtOutputPath);
-            this.pgGeneral.Controls.Add(this.btnSelectFolder);
             this.pgGeneral.Controls.Add(this.label2);
             this.pgGeneral.Controls.Add(this.label3);
             this.pgGeneral.Controls.Add(this.txtScriptFile);
@@ -520,10 +485,7 @@ namespace SandcastleBuilder.Components
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtStylesheet;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox txtOutputPath;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.LinkLabel lnkCodePlexSHFB;
-        private System.Windows.Forms.Button btnSelectFolder;
         private System.Windows.Forms.Button btnSelectScript;
         private System.Windows.Forms.Button btnSelectStylesheet;
         private System.Windows.Forms.TabControl tabConfig;

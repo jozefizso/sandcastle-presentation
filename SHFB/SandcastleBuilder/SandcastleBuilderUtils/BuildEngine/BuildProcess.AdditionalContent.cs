@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : BuildProcess.AdditionalContent.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 10/28/2009
-// Note    : Copyright 2006-2009, Eric Woodruff, All rights reserved
+// Updated : 06/30/2010
+// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the code used to merge the additional content into the
@@ -35,6 +35,8 @@
 // 1.8.0.0  07/26/2008  EFW  Modified to support the new project format
 // 1.8.0.1  01/21/2009  EFW  Added support for removeRegionMarkers option on
 //                           imported code blocks.
+// 1.9.0.0  06/06/2010  EFW  Added support for multi-format build output
+// 1.9.0.0  06/30/2010  EFW  Removed splitting of TOC collection
 //=============================================================================
 
 using System;
@@ -58,10 +60,9 @@ namespace SandcastleBuilder.Utils.BuildEngine
     {
         #region Private data members
         //=====================================================================
-        // Private data members
 
-        // The table of contents entries for the additional content
-        private TocEntryCollection toc, tocAbove, tocBelow;
+        // The table of contents entries for the additional and conceptual content
+        private TocEntryCollection toc;
 
         // Regular expressions used to match table of contents options and to
         // resolve namespace references in additional content files.
@@ -157,13 +158,11 @@ namespace SandcastleBuilder.Utils.BuildEngine
             TocEntryCollection parentToc;
             TocEntry tocEntry, tocFolder;
             FileItemCollection contentItems;
-            string projectPath, source, filename, dirName,
-                rootPath = workingFolder + @"Output\";
+            string projectPath, source, filename, dirName;
             string[] parts;
             int part;
 
-            this.ReportProgress(BuildStep.CopyAdditionalContent,
-                "Copying additional content files...");
+            this.ReportProgress(BuildStep.CopyAdditionalContent, "Copying additional content files...");
 
             if(this.ExecutePlugIns(ExecutionBehaviors.InsteadOf))
                 return;
@@ -172,8 +171,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
             // them before checking to see if there is anything to copy.
             this.ExecutePlugIns(ExecutionBehaviors.Before);
 
-            if(!project.HasItems(BuildAction.Content) &&
-              !project.HasItems(BuildAction.SiteMap))
+            if(!project.HasItems(BuildAction.Content) && !project.HasItems(BuildAction.SiteMap))
             {
                 this.ReportProgress("No additional content to copy");
                 this.ExecutePlugIns(ExecutionBehaviors.After);
@@ -185,14 +183,12 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
             // Now copy the content files
             contentItems = new FileItemCollection(project, BuildAction.Content);
-            projectPath = FolderPath.TerminatePath(Path.GetDirectoryName(
-                originalProjectName));
+            projectPath = FolderPath.TerminatePath(Path.GetDirectoryName(originalProjectName));
 
             foreach(FileItem fileItem in contentItems)
             {
                 source = fileItem.Include;
-                dirName = workingFolder + @"Output\" + Path.GetDirectoryName(
-                    fileItem.Link.ToString().Substring(projectPath.Length));
+                dirName = Path.GetDirectoryName(fileItem.Link.ToString().Substring(projectPath.Length));
                 filename = Path.Combine(dirName, Path.GetFileName(source));
 
                 if(source.EndsWith(".htm", StringComparison.OrdinalIgnoreCase) ||
@@ -206,14 +202,11 @@ namespace SandcastleBuilder.Utils.BuildEngine
                         tocEntry.IncludePage = false;
 
                     // .topic files get transformed into .html files
-                    if(source.EndsWith(".topic",
-                      StringComparison.OrdinalIgnoreCase))
-                        filename = Path.ChangeExtension(filename,
-                            ".html");
+                    if(source.EndsWith(".topic", StringComparison.OrdinalIgnoreCase))
+                        filename = Path.ChangeExtension(filename, ".html");
 
                     tocEntry.SourceFile = new FilePath(source, project);
-                    tocEntry.DestinationFile = filename.Remove(0,
-                        rootPath.Length);
+                    tocEntry.DestinationFile = filename;
 
                     // Figure out where to add the entry
                     parts = tocEntry.DestinationFile.Split('\\');
@@ -233,8 +226,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                             if(part == 0)
                                 toc.Add(tocFolder);
                             else
-                                tocItems[String.Join(@"\", parts, 0, part) +
-                                    @"\"].Add(tocFolder);
+                                tocItems[String.Join(@"\", parts, 0, part) + @"\"].Add(tocFolder);
 
                             parentToc = tocFolder.Children;
                             tocItems.Add(pathToRoot, parentToc);
@@ -249,33 +241,34 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 else
                     tocEntry = null;
 
-                if(!Directory.Exists(dirName))
-                    Directory.CreateDirectory(dirName);
+                this.EnsureOutputFoldersExist(dirName);
 
-                // If the file contains items that need to be resolved,
-                // it is handled separately.
-                if(tocEntry != null &&
-                  (tocEntry.HasLinks || tocEntry.HasCodeBlocks ||
-                  tocEntry.NeedsColorizing || tocEntry.HasProjectTags ||
-                  source.EndsWith(".topic", StringComparison.OrdinalIgnoreCase)))
+                foreach(string baseFolder in this.HelpFormatOutputFolders)
                 {
-                    // Figure out the path to the root if needed
-                    parts = tocEntry.DestinationFile.Split('\\');
-                    pathToRoot = String.Empty;
+                    // If the file contains items that need to be resolved,
+                    // it is handled separately.
+                    if(tocEntry != null &&
+                      (tocEntry.HasLinks || tocEntry.HasCodeBlocks ||
+                      tocEntry.NeedsColorizing || tocEntry.HasProjectTags ||
+                      source.EndsWith(".topic", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        // Figure out the path to the root if needed
+                        parts = tocEntry.DestinationFile.Split('\\');
+                        pathToRoot = String.Empty;
 
-                    for(part = 0; part < parts.Length - 1; part++)
-                        pathToRoot += "../";
+                        for(part = 0; part < parts.Length - 1; part++)
+                            pathToRoot += "../";
 
-                    this.ResolveLinksAndCopy(source, filename, tocEntry);
-                }
-                else
-                {
-                    this.ReportProgress("{0} -> {1}", source, filename);
+                        this.ResolveLinksAndCopy(source, baseFolder + filename, tocEntry);
+                    }
+                    else
+                    {
+                        this.ReportProgress("{0} -> {1}{2}", source, baseFolder, filename);
 
-                    // All attributes are turned off so that we can delete
-                    // it later.
-                    File.Copy(source, filename, true);
-                    File.SetAttributes(filename, FileAttributes.Normal);
+                        // All attributes are turned off so that we can delete it later
+                        File.Copy(source, baseFolder + filename, true);
+                        File.SetAttributes(baseFolder + filename, FileAttributes.Normal);
+                    }
                 }
             }
 
@@ -307,7 +300,6 @@ namespace SandcastleBuilder.Utils.BuildEngine
             List<ITableOfContents> tocFiles;
             TocEntryCollection siteMap, mergedToc;
             TocEntry tocEntry;
-            int idx;
 
             this.ReportProgress(BuildStep.MergeTablesOfContents,
                 "Merging conceptual and additional tables of contents...");
@@ -328,8 +320,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
             foreach(FileItem fileItem in siteMapFiles)
             {
-                this.ReportProgress("    Loading site map '{0}'",
-                    fileItem.FullPath);
+                this.ReportProgress("    Loading site map '{0}'", fileItem.FullPath);
                 siteMap = new TocEntryCollection(fileItem);
                 siteMap.Load();
 
@@ -341,19 +332,18 @@ namespace SandcastleBuilder.Utils.BuildEngine
             }
 
             // Sort the files
-            tocFiles.Sort(delegate(ITableOfContents x, ITableOfContents y)
-                {
-                    FileItem fx = x.ContentLayoutFile, fy = y.ContentLayoutFile;
+            tocFiles.Sort((x, y) =>
+            {
+                FileItem fx = x.ContentLayoutFile, fy = y.ContentLayoutFile;
 
-                    if(fx.SortOrder < fy.SortOrder)
-                        return -1;
+                if(fx.SortOrder < fy.SortOrder)
+                    return -1;
 
-                    if(fx.SortOrder > fy.SortOrder)
-                        return 1;
+                if(fx.SortOrder > fy.SortOrder)
+                    return 1;
 
-                    return String.Compare(fx.Name, fy.Name,
-                        StringComparison.OrdinalIgnoreCase);
-                });
+                return String.Compare(fx.Name, fy.Name, StringComparison.OrdinalIgnoreCase);
+            });
 
             // Create the merged TOC
             mergedToc = new TocEntryCollection();
@@ -377,50 +367,6 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
                 if(tocEntry != null)
                     defaultTopic = tocEntry.DestinationFile;
-                    
-                // Split the TOC if necessary
-                if(project.ContentPlacement == ContentPlacement.AboveNamespaces)
-                {
-                    tocAbove = toc;
-                    tocBelow = null;
-                }
-                else
-                {
-                    tocAbove = null;
-                    tocBelow = toc;
-                }
-
-                // See if the TOC is to be split.  The split can only occur
-                // at the root level.
-                tocEntry = null;
-
-                foreach(TocEntry t in toc)
-                    if(t.SplitToc)
-                    {
-                        tocEntry = t;
-                        break;
-                    }
-
-                if(tocEntry != null)
-                    if(toc[0] == tocEntry)
-                    {
-                        // Same as ContentPlacement.BelowNamespaces
-                        tocAbove = null;
-                        tocBelow = toc;
-                    }
-                    else
-                    {
-                        tocAbove = toc;
-                        tocBelow = new TocEntryCollection();
-
-                        idx = toc.IndexOf(tocEntry);
-
-                        while(idx < toc.Count)
-                        {
-                            tocBelow.Add(toc[idx]);
-                            toc.RemoveAt(idx);
-                        }
-                    }
             }
 
             this.ExecutePlugIns(ExecutionBehaviors.After);
@@ -430,7 +376,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// This is used to merge destination file information into the site
         /// map TOC.
         /// </summary>
-        /// <param name="site">The the site entry to update</param>
+        /// <param name="site">The site entry to update</param>
         /// <remarks>In addition, files in the site map that do not exist in
         /// the TOC built from the defined content will be processed and
         /// copied to the root folder.</remarks>
@@ -449,12 +395,11 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 {
                     source = site.SourceFile;
                     site.DestinationFile = Path.GetFileName(source);
-                    filename = workingFolder + @"Output\" + site.DestinationFile;
+                    filename = site.DestinationFile;
 
                     // .topic files get transformed into .html files
                     if(source.EndsWith(".topic", StringComparison.OrdinalIgnoreCase))
-                        site.DestinationFile = Path.ChangeExtension(
-                            site.DestinationFile, ".html");
+                        site.DestinationFile = Path.ChangeExtension(site.DestinationFile, ".html");
 
                     // Check to see if anything needs resolving
                     if(source.EndsWith(".htm", StringComparison.OrdinalIgnoreCase) ||
@@ -462,25 +407,26 @@ namespace SandcastleBuilder.Utils.BuildEngine
                       source.EndsWith(".topic", StringComparison.OrdinalIgnoreCase))
                         match = BuildProcess.GetTocInfo(source);
 
-                    // If the file contains items that need to be resolved,
-                    // it is handled separately.
-                    if(match != null && (match.HasLinks || match.HasCodeBlocks ||
-                      match.NeedsColorizing || match.HasProjectTags ||
-                      source.EndsWith(".topic", StringComparison.OrdinalIgnoreCase)))
+                    foreach(string baseFolder in this.HelpFormatOutputFolders)
                     {
-                        // Files are always copied to the root
-                        pathToRoot = String.Empty;
+                        // If the file contains items that need to be resolved, it is handled separately
+                        if(match != null && (match.HasLinks || match.HasCodeBlocks ||
+                          match.NeedsColorizing || match.HasProjectTags ||
+                          source.EndsWith(".topic", StringComparison.OrdinalIgnoreCase)))
+                        {
+                            // Files are always copied to the root
+                            pathToRoot = String.Empty;
 
-                        this.ResolveLinksAndCopy(source, filename, match);
-                    }
-                    else
-                    {
-                        this.ReportProgress("{0} -> {1}", source, filename);
+                            this.ResolveLinksAndCopy(source, baseFolder + filename, match);
+                        }
+                        else
+                        {
+                            this.ReportProgress("{0} -> {1}{2}", source, baseFolder, filename);
 
-                        // All attributes are turned off so that we can delete
-                        // it later.
-                        File.Copy(source, filename, true);
-                        File.SetAttributes(filename, FileAttributes.Normal);
+                            // All attributes are turned off so that we can delete it later
+                            File.Copy(source, baseFolder + filename, true);
+                            File.SetAttributes(baseFolder + filename, FileAttributes.Normal);
+                        }
                     }
                 }
             }
@@ -508,13 +454,13 @@ namespace SandcastleBuilder.Utils.BuildEngine
             tocEntry = new TocEntry(null);
             tocEntry.IncludePage = !reTocExclude.IsMatch(content);
             tocEntry.IsDefaultTopic = reIsDefaultTopic.IsMatch(content);
-            tocEntry.SplitToc = reSplitToc.IsMatch(content);
+
+            if(reSplitToc.IsMatch(content))
+                tocEntry.ApiParentMode = ApiParentMode.InsertAfter;
 
             Match m = reSortOrder.Match(content);
             if(m.Success)
-                tocEntry.SortOrder = Convert.ToInt32(
-                    m.Groups["SortOrder"].Value,
-                    CultureInfo.InvariantCulture);
+                tocEntry.SortOrder = Convert.ToInt32(m.Groups["SortOrder"].Value, CultureInfo.InvariantCulture);
 
             // Get the page title if possible.  If not found, use the filename
             // without the path or extension as the page title.
@@ -522,9 +468,8 @@ namespace SandcastleBuilder.Utils.BuildEngine
             if(!m.Success)
                 tocEntry.Title = Path.GetFileNameWithoutExtension(filename);
             else
-                tocEntry.Title = HttpUtility.HtmlDecode(
-                    m.Groups["Title"].Value).Replace("\r", String.Empty).Replace(
-                    "\n", String.Empty);
+                tocEntry.Title = HttpUtility.HtmlDecode(m.Groups["Title"].Value).Replace(
+                    "\r", String.Empty).Replace("\n", String.Empty);
 
             // Since we've got the file loaded, see if there are links
             // that need to be resolved when the file is copied, if it
@@ -533,8 +478,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
             tocEntry.HasLinks = reResolveLinks.IsMatch(content);
             tocEntry.HasCodeBlocks = reCodeBlock.IsMatch(content);
             tocEntry.NeedsColorizing = reColorizeCheck.IsMatch(content);
-            tocEntry.HasProjectTags = (reProjectTags.IsMatch(content) ||
-                reSharedContent.IsMatch(content));
+            tocEntry.HasProjectTags = (reProjectTags.IsMatch(content) || reSharedContent.IsMatch(content));
 
             return tocEntry;
         }
@@ -574,8 +518,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
             {
                 // Initialize code colorizer on first use
                 if(codeColorizer == null)
-                    codeColorizer = new CodeColorizer(
-                        shfbFolder + @"Colorizer\highlight.xml",
+                    codeColorizer = new CodeColorizer(shfbFolder + @"Colorizer\highlight.xml",
                         shfbFolder + @"Colorizer\highlight.xsl");
 
                 // Set the path the "Copy" image
@@ -595,10 +538,8 @@ namespace SandcastleBuilder.Utils.BuildEngine
                   !sourceFile.EndsWith(".xsl", StringComparison.OrdinalIgnoreCase))
                 {
                     script = String.Format(CultureInfo.InvariantCulture,
-                        "<link type='text/css' rel='stylesheet' " +
-                        "href='{0}styles/highlight.css' />" +
-                        "<script type='text/javascript' " +
-                        "src='{0}scripts/highlight.js'></script>", pathToRoot);
+                        "<link type='text/css' rel='stylesheet' href='{0}styles/highlight.css' />" +
+                        "<script type='text/javascript' src='{0}scripts/highlight.js'></script>", pathToRoot);
 
                     pos = content.IndexOf("</head>", StringComparison.Ordinal);
 
@@ -618,39 +559,45 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 }
 
                 // Copy the colorizer files if not already there
-                if(!Directory.Exists(workingFolder + @"Output\styles"))
-                    Directory.CreateDirectory(workingFolder + @"Output\styles");
+                this.EnsureOutputFoldersExist("icons");
+                this.EnsureOutputFoldersExist("styles");
+                this.EnsureOutputFoldersExist("scripts");
 
-                if(!Directory.Exists(workingFolder + @"Output\scripts"))
-                    Directory.CreateDirectory(workingFolder + @"Output\scripts");
+                foreach(string baseFolder in this.HelpFormatOutputFolders)
+                    if(!File.Exists(baseFolder + @"styles\highlight.css"))
+                    {
+                        syntaxFile = baseFolder + @"styles\highlight.css";
+                        File.Copy(shfbFolder + @"Colorizer\highlight.css", syntaxFile);
+                        File.SetAttributes(syntaxFile, FileAttributes.Normal);
 
-                if(!Directory.Exists(workingFolder + @"Output\icons"))
-                    Directory.CreateDirectory(workingFolder + @"Output\icons");
+                        syntaxFile = baseFolder + @"scripts\highlight.js";
+                        File.Copy(shfbFolder + @"Colorizer\highlight.js", syntaxFile);
+                        File.SetAttributes(syntaxFile, FileAttributes.Normal);
 
-                if(!File.Exists(workingFolder + @"Output\styles\highlight.css"))
-                {
-                    syntaxFile = workingFolder + @"Output\styles\highlight.css";
-                    File.Copy(shfbFolder + @"Colorizer\highlight.css",
-                        syntaxFile);
-                    File.SetAttributes(syntaxFile, FileAttributes.Normal);
+                        // Always copy the image files, they may be different.  Also, delete the
+                        // destination file first if it exists as the filename casing may be different.
+                        syntaxFile = baseFolder + @"icons\CopyCode.gif";
 
-                    syntaxFile = workingFolder + @"Output\scripts\highlight.js";
-                    File.Copy(shfbFolder + @"Colorizer\highlight.js",
-                        syntaxFile);
-                    File.SetAttributes(syntaxFile, FileAttributes.Normal);
+                        if(File.Exists(syntaxFile))
+                        {
+                            File.SetAttributes(syntaxFile, FileAttributes.Normal);
+                            File.Delete(syntaxFile);
+                        }
 
-                    // This one may exist as the default presentation styles
-                    // contain an image by this name.
-                    syntaxFile = workingFolder + @"Output\icons\CopyCode.gif";
-                    File.Copy(shfbFolder + @"Colorizer\CopyCode.gif",
-                        syntaxFile, true);
-                    File.SetAttributes(syntaxFile, FileAttributes.Normal);
+                        File.Copy(shfbFolder + @"Colorizer\CopyCode.gif", syntaxFile);
+                        File.SetAttributes(syntaxFile, FileAttributes.Normal);
 
-                    syntaxFile = workingFolder + @"Output\icons\CopyCode_h.gif";
-                    File.Copy(shfbFolder + @"Colorizer\CopyCode_h.gif",
-                        syntaxFile, true);
-                    File.SetAttributes(syntaxFile, FileAttributes.Normal);
-                }
+                        syntaxFile = baseFolder + @"icons\CopyCode_h.gif";
+
+                        if(File.Exists(syntaxFile))
+                        {
+                            File.SetAttributes(syntaxFile, FileAttributes.Normal);
+                            File.Delete(syntaxFile);
+                        }
+
+                        File.Copy(shfbFolder + @"Colorizer\CopyCode_h.gif", syntaxFile);
+                        File.SetAttributes(syntaxFile, FileAttributes.Normal);
+                    }
             }
 
             // Use a regular expression to find and replace all tags with
@@ -842,6 +789,8 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
             try
             {
+                sourceFile = Environment.ExpandEnvironmentVariables(sourceFile);
+
                 if(!Path.IsPathRooted(sourceFile))
                     sourceFile = Path.GetFullPath(projectFolder + sourceFile);
 
@@ -932,7 +881,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 return codeBlock;
 
             // Return the HTML encoded block
-            return "<pre " + options + ">" + HttpUtility.HtmlEncode(
+            return "<pre xml:space=\"preserve\" " + options + ">" + HttpUtility.HtmlEncode(
                 codeBlock) + "</pre>";
         }
 
@@ -953,8 +902,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
             FileItemCollection transforms;
             string content;
 
-            string sourceStylesheet, destFile = Path.ChangeExtension(
-                sourceFile, ".html");
+            string sourceStylesheet, destFile = Path.ChangeExtension(sourceFile, ".html");
 
             try
             {
@@ -965,8 +913,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 // Create the transform on first use
                 if(xslTransform == null)
                 {
-                    transforms = new FileItemCollection(project,
-                        BuildAction.TopicTransform);
+                    transforms = new FileItemCollection(project, BuildAction.TopicTransform);
 
                     if(transforms.Count != 0)
                     {
@@ -978,18 +925,15 @@ namespace SandcastleBuilder.Utils.BuildEngine
                         sourceStylesheet = transforms[0].FullPath;
                     }
                     else
-                        sourceStylesheet = templateFolder + presentationParam +
-                            ".xsl";
+                        sourceStylesheet = templateFolder + presentationParam + ".xsl";
 
-                    xslStylesheet = workingFolder + Path.GetFileName(
-                        sourceStylesheet);
+                    xslStylesheet = workingFolder + Path.GetFileName(sourceStylesheet);
                     tocInfo = BuildProcess.GetTocInfo(sourceStylesheet);
 
                     // The stylesheet may contain shared content items so we
                     // must resolve it this way rather than using
                     // TransformTemplate.
-                    this.ResolveLinksAndCopy(sourceStylesheet, xslStylesheet,
-                        tocInfo);
+                    this.ResolveLinksAndCopy(sourceStylesheet, xslStylesheet, tocInfo);
 
                     xslTransform = new XslCompiledTransform();
                     settings = new XsltSettings(true, true);
@@ -999,8 +943,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
                         readerSettings), settings, new XmlUrlResolver());
                 }
 
-                this.ReportProgress("Applying XSL transformation '{0}' to " +
-                    "'{1}'.", xslStylesheet, sourceFile);
+                this.ReportProgress("Applying XSL transformation '{0}' to '{1}'.", xslStylesheet, sourceFile);
 
                 reader = XmlReader.Create(sourceFile, readerSettings);
                 writerSettings = xslTransform.OutputSettings.Clone();
@@ -1059,8 +1002,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
             {
                 // Initialize code colorizer on first use
                 if(codeColorizer == null)
-                    codeColorizer = new CodeColorizer(
-                        shfbFolder + @"Colorizer\highlight.xml",
+                    codeColorizer = new CodeColorizer(shfbFolder + @"Colorizer\highlight.xml",
                         shfbFolder + @"Colorizer\highlight.xsl");
 
                 // Set the path the "Copy" image

@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Plug-Ins
 // File    : DbcsFixPlugIn.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 08/12/2008
-// Note    : Copyright 2008, Eric Woodruff, All rights reserved
+// Updated : 06/12/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a plug-in designed to modify the HTML files and alter the
@@ -20,15 +20,14 @@
 // ============================================================================
 // 1.6.0.5  02/18/2008  EFW  Created the code
 // 1.8.0.0  07/15/2008  EFW  Updated for use with MSBuild project format
+// 1.9.0.0  06/07/2010  EFW  Added support for multi-format build output
 //=============================================================================
 
 using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.XPath;
 
@@ -49,6 +48,8 @@ namespace SandcastleBuilder.PlugIns
     public class DbcsFixPlugIn : IPlugIn
     {
         #region Private data members
+        //=====================================================================
+
         private ExecutionPointCollection executionPoints;
 
         private BuildProcess builder;
@@ -58,7 +59,6 @@ namespace SandcastleBuilder.PlugIns
 
         #region IPlugIn implementation
         //=====================================================================
-        // IPlugIn implementation
 
         /// <summary>
         /// This read-only property returns a friendly name for the plug-in
@@ -77,8 +77,7 @@ namespace SandcastleBuilder.PlugIns
             {
                 // Use the assembly version
                 Assembly asm = Assembly.GetExecutingAssembly();
-                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(
-                    asm.Location);
+                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
 
                 return new Version(fvi.ProductVersion);
             }
@@ -94,9 +93,8 @@ namespace SandcastleBuilder.PlugIns
             {
                 // Use the assembly copyright
                 Assembly asm = Assembly.GetExecutingAssembly();
-                AssemblyCopyrightAttribute copyright =
-                    (AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(
-                        asm, typeof(AssemblyCopyrightAttribute));
+                AssemblyCopyrightAttribute copyright = (AssemblyCopyrightAttribute)Attribute.GetCustomAttribute(
+                    asm, typeof(AssemblyCopyrightAttribute));
 
                 return copyright.Copyright + "\r\nSBAppLocale is Copyright " +
                     "\xA9 2005-2009 Steel Bytes, All Rights Reserved";
@@ -135,16 +133,11 @@ namespace SandcastleBuilder.PlugIns
             get
             {
                 if(executionPoints == null)
-                {
-                    executionPoints = new ExecutionPointCollection();
-
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.ExtractingHtmlInfo,
-                        ExecutionBehaviors.Before));
-                    executionPoints.Add(new ExecutionPoint(
-                        BuildStep.CompilingHelpFile,
-                        ExecutionBehaviors.Before));
-                }
+                    executionPoints = new ExecutionPointCollection
+                    {
+                        new ExecutionPoint(BuildStep.ExtractingHtmlInfo, ExecutionBehaviors.Before),
+                        new ExecutionPoint(BuildStep.CompilingHelpFile, ExecutionBehaviors.Before)
+                    };
 
                 return executionPoints;
             }
@@ -159,8 +152,7 @@ namespace SandcastleBuilder.PlugIns
         /// <returns>A string containing the new configuration XML fragment</returns>
         /// <remarks>The configuration data will be stored in the help file
         /// builder project.</remarks>
-        public string ConfigurePlugIn(SandcastleProject project,
-          string currentConfig)
+        public string ConfigurePlugIn(SandcastleProject project, string currentConfig)
         {
             using(DbcsFixConfigDlg dlg = new DbcsFixConfigDlg(currentConfig))
             {
@@ -179,15 +171,13 @@ namespace SandcastleBuilder.PlugIns
         /// process.</param>
         /// <param name="configuration">The configuration data that the plug-in
         /// should use to initialize itself.</param>
-        public void Initialize(BuildProcess buildProcess,
-          XPathNavigator configuration)
+        public void Initialize(BuildProcess buildProcess, XPathNavigator configuration)
         {
             XPathNavigator root, node;
 
             builder = buildProcess;
 
-            builder.ReportProgress("{0} Version {1}\r\n{2}",
-                this.Name, this.Version, this.Copyright);
+            builder.ReportProgress("{0} Version {1}\r\n{2}", this.Name, this.Version, this.Copyright);
 
             root = configuration.SelectSingleNode("configuration");
 
@@ -196,6 +186,7 @@ namespace SandcastleBuilder.PlugIns
                     "has not been configured yet");
 
             node = root.SelectSingleNode("sbAppLocale");
+
             if(node != null)
                 sbAppLocalePath = node.GetAttribute("path", String.Empty).Trim();
 
@@ -212,8 +203,7 @@ namespace SandcastleBuilder.PlugIns
                     "SBAppLocale tool at " + sbAppLocalePath);
 
             // If not building HTML Help 1, there's nothing to do
-            if((builder.CurrentProject.HelpFileFormat &
-              HelpFileFormat.HtmlHelp1) == 0)
+            if((builder.CurrentProject.HelpFileFormat & HelpFileFormat.HtmlHelp1) == 0)
             {
                 executionPoints.Clear();
                 builder.ReportWarning("DFP0007", "An HTML Help 1 file is not " +
@@ -243,8 +233,7 @@ namespace SandcastleBuilder.PlugIns
                 nsm = new XmlNamespaceManager(project.NameTable);
                 nsm.AddNamespace("MSBuild", project.DocumentElement.NamespaceURI);
 
-                property = project.SelectSingleNode("//MSBuild:LocalizedFolder",
-                    nsm);
+                property = project.SelectSingleNode("//MSBuild:LocalizedFolder", nsm);
 
                 if(property == null)
                     throw new BuilderException("DFP0004", "Unable to locate " +
@@ -266,8 +255,7 @@ namespace SandcastleBuilder.PlugIns
             nsm = new XmlNamespaceManager(project.NameTable);
             nsm.AddNamespace("MSBuild", project.DocumentElement.NamespaceURI);
 
-            property = project.SelectSingleNode("//MSBuild:WorkingFolder",
-                nsm);
+            property = project.SelectSingleNode("//MSBuild:WorkingFolder", nsm);
 
             if(property == null)
                 throw new BuilderException("DFP0005", "Unable to locate " +
@@ -275,8 +263,7 @@ namespace SandcastleBuilder.PlugIns
 
             property.InnerText = @".\Localized";
 
-            property = project.SelectSingleNode("//MSBuild:LocalizeApp",
-                nsm);
+            property = project.SelectSingleNode("//MSBuild:LocalizeApp", nsm);
 
             if(property == null)
                 throw new BuilderException("DFP0006", "Unable to locate " +

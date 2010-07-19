@@ -88,23 +88,23 @@ solutions to fix the problem.</para>
 			<alert class="note">
 			  <para>The build process can consume a lot of memory and, if your
 system has less than 1GB, it may take much more time to complete a build.
-Another factor that can affect the build time is the <codeInline>SdkLinkType</codeInline>
-project property setting.  By default, it is set to <codeInline>MSDN</codeInline>
-which causes the <application>BuildAssembler</application> tool to contact the
-MSDN web service to resolve links to online content for all .NET Framework
-types and members.  If your internet connection is slow, the resulting build
-will take longer.  See the
-<link xlink:href="1b2dff59-92cc-4578-b261-f3849f30c26c#SdkLinkType">SdkLinkType</link>
-property documentation for information on its possible values and the
-<link xlink:href="3a1c4bf1-8ecf-4ab3-8010-277bed8d3819">cached build components</link>
-topic for information on how you can reduce the build time.</para>
+Another factor that can affect the build time are the <codeInline>HtmlSdkLinkType</codeInline>
+<codeInline>MSHelp2SdkLinkType</codeInline>, <codeInline>MSHelpViewerSdkLinkType</codeInline>,
+and <codeInline>WebsiteSdkLinkType</codeInline> project property settings.  By
+default, they are all set to <codeInline>Msdn</codeInline> which causes the
+<application>BuildAssembler</application> tool to contact the MSDN web service
+to resolve links to online content for all .NET Framework types and members.
+If your internet connection is slow, the resulting build will take longer.
+See the documentation for the above noted SDK link type properties for information
+on their possible values and the <link xlink:href="3a1c4bf1-8ecf-4ab3-8010-277bed8d3819">cached
+build components</link> topic for information on how you can reduce the build time.</para>
 			</alert>
 
 <alert class="note">
-  <para>When <codeInline>SdkLinkType</codeInline> is set to
-<codeInline>MSDN</codeInline>, the build may fail if you are behind a proxy
-server.  See the <link xlink:href="1aea789d-b226-4b39-b534-4c97c256fac8#Proxy">FAQ</link>
-for the workaround.</para>
+  <para>When the SDK link type properties are set to <codeInline>Msdn</codeInline>,
+the build may fail if you are behind a proxy server.  See the
+<link xlink:href="1aea789d-b226-4b39-b534-4c97c256fac8#Proxy">FAQ</link> for the
+workaround.</para>
 </alert>
 
               </content>

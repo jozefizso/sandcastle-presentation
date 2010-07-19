@@ -2,9 +2,9 @@
 // System  : Sandcastle Help File Builder Components
 // File    : ResolveConceptualLinksComponent.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 05/07/2008
+// Updated : 06/22/2010
 // Note    : This is a slightly modified version of the Microsoft
-//           ResolveConceptualLinksComponent (Copyright 2007-2008
+//           ResolveConceptualLinksComponent (Copyright 2007-2010
 //           Microsoft Corporation).  My changes are indicated by my initials
 //           "EFW" in a comment on the changes.
 // Compiler: Microsoft Visual C#
@@ -27,6 +27,7 @@
 // Version     Date     Who  Comments
 // ============================================================================
 // 1.6.0.7  05/07/2008  EFW  Created the code
+// 1.9.0.0  06/19/2010  EFW  Added support for MS Help Viewer Id link type
 //=============================================================================
 
 using System;
@@ -95,11 +96,10 @@ namespace SandcastleBuilder.Components
         private TargetDirectoryCollection targetDirectories;
         private bool showBrokenLinkText;
 
-        private static XPathExpression conceptualLinks =
-            XPathExpression.Compile("//conceptualLink");
+        private static XPathExpression conceptualLinks = XPathExpression.Compile("//conceptualLink");
 
-        private static Regex validGuid = new Regex("^[0-9a-fA-F]{8}-" +
-            "[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+        private static Regex validGuid = new Regex(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
 
         private static int cacheSize = 1000;
         #endregion
@@ -123,12 +123,10 @@ namespace SandcastleBuilder.Components
             targetDirectories = new TargetDirectoryCollection();
             cache = new Dictionary<string, TargetInfo>(cacheSize);
 
-            attribute = configuration.GetAttribute("showBrokenLinkText",
-                String.Empty);
+            attribute = configuration.GetAttribute("showBrokenLinkText", String.Empty);
 
             if(!String.IsNullOrEmpty(attribute))
-                showBrokenLinkText = Convert.ToBoolean(attribute,
-                    CultureInfo.InvariantCulture);
+                showBrokenLinkText = Convert.ToBoolean(attribute, CultureInfo.InvariantCulture);
 
             foreach(XPathNavigator navigator in configuration.Select("targets"))
             {
@@ -148,16 +146,14 @@ namespace SandcastleBuilder.Components
                 attribute = navigator.GetAttribute("url", String.Empty);
 
                 if(String.IsNullOrEmpty(attribute))
-                    urlExp = XPathExpression.Compile(
-                        "concat(/metadata/topic/@id,'.htm')");
+                    urlExp = XPathExpression.Compile("concat(/metadata/topic/@id,'.htm')");
                 else
                     urlExp = this.CompileXPathExpression(attribute);
 
                 attribute = navigator.GetAttribute("text", String.Empty);
 
                 if(String.IsNullOrEmpty(attribute))
-                    textExp = XPathExpression.Compile(
-                        "string(/metadata/topic/title)");
+                    textExp = XPathExpression.Compile("string(/metadata/topic/title)");
                 else
                     textExp = this.CompileXPathExpression(attribute);
 
@@ -165,8 +161,7 @@ namespace SandcastleBuilder.Components
                 attribute = navigator.GetAttribute("linkText", String.Empty);
 
                 if(String.IsNullOrEmpty(attribute))
-                    linkTextExp = XPathExpression.Compile(
-                        "string(/metadata/topic/linkText)");
+                    linkTextExp = XPathExpression.Compile("string(/metadata/topic/linkText)");
                 else
                     linkTextExp = this.CompileXPathExpression(attribute);
 
@@ -180,24 +175,20 @@ namespace SandcastleBuilder.Components
 
                 try
                 {
-                    linkType = (LinkType)Enum.Parse(typeof(LinkType),
-                        attribute, true);
+                    linkType = (LinkType)Enum.Parse(typeof(LinkType), attribute, true);
                 }
                 catch(ArgumentException)
                 {
-                    base.WriteMessage(MessageLevel.Error, String.Format(
-                        CultureInfo.InvariantCulture, "'{0}' is not a " +
-                        "valid link type.", attribute));
+                    base.WriteMessage(MessageLevel.Error, String.Format(CultureInfo.InvariantCulture,
+                        "'{0}' is not a valid link type.", attribute));
                 }
 
-                targetDirectory = new TargetDirectory(basePath, urlExp,
-                    textExp, linkTextExp, linkType);
+                targetDirectory = new TargetDirectory(basePath, urlExp, textExp, linkTextExp, linkType);
                 targetDirectories.Add(targetDirectory);
             }
 
-            base.WriteMessage(MessageLevel.Info, String.Format(
-                CultureInfo.InvariantCulture, "Collected {0} targets " +
-                "directories.", targetDirectories.Count));
+            base.WriteMessage(MessageLevel.Info, String.Format(CultureInfo.InvariantCulture,
+                "Collected {0} targets directories.", targetDirectories.Count));
         }
         #endregion
 
@@ -217,8 +208,7 @@ namespace SandcastleBuilder.Components
             LinkType linkType;
             string url, text;
 
-            foreach(XPathNavigator navigator in
-              BuildComponentUtilities.ConvertNodeIteratorToArray(
+            foreach(XPathNavigator navigator in BuildComponentUtilities.ConvertNodeIteratorToArray(
               document.CreateNavigator().Select(conceptualLinks)))
             {
                 info = ConceptualLinkInfo.Create(navigator);
@@ -227,19 +217,14 @@ namespace SandcastleBuilder.Components
 
                 if(validGuid.IsMatch(info.Target))
                 {
-                    targetInfo = this.GetTargetInfoFromCache(
-                        info.Target.ToLower(CultureInfo.InvariantCulture));
+                    targetInfo = this.GetTargetInfoFromCache(info.Target.ToLower(CultureInfo.InvariantCulture));
 
                     if(targetInfo == null)
                     {
-                        // EFW - Removed linkType = Index, broken links should
-                        // use the None style.
-                        text = this.BrokenLinkDisplayText(info.Target,
-                            info.Text);
-                        base.WriteMessage(MessageLevel.Warn, String.Format(
-                            CultureInfo.InvariantCulture,
-                            "Unknown conceptual link target '{0}'.",
-                            info.Target));
+                        // EFW - Removed linkType = Index, broken links should use the None style.
+                        text = this.BrokenLinkDisplayText(info.Target, info.Text);
+                        base.WriteMessage(MessageLevel.Warn, String.Format(CultureInfo.InvariantCulture,
+                            "Unknown conceptual link target '{0}'.", info.Target));
                     }
                     else
                     {
@@ -260,12 +245,10 @@ namespace SandcastleBuilder.Components
                 }
                 else
                 {
-                    // EFW - Removed linkType = Index, broken links should
-                    // use the None style.
+                    // EFW - Removed linkType = Index, broken links should use the None style.
                     text = this.BrokenLinkDisplayText(info.Target, info.Text);
-                    base.WriteMessage(MessageLevel.Warn, String.Format(
-                        CultureInfo.InvariantCulture, "Invalid conceptual " +
-                        "link target '{0}'.", info.Target));
+                    base.WriteMessage(MessageLevel.Warn, String.Format(CultureInfo.InvariantCulture,
+                        "Invalid conceptual link target '{0}'.", info.Target));
                 }
 
                 XmlWriter writer = navigator.InsertAfter();
@@ -283,11 +266,15 @@ namespace SandcastleBuilder.Components
                         break;
 
                     case LinkType.Index:
-                        writer.WriteStartElement("mshelp", "link",
-                            "http://msdn.microsoft.com/mshelp");
-                        writer.WriteAttributeString("keywords",
-                            info.Target.ToLower(CultureInfo.InvariantCulture));
+                        writer.WriteStartElement("mshelp", "link", "http://msdn.microsoft.com/mshelp");
+                        writer.WriteAttributeString("keywords", info.Target.ToLower(CultureInfo.InvariantCulture));
                         writer.WriteAttributeString("tabindex", "0");
+                        break;
+
+                    case LinkType.Id:
+                        writer.WriteStartElement("a");
+                        writer.WriteAttributeString("href", String.Format(CultureInfo.InvariantCulture,
+                            "ms-xhelp://?Id={0}", info.Target));
                         break;
                 }
 
@@ -333,17 +320,13 @@ namespace SandcastleBuilder.Components
             }
             catch(ArgumentException argEx)
             {
-                base.WriteMessage(MessageLevel.Error, String.Format(
-                    CultureInfo.InvariantCulture, "'{0}' is not a valid " +
-                    "XPath expression. The error message is: {1}", xpath,
-                    argEx.Message));
+                base.WriteMessage(MessageLevel.Error, String.Format(CultureInfo.InvariantCulture,
+                    "'{0}' is not a valid XPath expression. The error message is: {1}", xpath, argEx.Message));
             }
             catch(XPathException xpathEx)
             {
-                base.WriteMessage(MessageLevel.Error, String.Format(
-                    CultureInfo.InvariantCulture, "'{0}' is not a valid " +
-                    "XPath expression. The error message is: {1}", xpath,
-                    xpathEx.Message));
+                base.WriteMessage(MessageLevel.Error, String.Format(CultureInfo.InvariantCulture,
+                    "'{0}' is not a valid XPath expression. The error message is: {1}", xpath, xpathEx.Message));
             }
 
             return expression;
@@ -360,8 +343,7 @@ namespace SandcastleBuilder.Components
 
             if(!cache.TryGetValue(target, out targetInfo))
             {
-                targetInfo = targetDirectories.GetTargetInfo(target +
-                    ".cmp.xml");
+                targetInfo = targetDirectories.GetTargetInfo(target + ".cmp.xml");
 
                 if(cache.Count >= cacheSize)
                     cache.Clear();

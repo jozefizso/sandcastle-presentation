@@ -2,9 +2,9 @@
 // System  : Sandcastle Help File Builder Components
 // File    : TargetDirectory.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 05/08/2008
+// Updated : 06/19/2010
 // Note    : This is a slightly modified version of the Microsoft
-//           TargetDirectory class (Copyright 2007-2008 Microsoft Corporation).
+//           TargetDirectory class (Copyright 2007-2010 Microsoft Corporation).
 //           My changes are indicated by my initials "EFW" in a comment on the
 //           changes.
 // Compiler: Microsoft Visual C#
@@ -21,15 +21,12 @@
 // Version     Date     Who  Comments
 // ============================================================================
 // 1.6.0.7  05/07/2008  EFW  Created the code
+// 1.9.0.0  06/19/2010  EFW  Added support for MS Help Viewer Id link type
 //=============================================================================
 
 using System;
-using System.Globalization;
 using System.IO;
-using System.Xml;
 using System.Xml.XPath;
-
-using Microsoft.Ddue.Tools;
 
 namespace SandcastleBuilder.Components
 {
@@ -42,8 +39,10 @@ namespace SandcastleBuilder.Components
         None,
         /// <summary>Local links</summary>
         Local,
-        /// <summary>Index links</summary>
-        Index
+        /// <summary>Index links (MS Help 2 only)</summary>
+        Index,
+        /// <summary>Id links (MS Help Viewer only)</summary>
+        Id
     }
 
     /// <summary>
