@@ -206,25 +206,27 @@ namespace SandcastleBuilder.Components
         /// <summary>
         /// This is overriden to save the updated cache when disposed
         /// </summary>
-        public override void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            if(msdnCache != null && msdnCache.Count != originalCacheCount)
+            if (disposing)
             {
-                base.WriteMessage(MessageLevel.Info, "MSDN URL cache " +
-                    "updated.  Saving new information to " + cacheFile);
-
-                using(FileStream fs = new FileStream(cacheFile, FileMode.Create))
+                if (msdnCache != null && msdnCache.Count != originalCacheCount)
                 {
-                    BinaryFormatter bf = new BinaryFormatter();
-                    bf.Serialize(fs, msdnCache);
+                    base.WriteMessage(MessageLevel.Info, "MSDN URL cache " +
+                        "updated.  Saving new information to " + cacheFile);
 
-                    base.WriteMessage(MessageLevel.Info, String.Format(
-                        CultureInfo.InvariantCulture, "New cache size: {0} " +
-                        "entries", msdnCache.Count));
+                    using (FileStream fs = new FileStream(cacheFile, FileMode.Create))
+                    {
+                        BinaryFormatter bf = new BinaryFormatter();
+                        bf.Serialize(fs, msdnCache);
+
+                        base.WriteMessage(MessageLevel.Info, String.Format(
+                            CultureInfo.InvariantCulture, "New cache size: {0} " +
+                            "entries", msdnCache.Count));
+                    }
                 }
             }
-
-            base.Dispose();
+            base.Dispose(disposing);
         }
         #endregion
     }

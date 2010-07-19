@@ -250,27 +250,29 @@ namespace SandcastleBuilder.Components
         /// This is used in the debug build to get an idea of how many files
         /// were kept loaded in the cache.
         /// </summary>
-        public override void Dispose()
+        protected override void Dispose(bool disposing)
         {
-            Object cacheData, cache;
-            Type type;
-            FieldInfo field;
+            if (disposing)
+            { 
+                Object cacheData, cache;
+                Type type;
+                FieldInfo field;
 
-            cacheData = BuildComponent.Data[cacheId];
-            type = cacheData.GetType();
-            field = type.GetField("cache", BindingFlags.NonPublic |
-                BindingFlags.Instance);
-            cache = field.GetValue(cacheData);
+                cacheData = BuildComponent.Data[cacheId];
+                type = cacheData.GetType();
+                field = type.GetField("cache", BindingFlags.NonPublic |
+                    BindingFlags.Instance);
+                cache = field.GetValue(cacheData);
 
-            type = cache.GetType();
-            field = type.GetField("count", BindingFlags.NonPublic |
-                BindingFlags.Instance);
+                type = cache.GetType();
+                field = type.GetField("count", BindingFlags.NonPublic |
+                    BindingFlags.Instance);
 
-            this.WriteMessage(MessageLevel.Info, String.Format(
-                CultureInfo.InvariantCulture, "Used \"{0}\" cache entries: {1}",
-                cacheId, field.GetValue(cache).ToString()));
-
-            base.Dispose();
+                this.WriteMessage(MessageLevel.Info, String.Format(
+                    CultureInfo.InvariantCulture, "Used \"{0}\" cache entries: {1}",
+                    cacheId, field.GetValue(cache).ToString()));
+            }
+            base.Dispose(disposing);
         }
         #endregion
     }

@@ -507,7 +507,7 @@ namespace SandcastleBuilder.Components
           XPathNavigator configuration) : base(configuration)
         {
             if(String.IsNullOrEmpty(base.Language))
-                base.language = "JavaScript";
+                base.Language = "JavaScript";
         }
         #endregion
 
