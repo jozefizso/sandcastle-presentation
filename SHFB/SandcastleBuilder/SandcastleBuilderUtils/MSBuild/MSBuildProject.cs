@@ -297,7 +297,6 @@ namespace SandcastleBuilder.Utils.MSBuild
             if(!String.IsNullOrEmpty(outDir))
                 msBuildProject.SetGlobalProperty(ProjectElement.OutDir, outDir);
 
-            ////properties = msBuildProject.EvaluatedProperties;
             msBuildProject.ReevaluateIfNecessary();
         }
 
@@ -321,7 +320,6 @@ namespace SandcastleBuilder.Utils.MSBuild
             msBuildProject.SetGlobalProperty(
                 ProjectElement.SolutionExt, Path.GetExtension(solutionName));
             
-            ////properties = msBuildProject.EvaluatedProperties;
             msBuildProject.ReevaluateIfNecessary();
         }
 
@@ -332,8 +330,6 @@ namespace SandcastleBuilder.Utils.MSBuild
         /// cloned references</param>
         public void CloneReferences(List<ProjectItem> references)
         {
-            ////BuildItem refItem;
-            ////rootPath, path;
             Project dummyProject = new Project();
 
             string rootPath = msBuildProject.DirectoryPath;
