@@ -559,8 +559,9 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
                 buildStart = stepStart = DateTime.Now;
                 
-                var toolset = ProjectCollection.GlobalProjectCollection.GetToolset(
-                    project.MSBuildProject.ToolsVersion);
+                ////var toolset = ProjectCollection.GlobalProjectCollection.GetToolset(
+                ////    project.MSBuildProject.ToolsVersion);
+                var toolset = ProjectCollection.GlobalProjectCollection.GetToolset("4.0");
 
                 msBuildExePath = Path.Combine(toolset.ToolsPath, "MSBuild.exe");
 

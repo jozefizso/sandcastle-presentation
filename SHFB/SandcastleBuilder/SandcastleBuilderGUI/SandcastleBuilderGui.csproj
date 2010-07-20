@@ -861,6 +861,7 @@
     </Content>
     <Content Include="Templates\MRefBuilder.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Templates\Help2x.HxC">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -960,11 +961,11 @@
     <PostBuildEvent>IF "$(ConfigurationName)"=="Debug" Goto Exit
 IF "$(ConfigurationName)"=="ReleaseNoDoc" Goto Exit
 
-SET SHFBROOT=$(SolutionDir)SandcastleBuilderGUI\Bin\Debug
+SET SHFBROOT=$(TargetDir)
 
 ECHO Building SHFB help files via MSBuild
-"$(SystemRoot)\Microsoft.NET\Framework\v3.5\MSBuild.exe" /p:CleanIntermediates=True /p:Configuration=Release "$(SolutionDir)Doc\SandcastleBuilder.shfbproj"
-"$(SystemRoot)\Microsoft.NET\Framework\v3.5\MSBuild.exe" /p:CleanIntermediates=True /p:Configuration=Release "$(SolutionDir)Doc\BuildComponents.shfbproj"
+"$(MSBuildToolsPath)\MSBuild.exe" /p:CleanIntermediates=True /p:Configuration=Release "$(SolutionDir)Doc\SandcastleBuilder.shfbproj"
+"$(MSBuildToolsPath)\MSBuild.exe" /p:CleanIntermediates=True /p:Configuration=Release "$(SolutionDir)Doc\BuildComponents.shfbproj"
 
 :Exit
 </PostBuildEvent>
