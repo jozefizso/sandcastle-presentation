@@ -23,16 +23,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
-using Microsoft.Build.BuildEngine;
 using Microsoft.Build.Evaluation;
-
-using Project = Microsoft.Build.Evaluation.Project;
-using System.Diagnostics;
+using Microsoft.Build.Exceptions;
 
 namespace SandcastleBuilder.Utils.MSBuild
 {
@@ -46,7 +44,7 @@ namespace SandcastleBuilder.Utils.MSBuild
         //=====================================================================
 
         private Project msBuildProject;
-        private BuildPropertyGroup properties;
+        ////private BuildPropertyGroup properties;
         private static Regex reInvalidAttribute = new Regex(
             "The attribute \"(.*?)\" in element \\<(.*?)\\> is unrecognized",
             RegexOptions.IgnoreCase);
@@ -72,26 +70,21 @@ namespace SandcastleBuilder.Utils.MSBuild
             {
                 string assemblyName, outputType, outputPath = null;
 
-                if(properties == null)
-                    throw new InvalidOperationException("Configuration has " +
-                        "not been set");
+                ////if(properties == null)
+                ////    throw new InvalidOperationException("Configuration has " +
+                ////        "not been set");
 
                 // Give precedence to OutDir if defined
-                if(properties["OutDir"] != null)
-                    outputPath = properties["OutDir"].FinalValue;
-
-                if(String.IsNullOrEmpty(outputPath) &&
-                  properties["OutputPath"] != null)
-                    outputPath = properties["OutputPath"].FinalValue;
+                outputPath = ProjectFile.GetPropertyValue("OutDir");
+                
+                if(String.IsNullOrEmpty(outputPath))
+                    outputPath = ProjectFile.GetPropertyValue("OutputPath");
 
                 if(!String.IsNullOrEmpty(outputPath))
                 {
-                    assemblyName = properties["AssemblyName"].FinalValue;
+                    assemblyName = ProjectFile.GetPropertyValue("AssemblyName");
 
-                    if(properties["OutputType"] != null)
-                        outputType = properties["OutputType"].FinalValue;
-                    else
-                        outputType = null;
+                    outputType = ProjectFile.GetPropertyValue("OutputType");
                 }
                 else
                     assemblyName = outputType = null;
@@ -130,40 +123,38 @@ namespace SandcastleBuilder.Utils.MSBuild
             {
                 string docFile = null, outputPath = null;
 
-                if(properties == null)
-                    throw new InvalidOperationException("Configuration has " +
-                        "not been set");
+                ////if(properties == null)
+                ////    throw new InvalidOperationException("Configuration has " +
+                ////        "not been set");
 
-                if(properties["DocumentationFile"] != null)
+                docFile = ProjectFile.GetPropertyValue("DocumentationFile");
+
+                if(!String.IsNullOrEmpty(docFile))
                 {
-                    docFile = properties["DocumentationFile"].FinalValue;
+                    ////docFile = properties["DocumentationFile"].FinalValue;
 
-                    if(!String.IsNullOrEmpty(docFile))
+                    // If rooted, take the path as it is
+                    if(!Path.IsPathRooted(docFile))
                     {
-                        // If rooted, take the path as it is
-                        if(!Path.IsPathRooted(docFile))
+                        // Give precedence to OutDir if defined
+                        outputPath = ProjectFile.GetPropertyValue("OutDir");
+
+                        if(!String.IsNullOrEmpty(outputPath))
                         {
-                            // Give precedence to OutDir if defined
-                            if(properties["OutDir"] != null)
-                                outputPath = properties["OutDir"].FinalValue;
-
-                            if(!String.IsNullOrEmpty(outputPath))
-                            {
-                                if(Path.IsPathRooted(outputPath))
-                                    docFile = Path.Combine(outputPath,
-                                        Path.GetFileName(docFile));
-                                else
-                                    docFile = Path.Combine(Path.Combine(
-                                        msBuildProject.DirectoryPath,
-                                        outputPath), Path.GetFileName(docFile));
-
-                                // Fall back to the original location if not found
-                                if(!File.Exists(docFile))
-                                    docFile = Path.Combine(msBuildProject.DirectoryPath, docFile);
-                            }
+                            if(Path.IsPathRooted(outputPath))
+                                docFile = Path.Combine(outputPath,
+                                    Path.GetFileName(docFile));
                             else
+                                docFile = Path.Combine(Path.Combine(
+                                    msBuildProject.DirectoryPath,
+                                    outputPath), Path.GetFileName(docFile));
+
+                            // Fall back to the original location if not found
+                            if(!File.Exists(docFile))
                                 docFile = Path.Combine(msBuildProject.DirectoryPath, docFile);
                         }
+                        else
+                            docFile = Path.Combine(msBuildProject.DirectoryPath, docFile);
                     }
                 }
                 else
@@ -193,14 +184,7 @@ namespace SandcastleBuilder.Utils.MSBuild
         {
             get
             {
-                if(properties == null)
-                    throw new InvalidOperationException("Configuration has " +
-                        "not been set");
-
-                if(properties["TargetFrameworkVersion"] != null)
-                    return properties["TargetFrameworkVersion"].FinalValue;
-
-                return null;
+                return ProjectFile.GetPropertyValue("TargetFrameworkVersion");
             }
         }
 
@@ -211,14 +195,11 @@ namespace SandcastleBuilder.Utils.MSBuild
         {
             get
             {
-                if(properties == null)
-                    throw new InvalidOperationException("Configuration has " +
-                        "not been set");
+                string projectGuid = ProjectFile.GetPropertyValue("ProjectGuid");
+                if (String.IsNullOrEmpty(projectGuid))
+                    projectGuid = Guid.Empty.ToString();
 
-                if(properties["ProjectGuid"] == null)
-                    return Guid.Empty.ToString();
-
-                return properties["ProjectGuid"].FinalValue;
+                return projectGuid;
             }
         }
         #endregion
@@ -355,10 +336,13 @@ namespace SandcastleBuilder.Utils.MSBuild
                     if (reference.ItemType == "Reference")
                     {
                         var hintPath = metadata.Find(pm => pm.Name == "HintPath");
-                        string path = hintPath.EvaluatedValue;
-                        if (hintPath != null && !Path.IsPathRooted(path))
+                        if (hintPath != null)
                         {
-                            hintPath.UnevaluatedValue = Path.Combine(path);
+                            string path = hintPath.EvaluatedValue;
+                            if (!Path.IsPathRooted(path))
+                            {
+                                hintPath.UnevaluatedValue = Path.Combine(path);
+                            }
                         }
                     }
 
