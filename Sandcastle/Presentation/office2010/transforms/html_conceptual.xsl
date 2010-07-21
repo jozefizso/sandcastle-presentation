@@ -17,5 +17,10 @@
   <xsl:template name="documentMajorTitle">
     <!-- empty document major title -->
   </xsl:template>
+
+
+  <xsl:template name="footer_branding_note">
+    Template is based on the Office 2010 Help branding.
+  </xsl:template>
   
 </xsl:stylesheet>
