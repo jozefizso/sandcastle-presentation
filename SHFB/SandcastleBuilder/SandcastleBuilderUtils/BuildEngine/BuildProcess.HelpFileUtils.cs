@@ -434,6 +434,16 @@ namespace SandcastleBuilder.Utils.BuildEngine
                    fileSpec = sourcePath.Substring(idx + 1),
                    filename;
 
+            if (!Directory.Exists(dirName))
+            {
+                this.ReportWarning(
+                    "BEX001",
+                    "Directory '{0}' does not exists and will not be copied to target directory '{1}'.",
+                    dirName,
+                    destPath);
+                return;
+            }
+
             string[] files = Directory.GetFiles(dirName, fileSpec);
 
             foreach(string name in files)
