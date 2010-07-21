@@ -101,7 +101,7 @@
 
   </xsl:template>
 
-	<xsl:template name="body">
+	<xsl:template name="bodyOld">
     <!-- freshness date -->
     <xsl:call-template name="writeFreshnessDate">
       <xsl:with-param name="ChangedHistoryDate" select="/document/topic/*//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row[1]/ddue:entry[1] |
