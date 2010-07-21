@@ -27,6 +27,7 @@
   <xsl:include href="conceptualMetadataHelp20.xsl"/>
   -->
   <xsl:include href="miranda.xsl" />
+  <xsl:include href="biblio.xsl" />
 
   <xsl:variable name="hasSeeAlsoSection" select="boolean(count(/document/topic/*/ddue:relatedTopics/*[local-name()!='sampleRef']) > 0)"/>
   <xsl:variable name="examplesSection" select="boolean(string-length(/document/topic/*/ddue:codeExample[normalize-space(.)]) > 0)"/>
