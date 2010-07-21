@@ -22,8 +22,10 @@
   
 	<xsl:include href="utilities_dduexml.xsl" />
   <xsl:include href="seeAlsoSection.xsl" />
+  <!--
   <xsl:include href="conceptualMetadataHelp30.xsl"/>
   <xsl:include href="conceptualMetadataHelp20.xsl"/>
+  -->
   <xsl:include href="miranda.xsl" />
 
   <xsl:variable name="hasSeeAlsoSection" select="boolean(count(/document/topic/*/ddue:relatedTopics/*[local-name()!='sampleRef']) > 0)"/>
