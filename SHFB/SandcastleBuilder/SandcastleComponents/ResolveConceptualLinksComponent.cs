@@ -263,6 +263,7 @@ namespace SandcastleBuilder.Components
                     case LinkType.Local:
                         writer.WriteStartElement("a");
                         writer.WriteAttributeString("href", url);
+                        WriteHtmlAttributes(writer, info);
                         break;
 
                     case LinkType.Index:
@@ -352,6 +353,18 @@ namespace SandcastleBuilder.Components
             }
 
             return targetInfo;
+        }
+
+        /// <summary>
+        /// Writes any custom HTML attributes defined in the ConceptualLinkInfo
+        /// to the XmlWriter.
+        /// </summary>
+        private static void WriteHtmlAttributes(XmlWriter writer, ConceptualLinkInfo link)
+        {
+            foreach (var attribute in link.HtmlAttributes)
+            {
+                writer.WriteAttributeString(attribute.Key, attribute.Value);
+            }
         }
         #endregion
     }

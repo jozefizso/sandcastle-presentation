@@ -21,9 +21,11 @@
 // Version     Date     Who  Comments
 // ============================================================================
 // 1.6.0.7  05/07/2008  EFW  Created the code
+// 1.9.1.0  07/22/2010  JI   Added support for HTML attributes title and class
 //=============================================================================
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
 using System.Xml.XPath;
@@ -40,10 +42,12 @@ namespace SandcastleBuilder.Components
     {
         #region Private data members
         //=====================================================================
+        private static readonly List<string> AllowedHtmlAttributes = new List<string>() { "title", "class" };
 
         // EFW - Added support for an anchor name
         private string target, anchor;
         private string text;
+        IDictionary<string, string> htmlAttributes = new Dictionary<string, string>(2);
         #endregion
 
         #region Properties
@@ -71,6 +75,17 @@ namespace SandcastleBuilder.Components
         public string Text
         {
             get { return text; }
+        }
+
+        /// <summary>
+        /// Gets custom HTML attributes defined on &lt;conceptualLink/&gt; element.
+        /// </summary>
+        public IDictionary<string, string> HtmlAttributes
+        {
+            get
+            {
+                return (htmlAttributes);
+            }
         }
         #endregion
 
@@ -116,6 +131,20 @@ namespace SandcastleBuilder.Components
 
             // EFW - Trim off unwanted whitespace
             info.text = node.ToString().Trim();
+
+            if (node.MoveToFirstAttribute())
+            {
+                do
+                {
+                    if (AllowedHtmlAttributes.Contains(node.Name))
+                    {
+                        info.HtmlAttributes.Add(node.Name, node.Value);
+                    }
+                }
+                while (node.MoveToNextAttribute());
+                node.MoveToParent();
+            }
+
             return info;
         }
         #endregion
