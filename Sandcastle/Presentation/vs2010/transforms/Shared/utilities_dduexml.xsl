@@ -271,6 +271,10 @@
     <!-- not supporting popup definitions; just show the display text -->
     <xsl:value-of select="."/>
   </xsl:template>
+
+  <xsl:template match="ddue:lineBreak">
+    <br/>
+  </xsl:template>
   
 	<!-- fail if any unknown elements are encountered -->
 <!--
