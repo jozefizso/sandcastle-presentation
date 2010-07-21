@@ -3031,7 +3031,7 @@ namespace SandcastleBuilder.Utils
                     "filename");
 
             filename = Path.GetFullPath(filename);
-            var projects = ProjectCollection.GlobalProjectCollection;
+            var projects = new ProjectCollection();
 
             if (!File.Exists(filename))
             {

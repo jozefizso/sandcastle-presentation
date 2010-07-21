@@ -60,6 +60,7 @@ using SandcastleBuilder.Utils.Design;
 
 using WeifenLuo.WinFormsUI.Docking;
 using Microsoft.Build.Exceptions;
+using Microsoft.Build.Evaluation;
 
 namespace SandcastleBuilder.Gui
 {
@@ -1161,6 +1162,7 @@ namespace SandcastleBuilder.Gui
             this.SetUIEnabledState(false);
             Application.DoEvents();
 
+            ProjectCollection.GlobalProjectCollection.UnloadAllProjects();
             buildProcess = new BuildProcess(project);
             buildProcess.BuildStepChanged +=
                 new EventHandler<BuildProgressEventArgs>(
