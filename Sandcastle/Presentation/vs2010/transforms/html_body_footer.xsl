@@ -18,11 +18,15 @@
               <include item="copyrightStatement"/>
             </span>
             <span class="pipe">|</span>
-            Template is based on the MSDN 2010 branding.
+            <xsl:call-template name="footer_branding_note" />
           </div>
         </div>
       </div>
     </div>
+  </xsl:template>
+
+  <xsl:template name="footer_branding_note">
+    Template is based on the MSDN 2010 branding.
   </xsl:template>
   
 </xsl:stylesheet>
