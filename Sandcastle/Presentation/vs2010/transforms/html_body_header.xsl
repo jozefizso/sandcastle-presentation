@@ -16,7 +16,7 @@
           <tr>
             <td class="leftSection cl_lightweight_header_leftSection_wave leftSectionImageClusterOverride">
               <div class="tabContainer">
-                <conceptualLink target="{/document/toc/topics/topic[1]/@id}">Home</conceptualLink>
+                <conceptualLink target="{/document/toc/topics/topic[1]/@id}" class="headerTab">Home</conceptualLink>
                 <!--
                 <a href="http://msdn.microsoft.com/en-us/" title="Home" class=" headerTab">Home</a>
                 <a href="http://msdn.microsoft.com/en-us/library" title="Library" class="headerTabSelected cl_lightweight_selected_tab_repeatX">Library</a>

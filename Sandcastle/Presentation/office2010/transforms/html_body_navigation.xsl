@@ -9,7 +9,7 @@
 
   <xsl:template name="navBreadcrumbs">
     <div class="breadcrumbs">
-      <conceptualLink target="{/document/toc/topics/topic[1]/@id}">Home</conceptualLink>
+      <conceptualLink target="{/document/toc/topics/topic[1]/@id}" class="headerTab">Home</conceptualLink>
       &gt;
       <a href="#">Another page</a>
     </div>

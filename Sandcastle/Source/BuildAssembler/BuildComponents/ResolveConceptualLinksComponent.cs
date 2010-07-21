@@ -162,6 +162,7 @@ namespace Microsoft.Ddue.Tools {
                     case LinkType.Local:
                         writer.WriteStartElement("a");
                         writer.WriteAttributeString("href", url);
+                        WriteHtmlAttributes(writer, link);
                         break;
                     case LinkType.Index:
                         writer.WriteStartElement("mshelp", "link", "http://msdn.microsoft.com/mshelp");
@@ -206,6 +207,12 @@ namespace Microsoft.Ddue.Tools {
             return(info);
 
 		}
+
+        private static void WriteHtmlAttributes(XmlWriter writer, ConceptualLinkInfo link) {
+            foreach (var attribute in link.HtmlAttributes) {
+                writer.WriteAttributeString(attribute.Key, attribute.Value);
+            }
+        }
 
 		private static int cacheSize = 1000;
 
@@ -411,12 +418,15 @@ namespace Microsoft.Ddue.Tools {
     // a representation of a conceptual link
 
     internal class ConceptualLinkInfo {
+        private static readonly List<string> AllowedHtmlAttributes = new List<string>() { "title", "class" };
 
         private string target;
 
         private string text;
 
         private bool showText = false;
+
+        IDictionary<string, string> htmlAttributes = new Dictionary<string, string>(2);
 
         public string Target {
             get {
@@ -436,6 +446,12 @@ namespace Microsoft.Ddue.Tools {
             }
         }
 
+        public IDictionary<string,string> HtmlAttributes {
+            get {
+                return (htmlAttributes);
+            }
+        }
+
         private ConceptualLinkInfo () { }
 
         public static ConceptualLinkInfo Create (XPathNavigator node) {
@@ -445,7 +461,20 @@ namespace Microsoft.Ddue.Tools {
             
             info.target = node.GetAttribute("target", String.Empty);
             info.text = node.ToString();
-            
+
+            if (node.MoveToFirstAttribute())
+            {
+                do
+                {
+                    if (AllowedHtmlAttributes.Contains(node.Name))
+                    {
+                        info.HtmlAttributes.Add(node.Name, node.Value);
+                    }
+                }
+                while (node.MoveToNextAttribute());
+                node.MoveToParent();
+            }
+
             return(info);
         }
 
