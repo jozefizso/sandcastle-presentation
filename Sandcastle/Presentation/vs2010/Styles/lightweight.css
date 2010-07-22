@@ -451,12 +451,12 @@
 body {
 	margin:0;
 	font-family:'Segoe UI', Verdana, Arial;
-	font-size:.83em;
+	font-size:0.813em;
 	color:#000;
 	font-style:normal;
 	padding-right:0;
 	padding-left:0;
-	word-wrap:break-word
+	word-wrap:break-word;
 }
 
 a:link {
@@ -569,23 +569,13 @@ table td {
 	padding-bottom:96px
 }
 
-.Search {
+.searchBoxContainer {
+	border:none;
+	height:23px;
+	margin:13px;
+	padding:0;
+	white-space:nowrap;
 	width:256px;
-	margin-left:13px;
-	margin-right:13px;
-	height:24px;
-	padding-top:13px;
-	border-width:0
-}
-
-.LT_image {
-	float:left;
-	top:0
-}
-
-.RT_image {
-	float:left;
-	top:0
 }
 
 .SearchButton {
@@ -616,34 +606,44 @@ table td {
 	font-style:italic
 }
 
-.SearchBox {
-	float:left;
-	padding-left:1px;
-	padding-right:1px;
-	padding-top:4px;
-	display:inline;
-	width:226px;
-	line-height:12px;
-	font-size:11px;
-	border-width:0;
-	margin-top:1px;
-	margin-bottom:1px;
-	height:16px
+.searchBox {
+	border: none;
+	width:100%;
 }
 
-.SearchBoxHighContrast {
-	float:left;
-	padding-left:1px;
-	padding-right:1px;
-	padding-top:4px;
-	display:inline;
-	width:226px;
-	line-height:12px;
-	font-size:11px;
-	border-width:0;
-	margin-right:1px;
-	height:16px;
-	border-width:1px
+.searchBox td {
+	border:none;
+	margin:0;
+	padding:0;
+}
+
+.searchBox td.searchTextBoxTd {
+	width:100%;
+}
+
+.searchBox td.searchButtonTd {
+	width:19px;
+}
+
+.searchTextBox {
+	border:1px solid white;
+	margin: 0;
+	width:100%;
+}
+
+.cl_slice_Search a {
+	display: block;
+	overflow: hidden;
+	width: 19px;
+	height: 19px;
+	position: relative;
+	padding: 0pt;
+	margin: 0pt;
+}
+.cl_search_icon {
+	left:-272px;
+	top:-3px;
+	position: relative;
 }
 
 .nav {
