@@ -19,35 +19,41 @@
   <xsl:template name="searchBox">
     <div class="searchcontainer">
       <form id="SearchForm" action="" method="get">
-        <div class="Search">
-          <img class="LT_image cl_lt_search" alt="">
-            <includeAttribute name="src" item="imagePath">
-              <parameter>030c41d9079671d09a62d8e2c1db6973.gif</parameter>
-            </includeAttribute>
-          </img>
-
-          <div class="SearchPanel cl_slice_Search">
-            <input id="searchTextBox" name="query" type="text"
-							maxlength="200" class="SearchBox">
-              <includeAttribute name="value" item="searchInputText" />
-            </input>
-
-            <a onClick="javascript:document.getElementById('SearchForm').submit();" style="display: inline-block; vertical-align: top;">
-              <span class="SearchButton">
-                <img class="cl_search_icon" alt="" title="Search">
-                  <includeAttribute name="src" item="imagePath">
-                    <parameter>msdn2010branding-stripe1.png</parameter>
-                  </includeAttribute>
-                </img>
-              </span>
-            </a>
-          </div>
-
-          <img class="RT_image cl_rt_search" alt="">
-            <includeAttribute name="src" item="imagePath">
-              <parameter>030c41d9079671d09a62d8e2c1db6973.gif</parameter>
-            </includeAttribute>
-          </img>
+        <div class="searchBoxContainer">
+          <table cellspacing="0" cellpadding="0" border="0" class="searchBox">
+            <tbody>
+              <tr>
+                <td>
+                  <img class="cl_lt_search" alt="">
+                    <includeAttribute name="src" item="imagePath">
+                      <parameter>030c41d9079671d09a62d8e2c1db6973.gif</parameter>
+                    </includeAttribute>
+                  </img>
+                </td>
+                <td class="searchTextBoxTd cl_slice_Search">
+                  <input type="text" id="Text1" maxlength="200" class="searchTextBox" name="query">
+                    <includeAttribute name="value" item="searchInputText" />
+                  </input>
+                </td>
+                <td class="searchButtonTd cl_slice_Search">
+                  <a style="" onclick="javascript:document.getElementById('SearchForm').submit();">
+                    <img class="cl_search_icon" title="Search" alt="Search">
+                      <includeAttribute name="src" item="imagePath">
+                        <parameter>msdn2010branding-stripe1.png</parameter>
+                      </includeAttribute>
+                    </img>
+                  </a>
+                </td>
+                <td>
+                  <img class="cl_rt_search" alt="">
+                    <includeAttribute name="src" item="imagePath">
+                      <parameter>030c41d9079671d09a62d8e2c1db6973.gif</parameter>
+                    </includeAttribute>
+                  </img>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </form>
     </div>
