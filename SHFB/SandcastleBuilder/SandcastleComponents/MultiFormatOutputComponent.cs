@@ -27,6 +27,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Xml;
+using System.Xml.Resolvers;
 using System.Xml.XPath;
 
 using Microsoft.Ddue.Tools;
@@ -134,7 +135,7 @@ namespace SandcastleBuilder.Components
             foreach(string format in formatComponents.Keys)
             {
                 CurrentFormat = format;
-                clone = (XmlDocument)document.Clone();
+                clone = CloneXmlDocument(document);
 
                 foreach(BuildComponent component in formatComponents[format])
                     component.Apply(clone, key);
@@ -159,5 +160,29 @@ namespace SandcastleBuilder.Components
             base.Dispose(disposing);
         }
         #endregion
+
+        /// <summary>
+        /// CloneXmlDocument will create a clone of the <paramref name="document"/>.
+        /// XmlDocument.Clone() cannot be used because it uses default XmlResolver
+        /// that will try to download DTD files from Internet and it causes problems
+        /// with XHTML DTD (W3C block access to these DTDs from XML processors).
+        /// XmlPreloadedResolver from .NET 4.0 contains these DTDs so they will
+        /// not be downloaded from Internet.
+        /// </summary>
+        /// <param name="document">XmlDocument to be cloned.</param>
+        /// <returns>Cloned XmlDocument.</returns>
+        private static XmlDocument CloneXmlDocument(XmlDocument document)
+        {
+            XmlDocument clone = document.Implementation.CreateDocument();
+            clone.XmlResolver = new XmlPreloadedResolver(XmlKnownDtds.Xhtml10);
+
+            foreach (var node in document.ChildNodes)
+            {
+                var newNode = clone.ImportNode((XmlNode)node, true);
+                clone.AppendChild(newNode);
+            }
+
+            return clone;
+        }
     }
 }

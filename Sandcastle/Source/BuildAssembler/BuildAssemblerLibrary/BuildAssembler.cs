@@ -9,6 +9,7 @@ using System.Configuration;
 using System.IO;
 using System.Reflection;
 using System.Xml;
+using System.Xml.Resolvers;
 using System.Xml.XPath;
 
 using Microsoft.Ddue.Tools.CommandLine;
@@ -80,6 +81,7 @@ namespace Microsoft.Ddue.Tools {
                 // create the document
                 XmlDocument document = new XmlDocument();
                 document.PreserveWhitespace = true;
+                document.XmlResolver = new XmlPreloadedResolver(XmlKnownDtds.Xhtml10);
 
                 // write a log message
                 WriteMessage(MessageLevel.Info, String.Format("Building topic {0}", topic));
