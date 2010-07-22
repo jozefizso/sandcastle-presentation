@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.1"
-				xmlns:MSHelp="http://msdn.microsoft.com/mshelp"
+        xmlns:MSHelp="http://msdn.microsoft.com/mshelp"
         xmlns:mshelp="http://msdn.microsoft.com/mshelp"
-				xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5"
-				xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
         xmlns:msxsl="urn:schemas-microsoft-com:xslt"
 >
 
@@ -12,7 +12,8 @@
   <xsl:output method="xml" omit-xml-declaration="no" encoding="utf-8"
               doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
               doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
-              indent="yes"/>
+              indent="yes"
+              />
 
   <xsl:param name="RTMReleaseDate" />
   <xsl:param name="changeHistoryOptions" />
@@ -20,7 +21,7 @@
 
   <xsl:include href="html_conceptual.xsl"/>
   
-	<xsl:include href="utilities_dduexml.xsl" />
+  <xsl:include href="utilities_dduexml.xsl" />
   <xsl:include href="seeAlsoSection.xsl" />
   <!--
   <xsl:include href="conceptualMetadataHelp30.xsl"/>
@@ -39,7 +40,7 @@
   <xsl:variable name="subsubgroup" select="/document/reference/apidata/@subsubgroup" />
   <xsl:variable name="pseudo" select="boolean(/document/reference/apidata[@pseudo='true'])"/>
   <!-- key parameter is the api identifier string -->
-	<xsl:param name="key" />
+  <xsl:param name="key" />
   <xsl:param name="metadata" select="false()" />
   <xsl:param name="languages">false</xsl:param>
 
@@ -58,13 +59,13 @@
     </xsl:for-each>
   </xsl:template>
   
-	<!-- document body -->
+  <!-- document body -->
 
-	<!-- Title in topic -->
+  <!-- Title in topic -->
 
-	<xsl:template name="topicTitleDecorated">
+  <xsl:template name="topicTitleDecorated">
     <xsl:call-template name="topicTitle" />
-	</xsl:template>
+  </xsl:template>
 
   <xsl:template name="topicTitlePlain">
     <xsl:call-template name="topicTitle" />
@@ -81,9 +82,9 @@
     </xsl:choose>
   </xsl:template>
   
-	<!-- Index entry -->
+  <!-- Index entry -->
 
-	<!-- main window -->
+  <!-- main window -->
 
   <xsl:template name="mainOld">
     <div id="mainSection">
@@ -101,49 +102,49 @@
 
   </xsl:template>
 
-	<xsl:template name="bodyOld">
+  <xsl:template name="bodyOld">
     <!-- freshness date -->
     <xsl:call-template name="writeFreshnessDate">
       <xsl:with-param name="ChangedHistoryDate" select="/document/topic/*//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row[1]/ddue:entry[1] |
                       /document/topic/*/ddue:changeHistory/ddue:content/ddue:table/ddue:row[1]/ddue:entry[1]" />
     </xsl:call-template>
 
-		<xsl:apply-templates select="topic" />
+    <xsl:apply-templates select="topic" />
     
     <!-- changed table section -->
     <xsl:call-template name="writeChangeHistorySection" />
-	</xsl:template>
+  </xsl:template>
 
   <!--<xsl:template match="topic">
     topic
   </xsl:template>-->
   
-	<!-- sections that behave differently in conceptual and reference -->
+  <!-- sections that behave differently in conceptual and reference -->
 
-	<xsl:template match="ddue:title">
-		<!-- don't print title -->
-	</xsl:template>
+  <xsl:template match="ddue:title">
+    <!-- don't print title -->
+  </xsl:template>
 
-	<xsl:template match="ddue:introduction">
+  <xsl:template match="ddue:introduction">
     <xsl:apply-templates select="@address" />
-		<div class="introduction">
-			<xsl:apply-templates />
-		</div>
-	</xsl:template>
+    <div class="introduction">
+      <xsl:apply-templates />
+    </div>
+  </xsl:template>
 
-	<xsl:template match="ddue:parameters">
+  <xsl:template match="ddue:parameters">
     <xsl:if test="normalize-space(.)">
-		<xsl:call-template name="section">
+    <xsl:call-template name="section">
       <xsl:with-param name="toggleSwitch" select="'parameters'"/>
-			<xsl:with-param name="title"><include item="parametersTitle" /></xsl:with-param>
-			<xsl:with-param name="content">
-				<xsl:apply-templates />
-			</xsl:with-param>
-		</xsl:call-template>
+      <xsl:with-param name="title"><include item="parametersTitle" /></xsl:with-param>
+      <xsl:with-param name="content">
+        <xsl:apply-templates />
+      </xsl:with-param>
+    </xsl:call-template>
     </xsl:if>
-	</xsl:template>
+  </xsl:template>
 
-	<xsl:template match="ddue:returnValue">
+  <xsl:template match="ddue:returnValue">
     <xsl:if test="normalize-space(.)">
       <xsl:choose>
         <xsl:when test="(normalize-space(ddue:content)='') and ddue:sections/ddue:section[ddue:title='Property Value']">
@@ -170,21 +171,21 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:if>
-	</xsl:template>
+  </xsl:template>
 
-	<xsl:template match="ddue:exceptions">
+  <xsl:template match="ddue:exceptions">
     <xsl:if test="normalize-space(.)">
-		<xsl:call-template name="section">
+    <xsl:call-template name="section">
       <xsl:with-param name="toggleSwitch" select="'ddueExceptions'"/>
-			<xsl:with-param name="title"><include item="exceptionsTitle" /></xsl:with-param>
-			<xsl:with-param name="content">
-				<xsl:apply-templates />
-			</xsl:with-param>
-		</xsl:call-template>
+      <xsl:with-param name="title"><include item="exceptionsTitle" /></xsl:with-param>
+      <xsl:with-param name="content">
+        <xsl:apply-templates />
+      </xsl:with-param>
+    </xsl:call-template>
     </xsl:if>
-	</xsl:template>
+  </xsl:template>
 
-	<xsl:template match="ddue:relatedSections">
+  <xsl:template match="ddue:relatedSections">
     <xsl:if test="normalize-space(.)">
     <xsl:call-template name="section">
       <xsl:with-param name="toggleSwitch" select="'relatedSections'"/>
@@ -194,7 +195,7 @@
       </xsl:with-param>
     </xsl:call-template>
     </xsl:if>
-	</xsl:template>
+  </xsl:template>
 
   <xsl:template match="ddue:relatedTopics">
     <xsl:if test="$hasSeeAlsoSection">
@@ -248,7 +249,7 @@
     <include item="{$runningHeaderText}" />
   </xsl:template>
 
-	<!-- Footer stuff -->
+  <!-- Footer stuff -->
 
   <!--<xsl:template name="foot">
     <div id="footer">
