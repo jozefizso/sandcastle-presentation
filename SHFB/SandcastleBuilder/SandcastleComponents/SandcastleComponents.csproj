@@ -183,6 +183,7 @@
       <DependentUpon>PostTransformConfigDlg.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoveNamespaceDeclarations.cs" />
     <Compile Include="ResolveConceptualLinksComponent.cs" />
     <Compile Include="ShowMissingComponent.cs" />
     <Compile Include="TargetDirectory.cs" />
