@@ -214,7 +214,7 @@ namespace Microsoft.Ddue.Tools {
         }
 
         public BuildComponent LoadComponent (XPathNavigator configuration) {
-
+            
             if (configuration == null) throw new ArgumentNullException("configuration");
 
             // get the component infomation

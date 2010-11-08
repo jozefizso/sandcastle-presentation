@@ -292,6 +292,7 @@
   <item id="staticNotThreadSafe">Static members of this type are not safe for multi-threaded operations. </item>
   <item id="instanceThreadSafe">Instance members of this type are safe for multi-threaded operations. </item>
   <item id="instanceNotThreadSafe">Instance members of this type are not safe for multi-threaded operations. </item>
+  <item id="membersExposedByType">The {0} type exposes the following members.</item>
 
 	<!-- alt text for images -->
 	<item id="pubClassAltText">Public class</item>
