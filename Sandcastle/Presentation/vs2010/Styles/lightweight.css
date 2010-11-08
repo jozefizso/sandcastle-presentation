@@ -2212,3 +2212,9 @@ span.mtps-th {
 .footerContainer .pipe {
 	color:#7d7d7d
 }
+
+.topicMetaVersion, .curversion {
+    color: #5D5D5D;
+    font-size: 1em;
+    font-weight: bold;
+}

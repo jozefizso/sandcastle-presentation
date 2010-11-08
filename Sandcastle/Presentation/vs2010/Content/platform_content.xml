@@ -2,7 +2,7 @@
 <content xml:space="preserve">
 
   <!-- .NET Platform information -->
-  <item id="netPlatformName">.NET Framework Version</item>
+  <item id="netPlatformName">.NET Framework</item>
   <item id="netPlatformTitle">This page is specific to: <strong><include item="netPlatformName" />:</strong></item>
   <!--<item id=""></item>
   <item id=""></item>-->

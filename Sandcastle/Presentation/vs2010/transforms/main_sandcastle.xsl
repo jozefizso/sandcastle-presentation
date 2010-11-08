@@ -8,7 +8,7 @@
   <!-- stuff specified to comments authored in DDUEXML -->
 
 	<!-- stuff specified to comments authored in DDUEXML -->
-  <xsl:param name="omitXmlnsBoilerplate" select="'false'" />
+  <!--<xsl:param name="omitXmlnsBoilerplate" select="'false'" />-->
   <xsl:include href="html_body_header.xsl"/>
   <xsl:include href="html_body_navigation.xsl"/>
   <xsl:include href="html_body.xsl"/>
@@ -16,6 +16,7 @@
   
   <xsl:include href="utilities_reference.xsl" />
 
+  <!--
   <xsl:variable name="summary" select="normalize-space(/document/comments/summary)" />
   <xsl:variable name="abstractSummary" select="/document/comments/summary" />
   <xsl:variable name="hasSeeAlsoSection" select="boolean((count(/document/comments//seealso | /document/reference/elements/element/overloads//seealso) > 0)  or 
@@ -23,6 +24,7 @@
   <xsl:variable name="examplesSection" select="boolean(string-length(/document/comments/example[normalize-space(.)]) > 0)"/>
   <xsl:variable name="languageFilterSection" select="boolean(string-length(/document/comments/example[normalize-space(.)]) > 0)" />
 
+  -->
   <xsl:template match="/">
     <html>
       <head>
@@ -37,12 +39,13 @@
         <xsl:call-template name="insertMetadata" />
       </head>
       <body>
-        <xsl:call-template name="bodyHeaderMain"/>
+        <xsl:call-template name="bodyHeader"/>
         <xsl:call-template name="main"/>
       </body>
     </html>
   </xsl:template>
   
+  <!--
   <xsl:template name="getParameterDescription">
     <xsl:param name="name" />
     <xsl:apply-templates select="/document/comments/param[@name=$name]" />
@@ -68,6 +71,7 @@
   <xsl:template name="getInternalOnlyDescription">
 
   </xsl:template>
+  -->
 
 
   <!-- block sections -->
@@ -462,9 +466,9 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template name="runningHeader">
+  <!--<xsl:template name="runningHeader">
     <include item="runningHeaderText" />
-  </xsl:template>
+  </xsl:template>-->
 
   <!-- pass through html tags -->
 
@@ -553,7 +557,7 @@
   </xsl:template>
   -->
   
-  <xsl:template name="subSection">
+  <!--<xsl:template name="subSection">
     <xsl:param name="title" />
     <xsl:param name="content" />
 
@@ -571,7 +575,7 @@
       </p>
     </xsl:if>
     <xsl:call-template name="memberIntroBoilerplate"/>
-  </xsl:template>
+  </xsl:template>-->
 
   <xsl:template name="codelangAttributes">
     <xsl:call-template name="mshelpCodelangAttributes">

@@ -1,8 +1,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" 
-				xmlns:MSHelp="http://msdn.microsoft.com/mshelp"
+        xmlns:MSHelp="http://msdn.microsoft.com/mshelp"
         xmlns:mshelp="http://msdn.microsoft.com/mshelp"
-				xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5"
-				xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:ddue="http://ddue.schemas.microsoft.com/authoring/2003/5"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
         xmlns:msxsl="urn:schemas-microsoft-com:xslt"
          >
 
@@ -142,7 +142,8 @@
     <xsl:variable name="name" select="@name" />
     <xsl:variable name="version" select="@version" />
     
-    <include item="{$name}PlatformTitle" />
+    <include item="{$name}PlatformName" />
+    <xsl:text> </xsl:text>
     <strong>
       <xsl:value-of select="@version"/>
     </strong>

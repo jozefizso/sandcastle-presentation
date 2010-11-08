@@ -272,7 +272,7 @@
     <xsl:value-of select="."/>
   </xsl:template>
 
-  <xsl:template match="ddue:lineBreak">
+  <xsl:template match="ddue:lineBreak | ddue:br">
     <br/>
   </xsl:template>
   

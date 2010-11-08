@@ -19,10 +19,10 @@
   <!--<xsl:include href="htmlBody.xsl"/>-->
   <!--<xsl:include href="seeAlsoSection.xsl"/>-->
   
-  <xsl:variable name="summary" select="normalize-space(/document/comments/ddue:dduexml/ddue:summary)" />
+  <xsl:variable name="summary" select="normalize-space(/document/comments/summary)" />
   
   <xsl:variable name="abstractSummary">
-    <xsl:for-each select="/document/comments/ddue:dduexml/ddue:summary">
+    <xsl:for-each select="/document/comments/summary">
       <xsl:apply-templates select="." mode="abstract" />
     </xsl:for-each>
   </xsl:variable>
@@ -54,7 +54,7 @@
                             ))
                         )" />
   
-	<xsl:template name="body">
+	<xsl:template name="bodyX">
     <!-- freshness date -->
     <xsl:call-template name="writeFreshnessDate">
       <xsl:with-param name="ChangedHistoryDate" select="/document/comments/ddue:dduexml//ddue:section[ddue:title = 'Change History']/ddue:content/ddue:table/ddue:row[1]/ddue:entry[1] | 
@@ -382,16 +382,7 @@
   </xsl:template>
 
 	<xsl:template name="getElementDescription">
-    <xsl:choose>
-      <xsl:when test="normalize-space(ddue:summary[1]) != ''">
-        <span sdata="memberAuthoredSummary">
-        <xsl:apply-templates select="ddue:summary[1]/ddue:para/node()" />
-        </span>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:apply-templates select="ddue:summary[2]/ddue:para/node()" />
-      </xsl:otherwise>
-    </xsl:choose>
+    <xsl:apply-templates select="summary" />
   </xsl:template>
 
   <xsl:template name="getInternalOnlyDescription">
