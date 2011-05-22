@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder
 // File    : SiteMapEditorWindow.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 01/21/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 01/15/2011
+// Note    : Copyright 2008-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to edit site map files that defines the
@@ -25,18 +25,13 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Design;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
-using System.Xml;
-using System.Xml.XPath;
 
 using SandcastleBuilder.Utils;
 using SandcastleBuilder.Utils.ConceptualContent;
-using SandcastleBuilder.Utils.Design;
 
 using WeifenLuo.WinFormsUI.Docking;
 
@@ -70,7 +65,6 @@ namespace SandcastleBuilder.Gui.ContentEditors
         {
             EventHandler onClick = new EventHandler(templateFile_OnClick);
             ToolStripMenuItem miTemplate;
-            Image itemImage;
             string name;
 
             InitializeComponent();
@@ -78,8 +72,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             sbStatusBarText.InstanceStatusBar = MainForm.Host.StatusBarTextLabel;
 
             // Look for custom templates in the local application data folder
-            name = Path.Combine(Environment.GetFolderPath(
-                Environment.SpecialFolder.LocalApplicationData),
+            name = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 Constants.ItemTemplates);
 
             if(!Directory.Exists(name))
@@ -94,17 +87,14 @@ namespace SandcastleBuilder.Gui.ContentEditors
                     foreach(string file in files)
                     {
                         name = Path.GetFileNameWithoutExtension(file);
-                        itemImage = null;
 
                         miTemplate = new ToolStripMenuItem(name, null, onClick);
-                        miTemplate.Image = itemImage;
                         miTemplate.Tag = file;
                         sbStatusBarText.SetStatusBarText(miTemplate,
                             "Add new '" + name + "' topic");
                         miCustomSibling.DropDownItems.Add(miTemplate);
 
                         miTemplate = new ToolStripMenuItem(name, null, onClick);
-                        miTemplate.Image = itemImage;
                         miTemplate.Tag = file;
                         sbStatusBarText.SetStatusBarText(miTemplate,
                             "Add new '" + name + "' topic");
@@ -265,40 +255,30 @@ namespace SandcastleBuilder.Gui.ContentEditors
         {
             TreeNode current = tvContent.SelectedNode;
 
-            tsbPaste.Enabled = tsmiPasteAsSibling.Enabled =
-                tsmiPasteAsChild.Enabled = miPaste.Enabled =
+            tsbPaste.Enabled = tsmiPasteAsSibling.Enabled = tsmiPasteAsChild.Enabled = miPaste.Enabled =
                 miPasteAsChild.Enabled = (cutClipboard != null);
 
             if(tvContent.Nodes.Count == 0)
             {
-                miDefaultTopic.Enabled = miSplitToc.Enabled =
-                    miMoveUp.Enabled = miMoveDown.Enabled =
-                    miAddChild.Enabled = miDelete.Enabled =
-                    miCut.Enabled = miCopyAsLink.Enabled =
-                    tsbDefaultTopic.Enabled = tsbSplitTOC.Enabled =
-                    tsbAddChildTopic.Enabled = tsbDeleteTopic.Enabled =
-                    tsbMoveUp.Enabled = tsbMoveDown.Enabled = tsbCut.Enabled =
-                    tsbEditTopic.Enabled = miEditTopic.Enabled =
+                miDefaultTopic.Enabled = miSplitToc.Enabled = miMoveUp.Enabled = miMoveDown.Enabled =
+                    miAddChild.Enabled = miDelete.Enabled = miCut.Enabled = miCopyAsLink.Enabled =
+                    miSortTopics.Enabled = tsbDefaultTopic.Enabled = tsbSplitTOC.Enabled =
+                    tsbAddChildTopic.Enabled = tsbDeleteTopic.Enabled = tsbMoveUp.Enabled =
+                    tsbMoveDown.Enabled = tsbCut.Enabled = tsbEditTopic.Enabled = miEditTopic.Enabled =
                     pgProps.Enabled = false;
 
                 pgProps.SelectedObject = null;
             }
             else
             {
-                miDefaultTopic.Enabled = miAddChild.Enabled =
-                    miDelete.Enabled = miCut.Enabled = miCopyAsLink.Enabled =
-                    tsbDefaultTopic.Enabled = tsbAddChildTopic.Enabled =
-                    tsbDeleteTopic.Enabled = tsbCut.Enabled =
-                    pgProps.Enabled = true;
+                miDefaultTopic.Enabled = miAddChild.Enabled = miDelete.Enabled = miCut.Enabled = miCopyAsLink.Enabled =
+                    miSortTopics.Enabled = tsbDefaultTopic.Enabled = tsbAddChildTopic.Enabled =
+                    tsbDeleteTopic.Enabled = tsbCut.Enabled = pgProps.Enabled = true;
 
-                tsbEditTopic.Enabled = miEditTopic.Enabled =
-                    (((TocEntry)current.Tag).SourceFile.Path.Length != 0);
-                tsbSplitTOC.Enabled = miSplitToc.Enabled =
-                    (current.Parent == null);
-                tsbMoveDown.Enabled = miMoveDown.Enabled =
-                    (current.NextNode != null);
-                tsbMoveUp.Enabled = miMoveUp.Enabled =
-                    (current.PrevNode != null);
+                tsbEditTopic.Enabled = miEditTopic.Enabled = (((TocEntry)current.Tag).SourceFile.Path.Length != 0);
+                tsbSplitTOC.Enabled = miSplitToc.Enabled = (current.Parent == null);
+                tsbMoveDown.Enabled = miMoveDown.Enabled = (current.NextNode != null);
+                tsbMoveUp.Enabled = miMoveUp.Enabled = (current.PrevNode != null);
 
                 if(pgProps.SelectedObject != current.Tag)
                     pgProps.SelectedObject = current.Tag;
@@ -636,9 +616,10 @@ namespace SandcastleBuilder.Gui.ContentEditors
                 {
                     foreach(string filename in dlg.FileNames)
                     {
-                        this.AddTopicFile(filename,
-                            miSelection.Owner == cmsNewChildTopic);
-                        tvContent.SelectedNode = selectedNode;
+                        this.AddTopicFile(filename, miSelection.Owner == cmsNewChildTopic);
+
+                        if(selectedNode != null)
+                            tvContent.SelectedNode = selectedNode;
                     }
 
                     MainForm.Host.ProjectExplorer.RefreshProject();

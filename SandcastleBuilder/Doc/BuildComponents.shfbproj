@@ -31,7 +31,7 @@
     <FrameworkVersion>3.5</FrameworkVersion>
     <HelpTitle>Sandcastle Standalone Build Components and Tools Documentation</HelpTitle>
     <CopyrightHref>http://www.EWoodruff.us</CopyrightHref>
-    <CopyrightText>[v{%40HelpFileVersion}] Copyright \xA9 2006-2010, Eric Woodruff, All rights reserved</CopyrightText>
+    <CopyrightText>[v{%40HelpFileVersion}] Copyright \xA9 2006-2011, Eric Woodruff, All rights reserved</CopyrightText>
     <FeedbackEMailAddress>Eric%40EWoodruff.us</FeedbackEMailAddress>
     <PresentationStyle>vs2005</PresentationStyle>
     <SyntaxFilters>CSharp, VisualBasic</SyntaxFilters>
@@ -117,7 +117,7 @@
     </PlugInConfigurations>
     <ProductTitle>Sandcastle Standalone Build Components and Tools</ProductTitle>
     <VendorName>EWSoftware</VendorName>
-    <HelpFileFormat>HtmlHelp1, MSHelpViewer</HelpFileFormat>
+    <HelpFileFormat>HtmlHelp1</HelpFileFormat>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in
        order for Visual Studio to perform the build.  The others are optional

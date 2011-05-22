@@ -100,7 +100,7 @@ example command lines:</para>
   /p:Configuration=Release HelpFile.shfbproj
 
 %SystemRoot%\Microsoft.NET\Framework\v3.5\MSBuild.exe
-	/p:CopyrightText="Copyright \xa9 2006-2007"
+	/p:CopyrightText="Copyright \xa9 2006-2011"
 	/p:FeedbackEMailAdress="Eric@EWoodruff.us"
 	HelpFile.shfbproj
 </code>
@@ -227,7 +227,7 @@ IF "$(ConfigurationName)"=="Debug" Goto Exit
 
 ECHO Building SHFB help file via MSBuild
 "$(SystemRoot)\Microsoft.NET\Framework\v3.5\MSBuild.exe"
-    /p:CleanIntermediates=True /p:Configuration=Release 
+    /p:CleanIntermediates=True /p:Configuration=Release
     "$(SolutionDir)Doc\SandcastleBuilder.shfbproj"
 
 :Exit

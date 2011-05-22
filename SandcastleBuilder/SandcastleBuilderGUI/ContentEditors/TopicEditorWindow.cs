@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder
 // File    : TopicEditorWindow.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 11/10/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 02/21/2011
+// Note    : Copyright 2008-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to edit the conceptual topic files.
@@ -76,9 +76,9 @@ namespace SandcastleBuilder.Gui.ContentEditors
             // Connect the drag and drop events to the text area
             TextArea area = editor.ActiveTextAreaControl.TextArea;
             area.AllowDrop = true;
-            area.DragEnter += new DragEventHandler(editor_DragEnter);
-            area.DragDrop += new DragEventHandler(editor_DragDrop);
-            editor.DragDrop += new DragEventHandler(editor_DragDrop);
+            area.DragEnter += editor_DragEnter;
+            area.DragOver += editor_DragEnter;
+            area.DragDrop += editor_DragDrop;
             editor.PerformFindText += new EventHandler(editor_PerformFindText);
             editor.PerformReplaceText += new EventHandler(editor_PerformReplaceText);
 
@@ -522,9 +522,8 @@ namespace SandcastleBuilder.Gui.ContentEditors
             else
                 style = "ordered";
 
-            ContentEditorControl.InsertString(textArea,
-                "\r\n<list class=\"" + style + "\">\r\n" +
-                "  <listItem>Item 1</listItem>\r\n  <listItem>Item 2" +
+            ContentEditorControl.InsertString(textArea, "\r\n<list class=\"" + style + "\">\r\n" +
+                "  <listItem><para>Item 1</para></listItem>\r\n  <listItem><para>Item 2</para>" +
                 "</listItem>\r\n</list>\r\n");
             editor.Focus();
         }
@@ -540,10 +539,10 @@ namespace SandcastleBuilder.Gui.ContentEditors
 
             ContentEditorControl.InsertString(textArea,
                 "\r\n<table>\r\n  <tableHeader>\r\n    " +
-                "<row>\r\n      <entry>Header 1</entry>\r\n      <entry>" +
-                "Header 2</entry>\r\n    </row>\r\n  </tableHeader>\r\n  " +
-                "<row>\r\n    <entry>Column 1</entry>\r\n    <entry>" +
-                "Column 2</entry>\r\n  </row>\r\n</table>\r\n");
+                "<row>\r\n      <entry><para>Header 1</para></entry>\r\n      <entry>" +
+                "<para>Header 2</para></entry>\r\n    </row>\r\n  </tableHeader>\r\n  " +
+                "<row>\r\n    <entry><para>Column 1</para></entry>\r\n    <entry>" +
+                "<para>Column 2</para></entry>\r\n  </row>\r\n</table>\r\n");
             editor.Focus();
         }
 
@@ -657,11 +656,10 @@ namespace SandcastleBuilder.Gui.ContentEditors
         {
             TextArea textArea = editor.ActiveTextAreaControl.TextArea;
 
-            ContentEditorControl.InsertString(textArea,
-                "\r\n<definitionTable>\r\n" +
+            ContentEditorControl.InsertString(textArea, "\r\n<definitionTable>\r\n" +
                 "  <definedTerm>Term 1</definedTerm>\r\n  <definition>" +
-                "Definition 1</definition>\r\n  <definedTerm>Term 2" +
-                "</definedTerm>\r\n  <definition>Definition 2</definition>" +
+                "<para>Definition 1</para></definition>\r\n  <definedTerm>Term 2" +
+                "</definedTerm>\r\n  <definition><para>Definition 2</para></definition>" +
                 "\r\n</definitionTable>");
             editor.Focus();
             this.TrackLastInsertedElement(sender as ToolStripMenuItem);

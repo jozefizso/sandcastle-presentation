@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : FileItemCollection.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 08/07/2008
-// Note    : Copyright 2008, Eric Woodruff, All rights reserved
+// Updated : 07/09/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a collection class used to hold build items from the
@@ -130,16 +130,15 @@ namespace SandcastleBuilder.Utils
         //=====================================================================
 
         /// <summary>
-        /// This is used to refresh the collection by loading the image
-        /// build items from the project.
+        /// This is used to refresh the collection by loading the build items
+        /// from the project.
         /// </summary>
         public void Refresh()
         {
             this.Clear();
 
             foreach(BuildItem item in
-              projectFile.MSBuildProject.GetEvaluatedItemsByName(
-              buildAction.ToString()))
+              projectFile.MSBuildProject.GetEvaluatedItemsByName(buildAction.ToString()))
                 this.Add(new FileItem(new ProjectElement(projectFile, item)));
 
             this.Sort();

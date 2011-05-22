@@ -48,18 +48,15 @@ namespace SandcastleBuilder.Utils.MSBuild
         #region Private data members
         //=====================================================================
 
-        private static Regex reParseMessage = new Regex(@"^(\w{2,}):\s*(.*?)" +
-            @"\s*\W(warning|error)\W\s*(\w+?\d*?):\s*(.*)",
-            RegexOptions.IgnoreCase | RegexOptions.Multiline);
-
-        private bool verbose, alwaysLoadProject, isPriorMSBuildVersion,
-            dumpLogOnFailure;
-        private BuildStep lastBuildStep;
+        private static Regex reParseMessage = new Regex(@"^(\w{2,}):\s*(.*?)\s*" +
+            @"\W(warning|error)\W\s*(\w+?\d*?):\s*(.*)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
         private SandcastleProject sandcastleProject;
         private BuildProcess buildProcess;
+        private BuildStep lastBuildStep;
 
         private string projectFile, configuration, platform, outDir;
+        private bool verbose, alwaysLoadProject, isPriorMSBuildVersion, dumpLogOnFailure;
         #endregion
 
         #region Task input properties

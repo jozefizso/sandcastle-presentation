@@ -2,8 +2,8 @@
 // System  : EWSoftware Design Time Attributes and Editors
 // File    : VersionBuilderConfigDlg.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 06/28/2010
-// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
+// Updated : 01/17/2011
+// Note    : Copyright 2007-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to edit the version builder plug-in
@@ -89,22 +89,23 @@ namespace SandcastleBuilder.PlugIns
 
             root = navigator.SelectSingleNode("configuration");
 
-            if(root.IsEmptyElement)
-                return;
-
-            node = root.SelectSingleNode("currentProject");
-            if(node != null)
+            if(!root.IsEmptyElement)
             {
-                txtLabel.Text = node.GetAttribute("label", String.Empty);
-                txtVersion.Text = node.GetAttribute("version", String.Empty);
-                ripOldApis = node.GetAttribute("ripOldApis", String.Empty);
+                node = root.SelectSingleNode("currentProject");
 
-                // This wasn't in earlier versions
-                if(!String.IsNullOrEmpty(ripOldApis))
-                    chkRipOldAPIs.Checked = Convert.ToBoolean(ripOldApis, CultureInfo.InvariantCulture);
+                if(node != null)
+                {
+                    txtLabel.Text = node.GetAttribute("label", String.Empty);
+                    txtVersion.Text = node.GetAttribute("version", String.Empty);
+                    ripOldApis = node.GetAttribute("ripOldApis", String.Empty);
+
+                    // This wasn't in earlier versions
+                    if(!String.IsNullOrEmpty(ripOldApis))
+                        chkRipOldAPIs.Checked = Convert.ToBoolean(ripOldApis, CultureInfo.InvariantCulture);
+                }
+
+                items.FromXml(currentProject, root);
             }
-
-            items.FromXml(currentProject, root);
 
             if(items.Count == 0)
                 pgProps.Enabled = btnDelete.Enabled = false;

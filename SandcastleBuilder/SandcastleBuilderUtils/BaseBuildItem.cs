@@ -22,8 +22,6 @@
 using System;
 using System.ComponentModel;
 
-using Microsoft.Build.BuildEngine;
-
 namespace SandcastleBuilder.Utils
 {
     /// <summary>

@@ -2,8 +2,8 @@
 // System  : EWSoftware Design Time Attributes and Editors
 // File    : FrameworkVersionTypeConverter.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 11/30/2007
-// Note    : Copyright 2006-2007, Eric Woodruff, All rights reserved
+// Updated : 01/15/2011
+// Note    : Copyright 2006-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a type converter that allows you to select a .NET
@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 
 namespace SandcastleBuilder.Utils.Design
 {
@@ -33,15 +34,16 @@ namespace SandcastleBuilder.Utils.Design
     /// </summary>
     public class FrameworkVersionTypeConverter : StringConverter
     {
+        #region Private data members
         //=====================================================================
-        // Private data members
 
         private static List<string> versions = new List<string>();
         private static StandardValuesCollection standardValues =
             FrameworkVersionTypeConverter.InitializeStandardValues();
+        #endregion
 
+        #region Properties
         //=====================================================================
-        // Properties
 
         /// <summary>
         /// This read-only property returns the version number of the most
@@ -51,9 +53,10 @@ namespace SandcastleBuilder.Utils.Design
         {
             get { return versions[versions.Count - 1]; }
         }
+        #endregion
 
+        #region Methods
         //=====================================================================
-        // Methods
 
         /// <summary>
         /// This is used to get the standard values by searching for the
@@ -85,8 +88,7 @@ namespace SandcastleBuilder.Utils.Design
         /// </summary>
         /// <param name="context">The format context object</param>
         /// <returns>Returns the standard values for the type</returns>
-        public override StandardValuesCollection GetStandardValues(
-          ITypeDescriptorContext context)
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             return standardValues;
         }
@@ -97,8 +99,7 @@ namespace SandcastleBuilder.Utils.Design
         /// </summary>
         /// <param name="context">The format context object</param>
         /// <returns>Always returns true</returns>
-        public override bool GetStandardValuesExclusive(
-          ITypeDescriptorContext context)
+        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
         {
             return true;
         }
@@ -109,8 +110,7 @@ namespace SandcastleBuilder.Utils.Design
         /// </summary>
         /// <param name="context">The format context object</param>
         /// <returns>Always returns true</returns>
-        public override bool GetStandardValuesSupported(
-          ITypeDescriptorContext context)
+        public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
             return true;
         }
@@ -143,5 +143,6 @@ namespace SandcastleBuilder.Utils.Design
 
             return latestVersion;
         }
+        #endregion
     }
 }

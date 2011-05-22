@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : ProjectElement.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 04/20/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 07/09/2010
+// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a wrapper class for build items in the project.
@@ -123,8 +123,7 @@ namespace SandcastleBuilder.Utils
             {
                 if(item.Include != value)
                 {
-                    if(String.IsNullOrEmpty(value) ||
-                      value.IndexOfAny(new char[] { '*', '?' }) != -1)
+                    if(String.IsNullOrEmpty(value) || value.IndexOfAny(new char[] { '*', '?' }) != -1)
                         throw new ArgumentException("The filename cannot be " +
                             "blank and cannot contain wildcards (* or ?)");
 
@@ -178,8 +177,7 @@ namespace SandcastleBuilder.Utils
         /// <param name="itemType">The type of build item to create</param>
         /// <param name="itemPath">The path to the item.  This can be relative
         /// or absolute and may contain variable references.</param>
-        internal ProjectElement(SandcastleProject project, string itemType,
-          string itemPath)
+        internal ProjectElement(SandcastleProject project, string itemType, string itemPath)
         {
             if(project == null)
                 throw new ArgumentNullException("project");
@@ -195,8 +193,7 @@ namespace SandcastleBuilder.Utils
             projectFile = project;
             this.CheckProjectIsEditable();
 
-            if(itemType == Utils.BuildAction.Folder.ToString() &&
-              itemPath[itemPath.Length - 1] != '\\')
+            if(itemType == Utils.BuildAction.Folder.ToString() && itemPath[itemPath.Length - 1] != '\\')
                 itemPath += @"\";
 
             item = project.MSBuildProject.AddNewItem(itemType, itemPath);
@@ -229,10 +226,8 @@ namespace SandcastleBuilder.Utils
         {
             // Build Action is the name, not metadata.
             // Include is an attribute, not metadata.
-            if(String.Compare(name, ProjectElement.BuildAction,
-              StringComparison.OrdinalIgnoreCase) == 0 ||
-              String.Compare(name, ProjectElement.IncludePath,
-              StringComparison.OrdinalIgnoreCase) == 0)
+            if(String.Compare(name, ProjectElement.BuildAction, StringComparison.OrdinalIgnoreCase) == 0 ||
+              String.Compare(name, ProjectElement.IncludePath, StringComparison.OrdinalIgnoreCase) == 0)
                 return true;
 
             return item.HasMetadata(name);
@@ -246,13 +241,11 @@ namespace SandcastleBuilder.Utils
         public string GetMetadata(string name)
         {
             // Build Action is the name, not metadata
-            if(String.Compare(name, ProjectElement.BuildAction,
-              StringComparison.OrdinalIgnoreCase) == 0)
+            if(String.Compare(name, ProjectElement.BuildAction, StringComparison.OrdinalIgnoreCase) == 0)
                 return item.Name;
 
             // Include is an attribute, not metadata
-            if(String.Compare(name, ProjectElement.IncludePath,
-              StringComparison.OrdinalIgnoreCase) == 0)
+            if(String.Compare(name, ProjectElement.IncludePath, StringComparison.OrdinalIgnoreCase) == 0)
                 return item.Include;
 
             return item.GetMetadata(name);
@@ -268,16 +261,14 @@ namespace SandcastleBuilder.Utils
             this.CheckProjectIsEditable();
 
             // Build Action is the name, not metadata
-            if(String.Compare(name, ProjectElement.BuildAction,
-              StringComparison.OrdinalIgnoreCase) == 0)
+            if(String.Compare(name, ProjectElement.BuildAction, StringComparison.OrdinalIgnoreCase) == 0)
             {
                 item.Name = value;
                 return;
             }
 
             // Include is an attribute, not metadata
-            if(String.Compare(name, ProjectElement.IncludePath,
-              StringComparison.OrdinalIgnoreCase) == 0)
+            if(String.Compare(name, ProjectElement.IncludePath, StringComparison.OrdinalIgnoreCase) == 0)
             {
                 item.Include = value;
                 return;

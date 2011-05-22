@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<FxCopProject Version="1.36" Name="My FxCop Project">
+<FxCopProject Version="10.0" Name="My FxCop Project">
  <ProjectOptions>
   <SharedProject>True</SharedProject>
-  <Stylesheet Apply="False">http://www.gotdotnet.com/team/fxcop//xsl/1.35/FxCopReport.xsl</Stylesheet>
+  <Stylesheet Apply="False">$(FxCopDir)\Xml\FxCopReport.xsl</Stylesheet>
   <SaveMessages>
    <Project Status="Active, Excluded" NewOnly="False" />
    <Report Status="Active" NewOnly="False" />
@@ -19,6 +19,7 @@
   <SearchGlobalAssemblyCache>False</SearchGlobalAssemblyCache>
   <DeadlockDetectionTimeout>120</DeadlockDetectionTimeout>
   <IgnoreGeneratedCode>False</IgnoreGeneratedCode>
+  <TargetFrameworkVersion>0.0</TargetFrameworkVersion>
  </ProjectOptions>
  <Targets>
   <Target Name="$(ProjectDir)/ColorizerLibrary/bin/Debug/ColorizerLibrary.dll" Analyze="True" AnalyzeAllChildren="True" />
@@ -38,7 +39,7 @@
   <Groups />
   <Settings />
  </Rules>
- <FxCopReport Version="1.36">
+ <FxCopReport Version="10.0">
   <Namespaces>
    <Namespace Name="ColorizerLibrary">
     <Messages>

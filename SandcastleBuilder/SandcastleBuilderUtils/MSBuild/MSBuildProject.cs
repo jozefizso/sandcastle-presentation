@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder MSBuild Tasks
 // File    : MSBuildProject.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 01/03/2010
+// Updated : 07/10/2010
 // Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -42,13 +42,12 @@ namespace SandcastleBuilder.Utils.MSBuild
         private Project msBuildProject;
         private BuildPropertyGroup properties;
         private static Regex reInvalidAttribute = new Regex(
-            "The attribute \"(.*?)\" in element \\<(.*?)\\> is unrecognized",
-            RegexOptions.IgnoreCase);
+            "The attribute \"(.*?)\" in element \\<(.*?)\\> is unrecognized", RegexOptions.IgnoreCase);
         #endregion
 
         #region Properties
         //=====================================================================
-        
+
         /// <summary>
         /// This is used to get the underlying MSBuild project file reference
         /// </summary>
@@ -67,15 +66,13 @@ namespace SandcastleBuilder.Utils.MSBuild
                 string assemblyName, outputType, outputPath = null;
 
                 if(properties == null)
-                    throw new InvalidOperationException("Configuration has " +
-                        "not been set");
+                    throw new InvalidOperationException("Configuration has not been set");
 
                 // Give precedence to OutDir if defined
                 if(properties["OutDir"] != null)
                     outputPath = properties["OutDir"].FinalValue;
 
-                if(String.IsNullOrEmpty(outputPath) &&
-                  properties["OutputPath"] != null)
+                if(String.IsNullOrEmpty(outputPath) && properties["OutputPath"] != null)
                     outputPath = properties["OutputPath"].FinalValue;
 
                 if(!String.IsNullOrEmpty(outputPath))
@@ -106,9 +103,8 @@ namespace SandcastleBuilder.Utils.MSBuild
                         if(Path.IsPathRooted(outputPath))
                             assemblyName = Path.Combine(outputPath, assemblyName);
                         else
-                            assemblyName = Path.Combine(Path.Combine(
-                                Path.GetDirectoryName(msBuildProject.FullFileName),
-                                outputPath), assemblyName);
+                            assemblyName = Path.Combine(Path.Combine(Path.GetDirectoryName(
+                                msBuildProject.FullFileName), outputPath), assemblyName);
                 }
 
                 return assemblyName;
@@ -125,8 +121,7 @@ namespace SandcastleBuilder.Utils.MSBuild
                 string docFile = null, outputPath = null;
 
                 if(properties == null)
-                    throw new InvalidOperationException("Configuration has " +
-                        "not been set");
+                    throw new InvalidOperationException("Configuration has not been set");
 
                 if(properties["DocumentationFile"] != null)
                 {
@@ -144,29 +139,24 @@ namespace SandcastleBuilder.Utils.MSBuild
                             if(!String.IsNullOrEmpty(outputPath))
                             {
                                 if(Path.IsPathRooted(outputPath))
-                                    docFile = Path.Combine(outputPath,
-                                        Path.GetFileName(docFile));
+                                    docFile = Path.Combine(outputPath, Path.GetFileName(docFile));
                                 else
-                                    docFile = Path.Combine(Path.Combine(
-                                        Path.GetDirectoryName(msBuildProject.FullFileName),
-                                        outputPath), Path.GetFileName(docFile));
+                                    docFile = Path.Combine(Path.Combine(Path.GetDirectoryName(
+                                        msBuildProject.FullFileName), outputPath), Path.GetFileName(docFile));
 
                                 // Fall back to the original location if not found
                                 if(!File.Exists(docFile))
-                                    docFile = Path.Combine(Path.GetDirectoryName(
-                                        msBuildProject.FullFileName), docFile);
+                                    docFile = Path.Combine(Path.GetDirectoryName(msBuildProject.FullFileName), docFile);
                             }
                             else
-                                docFile = Path.Combine(Path.GetDirectoryName(
-                                    msBuildProject.FullFileName), docFile);
+                                docFile = Path.Combine(Path.GetDirectoryName(msBuildProject.FullFileName), docFile);
                         }
                     }
                 }
                 else
                 {
-                    // If not defined, assume it's in the same place as the
-                    // assembly with the same name but a ".xml" extension.
-                    // This can happen when using Team Build for some reason.
+                    // If not defined, assume it's in the same place as the assembly with the same name
+                    // but a ".xml" extension.  This can happen when using Team Build for some reason.
                     docFile = this.AssemblyName;
 
                     if(!String.IsNullOrEmpty(docFile))
@@ -190,8 +180,7 @@ namespace SandcastleBuilder.Utils.MSBuild
             get
             {
                 if(properties == null)
-                    throw new InvalidOperationException("Configuration has " +
-                        "not been set");
+                    throw new InvalidOperationException("Configuration has not been set");
 
                 if(properties["TargetFrameworkVersion"] != null)
                     return properties["TargetFrameworkVersion"].FinalValue;
@@ -208,8 +197,7 @@ namespace SandcastleBuilder.Utils.MSBuild
             get
             {
                 if(properties == null)
-                    throw new InvalidOperationException("Configuration has " +
-                        "not been set");
+                    throw new InvalidOperationException("Configuration has not been set");
 
                 if(properties["ProjectGuid"] == null)
                     return Guid.Empty.ToString();
@@ -244,16 +232,15 @@ namespace SandcastleBuilder.Utils.MSBuild
             {
                 msBuildProject.Load(projectFile);
             }
-            catch (InvalidProjectFileException ex)
+            catch(InvalidProjectFileException ex)
             {
                 // Some MSBuild 4.0 projects cannot be loaded yet.  Their
                 // targets must be added as individual documentation sources
                 // and reference items.
                 if(reInvalidAttribute.IsMatch(ex.Message))
-                    throw new BuilderException("BE0068", "Incompatible Visual " +
-                        "Studio project file format.  See error code help topic " +
-                        "for more information.\r\nThis project may be for a " +
-                        "newer version of MSBuild and cannot be loaded.  " +
+                    throw new BuilderException("BE0068", "Incompatible Visual Studio project " +
+                        "file format.  See error code help topic for more information.\r\nThis " +
+                        "project may be for a newer version of MSBuild and cannot be loaded.  " +
                         "Error message:", ex);
 
                 throw;
@@ -271,28 +258,23 @@ namespace SandcastleBuilder.Utils.MSBuild
         /// it isn't found in the project, it will be converted to "AnyCPU"
         /// (no space).  This works around an issue with Team Build that
         /// includes the space even though it should not be present.</remarks>
-        public void SetConfiguration(string configuration, string platform,
-          string outDir)
+        public void SetConfiguration(string configuration, string platform, string outDir)
         {
             if(platform.Equals("Any CPU", StringComparison.OrdinalIgnoreCase))
             {
                 List<string> values = new List<string>(
-                    msBuildProject.GetConditionedPropertyValues(
-                    ProjectElement.Platform));
+                    msBuildProject.GetConditionedPropertyValues(ProjectElement.Platform));
 
                 if(values.IndexOf(platform) == -1 &&
                   values.IndexOf(SandcastleProject.DefaultPlatform) != -1)
                     platform = SandcastleProject.DefaultPlatform;
             }
 
-            msBuildProject.GlobalProperties.SetProperty(
-                ProjectElement.Configuration, configuration);
-            msBuildProject.GlobalProperties.SetProperty(
-                ProjectElement.Platform, platform);
+            msBuildProject.GlobalProperties.SetProperty(ProjectElement.Configuration, configuration);
+            msBuildProject.GlobalProperties.SetProperty(ProjectElement.Platform, platform);
 
             if(!String.IsNullOrEmpty(outDir))
-                msBuildProject.GlobalProperties.SetProperty(
-                    ProjectElement.OutDir, outDir);
+                msBuildProject.GlobalProperties.SetProperty(ProjectElement.OutDir, outDir);
 
             properties = msBuildProject.EvaluatedProperties;
         }
@@ -304,18 +286,14 @@ namespace SandcastleBuilder.Utils.MSBuild
         /// <param name="solutionName">The solution name to use</param>
         public void SetSolutionMacros(string solutionName)
         {
-            msBuildProject.GlobalProperties.SetProperty(
-                ProjectElement.SolutionPath, solutionName);
-            msBuildProject.GlobalProperties.SetProperty(
-                ProjectElement.SolutionDir, FolderPath.TerminatePath(
-                    Path.GetDirectoryName(solutionName)));
-            msBuildProject.GlobalProperties.SetProperty(
-                ProjectElement.SolutionFileName, Path.GetFileName(solutionName));
-            msBuildProject.GlobalProperties.SetProperty(
-                ProjectElement.SolutionName,
+            msBuildProject.GlobalProperties.SetProperty(ProjectElement.SolutionPath, solutionName);
+            msBuildProject.GlobalProperties.SetProperty(ProjectElement.SolutionDir, FolderPath.TerminatePath(
+                Path.GetDirectoryName(solutionName)));
+            msBuildProject.GlobalProperties.SetProperty(ProjectElement.SolutionFileName,
+                Path.GetFileName(solutionName));
+            msBuildProject.GlobalProperties.SetProperty(ProjectElement.SolutionName,
                 Path.GetFileNameWithoutExtension(solutionName));
-            msBuildProject.GlobalProperties.SetProperty(
-                ProjectElement.SolutionExt, Path.GetExtension(solutionName));
+            msBuildProject.GlobalProperties.SetProperty(ProjectElement.SolutionExt, Path.GetExtension(solutionName));
 
             properties = msBuildProject.EvaluatedProperties;
         }
@@ -332,8 +310,7 @@ namespace SandcastleBuilder.Utils.MSBuild
 
             rootPath = Path.GetDirectoryName(msBuildProject.FullFileName);
 
-            foreach(string refType in (new string[] { "Reference",
-              "COMReference", "ProjectReference" }))
+            foreach(string refType in (new string[] { "Reference", "COMReference", "ProjectReference" }))
                 foreach(BuildItem reference in msBuildProject.GetEvaluatedItemsByName(refType))
                 {
                     // Ignore nested project references.  We'll assume that
@@ -353,8 +330,7 @@ namespace SandcastleBuilder.Utils.MSBuild
                         path = refItem.GetMetadata("HintPath");
 
                         if(!Path.IsPathRooted(path))
-                            refItem.SetMetadata("HintPath", Path.Combine(
-                                rootPath, path));
+                            refItem.SetMetadata("HintPath", Path.Combine(rootPath, path));
                     }
 
                     if(!references.ContainsKey(refItem.Include))

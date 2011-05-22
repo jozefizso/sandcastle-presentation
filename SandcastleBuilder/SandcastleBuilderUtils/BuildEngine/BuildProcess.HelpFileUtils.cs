@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : BuildProcess.HelpFileUtils.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/07/2010
-// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
+// Updated : 01/15/2011
+// Note    : Copyright 2006-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the code used to modify the help file project files to
@@ -347,14 +347,38 @@ namespace SandcastleBuilder.Utils.BuildEngine
             }
 
             // Determine the default topic for Help 1 and website output if one
-            // was not specified in a content layout file.
+            // was not specified in a sitemap or content layout file.
             if(defaultTopic == null)
             {
                 node = tocXml.SelectSingleNode("topics/topic");
 
                 if(node != null)
-                    defaultTopic = @"html\" + node.Attributes["file"].Value + ".htm";
-                else
+                {
+                    if(node.Attributes["file"] != null)
+                        defaultTopic = node.Attributes["file"].Value + ".htm?";
+                    else
+                        if(node.FirstChild != null && node.FirstChild.Attributes["file"] != null)
+                            defaultTopic = node.FirstChild.Attributes["file"].Value + ".htm?";
+
+                    if(defaultTopic != null)
+                    {
+                        // Find the file
+                        string[] matches = Directory.GetFiles(workingFolder + "Output", defaultTopic,
+                          SearchOption.AllDirectories);
+
+                        if(matches.Length != 0)
+                        {
+                            defaultTopic = matches[0].Substring(workingFolder.Length + 7);
+
+                            if(defaultTopic.IndexOf('\\') != -1)
+                                defaultTopic = defaultTopic.Substring(defaultTopic.IndexOf('\\') + 1);
+                        }
+                        else
+                            defaultTopic = null;
+                    }
+                }
+
+                if(defaultTopic == null)
                     throw new BuilderException("BE0026", "Unable to determine default topic in " +
                         "toc.xml.  You may need to mark one as the default topic manually.");
             }
@@ -384,7 +408,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// <b>{@PresentationPath}\styles</b> folders which are located in the
         /// Sandcastle installation folder.  The art, icons, and media folders
         /// may or may not exist based on the style.</remarks>
-        protected void CopyStandardHelpContent()
+        private void CopyStandardHelpContent()
         {
             this.ReportProgress(BuildStep.CopyStandardContent, "Copying standard help content...");
 
@@ -420,7 +444,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// </summary>
         /// <param name="sourcePath">The source path from which to copy</param>
         /// <param name="destPath">The destination path to which to copy</param>
-        protected void RecursiveCopy(string sourcePath, string destPath)
+        private void RecursiveCopy(string sourcePath, string destPath)
         {
             if(sourcePath == null)
                 throw new ArgumentNullException("sourcePath");
@@ -483,7 +507,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// file list.  For HTML Help 1, it returns a list of the filenames.
         /// For MS Help 2, it returns the list formatted with the necessary
         /// XML markup.</remarks>
-        protected string HelpProjectFileList(string folder, HelpFileFormat format)
+        private string HelpProjectFileList(string folder, HelpFileFormat format)
         {
             StringBuilder sb = new StringBuilder(10240);
             string itemFormat, filename, checkName;
@@ -547,7 +571,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// This is used to generate the website helper files and copy the
         /// output to the project output folder ready for use as a website.
         /// </summary>
-        protected void GenerateWebsite()
+        private void GenerateWebsite()
         {
             string destFile, webWorkingFolder = String.Format(CultureInfo.InvariantCulture,
                 "{0}Output\\{1}", workingFolder, HelpFileFormat.Website);
@@ -600,7 +624,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// the website output.
         /// </summary>
         /// <returns>The HTML to insert for the table of contents.</returns>
-        protected string GenerateHtmlToc()
+        private string GenerateHtmlToc()
         {
             XPathDocument toc;
             XPathNavigator navToc;
@@ -692,7 +716,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// This is used to change the filenames assigned to each member
         /// in the reflection information file.
         /// </summary>
-        protected void ModifyHelpTopicFilenames()
+        private void ModifyHelpTopicFilenames()
         {
             XmlNodeList elements;
             string originalName, memberName, newName;

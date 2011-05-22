@@ -17,6 +17,10 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -118,7 +122,7 @@
     <Compile Include="VersionInfoComponent.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CodeColorizer\ColorizerLibrary\ColorizerLibrary.csproj">
+    <ProjectReference Include="..\CodeColorizer\ColorizerLibrary\ColorizerLibrary.csproj">
       <Project>{72331A21-C452-4BE4-BFDB-B8029A6BC1C0}</Project>
       <Name>ColorizerLibrary</Name>
       <Private>True</Private>

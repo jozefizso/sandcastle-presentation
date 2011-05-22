@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder Plug-Ins
 // File    : VersionBuilderPlugIn.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 06/27/2010
+// Updated : 07/23/2010
 // Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -265,8 +265,8 @@ namespace SandcastleBuilder.PlugIns
                 project = new SandcastleProject(vs.HelpFileProject, true);
 
                 // We'll use a working folder below the current project's working folder
-                workingPath = builder.WorkingFolder +
-                    vs.HelpFileProject.GetHashCode().ToString("X", CultureInfo.InvariantCulture) + "\\";
+                workingPath = builder.WorkingFolder + vs.HelpFileProject.GetHashCode().ToString("X",
+                    CultureInfo.InvariantCulture) + "\\";
 
                 success = this.BuildProject(project, workingPath);
 
@@ -483,9 +483,12 @@ namespace SandcastleBuilder.PlugIns
             config.Append("<versions>\r\n");
             script.Append("@ECHO OFF\r\n\r\n");
 
-            // Write out a <versions> element for each unique label that
-            // contains info for each related version.  We also copy the
-            // reflection files to unique names as we will create a new
+            // Make sure the script is ran from the correct location.  There was one report
+            // were it wasn't running from the correct folder for some reason.
+            script.AppendFormat("CD {0}\r\n\r\n", builder.WorkingFolder);
+
+            // Write out a <versions> element for each unique label that contains info for each related
+            // version.  We also copy the reflection files to unique names as we will create a new
             // reflection.org file that contains everything.
             foreach(string label in uniqueLabels)
             {

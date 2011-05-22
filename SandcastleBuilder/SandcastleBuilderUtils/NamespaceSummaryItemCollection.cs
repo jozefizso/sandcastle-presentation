@@ -30,8 +30,6 @@ using System.IO;
 using System.Text;
 using System.Xml;
 
-using Microsoft.Build.BuildEngine;
-
 using SandcastleBuilder.Utils.Design;
 
 namespace SandcastleBuilder.Utils

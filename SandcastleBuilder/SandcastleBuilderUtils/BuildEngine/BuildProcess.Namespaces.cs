@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : BuildProcess.Namespaces.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/01/2008
-// Note    : Copyright 2006-2008, Eric Woodruff, All rights reserved
+// Updated : 01/15/2011
+// Note    : Copyright 2006-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the code used to generate the namespace summary file and
@@ -67,7 +67,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// <summary>
         /// This is called to generate the namespace summary file
         /// </summary>
-        protected void GenerateNamespaceSummaries()
+        private void GenerateNamespaceSummaries()
         {
             XmlNodeList nsElements;
             XmlNode member;

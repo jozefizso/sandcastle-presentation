@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : TocEntry.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/02/2010
-// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
+// Updated : 01/15/2011
+// Note    : Copyright 2006-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a class representing a table of contents entry.  This is
@@ -483,7 +483,8 @@ namespace SandcastleBuilder.Utils.ConceptualContent
                     if(String.IsNullOrEmpty(this.DestinationFile))
                     {
                         url = this.Id;
-                        titleAttr = String.Format(CultureInfo.InvariantCulture, " title=\"{0}\"", this.Title);
+                        titleAttr = String.Format(CultureInfo.InvariantCulture, " title=\"{0}\"",
+                            HttpUtility.HtmlEncode(this.Title));
                     }
                     else
                     {

@@ -31,8 +31,6 @@ using System.Xml;
 
 using SandcastleBuilder.Utils;
 
-using Microsoft.Build.BuildEngine;
-
 namespace SandcastleBuilder.Utils.ConceptualContent
 {
     /// <summary>

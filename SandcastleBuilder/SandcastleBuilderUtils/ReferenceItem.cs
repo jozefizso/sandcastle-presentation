@@ -29,8 +29,6 @@ using System.Globalization;
 using System.IO;
 using System.Xml;
 
-using Microsoft.Build.BuildEngine;
-
 using SandcastleBuilder.Utils.Design;
 
 namespace SandcastleBuilder.Utils
@@ -170,8 +168,7 @@ namespace SandcastleBuilder.Utils
         /// <summary>
         /// Get a hash code for this item
         /// </summary>
-        /// <returns>Returns the hash code for the assembly path and
-        /// XML comments path.</returns>
+        /// <returns>Returns the hash code for the reference description</returns>
         public override int GetHashCode()
         {
             return this.ToString().GetHashCode();
@@ -180,8 +177,7 @@ namespace SandcastleBuilder.Utils
         /// <summary>
         /// Return a string representation of the item
         /// </summary>
-        /// <returns>Returns the assembly path and XML comments path separated
-        /// by a comma.</returns>
+        /// <returns>Returns the reference description</returns>
         public override string ToString()
         {
             return this.Reference;

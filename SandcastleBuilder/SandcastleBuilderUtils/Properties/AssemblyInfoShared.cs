@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder
 // File    : AssemblyInfoShared.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/07/2010
-// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
+// Updated : 01/03/2011
+// Note    : Copyright 2006-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // Sandcastle Help File Builder common assembly attributes.
@@ -43,7 +43,7 @@ using System.Security.Permissions;
 //
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Eric Woodruff")]
-[assembly: AssemblyCopyright("Copyright \xA9 2006-2010, Eric Woodruff, All Rights Reserved")]
+[assembly: AssemblyCopyright("Copyright \xA9 2006-2011, Eric Woodruff, All Rights Reserved")]
 [assembly: AssemblyTrademark("Eric Woodruff, All Rights Reserved")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]

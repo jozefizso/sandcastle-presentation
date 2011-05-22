@@ -2,8 +2,8 @@
 // System  : EWSoftware Design Time Attributes and Editors
 // File    : LanguageResourceConverter.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 12/06/2009
-// Note    : Copyright 2006-2009, Eric Woodruff, All rights reserved
+// Updated : 01/15/2011
+// Note    : Copyright 2006-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a type converter that allows you to select a culture
@@ -23,9 +23,11 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace SandcastleBuilder.Utils.Design
@@ -65,10 +67,8 @@ namespace SandcastleBuilder.Utils.Design
                 if(y == null)
                     return 1;
 
-                return CultureInfo.CurrentCulture.CompareInfo.Compare(
-                    ((CultureInfo)x).DisplayName,
-                    ((CultureInfo)y).DisplayName,
-                    CompareOptions.StringSort);
+                return CultureInfo.CurrentCulture.CompareInfo.Compare(((CultureInfo)x).DisplayName,
+                    ((CultureInfo)y).DisplayName, CompareOptions.StringSort);
             }
         }
         #endregion
@@ -82,8 +82,7 @@ namespace SandcastleBuilder.Utils.Design
         /// </summary>
         /// <param name="context">The format context object</param>
         /// <returns>Returns the standard values for the type</returns>
-        public override StandardValuesCollection GetStandardValues(
-          ITypeDescriptorContext context)
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             string[] files;
             int idx = 0;

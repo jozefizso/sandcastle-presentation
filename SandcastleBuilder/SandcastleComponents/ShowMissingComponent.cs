@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Components
 // File    : ShowMissingComponent.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 11/19/2009
-// Note    : Copyright 2007-2009, Eric Woodruff, All rights reserved
+// Updated : 08/18/2010
+// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a build component that is used to add "missing" notes
@@ -368,8 +368,7 @@ namespace SandcastleBuilder.Components
             XmlNode comments, returnsNode;
             string apiKey;
 
-            // Auto-document the constructor(s) on the type's list pages if
-            // necessary.
+            // Auto-document the constructor(s) on the type's list pages if necessary
             if(isEnabled && autoDocConstructors && (key[0] == 'T' ||
               key.StartsWith("AllMembers", StringComparison.Ordinal) ||
               (key.StartsWith("Overload", StringComparison.Ordinal) &&
@@ -385,13 +384,11 @@ namespace SandcastleBuilder.Components
                     apiKey = apiKey.Replace("..ctor", ".#ctor");
 
                 foreach(XmlNode element in document.SelectNodes(
-                  "document/reference/elements/element[starts-with(@api, '" +
-                  apiKey + "')]"))
+                  "document/reference/elements//element[starts-with(@api, '" + apiKey + "')]"))
                     this.CheckForMissingText(element, apiKey, "summary");
             }
 
-            // Auto-document the Dispose method(s) on the type's list pages if
-            // necessary.
+            // Auto-document the Dispose method(s) on the type's list pages if necessary
             if(isEnabled && autoDocDispose && (key[0] == 'T' ||
               key.StartsWith("AllMembers", StringComparison.Ordinal) ||
               (key.StartsWith("Overload", StringComparison.Ordinal) &&
@@ -404,20 +401,19 @@ namespace SandcastleBuilder.Components
 
                 // Handle IDisposable.Dispose()
                 foreach(XmlNode element in document.SelectNodes(
-                  "document/reference/elements/element[@api = '" + apiKey + "']"))
+                  "document/reference/elements//element[@api = '" + apiKey + "']"))
                     this.CheckForMissingText(element, apiKey, "summary");
 
                 // Handle the Boolean overload if present
                 apiKey += "(System.Boolean)";
 
                 foreach(XmlNode element in document.SelectNodes(
-                  "document/reference/elements/element[@api = '" + apiKey + "']"))
+                  "document/reference/elements//element[@api = '" + apiKey + "']"))
                     this.CheckForMissingText(element, apiKey, "summary");
             }
 
             // Don't bother if there is nothing to add
-            if(!isEnabled || key[0] == 'R' || key[1] != ':' ||
-              (key[0] == 'N' && !showMissingNamespaces))
+            if(!isEnabled || key[0] == 'R' || key[1] != ':' || (key[0] == 'N' && !showMissingNamespaces))
                 return;
 
             try
@@ -464,19 +460,16 @@ namespace SandcastleBuilder.Components
                         // and <param> tags.
                         if(showMissingReturns)
                         {
-                            returnsNode = document.SelectSingleNode(
-                                "document/reference/returns");
+                            returnsNode = document.SelectSingleNode("document/reference/returns");
 
                             if(returnsNode != null)
-                                this.CheckForMissingText(comments, key,
-                                    "returns");
+                                this.CheckForMissingText(comments, key, "returns");
                         }
 
                         if(showMissingParams || (autoDocDispose &&
                           key.EndsWith(".Dispose(System.Boolean)", StringComparison.Ordinal)))
                         {
-                            items = document.SelectNodes(
-                                "document/reference/parameters/parameter");
+                            items = document.SelectNodes("document/reference/parameters/parameter");
 
                             foreach(XmlNode p in items)
                                 this.CheckForMissingParameter(comments, key,
@@ -504,8 +497,7 @@ namespace SandcastleBuilder.Components
         /// <param name="comments">The comments node to check.</param>
         /// <param name="key">The key (name) for the current item</param>
         /// <param name="tagName">The tag type for which to check.</param>
-        private void CheckForMissingText(XmlNode comments, string key,
-          string tagName)
+        private void CheckForMissingText(XmlNode comments, string key, string tagName)
         {
             string text;
             XmlNode tag = comments.SelectSingleNode(tagName);

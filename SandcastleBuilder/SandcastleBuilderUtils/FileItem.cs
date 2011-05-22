@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : FileItem.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 04/04/2010
+// Updated : 07/09/2010
 // Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -179,10 +179,8 @@ namespace SandcastleBuilder.Utils
             {
                 string tempPath, newPath, path = includePath;
 
-                if(String.IsNullOrEmpty(value) || value.IndexOfAny(
-                  new char[] { ':', '\\', '*', '?' }) != -1)
-                    throw new ArgumentException("New name cannot be blank " +
-                        "and cannot contain ':', '\\', '*', or '?'");
+                if(String.IsNullOrEmpty(value) || value.IndexOfAny(new char[] { ':', '\\', '*', '?' }) != -1)
+                    throw new ArgumentException("New name cannot be blank and cannot contain ':', '\\', '*', or '?'");
 
                 if(buildAction != BuildAction.Folder)
                 {
@@ -245,8 +243,7 @@ namespace SandcastleBuilder.Utils
 
                 foreach(BuildItem item in base.ProjectElement.Project.MSBuildProject.EvaluatedItems)
                     if(item.Include.StartsWith(path, StringComparison.OrdinalIgnoreCase))
-                        item.Include = newPath + item.Include.Substring(
-                            path.Length);
+                        item.Include = newPath + item.Include.Substring(path.Length);
             }
         }
 

@@ -393,9 +393,9 @@ namespace SandcastleBuilder.Utils.Conversion
                             "excludeItems"), CultureInfo.InvariantCulture);
 
                         if(!exclude)
-                            includeFileSpec.Add(base.FullPath(source), dest);
+                            includeFileSpec[base.FullPath(source)] = dest;
                         else
-                            excludeFileSpec.Add(base.FullPath(source), dest);
+                            excludeFileSpec[base.FullPath(source)] = dest;
                     }
 
                     xr.Read();

@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : ConvertFromNDoc.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 06/20/2010
-// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
+// Updated : 01/09/2011
+// Note    : Copyright 2008-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a class used to convert NDoc 1.x project files to the
@@ -22,10 +22,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Xml;
 using System.Xml.XPath;
 

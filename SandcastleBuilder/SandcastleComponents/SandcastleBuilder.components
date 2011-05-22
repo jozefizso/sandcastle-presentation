@@ -418,7 +418,25 @@
         </defaultConfiguration>
     </component>
 
-    <!-- ******************************************************************
+    <!-- ****************************************************************** -->
+
+    <component id="API Token Resolution" type="Microsoft.Ddue.Tools.SharedContentComponent"
+        assembly="{@SandcastlePath}ProductionTools\BuildComponents.dll">
+      <description>This build component is used to resolve tokens in XML comments files.</description>
+
+      <!-- This only applies to API builds. -->
+      <insert placement="before" id="Show Missing Documentation Component" />
+
+      <!-- Not editable at all -->
+      <configureMethod name="-" />
+
+      <defaultConfiguration>
+        {@TokenFiles}
+        <replace elements="/*//token" item="string(.)" />
+      </defaultConfiguration>
+    </component>
+
+  <!-- ******************************************************************
 
     Components not defined in this file due to their unique requirements:
 

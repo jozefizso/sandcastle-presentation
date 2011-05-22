@@ -2,8 +2,8 @@
 // System  : EWSoftware Design Time Attributes and Editors
 // File    : XPathReflectionFileFilterConfigDlg.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)  Based on code by Eyal Post
-// Updated : 11/06/2008
-// Note    : Copyright 2008, Eric Woodruff, All rights reserved
+// Updated : 01/17/2011
+// Note    : Copyright 2008-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to edit the XPath reflection file filter
@@ -80,11 +80,9 @@ namespace SandcastleBuilder.PlugIns
 
             root = navigator.SelectSingleNode("configuration");
 
-            if(root.IsEmptyElement)
-                return;
-
-            foreach(XPathNavigator nav in root.Select("expressions/expression"))
-                tvExpressions.Nodes.Add(nav.InnerXml);
+            if(!root.IsEmptyElement)
+                foreach(XPathNavigator nav in root.Select("expressions/expression"))
+                    tvExpressions.Nodes.Add(nav.InnerXml);
 
             if(tvExpressions.Nodes.Count != 0)
                 btnDelete.Enabled = txtExpression.Enabled = true;

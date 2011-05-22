@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : ConvertToMSBuildFormat.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 08/04/2008
-// Note    : Copyright 2008, Eric Woodruff, All rights reserved
+// Updated : 01/15/2011
+// Note    : Copyright 2008-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a abstract base class used to convert a project in
@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -114,8 +113,7 @@ namespace SandcastleBuilder.Utils.Conversion
 
             if(folder == oldFolder)
                 throw new ArgumentException("The new project folder cannot " +
-                    "be the same as the old project file's folder",
-                    "folder");
+                    "be the same as the old project file's folder", "folder");
 
             if(!Directory.Exists(projectFolder))
                 Directory.CreateDirectory(projectFolder);
@@ -150,8 +148,7 @@ namespace SandcastleBuilder.Utils.Conversion
         /// </summary>
         protected void CreateFolderItems()
         {
-            List<string> buildActions = new List<string>(Enum.GetNames(
-                typeof(BuildAction)));
+            List<string> buildActions = new List<string>(Enum.GetNames(typeof(BuildAction)));
             List<string> folderNames = new List<string>();
             string name;
             
@@ -205,8 +202,7 @@ namespace SandcastleBuilder.Utils.Conversion
                     try
                     {
                         if(property.PropertyType.IsEnum)
-                            parsedValue = Enum.Parse(property.PropertyType,
-                                value, true);
+                            parsedValue = Enum.Parse(property.PropertyType, value, true);
                         else
                             if(property.PropertyType == typeof(Version))
                                 parsedValue = new Version(value);
@@ -218,15 +214,13 @@ namespace SandcastleBuilder.Utils.Conversion
                                         parsedValue = new FolderPath(value, project);
                                     else
                                     {
-                                        tc = TypeDescriptor.GetConverter(
-                                            property.PropertyType);
+                                        tc = TypeDescriptor.GetConverter(property.PropertyType);
                                         parsedValue = tc.ConvertFromString(value);
                                     }
                     }
                     catch(Exception ex)
                     {
-                        throw new BuilderException("CVT0001",
-                            "Unable to parse value '" + value +
+                        throw new BuilderException("CVT0001", "Unable to parse value '" + value +
                             "' for property '" + name + "'", ex);
                     }
 
@@ -235,8 +229,7 @@ namespace SandcastleBuilder.Utils.Conversion
                 }
 
             throw new BuilderException("CVT0002", "An attempt was made to " +
-                "set an unknown or read-only property: " + name + "   Value: " +
-                value);
+                "set an unknown or read-only property: " + name + "   Value: " + value);
         }
 
         /// <summary>
@@ -259,27 +252,22 @@ namespace SandcastleBuilder.Utils.Conversion
         /// <param name="wildcard">The wildcard to expand.</param>
         /// <param name="includeSubFolders">True to include subfolders, false
         /// to only include the given folder.</param>
-        /// <returns>The list of matching files.</returns>
-        protected static string[] ExpandWildcard(string wildcard,
-          bool includeSubFolders)
+        /// <returns>An enumerable list of matching files.</returns>
+        protected static IEnumerable<string> ExpandWildcard(string wildcard, bool includeSubFolders)
         {
             SearchOption searchOpt = SearchOption.TopDirectoryOnly;
-            string[] files = new string[0];
             string dirName;
 
             dirName = Path.GetDirectoryName(wildcard);
 
             if(Directory.Exists(dirName))
             {
-                if(wildcard.IndexOfAny(new char[] { '*', '?' }) != -1 &&
-                  includeSubFolders)
+                if(wildcard.IndexOfAny(new char[] { '*', '?' }) != -1 && includeSubFolders)
                     searchOpt = SearchOption.AllDirectories;
 
-                files = Directory.GetFiles(dirName, Path.GetFileName(wildcard),
-                    searchOpt);
+                foreach(string file in Directory.GetFiles(dirName, Path.GetFileName(wildcard), searchOpt))
+                    yield return file;
             }
-
-            return files;
         }
         #endregion
     }

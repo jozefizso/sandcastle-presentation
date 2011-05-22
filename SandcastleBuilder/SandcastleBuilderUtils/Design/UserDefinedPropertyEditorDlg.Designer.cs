@@ -35,6 +35,7 @@
             this.lbProperties = new SandcastleBuilder.Utils.Controls.RefreshableItemListBox();
             this.pgProps = new SandcastleBuilder.Utils.Controls.CustomPropertyGrid();
             this.statusBarTextProvider1 = new SandcastleBuilder.Utils.Controls.StatusBarTextProvider(this.components);
+            this.btnRemove = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnAdd
@@ -96,11 +97,24 @@
             this.pgProps.TabIndex = 1;
             this.pgProps.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.pgProps_PropertyValueChanged);
             // 
+            // btnRemove
+            // 
+            this.btnRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnRemove.Location = new System.Drawing.Point(106, 354);
+            this.btnRemove.Name = "btnRemove";
+            this.btnRemove.Size = new System.Drawing.Size(88, 32);
+            this.statusBarTextProvider1.SetStatusBarText(this.btnRemove, "Remove: Remove the selected user-defined property");
+            this.btnRemove.TabIndex = 3;
+            this.btnRemove.Text = "&Remove";
+            this.btnRemove.UseVisualStyleBackColor = true;
+            this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
+            // 
             // UserDefinedPropertyEditorDlg
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Inherit;
             this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(665, 398);
+            this.Controls.Add(this.btnRemove);
             this.Controls.Add(this.pgProps);
             this.Controls.Add(this.lbProperties);
             this.Controls.Add(this.btnAdd);
@@ -112,7 +126,8 @@
             this.Name = "UserDefinedPropertyEditorDlg";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "UserDefinedPropertyEditorDlg";
+            this.Text = "User Defined Project Properties";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.UserDefinedPropertyEditorDlg_FormClosing);
             this.ResumeLayout(false);
 
         }
@@ -125,5 +140,6 @@
         private SandcastleBuilder.Utils.Controls.StatusBarTextProvider statusBarTextProvider1;
         private SandcastleBuilder.Utils.Controls.RefreshableItemListBox lbProperties;
         private SandcastleBuilder.Utils.Controls.CustomPropertyGrid pgProps;
+        private System.Windows.Forms.Button btnRemove;
     }
 }

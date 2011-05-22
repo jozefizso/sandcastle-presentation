@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DD104C35-AE92-4C7B-9DD8-F8AF997BACE2}"
 	ProjectSection(SolutionItems) = preProject
 		CodeColorizer.FxCop = CodeColorizer.FxCop
-		Doc\ColorizerLibrary.shfb = Doc\ColorizerLibrary.shfb
+		Doc\ColorizerLibrary.shfbproj = Doc\ColorizerLibrary.shfbproj
 	EndProjectSection
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TextColorizerTest", "TextColorizerTest\", "{D7F11A0C-3E65-42D0-8743-82CEA117A003}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "TextColorizerTest", "TextColorizerTest", "{D7F11A0C-3E65-42D0-8743-82CEA117A003}"
 	ProjectSection(WebsiteProperties) = preProject
+		SccProjectName = "SAK"
+		SccAuxPath = "SAK"
+		SccLocalPath = "SAK"
+		SccProvider = "SAK"
 		TargetFramework = "3.5"
 		ProjectReferences = "{72331A21-C452-4BE4-BFDB-B8029A6BC1C0}|ColorizerLibrary.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/TextColorizerTest"
@@ -30,6 +34,20 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorizerLibrary", "ColorizerLibrary\ColorizerLibrary.csproj", "{72331A21-C452-4BE4-BFDB-B8029A6BC1C0}"
 EndProject
 Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 3
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs01
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = ColorizerLibrary\\ColorizerLibrary.csproj
+		SccProjectName1 = ColorizerLibrary
+		SccLocalPath1 = ColorizerLibrary
+		SccWebProject2 = true
+		SccProjectUniqueName2 = TextColorizerTest
+		SccLocalPath2 = .
+		SccProjectFilePathRelativizedFromConnection2 = TextColorizerTest\\
+		SccProjectEnlistmentChoice2 = 2
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|.NET = Debug|.NET
 		Debug|Any CPU = Debug|Any CPU

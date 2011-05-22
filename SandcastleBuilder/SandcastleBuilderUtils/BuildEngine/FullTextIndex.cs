@@ -146,6 +146,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
 
                 // Extract the page title
                 m = rePageTitle.Match(content);
+
                 if(!m.Success)
                     title = Path.GetFileNameWithoutExtension(name);
                 else

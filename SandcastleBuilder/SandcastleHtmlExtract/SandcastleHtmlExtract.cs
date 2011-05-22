@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder - HTML Extract
 // File    : SandcastleHtmlExtract.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 06/30/2010
-// Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
+// Updated : 01/09/2011
+// Note    : Copyright 2008-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the console mode application used to extract title and
@@ -537,7 +537,6 @@ commas, or other special characters.
         private static void ParseFiles(string fileFolder, string localizedOutputFolder)
         {
             KeywordInfo kw;
-            string[] fileList;
             string ext, folder, destFile, mainEntry = String.Empty;
             int htmlFiles = 0;
 
@@ -548,9 +547,7 @@ commas, or other special characters.
                 fileFolder = fileFolder.Substring(0, fileFolder.Length - 1);
 
             // Process all *.htm and *.html files in the given folder and all of its subfolders.
-            fileList = Directory.GetFiles(fileFolder, "*.*", SearchOption.AllDirectories);
-
-            foreach(string file in fileList)
+            foreach(string file in Directory.GetFiles(fileFolder, "*.*", SearchOption.AllDirectories))
             {
                 ext = Path.GetExtension(file).ToLower(CultureInfo.InvariantCulture);
 

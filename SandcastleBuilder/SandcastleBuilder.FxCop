@@ -19,6 +19,7 @@
   <SearchGlobalAssemblyCache>False</SearchGlobalAssemblyCache>
   <DeadlockDetectionTimeout>120</DeadlockDetectionTimeout>
   <IgnoreGeneratedCode>False</IgnoreGeneratedCode>
+  <TargetFrameworkVersion>0.0</TargetFrameworkVersion>
  </ProjectOptions>
  <Targets>
   <AssemblyReferenceDirectories>
@@ -2259,6 +2260,21 @@
         <Types>
          <Type Name="ApiFilterEditorDlg">
           <Members>
+           <Member Name="#ApiFilterEditorDlg_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2011-01-16 03:55:05Z">
+              <Issue>
+               <Item>'ApiFilterEditorDlg.ApiFilterEditorDlg_FormClosing(object, FormClosingEventArgs)'</Item>
+               <Item>'object'</Item>
+              </Issue>
+              <Notes>
+               <User Name="EWOODRUFF">
+                <Note Id="130" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
            <Member Name="#ApiFilterEditorDlg_Load(System.Object,System.EventArgs)">
             <Messages>
              <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2007-08-03 18:01:10Z">
@@ -2673,6 +2689,21 @@
              </Message>
             </Messages>
            </Member>
+           <Member Name="#NamespacesDlg_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2011-01-16 03:55:05Z">
+              <Issue>
+               <Item>'NamespaceSummaryItemEditorDlg.NamespacesDlg_FormClosing(object, FormClosingEventArgs)'</Item>
+               <Item>'object'</Item>
+              </Issue>
+              <Notes>
+               <User Name="EWOODRUFF">
+                <Note Id="130" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
            <Member Name="#NamespacesDlg_Load(System.Object,System.EventArgs)">
             <Messages>
              <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2008-09-18 23:40:01Z">
@@ -2845,6 +2876,24 @@
                 <Notes>
                  <User Name="EWOODRUFF">
                   <Note Id="56" />
+                 </User>
+                </Notes>
+               </Message>
+              </Messages>
+             </Accessor>
+            </Accessors>
+           </Member>
+           <Member Name="#WasModified">
+            <Accessors>
+             <Accessor Name="#set_WasModified(System.Boolean)">
+              <Messages>
+               <Message TypeName="AvoidUncalledPrivateCode" Category="Microsoft.Performance" CheckId="CA1811" Status="Excluded" Created="2011-01-16 03:55:05Z">
+                <Issue>
+                 <Item>'UserDefinedPropertyEditorDlg.PropertyItem.WasModified.set(bool)'</Item>
+                </Issue>
+                <Notes>
+                 <User Name="EWOODRUFF">
+                  <Note Id="131" />
                  </User>
                 </Notes>
                </Message>
@@ -3912,6 +3961,21 @@
               <Notes>
                <User Name="EWOODRUFF">
                 <Note Id="114" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#PreviewTopicWindow_FormClosing(System.Object,System.Windows.Forms.FormClosingEventArgs)">
+            <Messages>
+             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Status="Excluded" Created="2011-01-16 03:55:05Z">
+              <Issue>
+               <Item>'PreviewTopicWindow.PreviewTopicWindow_FormClosing(object, FormClosingEventArgs)'</Item>
+               <Item>'object'</Item>
+              </Issue>
+              <Notes>
+               <User Name="EWOODRUFF">
+                <Note Id="130" />
                </User>
               </Notes>
              </Message>
@@ -5831,6 +5895,8 @@
     <Note Id="127" Modified="2010-07-07 20:02:35Z">Okay as is</Note>
     <Note Id="128" Modified="2010-07-07 20:02:52Z">The parameterless constructor servers no purpose in this case.</Note>
     <Note Id="129" Modified="2010-07-07 20:02:59Z">Lowercase is preferred</Note>
+    <Note Id="130" Modified="2011-01-16 03:55:46Z">The exception is intentionally ignored</Note>
+    <Note Id="131" Modified="2011-01-16 04:01:14Z">The property is used.</Note>
    </User>
   </Notes>
   <Rules>

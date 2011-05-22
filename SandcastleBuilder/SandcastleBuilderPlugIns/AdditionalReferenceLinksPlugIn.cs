@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder Plug-Ins
 // File    : AdditionalReferenceLinksPlugIn.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 06/12/2010
+// Updated : 07/23/2010
 // Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -221,15 +221,13 @@ namespace SandcastleBuilder.PlugIns
                 {
                     project = new SandcastleProject(vs.HelpFileProject, true);
 
-                    // We'll use a working folder below the current project's
-                    // working folder.
+                    // We'll use a working folder below the current project's working folder
                     workingPath = builder.WorkingFolder + vs.HelpFileProject.GetHashCode().ToString("X",
                         CultureInfo.InvariantCulture) + "\\";
 
                     success = this.BuildProject(project, workingPath);
 
-                    // Switch back to the original folder for the current
-                    // project.
+                    // Switch back to the original folder for the current project
                     Directory.SetCurrentDirectory(builder.ProjectFolder);
 
                     if(!success)

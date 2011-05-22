@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : SandcastleProject.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/05/2010
+// Updated : 07/23/2010
 // Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -233,8 +233,7 @@ namespace SandcastleBuilder.Utils
 
                 if(msBuildProject != null)
                 {
-                    prop = msBuildProject.GlobalProperties[
-                        ProjectElement.Configuration];
+                    prop = msBuildProject.GlobalProperties[ProjectElement.Configuration];
                     
                     if(prop != null)
                         config = prop.Value;
@@ -250,8 +249,7 @@ namespace SandcastleBuilder.Utils
                 if(value == null || value.Trim().Length == 0)
                     value = DefaultConfiguration;
 
-                msBuildProject.GlobalProperties.SetProperty(
-                    ProjectElement.Configuration, value);
+                msBuildProject.GlobalProperties.SetProperty(ProjectElement.Configuration, value);
             }
         }
 
@@ -271,8 +269,7 @@ namespace SandcastleBuilder.Utils
 
                 if(msBuildProject != null)
                 {
-                    prop = msBuildProject.GlobalProperties[
-                        ProjectElement.Platform];
+                    prop = msBuildProject.GlobalProperties[ProjectElement.Platform];
 
                     if(prop != null)
                         platform = prop.Value;
@@ -288,8 +285,7 @@ namespace SandcastleBuilder.Utils
                 if(value == null || value.Trim().Length == 0)
                     value = DefaultPlatform;
 
-                msBuildProject.GlobalProperties.SetProperty(
-                    ProjectElement.Platform, value);
+                msBuildProject.GlobalProperties.SetProperty(ProjectElement.Platform, value);
             }
         }
 
@@ -309,8 +305,7 @@ namespace SandcastleBuilder.Utils
 
                 if(msBuildProject != null)
                 {
-                    prop = msBuildProject.GlobalProperties[
-                        ProjectElement.OutDir];
+                    prop = msBuildProject.GlobalProperties[ProjectElement.OutDir];
 
                     if(prop != null)
                         outDir = prop.Value;
@@ -323,8 +318,7 @@ namespace SandcastleBuilder.Utils
                 if(value == null)
                     value = String.Empty;
 
-                msBuildProject.GlobalProperties.SetProperty(
-                    ProjectElement.OutDir, value);
+                msBuildProject.GlobalProperties.SetProperty(ProjectElement.OutDir, value);
             }
         }
 
@@ -378,8 +372,7 @@ namespace SandcastleBuilder.Utils
                 if(Path.IsPathRooted(outputPath))
                     path = outputPath;
                 else
-                    path = Path.Combine(Path.GetDirectoryName(
-                        msBuildProject.FullFileName), outputPath);
+                    path = Path.Combine(Path.GetDirectoryName(msBuildProject.FullFileName), outputPath);
 
                 return Path.GetFullPath(path + "LastBuild.log");
             }
@@ -441,13 +434,11 @@ namespace SandcastleBuilder.Utils
             get
             {
                 Collection<FileItem> fileItems = new Collection<FileItem>();
-                List<string> buildActions = new List<string>(Enum.GetNames(
-                    typeof(BuildAction)));
+                List<string> buildActions = new List<string>(Enum.GetNames(typeof(BuildAction)));
 
                 foreach(BuildItem item in msBuildProject.EvaluatedItems)
                     if(buildActions.IndexOf(item.Name) != -1)
-                        fileItems.Add(new FileItem(new ProjectElement(this,
-                            item)));
+                        fileItems.Add(new FileItem(new ProjectElement(this, item)));
 
                 return fileItems;
             }
@@ -2092,8 +2083,7 @@ namespace SandcastleBuilder.Utils
                     this.VisibleItems |= VisibleItems.Privates;
                 else
                 {
-                    this.VisibleItems &= ~(VisibleItems.Privates |
-                        VisibleItems.PrivateFields);
+                    this.VisibleItems &= ~(VisibleItems.Privates | VisibleItems.PrivateFields);
                     this.DocumentInheritedFrameworkPrivateMembers = false;
                 }
             }
@@ -2119,8 +2109,7 @@ namespace SandcastleBuilder.Utils
             set
             {
                 if(value)
-                    this.VisibleItems |= (VisibleItems.Privates |
-                        VisibleItems.PrivateFields);
+                    this.VisibleItems |= (VisibleItems.Privates | VisibleItems.PrivateFields);
                 else
                     this.VisibleItems &= ~VisibleItems.PrivateFields;
             }
@@ -2145,8 +2134,7 @@ namespace SandcastleBuilder.Utils
                     this.VisibleItems |= VisibleItems.Protected;
 
                 else
-                    this.VisibleItems &= ~(VisibleItems.Protected |
-                        VisibleItems.SealedProtected);
+                    this.VisibleItems &= ~(VisibleItems.Protected | VisibleItems.SealedProtected);
             }
         }
 
@@ -2192,8 +2180,7 @@ namespace SandcastleBuilder.Utils
             set
             {
                 if(value)
-                    this.VisibleItems |= (VisibleItems.SealedProtected |
-                        VisibleItems.Protected);
+                    this.VisibleItems |= (VisibleItems.SealedProtected | VisibleItems.Protected);
                 else
                     this.VisibleItems &= ~VisibleItems.SealedProtected;
             }
@@ -2466,8 +2453,7 @@ namespace SandcastleBuilder.Utils
         /// </summary>
         /// <param name="sender">The sender of the event</param>
         /// <param name="e">The event parameters</param>
-        private void docSources_ListChanged(object sender,
-          ListChangedEventArgs e)
+        private void docSources_ListChanged(object sender, ListChangedEventArgs e)
         {
             if(!loadingProperties)
             {
@@ -2482,8 +2468,7 @@ namespace SandcastleBuilder.Utils
         /// </summary>
         /// <param name="sender">The sender of the event</param>
         /// <param name="e">The event parameters</param>
-        private void ItemList_ListChanged(object sender,
-          ListChangedEventArgs e)
+        private void ItemList_ListChanged(object sender, ListChangedEventArgs e)
         {
             if(!loadingProperties)
                 this.MarkAsDirty();
@@ -2526,8 +2511,7 @@ namespace SandcastleBuilder.Utils
             else if(changedPath == workingPath)
                 propName = "WorkingPath";
             else
-                throw new ArgumentException("Unknown path property changed",
-                    "sender");
+                throw new ArgumentException("Unknown path property changed", "sender");
 
             this.SetProjectProperty(propName, sender);
         }
@@ -2597,15 +2581,13 @@ namespace SandcastleBuilder.Utils
                 property = projectCache["SHFBSchemaVersion"];
 
                 if(property == null || String.IsNullOrEmpty(property.Value))
-                    throw new BuilderException("PRJ0001",
-                        "Invalid or missing SHFBSchemaVersion");
+                    throw new BuilderException("PRJ0001", "Invalid or missing SHFBSchemaVersion");
 
                 schemaVersion = new Version(property.Value);
 
                 if(schemaVersion > SandcastleProject.SchemaVersion)
-                    throw new BuilderException("PRJ0002", "The selected " +
-                        "file is for a more recent version of the help file " +
-                        "builder.  Please upgrade your copy to load the file.");
+                    throw new BuilderException("PRJ0002", "The selected file is for a more recent " +
+                        "version of the help file builder.  Please upgrade your copy to load the file.");
 
                 // Note that many properties don't use the final value as they
                 // don't contain variables that need replacing.
@@ -2647,16 +2629,13 @@ namespace SandcastleBuilder.Utils
 
                         case "HELPFILEFORMAT":
                             // The enum value names changed in v1.8.0.3
-                            if(schemaVersion.Major == 1 &&
-                              schemaVersion.Minor == 8 &&
-                              schemaVersion.Build == 0 &&
-                              schemaVersion.Revision < 3)
+                            if(schemaVersion.Major == 1 && schemaVersion.Minor == 8 &&
+                              schemaVersion.Build == 0 && schemaVersion.Revision < 3)
                             {
                                 helpFileFormat = prop.Value.ToUpper(CultureInfo.InvariantCulture);
 
                                 foreach(string key in translateFormat.Keys)
-                                    helpFileFormat = helpFileFormat.Replace(key,
-                                        translateFormat[key]);
+                                    helpFileFormat = helpFileFormat.Replace(key, translateFormat[key]);
 
                                 this.SetLocalProperty(prop.Name, helpFileFormat);
 
@@ -2683,9 +2662,8 @@ namespace SandcastleBuilder.Utils
             }
             catch(Exception ex)
             {
-                throw new BuilderException("PRJ0003", String.Format(
-                    CultureInfo.CurrentCulture, "Error reading project " +
-                    "from '{0}':\r\n{1}", msBuildProject.FullFileName,
+                throw new BuilderException("PRJ0003", String.Format(CultureInfo.CurrentCulture,
+                    "Error reading project from '{0}':\r\n{1}", msBuildProject.FullFileName,
                     ex.Message), ex);
             }
             finally
@@ -2739,16 +2717,13 @@ namespace SandcastleBuilder.Utils
                     return;
             }
 
-            if(!property.CanWrite || property.IsDefined(
-              typeof(XmlIgnoreAttribute), true))
-                throw new BuilderException("PRJ0004", String.Format(
-                    CultureInfo.InvariantCulture, "An attempt was " +
-                    "made to set a read-only or ignored property: {0}" +
-                    "   Value: {1}", name, value));
+            if(!property.CanWrite || property.IsDefined(typeof(XmlIgnoreAttribute), true))
+                throw new BuilderException("PRJ0004", String.Format(CultureInfo.InvariantCulture,
+                    "An attempt was made to set a read-only or ignored property: {0}   Value: {1}",
+                    name, value));
 
             // If escaped, unescape it
-            escAttr = pdcCache[name].Attributes[typeof(EscapeValueAttribute)] as
-                EscapeValueAttribute;
+            escAttr = pdcCache[name].Attributes[typeof(EscapeValueAttribute)] as EscapeValueAttribute;
 
             if(escAttr != null)
                 value = EscapeValueAttribute.Unescape(value);
@@ -2756,8 +2731,7 @@ namespace SandcastleBuilder.Utils
             try
             {
                 if(property.PropertyType.IsEnum)
-                    parsedValue = Enum.Parse(property.PropertyType,
-                        value, true);
+                    parsedValue = Enum.Parse(property.PropertyType, value, true);
                 else
                     if(property.PropertyType == typeof(Version))
                         parsedValue = new Version(value);
@@ -2770,8 +2744,7 @@ namespace SandcastleBuilder.Utils
                                 parsedValue = new FolderPath(value, this);
                             else
                             {
-                                tc = TypeDescriptor.GetConverter(
-                                    property.PropertyType);
+                                tc = TypeDescriptor.GetConverter(property.PropertyType);
                                 parsedValue = tc.ConvertFromString(value);
                             }
 
@@ -2785,9 +2758,8 @@ namespace SandcastleBuilder.Utils
             }
             catch(Exception ex)
             {
-                throw new BuilderException("PRJ0005",
-                    "Unable to parse value '" + value + "' for property '" +
-                    name + "'", ex);
+                throw new BuilderException("PRJ0005", "Unable to parse value '" + value +
+                    "' for property '" + name + "'", ex);
             }
 
             property.SetValue(this, parsedValue, null);
@@ -2802,8 +2774,7 @@ namespace SandcastleBuilder.Utils
         /// <exception cref="ArgumentException">This is thrown if the property
         /// name is null, an empty string, or is not a recognized property
         /// name.</exception>
-        private void SetProjectProperty(string propertyName,
-          object propertyValue)
+        private void SetProjectProperty(string propertyName, object propertyValue)
         {
             PropertyInfo localProp;
             DefaultValueAttribute defValue;
@@ -2875,8 +2846,7 @@ namespace SandcastleBuilder.Utils
             }
 
             // Only do the work if this is different to what we had
-            if(String.Compare(oldValue, newValue,
-              StringComparison.Ordinal) != 0)
+            if(String.Compare(oldValue, newValue, StringComparison.Ordinal) != 0)
             {
                 // See if the project can be edited.  If not, abort the change
                 // by throwing an exception.
@@ -2884,16 +2854,14 @@ namespace SandcastleBuilder.Utils
                 this.OnQueryEditProjectFile(ce);
 
                 if(ce.Cancel)
-                    throw new OperationCanceledException(
-                        "Project cannot be edited");
+                    throw new OperationCanceledException("Project cannot be edited");
 
                 // Escape the value if necessary
                 escAttr = pdcCache[propertyName].Attributes[
                     typeof(EscapeValueAttribute)] as EscapeValueAttribute;
 
                 if(escAttr != null)
-                    msBuildProject.SetProperty(propertyName,
-                        EscapeValueAttribute.Escape(newValue), null);
+                    msBuildProject.SetProperty(propertyName, EscapeValueAttribute.Escape(newValue), null);
                 else
                     msBuildProject.SetProperty(propertyName, newValue, null);
 
@@ -2947,8 +2915,7 @@ namespace SandcastleBuilder.Utils
             if(projectCache == null)
                 projectCache = msBuildProject.EvaluatedProperties;
 
-            if(msBuildProject == null || field == null ||
-              propertyCache.ContainsKey(name) ||
+            if(msBuildProject == null || field == null || propertyCache.ContainsKey(name) ||
               restrictedProps.IndexOf(name) != -1)
                 return false;
 
@@ -2982,25 +2949,25 @@ namespace SandcastleBuilder.Utils
             buildVarMatchEval = new MatchEvaluator(this.OnBuildVarMatch);
 
             docSources = new DocumentationSourceCollection(this);
-            docSources.ListChanged += new ListChangedEventHandler(docSources_ListChanged);
+            docSources.ListChanged += docSources_ListChanged;
 
             namespaceSummaries = new NamespaceSummaryItemCollection(this);
-            namespaceSummaries.ListChanged += new ListChangedEventHandler(ItemList_ListChanged);
+            namespaceSummaries.ListChanged += ItemList_ListChanged;
 
             references = new ReferenceItemCollection(this);
-            references.ListChanged += new ListChangedEventHandler(ItemList_ListChanged);
+            references.ListChanged += ItemList_ListChanged;
 
             componentConfigs = new ComponentConfigurationDictionary(this);
-            componentConfigs.DictionaryChanged += new ListChangedEventHandler(ItemList_ListChanged);
+            componentConfigs.DictionaryChanged += ItemList_ListChanged;
 
             plugInConfigs = new PlugInConfigurationDictionary(this);
-            plugInConfigs.DictionaryChanged += new ListChangedEventHandler(ItemList_ListChanged);
+            plugInConfigs.DictionaryChanged += ItemList_ListChanged;
 
             apiFilter = new ApiFilterCollection(this);
-            apiFilter.ListChanged += new ListChangedEventHandler(ItemList_ListChanged);
+            apiFilter.ListChanged += ItemList_ListChanged;
 
             helpAttributes = new MSHelpAttrCollection(this);
-            helpAttributes.ListChanged += new ListChangedEventHandler(ItemList_ListChanged);
+            helpAttributes.ListChanged += ItemList_ListChanged;
 
             try
             {
@@ -3037,9 +3004,9 @@ namespace SandcastleBuilder.Utils
 
                 this.HelpTitle = this.HtmlHelpName = this.CopyrightHref = this.CopyrightText =
                     this.FeedbackEMailAddress = this.FeedbackEMailLinkText = this.HeaderText =
-                    this.FooterText = this.ProjectSummary = this.RootNamespaceTitle = this.PlugInNamespaces =
-                    this.TopicVersion = this.TocParentId = this.TocParentVersion =
-                    this.CatalogProductId = this.CatalogVersion = null;
+                    this.FooterText = this.ProjectSummary = this.RootNamespaceTitle =
+                    this.PlugInNamespaces = this.TopicVersion = this.TocParentId =
+                    this.TocParentVersion = this.CatalogProductId = this.CatalogVersion = null;
 
                 language = new CultureInfo("en-US");
                 frameworkVersion = FrameworkVersionTypeConverter.LatestMatching("3.5");
@@ -3065,8 +3032,7 @@ namespace SandcastleBuilder.Utils
             string template;
 
             if(String.IsNullOrEmpty(filename))
-                throw new ArgumentException("A filename must be specified",
-                    "filename");
+                throw new ArgumentException("A filename must be specified", "filename");
 
             filename = Path.GetFullPath(filename);
             msBuildProject = new Project(Engine.GlobalEngine);
@@ -3074,8 +3040,7 @@ namespace SandcastleBuilder.Utils
             if(!File.Exists(filename))
             {
                 if(mustExist)
-                    throw new ArgumentException("The specific file must exist",
-                        "filename");
+                    throw new ArgumentException("The specific file must exist", "filename");
 
                 // Create new project from template file
                 template = Properties.Resources.ProjectTemplate;
@@ -3102,8 +3067,7 @@ namespace SandcastleBuilder.Utils
         /// property values are current, and, if using final values, that the
         /// configuration and platform have been set in the MSBuild project
         /// global properties.</remarks>
-        public SandcastleProject(Project existingProject, bool useFinalValues) :
-          this()
+        public SandcastleProject(Project existingProject, bool useFinalValues) : this()
         {
             msBuildProject = existingProject;
             usingFinalValues = useFinalValues;
@@ -3119,8 +3083,7 @@ namespace SandcastleBuilder.Utils
         /// build) or false to load design-time values.</param>
         /// <remarks>This is used to perform partial builds where we may want
         /// to use alternate property values.</remarks>
-        public SandcastleProject(SandcastleProject cloneProject,
-          bool useFinalValues) : this()
+        public SandcastleProject(SandcastleProject cloneProject, bool useFinalValues) : this()
         {
             string newName = Guid.NewGuid().ToString();
 
@@ -3133,8 +3096,7 @@ namespace SandcastleBuilder.Utils
             // Use the same folder so that relative paths have the same
             // base location.  Use a different filename to prevent the
             // cloned instance from being unloaded by the build engine.
-            msBuildProject.FullFileName = Path.Combine(
-                Path.GetDirectoryName(cloneProject.Filename),
+            msBuildProject.FullFileName = Path.Combine(Path.GetDirectoryName(cloneProject.Filename),
                 newName + ".shfbproj");
 
             this.Configuration = cloneProject.Configuration;
@@ -3284,8 +3246,7 @@ namespace SandcastleBuilder.Utils
             FilePath filePath;
             FileItem newFileItem = null;
             string[] folders;
-            string itemPath, rootPath = Path.GetDirectoryName(
-                msBuildProject.FullFileName);
+            string itemPath, rootPath = Path.GetDirectoryName(msBuildProject.FullFileName);
 
             if(String.IsNullOrEmpty(destFile) || !destFile.StartsWith(rootPath,
               StringComparison.OrdinalIgnoreCase))
@@ -3332,8 +3293,7 @@ namespace SandcastleBuilder.Utils
             }
 
             if(newFileItem == null)
-                newFileItem = new FileItem(new ProjectElement(this,
-                    buildAction.ToString(), destFile));
+                newFileItem = new FileItem(new ProjectElement(this, buildAction.ToString(), destFile));
 
             return newFileItem;
         }
@@ -3347,8 +3307,7 @@ namespace SandcastleBuilder.Utils
         {
             FilePath filePath;
             FileItem fileItem = null;
-            string itemPath, rootPath = Path.GetDirectoryName(
-                msBuildProject.FullFileName);
+            string itemPath, rootPath = Path.GetDirectoryName(msBuildProject.FullFileName);
 
             if(String.IsNullOrEmpty(fileToFind) ||
               !fileToFind.StartsWith(rootPath, StringComparison.OrdinalIgnoreCase))
@@ -3397,36 +3356,31 @@ namespace SandcastleBuilder.Utils
 
             if(componentConfigs.IsDirty)
             {
-                this.SetProjectProperty("ComponentConfigurations",
-                    componentConfigs.ToXml());
+                this.SetProjectProperty("ComponentConfigurations", componentConfigs.ToXml());
                 componentConfigs.IsDirty = false;
             }
 
             if(docSources.IsDirty || forceUpdate)
             {
-                this.SetProjectProperty("DocumentationSources",
-                    docSources.ToXml());
+                this.SetProjectProperty("DocumentationSources", docSources.ToXml());
                 docSources.IsDirty = false;
             }
 
             if(helpAttributes.IsDirty)
             {
-                this.SetProjectProperty("HelpAttributes",
-                    helpAttributes.ToXml());
+                this.SetProjectProperty("HelpAttributes", helpAttributes.ToXml());
                 helpAttributes.IsDirty = false;
             }
 
             if(namespaceSummaries.IsDirty)
             {
-                this.SetProjectProperty("NamespaceSummaries",
-                    namespaceSummaries.ToXml());
+                this.SetProjectProperty("NamespaceSummaries", namespaceSummaries.ToXml());
                 namespaceSummaries.IsDirty = false;
             }
 
             if(plugInConfigs.IsDirty)
             {
-                this.SetProjectProperty("PlugInConfigurations",
-                    plugInConfigs.ToXml());
+                this.SetProjectProperty("PlugInConfigurations", plugInConfigs.ToXml());
                 plugInConfigs.IsDirty = false;
             }
 
@@ -3439,8 +3393,7 @@ namespace SandcastleBuilder.Utils
                 this.SetProjectProperty("WorkingPath", workingPath);
             }
 
-            // Update the schema version if necessary but only if the project
-            // is dirty.
+            // Update the schema version if necessary but only if the project is dirty
             if(msBuildProject.IsDirty)
             {
                 property = msBuildProject.EvaluatedProperties["SHFBSchemaVersion"];
@@ -3477,9 +3430,8 @@ namespace SandcastleBuilder.Utils
             }
             catch(Exception ex)
             {
-                throw new BuilderException("PRJ0006", String.Format(
-                    CultureInfo.CurrentCulture, "Error saving project " +
-                    "to '{0}':\r\n{1}", filename, ex.Message), ex);
+                throw new BuilderException("PRJ0006", String.Format(CultureInfo.CurrentCulture,
+                    "Error saving project to '{0}':\r\n{1}", filename, ex.Message), ex);
             }
         }
 
@@ -3492,8 +3444,7 @@ namespace SandcastleBuilder.Utils
         /// false if there are no items with the given build action.</returns>
         public bool HasItems(BuildAction buildAction)
         {
-            BuildItemGroup items = msBuildProject.GetEvaluatedItemsByName(
-                buildAction.ToString());
+            BuildItemGroup items = msBuildProject.GetEvaluatedItemsByName(buildAction.ToString());
 
             return (items.Count != 0);
         }

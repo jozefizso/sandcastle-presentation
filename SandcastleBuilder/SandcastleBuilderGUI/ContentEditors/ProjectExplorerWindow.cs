@@ -1944,13 +1944,11 @@ namespace SandcastleBuilder.Gui.ContentEditors
                     Directory.Move(path, newPath);
                     path = fileItem.ProjectElement.Include;
                     newPath += "\\";
-                    fileItem.Include = new FilePath(newPath,
-                        fileItem.ProjectElement.Project);
+                    fileItem.Include = new FilePath(newPath, fileItem.ProjectElement.Project);
 
                     foreach(BuildItem item in fileItem.ProjectElement.Project.MSBuildProject.EvaluatedItems)
                         if(item.Include.StartsWith(path, StringComparison.OrdinalIgnoreCase))
-                            item.Include = newPath + item.Include.Substring(
-                                path.Length);
+                            item.Include = newPath + item.Include.Substring(path.Length);
                 }
 
                 this.LoadProject();

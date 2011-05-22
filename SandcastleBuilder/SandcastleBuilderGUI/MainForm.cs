@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder
 // File    : MainForm.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/07/2010
-// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
+// Updated : 01/16/2011
+// Note    : Copyright 2006-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the main form for the application.
@@ -40,6 +40,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -50,9 +51,7 @@ using Microsoft.Build.BuildEngine;
 
 using SandcastleBuilder.Gui.ContentEditors;
 using SandcastleBuilder.Gui.Properties;
-
 using SandcastleBuilder.MicrosoftHelpViewer;
-
 using SandcastleBuilder.Utils;
 using SandcastleBuilder.Utils.BuildEngine;
 using SandcastleBuilder.Utils.BuildComponent;
@@ -223,8 +222,7 @@ namespace SandcastleBuilder.Gui
             project.DocumentationSourcesChanged += new EventHandler(project_Modified);
             project.DirtyChanged += new EventHandler(project_Modified);
 
-            projectExplorer.CurrentProject = projectProperties.CurrentProject =
-                project;
+            projectExplorer.CurrentProject = projectProperties.CurrentProject = project;
 
             if(entityReferencesWindow != null)
                 entityReferencesWindow.CurrentProject = project;
@@ -232,8 +230,7 @@ namespace SandcastleBuilder.Gui
             this.project_Modified(this, EventArgs.Empty);
 
             // Get the configuration and platform values
-            values = project.MSBuildProject.GetConditionedPropertyValues(
-                "Configuration");
+            values = project.MSBuildProject.GetConditionedPropertyValues("Configuration");
 
             tcbConfig.Items.Clear();
 
@@ -246,8 +243,7 @@ namespace SandcastleBuilder.Gui
                 tcbConfig.Items.Add("Release");
             }
 
-            values = project.MSBuildProject.GetConditionedPropertyValues(
-                "Platform");
+            values = project.MSBuildProject.GetConditionedPropertyValues("Platform");
 
             tcbPlatform.Items.Clear();
 
@@ -404,8 +400,7 @@ namespace SandcastleBuilder.Gui
                 if(entityReferencesWindow != null)
                     entityReferencesWindow.CurrentProject = null;
 
-                project = projectExplorer.CurrentProject =
-                    projectProperties.CurrentProject = null;
+                project = projectExplorer.CurrentProject = projectProperties.CurrentProject = null;
                 this.UpdateFilenameInfo();
 
                 miDocumentation.Visible = miCloseProject.Enabled =
@@ -673,10 +668,8 @@ namespace SandcastleBuilder.Gui
 
             if(buildThread != null && buildThread.IsAlive)
             {
-                if(MessageBox.Show("A build is currently taking place.  Do " +
-                  "you want to abort it and exit?", Constants.AppName,
-                  MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
-                  DialogResult.No)
+                if(MessageBox.Show("A build is currently taking place.  Do you want to abort it and exit?",
+                  Constants.AppName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                 {
                     e.Cancel = true;
                     return;
@@ -815,12 +808,16 @@ namespace SandcastleBuilder.Gui
         /// <param name="e">The event arguments</param>
         private void project_Modified(object sender, EventArgs e)
         {
-            string scPath = BuildComponentManager.SandcastlePath,
-                   prjPath = project.SandcastlePath;
+            if(this.InvokeRequired)
+            {
+                this.Invoke(new EventHandler(project_Modified), new object[] { sender, e });
+                return;
+            }
+
+            string scPath = BuildComponentManager.SandcastlePath, prjPath = project.SandcastlePath;
 
             if((String.IsNullOrEmpty(scPath) && prjPath.Length != 0) ||
-              (!String.IsNullOrEmpty(scPath) && prjPath.Length != 0 &&
-              scPath != prjPath))
+              (!String.IsNullOrEmpty(scPath) && prjPath.Length != 0 && scPath != prjPath))
                 BuildComponentManager.SandcastlePath = prjPath;
 
             this.UpdateFilenameInfo();
@@ -1086,8 +1083,7 @@ namespace SandcastleBuilder.Gui
                 try
                 {
                     this.Cursor = Cursors.WaitCursor;
-                    this.CreateProject(mruList[
-                        miRecentProjects.DropDownItems.IndexOf(
+                    this.CreateProject(mruList[miRecentProjects.DropDownItems.IndexOf(
                         (ToolStripMenuItem)sender)], true);
 
                     MainForm.UpdateMruList(project.Filename);
@@ -1286,8 +1282,8 @@ namespace SandcastleBuilder.Gui
 
                     BuildProcess.VerifySafePath("OutputPath", outputFolder, projectFolder);
 
-                    // Read-only and/or hidden files and folders are ignored
-                    // as they are assumed to be under source control.
+                    // Read-only and/or hidden files and folders are ignored as they are assumed to be under
+                    // source control.
                     foreach(string file in Directory.GetFiles(outputFolder))
                         if((File.GetAttributes(file) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) == 0)
                             File.Delete(file);
@@ -1297,10 +1293,17 @@ namespace SandcastleBuilder.Gui
                     foreach(string folder in Directory.GetDirectories(outputFolder))
                         try
                         {
-                            if((File.GetAttributes(folder) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) == 0)
-                                Directory.Delete(folder, true);
+                            // Some source control providers have a mix of read-only/hidden files within a folder
+                            // that isn't read-only/hidden (i.e. Subversion).  In such cases, leave the folder alone.
+                            if(Directory.GetFileSystemEntries(folder, "*").Any(f =>
+                              (File.GetAttributes(f) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) != 0))
+                                sb.AppendFormat("Did not delete folder '{0}' as it contains read-only or hidden " +
+                                    "folders/files\r\n", folder);
                             else
-                                sb.AppendFormat("Did not delete folder '{0}' as it is read-only or hidden\r\n", folder);
+                                if((File.GetAttributes(folder) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) == 0)
+                                    Directory.Delete(folder, true);
+                                else
+                                    sb.AppendFormat("Did not delete folder '{0}' as it is read-only or hidden\r\n", folder);
                         }
                         catch(IOException ioEx)
                         {
@@ -1482,8 +1485,7 @@ namespace SandcastleBuilder.Gui
 
             // Make sure we start out in the project's output folder
             // in case the output folder is relative to it.
-            Directory.SetCurrentDirectory(Path.GetDirectoryName(
-                Path.GetFullPath(project.Filename)));
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Path.GetFullPath(project.Filename)));
 
             string outputPath = project.OutputPath;
 
@@ -1496,10 +1498,8 @@ namespace SandcastleBuilder.Gui
 
             if(!File.Exists(outputPath))
             {
-                MessageBox.Show("A copy of the website does not appear to " +
-                    "exist yet.  It may need to be built.",
-                    Constants.AppName, MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                MessageBox.Show("A copy of the website does not appear to exist yet.  It may need to be built.",
+                    Constants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -1513,19 +1513,16 @@ namespace SandcastleBuilder.Gui
 
                     outputPath = Path.GetDirectoryName(outputPath);
 
-                    // Visual Studio conveniently provides a development web
-                    // server that doesn't require IIS.
-                    webServerPath.Path = String.Format(
-                        CultureInfo.InvariantCulture, "%SystemRoot%" +
+                    // Visual Studio conveniently provides a development web server that doesn't require IIS
+                    webServerPath.Path = String.Format(CultureInfo.InvariantCulture, "%SystemRoot%" +
                         @"\Microsoft.NET\Framework\v{0}\WebDev.WebServer.exe",
                         FrameworkVersionTypeConverter.LatestMatching("2"));
 
                     // Visual Studio 2008 and later put it in a different location
                     if(!File.Exists(webServerPath))
                     {
-                        path = Environment.ExpandEnvironmentVariables(
-                            @"%ProgramFiles%\Common Files\Microsoft Shared\" +
-                            "DevServer");
+                        path = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Common Files\" +
+                            @"Microsoft Shared\DevServer");
 
                         if(Directory.Exists(path))
                             files = Directory.GetFiles(path, "WebDev.WebServer.exe",
@@ -1535,9 +1532,8 @@ namespace SandcastleBuilder.Gui
                             webServerPath.Path = files[0];
                         else
                         {
-                            path = Environment.ExpandEnvironmentVariables(
-                                @"%ProgramFiles(x86)%\Common Files\Microsoft " +
-                                @"Shared\DevServer");
+                            path = Environment.ExpandEnvironmentVariables(@"%ProgramFiles(x86)%\" +
+                                @"Common Files\Microsoft Shared\DevServer");
 
                             if(Directory.Exists(path))
                                 files = Directory.GetFiles(path, "WebDev.WebServer.exe",
@@ -1550,9 +1546,8 @@ namespace SandcastleBuilder.Gui
 
                     if(!File.Exists(webServerPath))
                     {
-                        MessageBox.Show("Unable to locate ASP.NET Development " +
-                            "Web Server.  View the HTML website instead.",
-                            Constants.AppName, MessageBoxButtons.OK,
+                        MessageBox.Show("Unable to locate ASP.NET Development Web Server.  View the HTML " +
+                            "website instead.", Constants.AppName, MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
                         return;
                     }
@@ -1563,8 +1558,7 @@ namespace SandcastleBuilder.Gui
                     psi.FileName = webServerPath;
                     psi.Arguments = String.Format(CultureInfo.InvariantCulture,
                         "/port:{0} /path:\"{1}\" /vpath:\"/SHFBOutput_{2}\"",
-                        Settings.Default.ASPNETDevServerPort, outputPath,
-                        this.Handle);
+                        Settings.Default.ASPNETDevServerPort, outputPath, this.Handle);
                     psi.WorkingDirectory = outputPath;
                     psi.UseShellExecute = false;
 

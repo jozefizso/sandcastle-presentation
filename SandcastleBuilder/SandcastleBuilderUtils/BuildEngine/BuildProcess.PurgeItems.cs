@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : BuildProcess.PurgeItems.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 06/15/2010
-// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
+// Updated : 01/15/2011
+// Note    : Copyright 2006-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the code used to purge duplicate topics and other items
@@ -65,7 +65,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// See the <b>Document*</b> properties in the
         /// <see cref="SandcastleProject"/> class for information on the
         /// items removed.</remarks>
-        protected void ApplyVisibilityProperties()
+        private void ApplyVisibilityProperties()
         {
             XmlNodeList apis;
             XmlNode api;

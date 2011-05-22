@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder
 // File    : PreviewTopicWindow.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 06/07/2010
+// Updated : 07/23/2010
 // Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -108,7 +108,6 @@ namespace SandcastleBuilder.Gui.ContentEditors
 
         #region Build methods
         //=====================================================================
-        // Build methods
 
         /// <summary>
         /// This kicks off the build process in a background thread
@@ -123,9 +122,8 @@ namespace SandcastleBuilder.Gui.ContentEditors
                 // Set up the project using information from the current project
                 tempProject = new SandcastleProject(currentProject, true);
 
-                // The temporary project resides in the same folder as the
-                // current project (by filename only, it isn't saved) to
-                // maintain relative paths.  However, build output is stored
+                // The temporary project resides in the same folder as the current project (by filename
+                // only, it isn't saved) to maintain relative paths.  However, build output is stored
                 // in a temporary folder and it keeps the intermediate files.
                 tempProject.CleanIntermediates = false;
                 tempPath = Path.GetTempFileName();
@@ -176,8 +174,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
         /// </summary>
         /// <param name="sender">The sender of the event</param>
         /// <param name="e">The event arguments</param>
-        private void buildProcess_BuildStepChanged(object sender,
-          BuildProgressEventArgs e)
+        private void buildProcess_BuildStepChanged(object sender, BuildProgressEventArgs e)
         {
             if(this.InvokeRequired)
             {
@@ -265,9 +262,16 @@ namespace SandcastleBuilder.Gui.ContentEditors
 
             if(sender == this && tempProject != null)
             {
-                // Delete the temporary project's working files
-                if(!String.IsNullOrEmpty(tempProject.OutputPath) && Directory.Exists(tempProject.OutputPath))
-                    Directory.Delete(tempProject.OutputPath, true);
+                try
+                {
+                    // Delete the temporary project's working files
+                    if(!String.IsNullOrEmpty(tempProject.OutputPath) && Directory.Exists(tempProject.OutputPath))
+                        Directory.Delete(tempProject.OutputPath, true);
+                }
+                catch
+                {
+                    // Eat the exception.  We'll ignore it if the temporary files cannot be deleted.
+                }
 
                 GC.Collect(2);
                 GC.WaitForPendingFinalizers();

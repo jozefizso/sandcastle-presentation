@@ -2,8 +2,8 @@
 // System  : EWSoftware Design Time Attributes and Editors
 // File    : UserDefinedPropertyEditorDlg.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 12/06/2009
-// Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
+// Updated : 01/09/2011
+// Note    : Copyright 2008-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to edit the user-defined project properties
@@ -67,6 +67,13 @@ namespace SandcastleBuilder.Utils.Design
             public UserDefinedPropertyEditorDlg Owner { get; set; }
 
             /// <summary>
+            /// This read-only property indicates whether or not the project
+            /// property was modified.
+            /// </summary>
+            [Browsable(false)]
+            public bool WasModified { get; private set; }
+
+            /// <summary>
             /// This is used to get or set the property name
             /// </summary>
             /// <remarks>Existing properties cannot be renamed as the MSBuild
@@ -95,10 +102,11 @@ namespace SandcastleBuilder.Utils.Design
                                 "an existing user-defined property name");
                     }
                     else
-                        throw new InvalidOperationException("Existing " +
-                            "properties cannot be renamed via the designer");
+                        throw new InvalidOperationException(
+                            "Existing properties cannot be renamed via the designer");
 
                     name = value;
+                    this.WasModified = true;
                 }
             }
 
@@ -116,6 +124,7 @@ namespace SandcastleBuilder.Utils.Design
                 {
                     this.Owner.CheckProjectIsEditable();
                     condition = value;
+                    this.WasModified = true;
                 }
             }
 
@@ -131,6 +140,7 @@ namespace SandcastleBuilder.Utils.Design
                 {
                     this.Owner.CheckProjectIsEditable();
                     propValue = value;
+                    this.WasModified = true;
                 }
             }
             #endregion
@@ -144,8 +154,7 @@ namespace SandcastleBuilder.Utils.Design
             /// <param name="owner">The owning dialog</param>
             /// <param name="buildProperty">The build property to edit or null
             /// for a new property</param>
-            public PropertyItem(UserDefinedPropertyEditorDlg owner,
-              BuildProperty buildProperty)
+            public PropertyItem(UserDefinedPropertyEditorDlg owner, BuildProperty buildProperty)
             {
                 string newPropName;
                 int idx = 1;
@@ -163,13 +172,11 @@ namespace SandcastleBuilder.Utils.Design
                 {
                     do
                     {
-                        newPropName = "NewProperty" + idx.ToString(
-                            CultureInfo.InvariantCulture);
+                        newPropName = "NewProperty" + idx.ToString(CultureInfo.InvariantCulture);
                         idx++;
 
                     } while(!this.Owner.Project.IsValidUserDefinedPropertyName(newPropName) ||
-                        this.Owner.UserDefinedProperties.Where(
-                        p => p.Name == newPropName).Count() != 0);
+                        this.Owner.UserDefinedProperties.Where(p => p.Name == newPropName).Count() != 0);
 
                     name = newPropName;
                     propValue = String.Empty;
@@ -188,7 +195,6 @@ namespace SandcastleBuilder.Utils.Design
                 return this.Name;
             }
             #endregion
-
         }
         #endregion
 
@@ -235,15 +241,14 @@ namespace SandcastleBuilder.Utils.Design
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Unable to load user-defined properties.  " +
-                    "Error " + ex.Message, Constants.AppName,
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Unable to load user-defined properties.  Error " + ex.Message,
+                    Constants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             lbProperties.Sorted = false;
 
             if(lbProperties.Items.Count == 0)
-                pgProps.Enabled = false;
+                pgProps.Enabled = btnRemove.Enabled = false;
             else
                 lbProperties.SelectedIndex = 0;
         }
@@ -262,8 +267,7 @@ namespace SandcastleBuilder.Utils.Design
             this.Project.OnQueryEditProjectFile(ce);
 
             if(ce.Cancel)
-                throw new OperationCanceledException(
-                    "Project cannot be edited");
+                throw new OperationCanceledException("Project cannot be edited");
 
             this.Project.MarkAsDirty();
         }
@@ -273,19 +277,27 @@ namespace SandcastleBuilder.Utils.Design
         //=====================================================================
 
         /// <summary>
+        /// Store changes to modified properties when the dialog is closed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UserDefinedPropertyEditorDlg_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            foreach(PropertyItem item in lbProperties.Items)
+				if(item.WasModified)
+                {
+                    this.Project.MSBuildProject.SetProperty(item.Name, item.Value);
+                    this.Project.MSBuildProject.EvaluatedProperties[item.Name].Condition = item.Condition;
+                }
+        }
+
+        /// <summary>
         /// Close the form
         /// </summary>
         /// <param name="sender">The sender of the event</param>
         /// <param name="e">The event arguments</param>
         private void btnClose_Click(object sender, EventArgs e)
         {
-            foreach(PropertyItem item in lbProperties.Items)
-            {
-                this.Project.MSBuildProject.SetProperty(item.Name, item.Value);
-                this.Project.MSBuildProject.EvaluatedProperties[
-                    item.Name].Condition = item.Condition;
-            }
-
             this.Close();
         }
 
@@ -296,8 +308,7 @@ namespace SandcastleBuilder.Utils.Design
         /// <param name="e">The event arguments</param>
         private void btnHelp_Click(object sender, EventArgs e)
         {
-            string path = Path.GetDirectoryName(
-                Assembly.GetExecutingAssembly().Location);
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             try
             {
@@ -315,9 +326,8 @@ namespace SandcastleBuilder.Utils.Design
             {
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
                 MessageBox.Show(String.Format(CultureInfo.CurrentCulture,
-                    "Unable to open help file '{0}'.  Reason: {1}",
-                    path, ex.Message), Constants.AppName,
-                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    "Unable to open help file '{0}'.  Reason: {1}", path, ex.Message),
+                    Constants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 
@@ -337,6 +347,19 @@ namespace SandcastleBuilder.Utils.Design
         }
 
         /// <summary>
+        /// Remove a user defined property
+        /// </summary>
+        /// <param name="sender">The sender of the event</param>
+        /// <param name="e">The event arguments</param>
+        private void btnRemove_Click(object sender, EventArgs e)
+        {
+            // MSBuild 3.5 and earlier do not support property removal
+            MessageBox.Show("MSBuild 3.5 does not provide a means of removing project properties.  You will " +
+                "need to open the project file in a text editor and remove the unwanted property manually.",
+                Constants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
         /// Update the property grid with the selected item
         /// </summary>
         /// <param name="sender"></param>
@@ -347,12 +370,12 @@ namespace SandcastleBuilder.Utils.Design
             {
                 PropertyItem item = (PropertyItem)lbProperties.SelectedItem;
                 pgProps.SelectedObject = item;
-                pgProps.Enabled = true;
+                pgProps.Enabled = btnRemove.Enabled = true;
             }
             else
             {
                 pgProps.SelectedObject = null;
-                pgProps.Enabled = false;
+                pgProps.Enabled = btnRemove.Enabled = false;
             }
 
             pgProps.Refresh();

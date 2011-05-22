@@ -52,6 +52,13 @@ edit the <codeInline>HintPath</codeInline> property to specify the referenced
 file.  All other references have read-only properties.  To change them, remove
 them and add the desired references in their place.</para>
 
+
+<alert class="note">
+  <para>If using environment variables in the hint path, use the MSBuild format
+rather than percent signs so that they are expanded correctly (i.e.
+<codeInline>$(MyVar)\Ref.dll</codeInline>).</para>
+</alert>
+
       </content>
     </section>
 

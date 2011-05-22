@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : BuildProcess.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/07/2010
-// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
+// Updated : 01/15/2011
+// Note    : Copyright 2006-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the thread class that handles all aspects of the build
@@ -945,10 +945,11 @@ namespace SandcastleBuilder.Utils.BuildEngine
                 // Copy the standard help file content
                 this.CopyStandardHelpContent();
 
-                // Copy conceptual content files if there are topics
+                // Copy conceptual content files if there are topics or tokens.  Tokens can be replaced in
+                // XML comments files so we check for them too.
                 conceptualContent = new ConceptualContentSettings(project);
 
-                if(conceptualContent.ContentLayoutFiles.Count != 0)
+                if(conceptualContent.ContentLayoutFiles.Count != 0 || conceptualContent.TokenFiles.Count != 0)
                 {
                     this.ReportProgress(BuildStep.CopyConceptualContent, "Copying conceptual content...");
 
@@ -1106,10 +1107,19 @@ namespace SandcastleBuilder.Utils.BuildEngine
                         {
                             // Ignore the working folder
                             if(!folder.EndsWith("Working", StringComparison.Ordinal))
-                              if((File.GetAttributes(folder) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) == 0)
-                                    Directory.Delete(folder, true);
+                            {
+                                // Some source control providers have a mix of read-only/hidden files within a folder
+                                // that isn't read-only/hidden (i.e. Subversion).  In such cases, leave the folder alone.
+                                if(Directory.GetFileSystemEntries(folder, "*").Any(f =>
+                                  (File.GetAttributes(f) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) != 0))
+                                    this.ReportProgress("    Did not delete folder '{0}' as it contains " +
+                                        "read-only or hidden folders/files", folder);
                                 else
-                                    this.ReportProgress("    Ignoring read-only/hidden folder {0}", folder);
+                                    if((File.GetAttributes(folder) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) == 0)
+                                        Directory.Delete(folder, true);
+                                    else
+                                        this.ReportProgress("    Ignoring read-only/hidden folder {0}", folder);
+                            }
                         }
                         catch(IOException ioEx)
                         {
@@ -2054,7 +2064,7 @@ AllDone:
         /// </summary>
         /// <exception cref="BuilderException">This is thrown if any of
         /// the information is invalid.</exception>
-        protected void ValidateDocumentationSources()
+        private void ValidateDocumentationSources()
         {
             List<string> commentsList = new List<string>();
             Dictionary<string, MSBuildProject> projectDictionary = new Dictionary<string, MSBuildProject>();

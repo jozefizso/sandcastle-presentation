@@ -2,8 +2,8 @@
 // System  : EWSoftware Design Time Attributes and Editors
 // File    : AdditionalReferenceLinksConfigDlg.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 08/13/2008
-// Note    : Copyright 2008, Eric Woodruff, All rights reserved
+// Updated : 01/17/2011
+// Note    : Copyright 2008-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to edit the additional reference links
@@ -91,10 +91,8 @@ namespace SandcastleBuilder.PlugIns
 
             root = navigator.SelectSingleNode("configuration");
 
-            if(root.IsEmptyElement)
-                return;
-
-            items.FromXml(project, root);
+            if(!root.IsEmptyElement)
+                items.FromXml(project, root);
 
             if(items.Count == 0)
                 pgProps.Enabled = btnDelete.Enabled = false;

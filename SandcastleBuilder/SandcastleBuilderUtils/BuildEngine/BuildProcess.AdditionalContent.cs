@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : BuildProcess.AdditionalContent.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 06/30/2010
-// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
+// Updated : 01/03/2011
+// Note    : Copyright 2006-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the code used to merge the additional content into the
@@ -151,7 +151,7 @@ namespace SandcastleBuilder.Utils.BuildEngine
         /// </summary>
         /// <remarks>Note that for wilcard content items, the folders are
         /// copied recursively.</remarks>
-        protected void CopyAdditionalContent()
+        private void CopyAdditionalContent()
         {
             Dictionary<string, TocEntryCollection> tocItems =
                 new Dictionary<string, TocEntryCollection>();

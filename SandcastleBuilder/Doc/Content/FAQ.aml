@@ -470,7 +470,7 @@ easiest way to reference them is to add a reference item with a path
 similar to the following:</para>
 
 <code lang="none">
-%VS80COMNTOOLS%\..\..\SmartDevices\SDK\CompactFramework\2.0\v2.0\WindowsCE\*.dll
+$(VS80COMNTOOLS)\..\..\SmartDevices\SDK\CompactFramework\2.0\v2.0\WindowsCE\*.dll
 </code>
 
 	<para>This will expand the <codeInline>VS80COMNTOOLS</codeInline>

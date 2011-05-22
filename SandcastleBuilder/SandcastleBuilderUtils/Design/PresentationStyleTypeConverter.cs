@@ -2,8 +2,8 @@
 // System  : EWSoftware Design Time Attributes and Editors
 // File    : PresenationStyleTypeConverter.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 09/17/2007
-// Note    : Copyright 2007, Eric Woodruff, All rights reserved
+// Updated : 01/16/2011
+// Note    : Copyright 2007-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a type converter that allows you to select a presentation
@@ -29,7 +29,6 @@ using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 
-using SandcastleBuilder.Utils;
 using SandcastleBuilder.Utils.BuildEngine;
 
 namespace SandcastleBuilder.Utils.Design
@@ -41,15 +40,16 @@ namespace SandcastleBuilder.Utils.Design
     /// </summary>
     internal sealed class PresentationStyleTypeConverter : StringConverter
     {
+        #region Private data members
         //=====================================================================
-        // Private data members
 
         private static List<string> styles = new List<string>();
         private static StandardValuesCollection standardValues =
             PresentationStyleTypeConverter.InitializeStandardValues();
+        #endregion
 
+        #region Properties
         //=====================================================================
-        // Properties
 
         /// <summary>
         /// This returns the default style
@@ -68,9 +68,10 @@ namespace SandcastleBuilder.Utils.Design
                 return defaultStyle;
             }
         }
+        #endregion
 
+        #region Methods
         //=====================================================================
-        // Methods
 
         /// <summary>
         /// This is used to get the standard values by searching for the
@@ -84,17 +85,15 @@ namespace SandcastleBuilder.Utils.Design
             {
                 // Try the DXROOT environment variable first
                 folder = Environment.GetEnvironmentVariable("DXROOT");
-                if(String.IsNullOrEmpty(folder) ||
-                  !folder.Contains(@"\Sandcastle"))
+
+                if(String.IsNullOrEmpty(folder) || !folder.Contains(@"\Sandcastle"))
                     folder = String.Empty;
 
                 // Try to find Sandcastle based on the path if not there
                 if(folder.Length == 0)
                 {
-                    Match m = Regex.Match(
-                        Environment.GetEnvironmentVariable("PATH"),
-                        @"[A-Z]:\\.[^;]+\\Sandcastle(?=\\Prod)",
-                        RegexOptions.IgnoreCase);
+                    Match m = Regex.Match(Environment.GetEnvironmentVariable("PATH"),
+                        @"[A-Z]:\\.[^;]+\\Sandcastle(?=\\Prod)", RegexOptions.IgnoreCase);
 
                     // If not found in the path, search all fixed drives
                     if(m.Success)
@@ -106,12 +105,10 @@ namespace SandcastleBuilder.Utils.Design
                         // If not found there, try the VS 2005 SDK folders
                         if(folder.Length == 0)
                         {
-                            folder = BuildProcess.FindSdkExecutable(
-                                "MRefBuilder.exe");
+                            folder = BuildProcess.FindSdkExecutable("MRefBuilder.exe");
 
                             if(folder.Length != 0)
-                                folder = folder.Substring(0,
-                                    folder.LastIndexOf('\\'));
+                                folder = folder.Substring(0, folder.LastIndexOf('\\'));
                         }
                     }
                 }
@@ -145,6 +142,7 @@ namespace SandcastleBuilder.Utils.Design
             }
 
             styles.Sort();
+
             return new StandardValuesCollection(styles);
         }
 
@@ -154,8 +152,7 @@ namespace SandcastleBuilder.Utils.Design
         /// </summary>
         /// <param name="context">The format context object</param>
         /// <returns>Returns the standard values for the type</returns>
-        public override StandardValuesCollection GetStandardValues(
-          ITypeDescriptorContext context)
+        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             return standardValues;
         }
@@ -166,8 +163,7 @@ namespace SandcastleBuilder.Utils.Design
         /// </summary>
         /// <param name="context">The format context object</param>
         /// <returns>Always returns true</returns>
-        public override bool GetStandardValuesExclusive(
-          ITypeDescriptorContext context)
+        public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
         {
             return true;
         }
@@ -178,8 +174,7 @@ namespace SandcastleBuilder.Utils.Design
         /// </summary>
         /// <param name="context">The format context object</param>
         /// <returns>Always returns true</returns>
-        public override bool GetStandardValuesSupported(
-          ITypeDescriptorContext context)
+        public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
         {
             return true;
         }
@@ -210,8 +205,7 @@ namespace SandcastleBuilder.Utils.Design
             {
                 // Try for a case-insensitive match first
                 foreach(string s in styles)
-                    if(String.Compare(s, style,
-                      StringComparison.OrdinalIgnoreCase) == 0)
+                    if(String.Compare(s, style, StringComparison.OrdinalIgnoreCase) == 0)
                         return s;
 
                 // Try for the closest match
@@ -221,8 +215,7 @@ namespace SandcastleBuilder.Utils.Design
                 {
                     compareStyle = s.ToLower(CultureInfo.InvariantCulture);
 
-                    if(compareStyle.StartsWith(style,
-                      StringComparison.Ordinal) || compareStyle.Contains(style))
+                    if(compareStyle.StartsWith(style, StringComparison.Ordinal) || compareStyle.Contains(style))
                         return s;
                 }
             }
@@ -230,5 +223,6 @@ namespace SandcastleBuilder.Utils.Design
             // Not found, return the first style
             return styles[0];
         }
+        #endregion
     }
 }

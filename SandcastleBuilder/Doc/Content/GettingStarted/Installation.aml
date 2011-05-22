@@ -42,15 +42,17 @@ must be installed prior to building a help file of that particular type:</para>
 
     <listItem>The MS Help 2 compiler for building MS Help 2 (.HxS) help
 files.  This must be downloaded and installed as part of the <externalLink>
-  <linkText>Visual Studio 2005 SDK</linkText>
+  <linkText>Visual Studio 2005 SDK v4.0</linkText>
   <linkUri>http://www.microsoft.com/downloads/details.aspx?familyid=51A5C65B-C020-4E08-8AC0-3EB9C06996F4&amp;displaylang=en</linkUri>
   <linkTarget>_blank</linkTarget>
 </externalLink> or the
 <externalLink>
-  <linkText>Visual Studio 2008 SDK</linkText>
-  <linkUri>http://www.microsoft.com/downloads/details.aspx?FamilyID=59ec6ec3-4273-48a3-ba25-dc925a45584d&amp;DisplayLang=en</linkUri>
+  <linkText>Visual Studio 2008 SDK v1.0</linkText>
+  <linkUri>http://www.microsoft.com/downloads/en/details.aspx?familyid=30402623-93ca-479a-867c-04dc45164f5b&amp;displaylang=en</linkUri>
   <linkTarget>_blank</linkTarget>
-</externalLink>.</listItem>
+</externalLink>.  Note that the latest version of the Visual Studio 2008 SDK does not
+contain the Help 2 compiler so you must download the 1.0 version.  The latest release
+can be installed after it if you need it.</listItem>
 
 	<listItem>The Help Library Manager and Help Library Agent for installing and
 viewing MS Help Viewer (.mshc) help files.  These are installed as part of Visual Studio 2010.</listItem>
@@ -145,8 +147,8 @@ help file builder but you may find them useful.</para>
 <list class="bullet">
   <listItem>If you are documenting .NET 1.1 applications and need the Help 2
 compiler tools, you can download the <externalLink>
-  <linkText>Visual Studio 2003 Help Integration Toolkit</linkText>
-  <linkUri>http://www.microsoft.com/downloads/details.aspx?familyid=ce1b26dc-d6af-42a1-a9a4-88c4eb456d87&amp;displaylang=en</linkUri>
+  <linkText>Visual Studio .NET Help Integration Kit 2003</linkText>
+  <linkUri>http://www.microsoft.com/downloads/en/details.aspx?familyid=ce1b26dc-d6af-42a1-a9a4-88c4eb456d87&amp;displaylang=en</linkUri>
   <linkTarget>_blank</linkTarget>
 </externalLink>.</listItem>
 

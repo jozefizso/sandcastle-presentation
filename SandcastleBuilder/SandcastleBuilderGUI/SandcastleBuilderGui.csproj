@@ -34,6 +34,10 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -66,7 +70,7 @@
   <ItemGroup>
     <Reference Include="ICSharpCode.TextEditor, Version=3.0.0.2970, Culture=neutral, PublicKeyToken=4d61825e8dd49f1a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\ICSharpCode.TextEditor.dll</HintPath>
+      <HintPath>..\ReferenceAssemblies\ICSharpCode.TextEditor.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="System" />
@@ -81,7 +85,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=2.2.3199.27942, Culture=neutral, PublicKeyToken=7c3444e32642107f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+      <HintPath>..\ReferenceAssemblies\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -694,7 +698,7 @@
     <Content Include="SharedContent\VS2005BuilderContent_zh-CN.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\CodeColorizer\ColorizerLibrary\Template\CopyCode_h.gif">
+    <Content Include="..\CodeColorizer\ColorizerLibrary\Template\CopyCode_h.gif">
       <Link>Colorizer\CopyCode_h.gif</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -778,23 +782,23 @@
     <Content Include="Templates\Hana.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\CodeColorizer\ColorizerLibrary\Template\CopyCode.gif">
+    <Content Include="..\CodeColorizer\ColorizerLibrary\Template\CopyCode.gif">
       <Link>Colorizer\CopyCode.gif</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\CodeColorizer\ColorizerLibrary\Template\highlight.css">
+    <Content Include="..\CodeColorizer\ColorizerLibrary\Template\highlight.css">
       <Link>Colorizer\highlight.css</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\CodeColorizer\ColorizerLibrary\Template\highlight.js">
+    <Content Include="..\CodeColorizer\ColorizerLibrary\Template\highlight.js">
       <Link>Colorizer\highlight.js</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\CodeColorizer\ColorizerLibrary\Template\highlight.xml">
+    <Content Include="..\CodeColorizer\ColorizerLibrary\Template\highlight.xml">
       <Link>Colorizer\highlight.xml</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\CodeColorizer\ColorizerLibrary\Template\highlight.xsl">
+    <Content Include="..\CodeColorizer\ColorizerLibrary\Template\highlight.xsl">
       <Link>Colorizer\highlight.xsl</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

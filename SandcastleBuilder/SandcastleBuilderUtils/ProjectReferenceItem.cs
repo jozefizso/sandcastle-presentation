@@ -29,8 +29,6 @@ using System.Globalization;
 using System.IO;
 using System.Xml;
 
-using Microsoft.Build.BuildEngine;
-
 using SandcastleBuilder.Utils.Design;
 using SandcastleBuilder.Utils.MSBuild;
 

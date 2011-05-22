@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : ConvertFromMSExampleGui.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 09/27/2008
-// Note    : Copyright 2008, Eric Woodruff, All rights reserved
+// Updated : 01/09/2011
+// Note    : Copyright 2008-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a class used to convert the Microsoft example Sandcastle
@@ -21,11 +21,9 @@
 //=============================================================================
 
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
+using System.Linq;
 using System.Xml;
 using System.Xml.XPath;
 
@@ -132,15 +130,14 @@ namespace SandcastleBuilder.Utils.Conversion
 
                 // Add the dependencies
                 lastProperty = "Dependents";
+
                 foreach(XPathNavigator dependency in navProject.Select(
                   "//prj:Project/prj:ItemGroup/prj:Dependents", nsm))
                 {
                     includePath = dependency.GetAttribute("Include", String.Empty);
 
                     if(includePath.IndexOfAny(new char[] { '*', '?' }) == -1)
-                        project.References.AddReference(
-                            Path.GetFileNameWithoutExtension(includePath),
-                            includePath);
+                        project.References.AddReference(Path.GetFileNameWithoutExtension(includePath), includePath);
                     else
                         foreach(string file in Directory.GetFiles(
                           Path.GetDirectoryName(includePath),

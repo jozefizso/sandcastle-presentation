@@ -2,8 +2,8 @@
 // System  : EWSoftware Design Time Attributes and Editors
 // File    : ComponentConfigurationEditorDlg.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/01/2008
-// Note    : Copyright 2007-2008, Eric Woodruff, All rights reserved
+// Updated : 01/09/2011
+// Note    : Copyright 2007-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to select and edit the third-party build
@@ -25,6 +25,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
@@ -303,8 +304,7 @@ namespace SandcastleBuilder.Utils.Design
         /// <param name="sender">The sender of the event</param>
         /// <param name="args">The event arguments</param>
         /// <returns>The loaded assembly</returns>
-        private Assembly CurrentDomain_AssemblyResolve(object sender,
-          ResolveEventArgs args)
+        private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             Assembly asm = null;
 
@@ -335,8 +335,7 @@ namespace SandcastleBuilder.Utils.Design
             }
 
             if(asm == null)
-                throw new FileLoadException("Unable to resolve reference to " +
-                    args.Name);
+                throw new FileLoadException("Unable to resolve reference to " + args.Name);
 
             return asm;
         }

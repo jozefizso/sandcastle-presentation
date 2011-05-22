@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : BuildComponentManager.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 03/07/2010
-// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
+// Updated : 01/03/2011
+// Note    : Copyright 2007-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the class that manages the set of third party build
@@ -52,12 +52,11 @@ namespace SandcastleBuilder.Utils.BuildComponent
         private static Dictionary<string, SyntaxFilterInfo> syntaxFilters;
         private static string sandcastlePath, shfbFolder, buildComponentFolder;
 
-        private static Regex reMatchPath = new Regex(
-            @"[A-Z]:\\.[^;]+\\Sandcastle(?=\\Prod)", RegexOptions.IgnoreCase);
-        private static Regex reMatchShfbFolder = new Regex("{@SHFBFolder}",
+        private static Regex reMatchPath = new Regex(@"[A-Z]:\\.[^;]+\\Sandcastle(?=\\Prod)",
             RegexOptions.IgnoreCase);
-        private static Regex reMatchCompFolder = new Regex("{@ComponentsFolder}",
-            RegexOptions.IgnoreCase);
+        private static Regex reMatchShfbFolder = new Regex("{@SHFBFolder}", RegexOptions.IgnoreCase);
+        private static Regex reMatchCompFolder = new Regex("{@ComponentsFolder}", RegexOptions.IgnoreCase);
+        private static Regex reMatchSandcastleFolder = new Regex("{@SandcastlePath}", RegexOptions.IgnoreCase);
         #endregion
 
         #region Properties
@@ -93,33 +92,29 @@ namespace SandcastleBuilder.Utils.BuildComponent
                 {
                     // Try to find it based on the DXROOT environment variable
                     sandcastlePath = Environment.GetEnvironmentVariable("DXROOT");
-                    if(String.IsNullOrEmpty(sandcastlePath) ||
-                      !sandcastlePath.Contains(@"\Sandcastle"))
+
+                    if(String.IsNullOrEmpty(sandcastlePath) || !sandcastlePath.Contains(@"\Sandcastle"))
                         sandcastlePath = String.Empty;
 
                     if(sandcastlePath.Length == 0)
                     {
                         // Search for it in the PATH environment variable
-                        Match m = reMatchPath.Match(
-                            Environment.GetEnvironmentVariable("PATH"));
+                        Match m = reMatchPath.Match(Environment.GetEnvironmentVariable("PATH"));
 
                         // If not found in the path, search all fixed drives
                         if(m.Success)
                             sandcastlePath = m.Value;
                         else
                         {
-                            sandcastlePath = BuildProcess.FindOnFixedDrives(
-                                @"\Sandcastle");
+                            sandcastlePath = BuildProcess.FindOnFixedDrives(@"\Sandcastle");
 
                             // If not found there, try the VS 2005 SDK folders
                             if(sandcastlePath.Length == 0)
                             {
-                                sandcastlePath = BuildProcess.FindSdkExecutable(
-                                    "MRefBuilder.exe");
+                                sandcastlePath = BuildProcess.FindSdkExecutable("MRefBuilder.exe");
 
                                 if(sandcastlePath.Length != 0)
-                                    sandcastlePath = sandcastlePath.Substring(0,
-                                        sandcastlePath.LastIndexOf('\\'));
+                                    sandcastlePath = sandcastlePath.Substring(0, sandcastlePath.LastIndexOf('\\'));
                             }
                         }
                     }
@@ -313,6 +308,8 @@ namespace SandcastleBuilder.Utils.BuildComponent
 
             path = reMatchShfbFolder.Replace(path, shfbFolder);
             path = reMatchCompFolder.Replace(path, buildComponentFolder);
+            path = reMatchSandcastleFolder.Replace(path, SandcastlePath);
+
             return Environment.ExpandEnvironmentVariables(path);
         }
 

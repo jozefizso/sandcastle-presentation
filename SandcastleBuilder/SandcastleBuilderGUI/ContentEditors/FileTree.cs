@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder
 // File    : FileTree.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 12/04/2009
+// Updated : 11/06/2010
 // Note    : Copyright 2008-2009, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -194,36 +194,38 @@ namespace SandcastleBuilder.Gui.ContentEditors
                     name = item.Link.PersistablePath;
 
                     // Resolve MSBuild and environment variable references
-                    if(name.IndexOf("$(", StringComparison.Ordinal) != -1 ||
-                      name.IndexOf('%') != -1)
-                        name = FilePath.AbsoluteToRelativePath(
-                            item.Link.BasePath, item.Link);
+                    if(name.IndexOf("$(", StringComparison.Ordinal) != -1 || name.IndexOf('%') != -1)
+                        name = FilePath.AbsoluteToRelativePath(item.Link.BasePath, item.Link);
 
-                    fileItems.Add(name, item);
-
-                    if(item.BuildAction != BuildAction.Folder)
+                    // Ignore duplicate items if any are found
+                    if(!fileItems.ContainsKey(name))
                     {
-                        name = Path.GetDirectoryName(name);
+                        fileItems.Add(name, item);
 
-                        if(name.Length != 0)
-                            name = FolderPath.TerminatePath(name);
-                    }
-
-                    if(folderNames.IndexOf(name) == -1)
-                    {
-                        folderNames.Add(name);
-
-                        // Note all paths leading up to this item as well
-                        parts = name.Split('\\');
-
-                        name = String.Empty;
-
-                        for(int idx = 0; idx < parts.Length - 2; idx++)
+                        if(item.BuildAction != BuildAction.Folder)
                         {
-                            name += parts[idx] + @"\";
+                            name = Path.GetDirectoryName(name);
 
-                            if(additionalFolders.IndexOf(name) == -1)
-                                additionalFolders.Add(name);
+                            if(name.Length != 0)
+                                name = FolderPath.TerminatePath(name);
+                        }
+
+                        if(folderNames.IndexOf(name) == -1)
+                        {
+                            folderNames.Add(name);
+
+                            // Note all paths leading up to this item as well
+                            parts = name.Split('\\');
+
+                            name = String.Empty;
+
+                            for(int idx = 0; idx < parts.Length - 2; idx++)
+                            {
+                                name += parts[idx] + @"\";
+
+                                if(additionalFolders.IndexOf(name) == -1)
+                                    additionalFolders.Add(name);
+                            }
                         }
                     }
                 }

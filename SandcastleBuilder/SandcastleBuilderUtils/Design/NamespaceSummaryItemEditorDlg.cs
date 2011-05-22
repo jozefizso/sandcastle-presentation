@@ -2,8 +2,8 @@
 // System  : EWSoftware Design Time Attributes and Editors
 // File    : NamespaceSummaryItemEditorDlg.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/27/2008
-// Note    : Copyright 2006-2008, Eric Woodruff, All rights reserved
+// Updated : 01/09/2011
+// Note    : Copyright 2006-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to edit namespace summaries and to indicate
@@ -42,7 +42,6 @@ using System.Xml.XPath;
 
 using SandcastleBuilder.Utils;
 using SandcastleBuilder.Utils.BuildEngine;
-using SandcastleBuilder.Utils.Gac;
 
 namespace SandcastleBuilder.Utils.Design
 {
@@ -279,20 +278,17 @@ namespace SandcastleBuilder.Utils.Design
 
             try
             {
-                // Clone the project for the build and adjust its properties
-                // for our needs.
+                // Clone the project for the build and adjust its properties for our needs
                 tempProject = new SandcastleProject(nsColl.Project, true);
 
-                // The temporary project resides in the same folder as the
-                // current project (by filename only, it isn't saved) to
-                // maintain relative paths.  However, build output is stored
+                // The temporary project resides in the same folder as the current project (by filename
+                // only, it isn't saved) to maintain relative paths.  However, build output is stored
                 // in a temporary folder and it keeps the intermediate files.
                 tempProject.CleanIntermediates = false;
                 tempPath = Path.GetTempFileName();
 
                 File.Delete(tempPath);
-                tempPath = Path.Combine(Path.GetDirectoryName(tempPath),
-                    "SHFBPartialBuild");
+                tempPath = Path.Combine(Path.GetDirectoryName(tempPath), "SHFBPartialBuild");
 
                 if(!Directory.Exists(tempPath))
                     Directory.CreateDirectory(tempPath);
@@ -300,12 +296,8 @@ namespace SandcastleBuilder.Utils.Design
                 tempProject.OutputPath = tempPath;
 
                 buildProcess = new BuildProcess(tempProject, true);
-                buildProcess.BuildStepChanged +=
-                    new EventHandler<BuildProgressEventArgs>(
-                    buildProcess_BuildStepChanged);
-                buildProcess.BuildProgress +=
-                    new EventHandler<BuildProgressEventArgs>(
-                    buildProcess_BuildProgress);
+                buildProcess.BuildStepChanged += buildProcess_BuildStepChanged;
+                buildProcess.BuildProgress += buildProcess_BuildProgress;
 
                 buildThread = new Thread(new ThreadStart(buildProcess.Build));
                 buildThread.Name = "Namespace partial build thread";
@@ -315,10 +307,8 @@ namespace SandcastleBuilder.Utils.Design
             catch(Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
-                MessageBox.Show("Unable to build project to obtain " +
-                    "API information.  Error: " + ex.Message,
-                    Constants.AppName, MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                MessageBox.Show("Unable to build project to obtain API information.  Error: " +
+                    ex.Message, Constants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -361,10 +351,27 @@ namespace SandcastleBuilder.Utils.Design
                 }
             }
 
-            // Delete the temporary project's working files
-            if(!String.IsNullOrEmpty(tempProject.OutputPath) &&
-              Directory.Exists(tempProject.OutputPath))
-                Directory.Delete(tempProject.OutputPath, true);
+            // Add new items that were modified
+            foreach(NamespaceSummaryItem item in lbNamespaces.Items)
+                if(item.IsDirty && nsColl[item.Name] == null)
+                    nsColl.Add(item);
+
+            this.DialogResult = nsColl.IsDirty ? DialogResult.OK : DialogResult.Cancel;
+
+            if(tempProject != null)
+            {
+                try
+                {
+                    // Delete the temporary project's working files
+                    if(!String.IsNullOrEmpty(tempProject.OutputPath) &&
+                      Directory.Exists(tempProject.OutputPath))
+                        Directory.Delete(tempProject.OutputPath, true);
+                }
+                catch
+                {
+                    // Eat the exception.  We'll ignore it if the temporary files cannot be deleted.
+                }
+            }
 
             GC.Collect(2);
             GC.WaitForPendingFinalizers();
@@ -378,13 +385,6 @@ namespace SandcastleBuilder.Utils.Design
         /// <param name="e">The event arguments</param>
         private void btnClose_Click(object sender, EventArgs e)
         {
-            // Add new items that were modified
-            foreach(NamespaceSummaryItem item in lbNamespaces.Items)
-                if(item.IsDirty && nsColl[item.Name] == null)
-                    nsColl.Add(item);
-
-            this.DialogResult = nsColl.IsDirty ? DialogResult.OK :
-                DialogResult.Cancel;
             this.Close();
         }
 
@@ -395,8 +395,7 @@ namespace SandcastleBuilder.Utils.Design
         /// <param name="e">The event arguments</param>
         private void btnHelp_Click(object sender, EventArgs e)
         {
-            string path = Path.GetDirectoryName(
-                Assembly.GetExecutingAssembly().Location);
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             try
             {

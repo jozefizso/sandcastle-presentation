@@ -70,10 +70,10 @@ namespace SandcastleBuilder.MicrosoftHelpViewer
         #region Registry access definitions and external methods
         //=====================================================================
 
-        private static UIntPtr HKEY_LOCAL_MACHINE = (UIntPtr)0x80000002; // Local Machine key
-        private static int KEY_WOW64_64KEY = 0x100;  // Access the 64-bit registry
-        private static int KEY_WOW64_32KEY = 0x200;  // Access the 32-bit registry
-        private static int KEY_READ = 0x20019;       // Read only access
+        private static readonly UIntPtr HKEY_LOCAL_MACHINE = (UIntPtr)0x80000002; // Local Machine key
+        private const int KEY_WOW64_64KEY = 0x100;  // Access the 64-bit registry
+        private const int KEY_WOW64_32KEY = 0x200;  // Access the 32-bit registry
+        private const int KEY_READ = 0x20019;       // Read only access
 
         // Win32 API registry access methods
         [DllImport("advapi32.dll", CharSet = CharSet.Unicode, EntryPoint = "RegOpenKeyExW", SetLastError = true)]

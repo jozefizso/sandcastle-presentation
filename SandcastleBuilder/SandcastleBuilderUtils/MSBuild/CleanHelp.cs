@@ -22,6 +22,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -118,10 +119,16 @@ namespace SandcastleBuilder.Utils.MSBuild
                     foreach(string folder in Directory.GetDirectories(this.OutputPath))
                         try
                         {
-                            if((File.GetAttributes(folder) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) == 0)
-                                Directory.Delete(folder, true);
+                            // Some source control providers have a mix of read-only/hidden files within a folder
+                            // that isn't read-only/hidden (i.e. Subversion).  In such cases, leave the folder alone.
+                            if(Directory.GetFileSystemEntries(folder, "*").Any(f =>
+                              (File.GetAttributes(f) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) != 0))
+                                Log.LogMessage("Skipping folder '{0}' as it contains read-only or hidden folders/files", folder);
                             else
-                                Log.LogMessage("Skipping folder '{0}' as it is read-only or hidden", folder);
+                                if((File.GetAttributes(folder) & (FileAttributes.ReadOnly | FileAttributes.Hidden)) == 0)
+                                    Directory.Delete(folder, true);
+                                else
+                                    Log.LogMessage("Skipping folder '{0}' as it is read-only or hidden", folder);
                         }
                         catch(IOException ioEx)
                         {

@@ -9,6 +9,10 @@
     <OutputType>Package</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.5\Wix.targets</WixTargetsPath>
     <Name>Setup</Name>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>bin\$(Configuration)\</OutputPath>
@@ -56,4 +60,7 @@
 	<Target Name="AfterBuild">
 	</Target>
 	-->
+  <PropertyGroup>
+    <PostBuildEvent>Copy "$(TargetPath)" "\CP\TFS01\SHFB\Deployment\InstallResources"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

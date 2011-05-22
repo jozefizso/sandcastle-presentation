@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder Utilities
 // File    : ReferenceItemCollection.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/27/2008
-// Note    : Copyright 2006-2008, Eric Woodruff, All rights reserved
+// Updated : 07/10/2010
+// Note    : Copyright 2006-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains a collection class used to hold the reference item
@@ -74,12 +74,11 @@ namespace SandcastleBuilder.Utils
         /// </summary>
         public void Sort()
         {
-            ((List<ReferenceItem>)base.Items).Sort(
-                delegate(ReferenceItem x, ReferenceItem y)
-                {
-                    return String.Compare(x.Reference, y.Reference,
-                        StringComparison.CurrentCultureIgnoreCase);
-                });
+            ((List<ReferenceItem>)base.Items).Sort((x, y) =>
+            {
+                return String.Compare(x.Reference, y.Reference,
+                    StringComparison.CurrentCultureIgnoreCase);
+            });
         }
         #endregion
 
@@ -107,25 +106,20 @@ namespace SandcastleBuilder.Utils
                 this.Clear();
                 timeOfLastDirty = project.TimeOfLastDirty;
 
-                BuildItemGroup referenceGroup = project.GetEvaluatedItemsByName(
-                    ReferenceType);
+                BuildItemGroup referenceGroup = project.GetEvaluatedItemsByName(ReferenceType);
 
                 foreach(BuildItem item in referenceGroup)
-                    this.Add(new ReferenceItem(new ProjectElement(projectFile,
-                        item)));
+                    this.Add(new ReferenceItem(new ProjectElement(projectFile, item)));
 
-                referenceGroup = project.GetEvaluatedItemsByName(
-                    ProjectReferenceType);
+                referenceGroup = project.GetEvaluatedItemsByName(ProjectReferenceType);
 
                 foreach(BuildItem item in referenceGroup)
-                    this.Add(new ProjectReferenceItem(new ProjectElement(
-                        projectFile, item)));
+                    this.Add(new ProjectReferenceItem(new ProjectElement(projectFile, item)));
 
                 referenceGroup = project.GetEvaluatedItemsByName(COMReferenceType);
 
                 foreach(BuildItem item in referenceGroup)
-                    this.Add(new COMReferenceItem(new ProjectElement(projectFile,
-                        item)));
+                    this.Add(new COMReferenceItem(new ProjectElement(projectFile, item)));
             }
             finally
             {
@@ -155,8 +149,7 @@ namespace SandcastleBuilder.Utils
         /// <remarks>The <see cref="ReferenceItem" /> constructor is internal
         /// so that we control creation of the items and can associate them
         /// with a project element.</remarks>
-        public ReferenceItem AddReference(string referenceName,
-          string hintPath)
+        public ReferenceItem AddReference(string referenceName, string hintPath)
         {
             ReferenceItem item = new ReferenceItem(new ProjectElement(
                 projectFile, ReferenceType, referenceName));
@@ -184,8 +177,7 @@ namespace SandcastleBuilder.Utils
         public ProjectReferenceItem AddProjectReference(string projectPath)
         {
             ProjectReferenceItem item = new ProjectReferenceItem(
-                new ProjectElement(projectFile, ProjectReferenceType,
-                projectPath));
+                new ProjectElement(projectFile, ProjectReferenceType, projectPath));
 
             int idx = base.IndexOf(item);
 

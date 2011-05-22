@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder
 // File    : TOC.js
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 09/28/2009
-// Note    : Copyright 2006-2009, Eric Woodruff, All rights reserved
+// Updated : 01/03/2011
+// Note    : Copyright 2006-2011, Eric Woodruff, All rights reserved
 // Compiler: JavaScript
 //
 // This file contains the methods necessary to implement a simple tree view
@@ -30,6 +30,7 @@
 
 // IE flag
 var isIE = (navigator.userAgent.indexOf("MSIE") >= 0);
+var isChrome = (navigator.userAgent.indexOf("Chrome") >= 0);
 
 // Minimum width of the TOC div
 var minWidth = 100;
@@ -207,6 +208,20 @@ function GetCurrentUrl()
         // our index page.
         base = window.location.href;
         base = base.substr(0, base.lastIndexOf("/") + 1);
+
+        // Chrome is too secure and won't let you access frame URLs when
+        // running from the file system unless you run Chrome with the
+        // "--disable-web-security" command line option.
+        if(isChrome && base.substr(0, 5) == "file:")
+        {
+            alert("Chrome security prevents access to file-based frame " +
+                "URLs.  As such, the TOC will not work with Index.html.  " +
+                "Either run this website on a web server, run Chrome with " +
+                "the '--disable-web-security' command line option, or use " +
+                "FireFox or Internet Explorer.");
+
+            return "";
+        }
 
         if(base.substr(0, 5) == "file:" && base.substr(0, 8) != "file:///")
             base = base.replace("file://", "file:///");

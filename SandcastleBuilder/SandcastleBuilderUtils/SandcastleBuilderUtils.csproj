@@ -17,6 +17,10 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,7 +53,7 @@
   <ItemGroup>
     <Reference Include="Ionic.Zip.Reduced, Version=1.8.4.5, Culture=neutral, PublicKeyToken=c551e179877da246, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\Ionic.Zip.Reduced.dll</HintPath>
+      <HintPath>..\ReferenceAssemblies\Ionic.Zip.Reduced.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
@@ -385,7 +389,7 @@
     <None Include="Resources\Token.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CodeColorizer\ColorizerLibrary\ColorizerLibrary.csproj">
+    <ProjectReference Include="..\CodeColorizer\ColorizerLibrary\ColorizerLibrary.csproj">
       <Project>{72331A21-C452-4BE4-BFDB-B8029A6BC1C0}</Project>
       <Name>ColorizerLibrary</Name>
     </ProjectReference>

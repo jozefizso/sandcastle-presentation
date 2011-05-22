@@ -2,7 +2,7 @@
 // System  : Sandcastle Help File Builder
 // File    : ContentLayoutWindow.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 07/03/2010
+// Updated : 09/06/2010
 // Note    : Copyright 2008-2010, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
@@ -133,17 +133,14 @@ namespace SandcastleBuilder.Gui.ContentEditors
                     foreach(string file in files)
                     {
                         name = Path.GetFileNameWithoutExtension(file);
-                        itemImage = null;
 
                         miTemplate = new ToolStripMenuItem(name, null, onClick);
-                        miTemplate.Image = itemImage;
                         miTemplate.Tag = file;
                         sbStatusBarText.SetStatusBarText(miTemplate,
                             "Add new '" + name + "' topic");
                         miCustomSibling.DropDownItems.Add(miTemplate);
 
                         miTemplate = new ToolStripMenuItem(name, null, onClick);
-                        miTemplate.Image = itemImage;
                         miTemplate.Tag = file;
                         sbStatusBarText.SetStatusBarText(miTemplate,
                             "Add new '" + name + "' topic");
@@ -307,6 +304,7 @@ namespace SandcastleBuilder.Gui.ContentEditors
             {
                 miDefaultTopic.Enabled = miMarkAsMSHVRoot.Enabled = miApiContent.Enabled = miMoveUp.Enabled =
                     miMoveDown.Enabled = miAddChild.Enabled = miDelete.Enabled = miCut.Enabled = miCopyAsLink.Enabled =
+                    miAssociateTopic.Enabled = miClearTopic.Enabled = miSortTopics.Enabled = miRefreshAssociations.Enabled =
                     tsbDefaultTopic.Enabled = tsbApiInsertionPoint.Enabled = tsbAddChildTopic.Enabled =
                     tsbDeleteTopic.Enabled = tsbMoveUp.Enabled = tsbMoveDown.Enabled = tsbCut.Enabled =
                     tsbEditTopic.Enabled = miEditTopic.Enabled = pgProps.Enabled = false;
@@ -316,7 +314,9 @@ namespace SandcastleBuilder.Gui.ContentEditors
             else
             {
                 miAddChild.Enabled = miDelete.Enabled = miCut.Enabled = miCopyAsLink.Enabled =
-                    tsbAddChildTopic.Enabled = tsbDeleteTopic.Enabled = tsbCut.Enabled = pgProps.Enabled = true;
+                    tsbAddChildTopic.Enabled = tsbDeleteTopic.Enabled = tsbCut.Enabled = pgProps.Enabled =
+                    miAssociateTopic.Enabled = miClearTopic.Enabled = miSortTopics.Enabled =
+                    miRefreshAssociations.Enabled = true;
 
                 tsbDefaultTopic.Enabled = miDefaultTopic.Enabled = tsbApiInsertionPoint.Enabled =
                     miApiContent.Enabled = (current != rootContainerNode);
@@ -756,9 +756,10 @@ namespace SandcastleBuilder.Gui.ContentEditors
                 {
                     foreach(string filename in dlg.FileNames)
                     {
-                        this.AddTopicFile(filename,
-                            miSelection.Owner == cmsNewChildTopic);
-                        tvContent.SelectedNode = selectedNode;
+                        this.AddTopicFile(filename, miSelection.Owner == cmsNewChildTopic);
+
+                        if(selectedNode != null)
+                            tvContent.SelectedNode = selectedNode;
                     }
 
                     MainForm.Host.ProjectExplorer.RefreshProject();

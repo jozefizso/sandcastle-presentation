@@ -2,8 +2,8 @@
 // System  : Sandcastle Help File Builder
 // File    : NewFromOtherFormatDlg.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 10/12/2008
-// Note    : Copyright 2008, Eric Woodruff, All rights reserved
+// Updated : 01/09/2011
+// Note    : Copyright 2008-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to convert a project in a different format
@@ -168,32 +168,28 @@ namespace SandcastleBuilder.Gui
             bool isValid = true;
 
             epErrors.Clear();
-            epErrors.SetIconPadding(txtProjectFile,
-                btnSelectNewFolder.Width + 5);
-            epErrors.SetIconPadding(txtNewProjectFolder,
-                btnSelectNewFolder.Width + 5);
+            epErrors.SetIconPadding(txtProjectFile, btnSelectNewFolder.Width + 5);
+            epErrors.SetIconPadding(txtNewProjectFolder, btnSelectNewFolder.Width + 5);
 
             project = txtProjectFile.Text.Trim();
             folder = txtNewProjectFolder.Text.Trim();
 
             if(project.Length == 0)
             {
-                epErrors.SetError(txtProjectFile, "A project file must " +
-                    "be specified");
+                epErrors.SetError(txtProjectFile, "A project file must be specified");
                 isValid = false;
             }
             else
                 if(!File.Exists(project))
                 {
-                    epErrors.SetError(txtProjectFile, "The specified " +
-                        "project file does not exist");
+                    epErrors.SetError(txtProjectFile, "The specified project file does not exist");
                     isValid = false;
                 }
 
             if(folder.Length == 0)
             {
-                epErrors.SetError(txtNewProjectFolder, "An output folder for " +
-                    "the converted project must be specified");
+                epErrors.SetError(txtNewProjectFolder, "An output folder for the converted project must " +
+                    "be specified");
                 isValid = false;
             }
 
@@ -202,11 +198,10 @@ namespace SandcastleBuilder.Gui
                 project = Path.GetFullPath(project);
                 folder = Path.GetFullPath(folder);
 
-                if(FolderPath.TerminatePath(Path.GetDirectoryName(project)) ==
-                  FolderPath.TerminatePath(folder))
+                if(FolderPath.TerminatePath(Path.GetDirectoryName(project)) == FolderPath.TerminatePath(folder))
                 {
-                    epErrors.SetError(txtNewProjectFolder, "The output " +
-                        "folder cannot match the folder of the original project");
+                    epErrors.SetError(txtNewProjectFolder, "The output folder cannot match the folder of the " +
+                        "original project");
                     isValid = false;
                 }
             }
@@ -221,36 +216,30 @@ namespace SandcastleBuilder.Gui
                 switch(cboProjectFormat.SelectedIndex)
                 {
                     case 1:
-                        converter = new ConvertFromNDoc(txtProjectFile.Text,
-                            txtNewProjectFolder.Text);
+                        converter = new ConvertFromNDoc(txtProjectFile.Text, txtNewProjectFolder.Text);
                         break;
 
                     case 2:
-                        converter = new ConvertFromDocProject(
-                            txtProjectFile.Text, txtNewProjectFolder.Text);
+                        converter = new ConvertFromDocProject(txtProjectFile.Text, txtNewProjectFolder.Text);
                         break;
 
                     case 3:
-                        converter = new ConvertFromSandcastleGui(
-                            txtProjectFile.Text, txtNewProjectFolder.Text);
+                        converter = new ConvertFromSandcastleGui(txtProjectFile.Text, txtNewProjectFolder.Text);
                         break;
 
                     case 4:
-                        converter = new ConvertFromMSExampleGui(
-                            txtProjectFile.Text, txtNewProjectFolder.Text);
+                        converter = new ConvertFromMSExampleGui(txtProjectFile.Text, txtNewProjectFolder.Text);
                         break;
 
                     default:
-                        converter = new ConvertFromShfbFile(txtProjectFile.Text,
-                            txtNewProjectFolder.Text);
+                        converter = new ConvertFromShfbFile(txtProjectFile.Text, txtNewProjectFolder.Text);
                         break;
                 }
 
                 newProjectFilename = converter.ConvertProject();
 
-                MessageBox.Show("The project has been converted successfully",
-                    Constants.AppName, MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                MessageBox.Show("The project has been converted successfully", Constants.AppName,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();
@@ -262,13 +251,11 @@ namespace SandcastleBuilder.Gui
                 BuilderException bex = ex as BuilderException;
 
                 if(bex != null)
-                    MessageBox.Show("Unable to convert project.  " +
-                        "Reason: Error " + bex.ErrorCode + ":" + bex.Message,
-                        Constants.AppName, MessageBoxButtons.OK,
+                    MessageBox.Show("Unable to convert project.  Reason: Error " + bex.ErrorCode +
+                        ":" + bex.Message, Constants.AppName, MessageBoxButtons.OK,
                         MessageBoxIcon.Exclamation);
                 else
-                    MessageBox.Show("Unable to convert project.  " +
-                        "Reason: " + ex.Message, Constants.AppName,
+                    MessageBox.Show("Unable to convert project.  Reason: " + ex.Message, Constants.AppName,
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
             finally
@@ -284,8 +271,7 @@ namespace SandcastleBuilder.Gui
         /// <param name="e">The event arguments</param>
         private void btnHelp_Click(object sender, EventArgs e)
         {
-            string path = Path.GetDirectoryName(
-                Assembly.GetExecutingAssembly().Location);
+            string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             try
             {
@@ -296,15 +282,13 @@ namespace SandcastleBuilder.Gui
 #endif
                 Form form = new Form();
                 form.CreateControl();
-                Help.ShowHelp(form, path, HelpNavigator.Topic,
-                    "html/f68822d2-97ba-48da-a98b-46747983b4a0.htm");
+                Help.ShowHelp(form, path, HelpNavigator.Topic, "html/f68822d2-97ba-48da-a98b-46747983b4a0.htm");
             }
             catch(Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
                 MessageBox.Show(String.Format(CultureInfo.CurrentCulture,
-                    "Unable to open help file '{0}'.  Reason: {1}",
-                    path, ex.Message), Constants.AppName,
+                    "Unable to open help file '{0}'.  Reason: {1}", path, ex.Message), Constants.AppName,
                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }

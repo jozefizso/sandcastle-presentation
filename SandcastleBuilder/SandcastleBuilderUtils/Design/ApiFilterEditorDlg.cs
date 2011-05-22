@@ -2,8 +2,8 @@
 // System  : EWSoftware Design Time Attributes and Editors
 // File    : ApiFilterEditorDlg.cs
 // Author  : Eric Woodruff  (Eric@EWoodruff.us)
-// Updated : 06/15/2010
-// Note    : Copyright 2007-2010, Eric Woodruff, All rights reserved
+// Updated : 01/09/2011
+// Note    : Copyright 2007-2011, Eric Woodruff, All rights reserved
 // Compiler: Microsoft Visual C#
 //
 // This file contains the form used to edit the API filter items.
@@ -569,7 +569,10 @@ namespace SandcastleBuilder.Utils.Design
                 if(buildFilterEntries.ContainsKey(entry.FullName))
                     System.Diagnostics.Debugger.Break();
 #endif
-                buildFilterEntries.Add(entry.FullName, entry);
+                // Sometimes, it does happen for unknown reasons.  Ignore it
+                // so that it doesn't prevent the filter from opening.
+                if(!buildFilterEntries.ContainsKey(entry.FullName))
+                    buildFilterEntries.Add(entry.FullName, entry);
 
                 if(entry.Children.Count != 0)
                     this.ConvertApiFilter(entry.Children);
@@ -1500,25 +1503,21 @@ namespace SandcastleBuilder.Utils.Design
         {
             string tempPath;
 
-            tvApiList.Enabled = splitContainer.Panel2.Enabled =
-                btnReset.Enabled = false;
+            tvApiList.Enabled = splitContainer.Panel2.Enabled = btnReset.Enabled = false;
 
             try
             {
-                // Clone the project for the build and adjust its properties
-                // for our needs.
+                // Clone the project for the build and adjust its properties for our needs
                 tempProject = new SandcastleProject(apiFilter.Project, true);
 
-                // The temporary project resides in the same folder as the
-                // current project (by filename only, it isn't saved) to
-                // maintain relative paths.  However, build output is stored
+                // The temporary project resides in the same folder as the current project (by filename
+                // only, it isn't saved) to maintain relative paths.  However, build output is stored
                 // in a temporary folder and it keeps the intermediate files.
                 tempProject.CleanIntermediates = false;
                 tempPath = Path.GetTempFileName();
 
                 File.Delete(tempPath);
-                tempPath = Path.Combine(Path.GetDirectoryName(tempPath),
-                    "SHFBPartialBuild");
+                tempPath = Path.Combine(Path.GetDirectoryName(tempPath), "SHFBPartialBuild");
 
                 if(!Directory.Exists(tempPath))
                     Directory.CreateDirectory(tempPath);
@@ -1530,12 +1529,8 @@ namespace SandcastleBuilder.Utils.Design
                 // We must suppress the current API filter for this build
                 buildProcess.SuppressApiFilter = true;
 
-                buildProcess.BuildStepChanged +=
-                    new EventHandler<BuildProgressEventArgs>(
-                    buildProcess_BuildStepChanged);
-                buildProcess.BuildProgress +=
-                    new EventHandler<BuildProgressEventArgs>(
-                    buildProcess_BuildProgress);
+                buildProcess.BuildStepChanged += buildProcess_BuildStepChanged;
+                buildProcess.BuildProgress += buildProcess_BuildProgress;
 
                 buildThread = new Thread(new ThreadStart(buildProcess.Build));
                 buildThread.Name = "API fitler partial build thread";
@@ -1545,10 +1540,8 @@ namespace SandcastleBuilder.Utils.Design
             catch(Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.ToString());
-                MessageBox.Show("Unable to build project to obtain " +
-                    "API information.  Error: " + ex.Message,
-                    Constants.AppName, MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                MessageBox.Show("Unable to build project to obtain API information.  Error: " +
+                    ex.Message, Constants.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1591,10 +1584,31 @@ namespace SandcastleBuilder.Utils.Design
                 }
             }
 
-            // Delete the temporary project's working files
-            if(!String.IsNullOrEmpty(tempProject.OutputPath) &&
-              Directory.Exists(tempProject.OutputPath))
-                Directory.Delete(tempProject.OutputPath, true);
+            if(wasModified)
+            {
+                apiFilter.Clear();
+
+                // Add documented namespace filters
+                this.AddNamespaceFilter(tvApiList.Nodes[0]);
+
+                // Add filters for inherited types
+                this.AddNamespaceFilter(tvApiList.Nodes[1]);
+            }
+
+            if(tempProject != null)
+            {
+                try
+                {
+                    // Delete the temporary project's working files
+                    if(!String.IsNullOrEmpty(tempProject.OutputPath) &&
+                      Directory.Exists(tempProject.OutputPath))
+                        Directory.Delete(tempProject.OutputPath, true);
+                }
+                catch
+                {
+                    // Eat the exception.  We'll ignore it if the temporary files cannot be deleted.
+                }
+            }
 
             GC.Collect(2);
             GC.WaitForPendingFinalizers();
@@ -1608,17 +1622,6 @@ namespace SandcastleBuilder.Utils.Design
         /// <param name="e">The event arguments</param>
         private void btnClose_Click(object sender, EventArgs e)
         {
-            if(wasModified)
-            {
-                apiFilter.Clear();
-
-                // Add documented namespace filters
-                this.AddNamespaceFilter(tvApiList.Nodes[0]);
-
-                // Add filters for inherited types
-                this.AddNamespaceFilter(tvApiList.Nodes[1]);
-            }
-
             this.Close();
         }
 
@@ -1661,12 +1664,11 @@ namespace SandcastleBuilder.Utils.Design
         /// <param name="e">The event arguments</param>
         private void btnReset_Click(object sender, EventArgs e)
         {
-            if(MessageBox.Show("Are you sure you want to clear the API " +
-              "filter and reset it to its default state?",
-              Constants.AppName, MessageBoxButtons.YesNo,
-              MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) ==
-              DialogResult.Yes)
+            if(MessageBox.Show("Are you sure you want to clear the API filter and reset it to its default state?",
+              Constants.AppName, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+              MessageBoxDefaultButton.Button2) == DialogResult.Yes)
             {
+                wasModified = false;
                 apiFilter.Clear();
                 this.Close();
             }
