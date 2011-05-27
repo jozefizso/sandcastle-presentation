@@ -95,6 +95,28 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "AuthoringVisualStudio", "Sc
 		VWDPort = "1505"
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MSBuild", "MSBuild", "{2D7A1BF1-08EB-439C-9C7D-1ADB18EDBFE1}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "MSBuild", "MSBuild\", "{7BCF84C4-4F83-4A73-9516-90D758375F60}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/MSBuild"
+		Debug.AspNetCompiler.PhysicalPath = "MSBuild\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\MSBuild\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/MSBuild"
+		Release.AspNetCompiler.PhysicalPath = "MSBuild\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\MSBuild\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "1476"
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -348,6 +370,21 @@ Global
 		{1E719717-623F-4D9A-9F89-55A125FDB0AB}.Sandcastle|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{1E719717-623F-4D9A-9F89-55A125FDB0AB}.Sandcastle|Mixed Platforms.Build.0 = Debug|Any CPU
 		{1E719717-623F-4D9A-9F89-55A125FDB0AB}.Sandcastle|x86.ActiveCfg = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Release|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Release|x86.ActiveCfg = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Sandcastle|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Sandcastle|Any CPU.Build.0 = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Sandcastle|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Sandcastle|Mixed Platforms.Build.0 = Debug|Any CPU
+		{7BCF84C4-4F83-4A73-9516-90D758375F60}.Sandcastle|x86.ActiveCfg = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -370,5 +407,6 @@ Global
 		{63B12D4F-2D39-442F-B73C-C089954FFAD3} = {0BA91CC9-9E7D-4CD2-B970-0C1956891F2D}
 		{72D892D3-BEFA-4BFB-B636-93961C2F25A6} = {0BA91CC9-9E7D-4CD2-B970-0C1956891F2D}
 		{1E719717-623F-4D9A-9F89-55A125FDB0AB} = {0A2871D6-C2B6-4976-91BD-0820C3AA7286}
+		{7BCF84C4-4F83-4A73-9516-90D758375F60} = {2D7A1BF1-08EB-439C-9C7D-1ADB18EDBFE1}
 	EndGlobalSection
 EndGlobal

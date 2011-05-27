@@ -1,7 +1,7 @@
-# 
+#
 # Sandcastle Presentation
 # http://code.google.com/p/sandcastle-presentation/
-# 
+#
 
 syntax: regexp
 
@@ -9,6 +9,7 @@ syntax: regexp
 
 bin/
 obj/
+build/
 Output/
 target/
 chm/
