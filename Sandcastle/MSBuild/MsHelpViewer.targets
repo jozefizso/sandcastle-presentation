@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <UsingTask TaskName="MRefBuilder" AssemblyFile="..." />
+
   <PropertyGroup>
     <!-- Sandcastle directories -->
     <DxRootPath>$(MSBuildThisFileDirectory)\..\</DxRootPath>
@@ -38,7 +40,23 @@
   </Target>
   
   <!--Call MRefBuilder-->
-  <!--<Target Name="Reflection" DependsOnTargets="CreateDirectories;CopySrcFiles">
+  <Target Name="Reflection" DependsOnTargets="BuildDocumentationForReferencedProjects">
+    <ItemGroup>
+      <Assemblies Include="$(DllDir)\*.dll" />
+      <Assemblies Include="$(DllDir)\*.exe" />
+      <Dependencies Include="$(DependencyDir)\*.dll" />
+      <Dependencies Include="$(DependencyDir)\*.exe" />
+    </ItemGroup>
+    
+    <MRefBuilder
+        Assemblies="@(Assemblies)"
+        Dependencies="@(Dependencies)"
+        OutputFile="$(TopicStyleDir)\reflection.org"
+        IncludeInternalMembers=" '$(IncludeInternalMembers)' == 'true' "
+      >
+      
+    </MRefBuilder>
+    <!--
     <Exec Command='"$(ProductionTools)\MRefBuilder" &quot;$(DllDir)\*.dll&quot; &quot;$(DllDir)\*.exe&quot; /out:&quot;$(TopicStyleDir)\reflection.org&quot; /dep:&quot;$(DependencyDir)\*.dll&quot;,&quot;$(DependencyDir)\*.exe&quot;' Condition="$(Internal)=='false'" />
 
     <Exec Command='"$(ProductionTools)\MRefBuilder" &quot;$(DllDir)\*.dll&quot; &quot;$(DllDir)\*.exe&quot; /out:&quot;$(TopicStyleDir)\reflection.org&quot; /dep:&quot;$(DependencyDir)\*.dll&quot;,&quot;$(DependencyDir)\*.exe&quot; /internal+' Condition="$(Internal)=='true'" />
@@ -46,7 +64,8 @@
     <Exec Condition="'$(TopicStyle)' == 'prototype'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyPrototypeDocModel.xsl" /xsl:"$(ProductionTransforms)\AddGuidFilenames.xsl" "$(TopicStyleDir)\reflection.org" /out:"$(TopicStyleDir)\reflection.xml"' />
     <Exec Condition="'$(TopicStyle)' == 'vs2005'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(TopicStyleDir)\reflection.org" /out:"$(TopicStyleDir)\reflection.xml" /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=true' />
     <Exec Condition="'$(TopicStyle)' == 'hana'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(TopicStyleDir)\reflection.org" /out:"$(TopicStyleDir)\reflection.xml" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
-  </Target>-->
+    -->
+  </Target>
 
   <Target Name="CleanBuildDirectory">
     <Message Text="Cleaning build directory '$(BuildDir)'." />

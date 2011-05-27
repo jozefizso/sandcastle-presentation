@@ -26,6 +26,7 @@
       </PropertyGroup>
     </Otherwise>
   </Choose>
+  
   <Target Name="CopySrcFiles" DependsOnTargets="CreateDirectories">
     <Exec Command="copy &quot;%(Dlls.FullPath)&quot; &quot;$(DllDir)\%(Dlls.Filename)%(Dlls.Extension)&quot;" />
     <Exec Command="copy &quot;%(Comments.FullPath)&quot; &quot;$(CommentsDir)\%(Comments.Filename)%(Comments.Extension)&quot;" 
