@@ -10,7 +10,7 @@
     <DependencyDir>$(BuildDir)\dependency</DependencyDir>
     <CommentsDir>$(BuildDir)\comments</CommentsDir>
     <GenericDir>$(DXROOT)\Examples\Generic</GenericDir>
-    <Internal>false</Internal>
+    <IncludeInternalMembers>true</IncludeInternalMembers>
 
 
     <OutputDir>bin\</OutputDir>
