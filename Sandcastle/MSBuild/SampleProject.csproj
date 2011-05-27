@@ -2,7 +2,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="MsHelpViewer">
   <PropertyGroup>
     <DocumentationName>Sample Help Viewer Documentation</DocumentationName>
-    <SandcastlePresentation>vs2010</SandcastlePresentation>
     <CultureName>en-US</CultureName>
   </PropertyGroup>
   <PropertyGroup>
@@ -10,12 +9,17 @@
     <DllDir>$(BuildDir)\dll</DllDir>
     <DependencyDir>$(BuildDir)\dependency</DependencyDir>
     <CommentsDir>$(BuildDir)\comments</CommentsDir>
-    <GenericDir>$(DxRootPath)\Examples\Generic</GenericDir>
+    <GenericDir>$(DXROOT)\Examples\Generic</GenericDir>
     <Internal>false</Internal>
 
 
     <OutputDir>bin\</OutputDir>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <MvcWebLib>d:\dev\OpenSource\asp.net mvc3\mvcweblib\</MvcWebLib>
+  </PropertyGroup>
+  
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>lib\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -24,10 +28,15 @@
     <Comments Include="$(DXROOT)\Examples\sandcastle\comments.xml" />-->
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="ReferencedProject.csproj">
-      <Project>{113D0F9A-CBC0-40E8-90E4-733134123DBE}</Project>
-      <Name>ReferencedProject</Name>
+    <ProjectReference Include="$(MvcWEbLib)\Microsoft.Practices.Web\Microsoft.Practices.Web.csproj">
+      <Project>{5BC1D821-F884-4CAF-AAD7-79E9691856EE}</Project>
+      <Name>Microsoft.Practices.Web.csproj</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(MvcWEbLib)\Microsoft.Practices.Web.UnityExtensions\Microsoft.Practices.Web.UnityExtensions.csproj">
+      <Project>{C1E19C9A-F96F-4A1F-94E0-121EC1E7F2AC}</Project>
+      <Name>Microsoft.Practices.Web.UnityExtensions.csproj</Name>
     </ProjectReference>
   </ItemGroup>
+  
   <Import Project="$(DXROOT)\MSBuild\MsHelpViewer.targets" />
 </Project>

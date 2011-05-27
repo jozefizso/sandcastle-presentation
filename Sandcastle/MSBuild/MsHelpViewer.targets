@@ -9,21 +9,30 @@
     <PresentationStyle Condition=" '$(PresentationStyle)' == '' ">vs2010</PresentationStyle>
     <PresentationStyleDir Condition=" '$(PresentationStyleDir)' == '' ">$(DxRootPath)\Presentation\$(PresentationStyle)</PresentationStyleDir>
   </PropertyGroup>
+  <PropertyGroup>
+    <OutputDir Condition=" '$(OutputDir)' == '' ">bin\</OutputDir>
+    <BuildDir Condition=" '$(BuildDir)' == '' ">$(MSBuildProjectDirectory)\build</BuildDir>
+    <DllDir>$(BuildDir)\dll</DllDir>
+    <DependencyDir>$(BuildDir)\dependency</DependencyDir>
+    <CommentsDir>$(BuildDir)\comments</CommentsDir>
+  </PropertyGroup>
 
-  <Target Name="MsHelpViewer" DependsOnTargets="CopyDllsFromDependentProjects">
+  <Target Name="MsHelpViewer" DependsOnTargets="CleanBuildDirectory;BuildDocumentationForReferencedProjects">
     <Message Text="Target: MsHelpViewer" />
   </Target>
   
-  <Target Name="CopyDllsFromDependentProjects">
+  <Target Name="BuildDocumentationForReferencedProjects">
+    <!-- this task will build and create XML documentation for referenced projects -->
     <Message Text="Copying assemblies from referenced projects to $(DllDir)" />
     
-    <MSBuild Projects="@(ProjectReference)" Targets="Build" BuildInParallel="true" Properties="RunCodeAnalysis=False;StyleCopEnabled=False">
+    <MSBuild
+        Projects="@(ProjectReference)"
+        Targets="Build"
+        BuildInParallel="true"
+        Properties="DocumentationFile=$(CommentsDir)\%(FileName).xml;RunCodeAnalysis=False;StyleCopEnabled=False"
+      >
       <Output TaskParameter="TargetOutputs" ItemName="OutputAssemblies" />
     </MSBuild>
-    <Copy SourceFiles="@(OutputAssemblies)" DestinationFolder="$(DllDir)" SkipUnchangedFiles="true" />
-    
-    <!-- Do not copy third party DLLs. This is not supported yet. -->
-    <!--<Copy SourceFiles="@(Reference)" DestinationFolder="$(DllDir)" SkipUnchangedFiles="true" />-->
   </Target>
   
   <!--Call MRefBuilder-->
@@ -36,5 +45,9 @@
     <Exec Condition="'$(TopicStyle)' == 'vs2005'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(TopicStyleDir)\reflection.org" /out:"$(TopicStyleDir)\reflection.xml" /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=true' />
     <Exec Condition="'$(TopicStyle)' == 'hana'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(TopicStyleDir)\reflection.org" /out:"$(TopicStyleDir)\reflection.xml" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
   </Target>-->
-  
+
+  <Target Name="CleanBuildDirectory">
+    <Message Text="Cleaning build directory '$(BuildDir)'." />
+    <RemoveDir Directories="$(BuildDir)" Condition="Exists($(BuildDir))" ContinueOnError="true" />
+  </Target>
 </Project>
