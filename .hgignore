@@ -14,7 +14,8 @@ target/
 chm/
 \.suo$
 \.user$
-
+\.gpState$
+\.docstates$
 
 # Exclude some temporary XML and other files
 

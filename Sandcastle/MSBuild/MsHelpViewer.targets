@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <!-- Sandcastle directories -->
+    <DxRootPath>$(MSBuildThisFileDirectory)\..\</DxRootPath>
+    <ProductionTools>$(DxRootPath)\ProductionTools</ProductionTools>
+    <ProductionTransforms>$(DxRootPath)\ProductionTransforms</ProductionTransforms>
+    <PresentationStyle Condition=" '$(PresentationStyle)' == '' ">vs2010</PresentationStyle>
+    <PresentationStyleDir Condition=" '$(PresentationStyleDir)' == '' ">$(DxRootPath)\Presentation\$(PresentationStyle)</PresentationStyleDir>
+  </PropertyGroup>
+
+  <Target Name="MsHelpViewer" DependsOnTargets="CopyDllsFromDependentProjects">
+    <Message Text="Target: MsHelpViewer" />
+  </Target>
+  
+  <Target Name="CopyDllsFromDependentProjects">
+    <Message Text="Copying assemblies from referenced projects to $(DllDir)" />
+    
+    <MSBuild Projects="@(ProjectReference)" Targets="Build" BuildInParallel="true" Properties="RunCodeAnalysis=False;StyleCopEnabled=False">
+      <Output TaskParameter="TargetOutputs" ItemName="OutputAssemblies" />
+    </MSBuild>
+    <Copy SourceFiles="@(OutputAssemblies)" DestinationFolder="$(DllDir)" SkipUnchangedFiles="true" />
+    
+    <!-- Do not copy third party DLLs. This is not supported yet. -->
+    <!--<Copy SourceFiles="@(Reference)" DestinationFolder="$(DllDir)" SkipUnchangedFiles="true" />-->
+  </Target>
+  
+  <!--Call MRefBuilder-->
+  <!--<Target Name="Reflection" DependsOnTargets="CreateDirectories;CopySrcFiles">
+    <Exec Command='"$(ProductionTools)\MRefBuilder" &quot;$(DllDir)\*.dll&quot; &quot;$(DllDir)\*.exe&quot; /out:&quot;$(TopicStyleDir)\reflection.org&quot; /dep:&quot;$(DependencyDir)\*.dll&quot;,&quot;$(DependencyDir)\*.exe&quot;' Condition="$(Internal)=='false'" />
+
+    <Exec Command='"$(ProductionTools)\MRefBuilder" &quot;$(DllDir)\*.dll&quot; &quot;$(DllDir)\*.exe&quot; /out:&quot;$(TopicStyleDir)\reflection.org&quot; /dep:&quot;$(DependencyDir)\*.dll&quot;,&quot;$(DependencyDir)\*.exe&quot; /internal+' Condition="$(Internal)=='true'" />
+
+    <Exec Condition="'$(TopicStyle)' == 'prototype'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyPrototypeDocModel.xsl" /xsl:"$(ProductionTransforms)\AddGuidFilenames.xsl" "$(TopicStyleDir)\reflection.org" /out:"$(TopicStyleDir)\reflection.xml"' />
+    <Exec Condition="'$(TopicStyle)' == 'vs2005'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(TopicStyleDir)\reflection.org" /out:"$(TopicStyleDir)\reflection.xml" /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=true' />
+    <Exec Condition="'$(TopicStyle)' == 'hana'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(TopicStyleDir)\reflection.org" /out:"$(TopicStyleDir)\reflection.xml" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
+  </Target>-->
+  
+</Project>
