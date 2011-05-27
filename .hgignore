@@ -15,7 +15,8 @@ chm/
 \.suo$
 \.user$
 \.log$
-
+\.gpState$
+\.docstates$
 
 # Exclude some temporary XML and other files
 
