@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="MsHelpViewer">
+  <PropertyGroup>
+    <DocumentationName>Sample Help Viewer Documentation</DocumentationName>
+    <SandcastlePresentation>vs2010</SandcastlePresentation>
+    <CultureName>en-US</CultureName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <BuildDir>$(MSBuildProjectDirectory)\build</BuildDir>
+    <DllDir>$(BuildDir)\dll</DllDir>
+    <DependencyDir>$(BuildDir)\dependency</DependencyDir>
+    <CommentsDir>$(BuildDir)\comments</CommentsDir>
+    <GenericDir>$(DxRootPath)\Examples\Generic</GenericDir>
+    <Internal>false</Internal>
+
+
+    <OutputDir>bin\</OutputDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>lib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <!--<Dlls Include="$(DXROOT)\Examples\sandcastle\test.dll" />
+    <Comments Include="$(DXROOT)\Examples\sandcastle\comments.xml" />-->
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="ReferencedProject.csproj">
+      <Project>{113D0F9A-CBC0-40E8-90E4-733134123DBE}</Project>
+      <Name>ReferencedProject</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(DXROOT)\MSBuild\MsHelpViewer.targets" />
+</Project>
