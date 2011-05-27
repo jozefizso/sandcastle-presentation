@@ -12,9 +12,8 @@
   <PropertyGroup>
     <OutputDir Condition=" '$(OutputDir)' == '' ">bin\</OutputDir>
     <BuildDir Condition=" '$(BuildDir)' == '' ">$(MSBuildProjectDirectory)\build</BuildDir>
-    <DllDir>$(BuildDir)\dll</DllDir>
+    <DllDir>$(BuildDir)\bin</DllDir>
     <DependencyDir>$(BuildDir)\dependency</DependencyDir>
-    <CommentsDir>$(BuildDir)\comments</CommentsDir>
   </PropertyGroup>
 
   <Target Name="MsHelpViewer" DependsOnTargets="CleanBuildDirectory;BuildDocumentationForReferencedProjects">
@@ -29,10 +28,13 @@
         Projects="@(ProjectReference)"
         Targets="Build"
         BuildInParallel="true"
-        Properties="DocumentationFile=$(CommentsDir)\%(FileName).xml;RunCodeAnalysis=False;StyleCopEnabled=False"
+        Properties="DocumentationFile=$(DllDir)\%(FileName).xml;RunCodeAnalysis=False;StyleCopEnabled=False"
       >
       <Output TaskParameter="TargetOutputs" ItemName="OutputAssemblies" />
     </MSBuild>
+    
+    <!-- copy built assemblies to the dll folder so the MRefBuilder can process references in files -->
+    <Copy SourceFiles="@(OutputAssemblies)" DestinationFolder="$(DllDir)" SkipUnchangedFiles="true" />
   </Target>
   
   <!--Call MRefBuilder-->
