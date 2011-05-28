@@ -14,6 +14,7 @@
 
 
     <OutputDir>bin\</OutputDir>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -21,9 +22,9 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib">
+    <!--<Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>lib\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
+    </Reference>-->
     <!--<Dlls Include="$(DXROOT)\Examples\sandcastle\test.dll" />
     <Comments Include="$(DXROOT)\Examples\sandcastle\comments.xml" />-->
   </ItemGroup>
