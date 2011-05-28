@@ -19,8 +19,8 @@ namespace Microsoft.Ddue.Tools
             // specify options
             OptionCollection options = new OptionCollection();
             options.Add(new SwitchOption("?", "Show this help page."));
-            options.Add(new ListOption("xsl", "Sepcify transform files.", "xsltPath"));
-            options.Add(new ListOption("arg", "Sepcify arguments.", "name=value"));
+            options.Add(new ListOption("xsl", "Specify transform files.", "xsltPath"));
+            options.Add(new ListOption("arg", "Specify arguments.", "name=value"));
             options.Add(new StringOption("out", "Specify an output file. If unspecified, output goes to the console.", "outputFilePath"));
             options.Add(new SwitchOption("w", "Do not ignore insignificant whitespace. By default insignificant whitespace is ignored."));
 
