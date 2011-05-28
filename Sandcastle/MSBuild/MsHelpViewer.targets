@@ -1,31 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-  <UsingTask TaskName="MRefBuilder" AssemblyFile="..." />
+  <UsingTask TaskName="MRefBuilder" AssemblyFile="Sandcastle.Build.Tasks.dll" />
+  <UsingTask TaskName="XslTransformTask" AssemblyFile="Sandcastle.Build.Tasks.dll" />
 
   <PropertyGroup>
     <!-- Sandcastle directories -->
-    <DxRootPath>$(MSBuildThisFileDirectory)\..\</DxRootPath>
-    <ProductionTools>$(DxRootPath)\ProductionTools</ProductionTools>
-    <ProductionTransforms>$(DxRootPath)\ProductionTransforms</ProductionTransforms>
+    <DxRootPath>$(MSBuildThisFileDirectory)..\</DxRootPath>
+    <ProductionTools>$(DxRootPath)ProductionTools\</ProductionTools>
+    <ProductionTransforms>$(DxRootPath)ProductionTransforms\</ProductionTransforms>
     <PresentationStyle Condition=" '$(PresentationStyle)' == '' ">vs2010</PresentationStyle>
     <PresentationStyleDir Condition=" '$(PresentationStyleDir)' == '' ">$(DxRootPath)\Presentation\$(PresentationStyle)</PresentationStyleDir>
   </PropertyGroup>
   <PropertyGroup>
-    <OutputDir Condition=" '$(OutputDir)' == '' ">bin\</OutputDir>
-    <BuildDir Condition=" '$(BuildDir)' == '' ">$(MSBuildProjectDirectory)\build</BuildDir>
-    <DllDir>$(BuildDir)\bin</DllDir>
-    <DependencyDir>$(BuildDir)\dependency</DependencyDir>
+    <!-- Sandcastle script properties -->
+    <BuildDir Condition=" '$(BuildDir)' == '' ">$(MSBuildProjectDirectory)\build\</BuildDir>
+    <DllDir>$(BuildDir)\bin\</DllDir>
+    <DependencyDir>$(BuildDir)\dependency\</DependencyDir>
+    
+    <!-- MSBuild standard properties -->
+    <OutputPath Condition=" '$(OutputPath)' == '' ">bin\</OutputPath>
+    <IntermediateOutputPath>$(BuildDir)\obj\</IntermediateOutputPath>
   </PropertyGroup>
 
-  <Target Name="MsHelpViewer" DependsOnTargets="CleanBuildDirectory;BuildDocumentationForReferencedProjects">
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
+  <Target Name="MsHelpViewer" DependsOnTargets="CleanBuildDirectory;BuildDocumentationForReferencedProjects;Reflection">
     <Message Text="Target: MsHelpViewer" />
   </Target>
-  
+
   <Target Name="BuildDocumentationForReferencedProjects">
     <!-- this task will build and create XML documentation for referenced projects -->
     <Message Text="Copying assemblies from referenced projects to $(DllDir)" />
-    
+
     <MSBuild
         Projects="@(ProjectReference)"
         Targets="Build"
@@ -34,11 +40,67 @@
       >
       <Output TaskParameter="TargetOutputs" ItemName="OutputAssemblies" />
     </MSBuild>
-    
+
     <!-- copy built assemblies to the dll folder so the MRefBuilder can process references in files -->
     <Copy SourceFiles="@(OutputAssemblies)" DestinationFolder="$(DllDir)" SkipUnchangedFiles="true" />
+    <!--<Copy SourceFiles="@(ReferenceCopyLocalPaths)" DestinationFolder="$(DependencyDir)" SkipUnchangedFiles="true" />-->
   </Target>
   
+  <Target Name="BuildDocumentationForReferencedProjects_ReferencesHack" AfterTargets="BuildDocumentationForReferencedProjects">
+    <!-- this task is hack that enable us to copy dependent assemblies to the \dependencies folder -->
+    <!-- HACK: remove this task after finding solition to load proper @(ReferenceCopyLocalPaths) property -->
+    <Message Text="Copying referenced assemblies to $(DependencyDir)" />
+
+    <!-- dependent (CopyLocal=true) assemblies will be copied to the OutDir by the Build task automatically -->
+    <MSBuild
+        Projects="@(ProjectReference)"
+        Targets="Build"
+        BuildInParallel="true"
+        Properties="DocumentationFile=;OutDir=$(DependencyDir);RunCodeAnalysis=False;StyleCopEnabled=False"
+      />
+
+    <!-- remove project assemblies and .pdb files -->
+    <ItemGroup>
+      <DuplicatesToDelete Include="$(DependencyDir)%(OutputAssemblies.FileName).*" />
+      <DuplicatesToDelete Include="$(DependencyDir)*.pdb" />
+    </ItemGroup>
+    <Message Text="Deleting referenced projects assemblies from the dependency folder." />
+    <Delete Files="@(DuplicatesToDelete)" />
+  </Target>
+
+
+  <Target Name="BuildDocumentationForReferencedProjectsTest">
+    <Message Text="ReferencePath = @(ReferencePath->'%(FileName)')" />
+    <Message Text="ReferenceCopyLocalPaths = @(ReferenceCopyLocalPaths->'%(FileName)')" />
+    <Message Text="ReferenceDependencyPaths = @(ReferenceDependencyPaths->'%(FileName)')" />
+
+    <MSBuild Projects="$(MSBuildProjectFile)" Properties="ProjectFile=%(ProjectReference.Identity)" Targets="GetReferenceCopyLocalPaths">
+      <Output ItemName="ProjReferences" TaskParameter="TargetOutputs"/>
+    </MSBuild>
+    <Message Text="ProjectReference = @(ProjectReference->'%(Identity)')" />
+    <Message Text="ProjReferences = @(ProjReferences->'%(FileName)')" />
+  </Target>
+
+  <Target Name="GetReferenceCopyLocalPaths" Outputs="@(ReferenceCopyLocalPaths)" Condition=" '$(ProjectFile)' != '' " DependsOnTargets="ResolveReferences">
+    <MSBuild
+        Projects="$(ProjectFile)"
+        Targets="ResolveAssemblyReferences"
+        BuildInParallel="true"
+        Properties="RunCodeAnalysis=False;StyleCopEnabled=False"
+      >
+      <Output TaskParameter="TargetOutputs" ItemName="ReferenceCopyLocalPaths" />
+    </MSBuild>
+    <Message Text="ProjectFile = $(ProjectFile)" />
+    <Message Text="ReferenceCopyLocalPaths = @(ReferenceCopyLocalPaths)" />
+  </Target>
+
+  <Target Name="AfterResolveReferences">
+    <Message Text="AfterResolveReferences.ReferencePath = @(ReferencePath->'%(FileName)')" />
+    <Message Text="ReferenceCopyLocalPaths = @(ReferenceCopyLocalPaths->'%(FileName)')" />
+    <Message Text="ReferenceDependencyPaths = @(ReferenceDependencyPaths->'%(FileName)')" />
+  </Target>
+
+
   <!--Call MRefBuilder-->
   <Target Name="Reflection" DependsOnTargets="BuildDocumentationForReferencedProjects">
     <ItemGroup>
@@ -46,16 +108,25 @@
       <Assemblies Include="$(DllDir)\*.exe" />
       <Dependencies Include="$(DependencyDir)\*.dll" />
       <Dependencies Include="$(DependencyDir)\*.exe" />
+
+      <XslProductionTransform Include="$(ProductionTransforms)ApplyVSDocModel.xsl" />
+      <XslProductionTransform Include="$(ProductionTransforms)AddFriendlyFilenames.xsl" />
     </ItemGroup>
-    
+
     <MRefBuilder
         Assemblies="@(Assemblies)"
         Dependencies="@(Dependencies)"
-        OutputFile="$(TopicStyleDir)\reflection.org"
-        IncludeInternalMembers=" '$(IncludeInternalMembers)' == 'true' "
-      >
-      
-    </MRefBuilder>
+        OutputFile="$(BuildDir)\reflection.org"
+        IncludeInternalMembers="$(IncludeInternalMembers)"
+      />
+
+    <XslTransformTask
+        XmlInputFile="$(BuildDir)\reflection.org"
+        XmlOutputFile="$(BuildDir)\reflection.xml"
+        XslTransformationFiles="@(XslProductionTransform)"
+        XslParameters="IncludeAllMembersTopic=true;IncludeInheritedOverloadTopics=true"
+        IncludeMsBuildParameters="true"
+      />
     <!--
     <Exec Command='"$(ProductionTools)\MRefBuilder" &quot;$(DllDir)\*.dll&quot; &quot;$(DllDir)\*.exe&quot; /out:&quot;$(TopicStyleDir)\reflection.org&quot; /dep:&quot;$(DependencyDir)\*.dll&quot;,&quot;$(DependencyDir)\*.exe&quot;' Condition="$(Internal)=='false'" />
 
@@ -70,5 +141,7 @@
   <Target Name="CleanBuildDirectory">
     <Message Text="Cleaning build directory '$(BuildDir)'." />
     <RemoveDir Directories="$(BuildDir)" Condition="Exists($(BuildDir))" ContinueOnError="true" />
+    <RemoveDir Directories="$(OutputPath)" Condition="Exists($(OutputPath))" ContinueOnError="true" />
   </Target>
+
 </Project>

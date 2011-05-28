@@ -1,15 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using System.IO;
 
 namespace Sandcastle.Build.Tasks
 {
     public class MRefBuilder : ToolTask
     {
+        public MRefBuilder()
+        {
+        }
+
         [Required]
         public ITaskItem[] Assemblies { get; set; }
 
@@ -23,13 +25,6 @@ namespace Sandcastle.Build.Tasks
         protected override string ToolName
         {
             get { return "MRefBuilder.exe"; }
-        }
-
-        public override bool Execute()
-        {
-            Log.LogMessage(MessageImportance.Low, "Building reference information for assemblies.");
-
-            return base.Execute();
         }
 
         protected override string GenerateCommandLineCommands()
@@ -50,9 +45,8 @@ namespace Sandcastle.Build.Tasks
                 {
                     sb.AppendFormat("\"{0}\",", dependency.ItemSpec);
                 }
-
-                if (sb.ToString().EndsWith(",", StringComparison.OrdinalIgnoreCase))
-                    sb.Remove(sb.Length - 1, 1);
+                // change the last comma symbol to the space so the next command will be separated from this one
+                sb[sb.Length - 1] = ' ';
             }
 
             if (this.IncludeInternalMembers)
@@ -65,7 +59,7 @@ namespace Sandcastle.Build.Tasks
 
         protected override string GenerateFullPathToTool()
         {
-            return Path.Combine(Environment.GetEnvironmentVariable("DXROOT"), @"ProductionTools");
+            return Path.Combine(Environment.GetEnvironmentVariable("DXROOT"), "ProductionTools", this.ToolName);
         }
 
     }
