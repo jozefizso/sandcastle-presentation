@@ -34,3 +34,5 @@ JavadocSandcastle/Sandcastle/ProductionTools
 Sandcastle/Data
 Sandcastle/ProductionTools
 SHFB/SandcastleBuilder/Doc/Help
+glob:Sandcastle/Examples/Test/
+glob:Sandcastle/MSBuild/lib/

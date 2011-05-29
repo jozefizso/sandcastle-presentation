@@ -12,7 +12,10 @@ namespace Microsoft.Ddue.Tools.CommandLine {
 
 
     public enum LogLevel {
-        Info, Warn, Error
+        Notice = 0,
+        Info,
+        Warn,
+        Error
     }
 
 }

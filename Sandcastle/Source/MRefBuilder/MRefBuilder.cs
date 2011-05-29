@@ -281,7 +281,7 @@ namespace Microsoft.Ddue.Tools {
                         try {
                             builder.LoadAccessoryAssemblies(dependency);
                         } catch (IOException e) {
-                            ConsoleApplication.WriteMessage(LogLevel.Error, String.Format("An error occured while loading dependency assemblies. The error message is: {0}", e.Message));
+                            ConsoleApplication.WriteMessage(LogLevel.Error, String.Format("An error occured while loading dependency assemblies. The error message is: {0}. Dependency: '{1}'.", e.Message, dependency));
                             return (1);
                         }
                     }

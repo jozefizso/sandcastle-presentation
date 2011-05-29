@@ -163,8 +163,13 @@ namespace Sandcastle.Build.Tasks
             string inputFile = xmlInputFile;
             string outputFile = null;
 
+            this.Log.LogMessage("Transforming input XML file '{0}' to output '{1}'.", Path.GetFileName(xmlInputFile), Path.GetFileName(xmlOutputFile));
 
-            this.Log.LogMessage("Transforming input XML file '{0}' to output '{1}'.", xmlInputFile, xmlOutputFile);
+            this.Log.LogMessage(MessageImportance.Low, "List of XSLT files used in transformation:");
+            foreach (string xsltFile in transforms.Select(t => t.Item1))
+            {
+                this.Log.LogMessage(MessageImportance.Low, "  "+ xsltFile);
+            }
 
             for (int i = 0; i < transforms.Count; i++)
             {
@@ -180,8 +185,9 @@ namespace Sandcastle.Build.Tasks
                 }
 
                 string xsltFile = transforms[i].Item1;
+                string xsltFileName = Path.GetFileName(xsltFile);
                 XslCompiledTransform transform = transforms[i].Item2;
-                this.Log.LogMessage("Transforming input using the XSLT file '{0}'.", xsltFile);
+                this.Log.LogMessage("Transforming input using the XSLT file '{0}'.", xsltFileName);
                 this.Log.LogMessage(MessageImportance.Low, "Transforming XML file '{0}' using the XSLT file '{1}' into the output file '{2}'.", inputFile, xsltFile, outputFile);
 
                 try

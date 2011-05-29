@@ -1313,6 +1313,11 @@ namespace Microsoft.Ddue.Tools {
             writer.WriteEndElement();
         }
 
+        public void RegisterAddins(IEnumerable<MRefBuilderAddIn> addins) {
+            foreach (var addin in addins) {
+                addin.RegisterReflectionWriter(this);
+            }
+        }
     }
 
 }

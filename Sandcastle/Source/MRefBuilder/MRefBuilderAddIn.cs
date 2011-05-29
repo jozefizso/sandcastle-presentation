@@ -14,10 +14,14 @@ using Microsoft.Ddue.Tools.Reflection;
 
 namespace Microsoft.Ddue.Tools {
 
-    public class MRefBuilderAddIn {
+    public abstract class MRefBuilderAddIn {
 
+        protected MRefBuilderAddIn(XPathNavigator configuration) { }
+
+        [Obsolete]
         protected MRefBuilderAddIn(ManagedReflectionWriter writer, XPathNavigator configuration) { }
 
+        public abstract void RegisterReflectionWriter(ManagedReflectionWriter writer);
     }
 
 }

@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using Microsoft.Ddue.Tools;
+using Microsoft.Ddue.Tools.CommandLine;
 
 namespace Sandcastle.Build.Tasks
 {
-    public class MRefBuilder : ToolTask
+    public class MRefBuilder : Task
     {
         public MRefBuilder()
         {
@@ -22,44 +26,36 @@ namespace Sandcastle.Build.Tasks
 
         public bool IncludeInternalMembers { get; set; }
 
-        protected override string ToolName
+        public override bool Execute()
         {
-            get { return "MRefBuilder.exe"; }
-        }
+            string configFile = GetConfigFileName();
+            var assemblies = this.Assemblies.Select(item => item.ItemSpec);
+            var dependencies = this.Dependencies.Select(item => item.ItemSpec);
 
-        protected override string GenerateCommandLineCommands()
-        {
-            StringBuilder sb = new StringBuilder();
+            ConsoleApplication.SetConsoleLogger(new MsBuildConsoleLogger(this.Log));
+            MRefBuilderApp builder = new MRefBuilderApp(configFile, assemblies, dependencies, this.OutputFile, this.IncludeInternalMembers);
 
-            foreach (ITaskItem assembly in this.Assemblies)
+            try
             {
-                sb.AppendFormat("\"{0}\" ", assembly.ItemSpec);
+                builder.VisitApis();
             }
-
-            sb.AppendFormat("/out:\"{0}\" ", this.OutputFile);
-
-            if (this.Dependencies != null && this.Dependencies.Length > 0)
+            catch (SandcastleBuildException ex)
             {
-                sb.Append("/dep:");
-                foreach (ITaskItem dependency in this.Dependencies)
+                this.Log.LogError("MRefBuilder task failed: {0}", ex.Message);
+                if (ex.InnerException != null)
                 {
-                    sb.AppendFormat("\"{0}\",", dependency.ItemSpec);
+                    this.Log.LogErrorFromException(ex.InnerException);
                 }
-                // change the last comma symbol to the space so the next command will be separated from this one
-                sb[sb.Length - 1] = ' ';
+
+                return false;
             }
 
-            if (this.IncludeInternalMembers)
-            {
-                sb.Append("/internal+");
-            }
-
-            return sb.ToString();
+            return true;
         }
 
-        protected override string GenerateFullPathToTool()
+        private string GetConfigFileName()
         {
-            return Path.Combine(Environment.GetEnvironmentVariable("DXROOT"), "ProductionTools", this.ToolName);
+            return Path.Combine(Environment.GetEnvironmentVariable("DXROOT"), "ProductionTools", "MRefBuilder.config");
         }
 
     }
