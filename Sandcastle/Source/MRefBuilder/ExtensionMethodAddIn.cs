@@ -24,8 +24,18 @@ namespace Microsoft.Ddue.Tools {
 
         private ManagedReflectionWriter reflector;
 
+        public ExtensionMethodAddIn(XPathNavigator configuration)
+            : base(configuration) {
+        }
+
+        [Obsolete]
         public ExtensionMethodAddIn(ManagedReflectionWriter reflector, XPathNavigator configuration) : base(reflector, configuration) {
-            this.reflector = reflector;
+            if (reflector != null)
+                this.RegisterReflectionWriter(reflector);
+        }
+
+        public override void RegisterReflectionWriter(ManagedReflectionWriter writer) {
+            this.reflector = writer;
             reflector.RegisterStartTagCallback("apis", new MRefBuilderCallback(RecordExtensionMethods));
             reflector.RegisterEndTagCallback("elements", new MRefBuilderCallback(AddExtensionMethods));
             reflector.RegisterStartTagCallback("apidata", new MRefBuilderCallback(AddExtensionSubsubgroup));

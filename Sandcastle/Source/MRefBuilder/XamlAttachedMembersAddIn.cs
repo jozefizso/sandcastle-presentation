@@ -24,9 +24,20 @@ namespace Microsoft.Ddue.Tools {
 
         private ManagedReflectionWriter mrw;
 
+        public XamlAttachedMembersAddIn(XPathNavigator configuration)
+            : base(configuration) {
+        }
+
+        [Obsolete]
         public XamlAttachedMembersAddIn(ManagedReflectionWriter writer, XPathNavigator configuration) : base(writer, configuration) {
+            if (writer != null)
+                this.RegisterReflectionWriter(writer);
+        }
+
+        public override void RegisterReflectionWriter(ManagedReflectionWriter writer) {
+
             // keep track of the writer
-            mrw = writer;
+            this.mrw = writer;
 
             // register processors as callbacks
             writer.RegisterStartTagCallback("apis", new MRefBuilderCallback(AddAttachedMembers));

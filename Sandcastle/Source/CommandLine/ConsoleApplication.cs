@@ -7,10 +7,24 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Xml.XPath;
+using System.Diagnostics;
 
 namespace Microsoft.Ddue.Tools.CommandLine {
 
     public static class ConsoleApplication {
+
+        private static IConsoleLogger logger;
+
+        static ConsoleApplication() {
+            logger = new ConsoleLogger();
+        }
+
+        public static void SetConsoleLogger(IConsoleLogger consoleLogger) {
+            if (consoleLogger == null)
+                throw new ArgumentNullException("consoleLogger");
+
+            logger = consoleLogger;
+        }
 
         public static XPathDocument GetConfigurationFile() {
             return (GetConfigurationFile(Assembly.GetCallingAssembly().Location + ".config"));
@@ -42,21 +56,36 @@ namespace Microsoft.Ddue.Tools.CommandLine {
         public static void WriteBanner() {
             Assembly application = Assembly.GetCallingAssembly();
             AssemblyName applicationData = application.GetName();
-            Console.WriteLine("{0} (v{1})", applicationData.Name, applicationData.Version);
+            WriteMessage(LogLevel.Info, "{0} (v{1})", applicationData.Name, applicationData.Version);
             Object[] copyrightAttributes = application.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), true);
             foreach (AssemblyCopyrightAttribute copyrightAttribute in copyrightAttributes) {
-                Console.WriteLine(copyrightAttribute.Copyright);
+                WriteMessage(LogLevel.Info, copyrightAttribute.Copyright);
             }
         }
 
         public static void WriteMessage(LogLevel level, string message) {
-            Console.WriteLine("{0}: {1}", level, message);
+            logger.WriteMessage(level, message);
+        }
+
+        public static void WriteMessage(LogLevel level, string format, object arg1) {
+            string message = String.Format(format, arg1);
+            WriteMessage(level, message);
+        }
+
+        public static void WriteMessage(LogLevel level, string format, object arg1, object arg2) {
+            string message = String.Format(format, arg1, arg2);
+            WriteMessage(level, message);
+        }
+
+        public static void WriteMessage(LogLevel level, string format, object arg1, object arg2, object arg3) {
+            string message = String.Format(format, arg1, arg2, arg3);
+            WriteMessage(level, message);
         }
 
         public static void WriteMessage(LogLevel level, string format, params object[] arg)
         {
-            Console.Write("{0}: ", level);
-            Console.WriteLine(format, arg);
+            string message = String.Format(format, arg);
+            WriteMessage(level, message);
         }
 
     }
