@@ -16,6 +16,7 @@ namespace Sandcastle.Build.Tasks
 
         public XslTransformTask()
         {
+            this.IndentXmlOutput = true;
         }
 
         [Required]
@@ -30,6 +31,8 @@ namespace Sandcastle.Build.Tasks
         public string XslParameters { get; set; }
 
         public bool IncludeMsBuildParameters { get; set; }
+
+        public bool IndentXmlOutput { get; set; }
 
         public override bool Execute()
         {
@@ -220,8 +223,11 @@ namespace Sandcastle.Build.Tasks
 
         private void TransformFile(string xmlInputFile, string outputFile, XslCompiledTransform transform, XsltArgumentList args)
         {
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = this.IndentXmlOutput;
+
             using (XmlReader reader = XmlReader.Create(xmlInputFile))
-            using (XmlWriter writer = XmlWriter.Create(outputFile))
+            using (XmlWriter writer = XmlWriter.Create(outputFile, settings))
             {
                 transform.Transform(reader, args, writer);
             }

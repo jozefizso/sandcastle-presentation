@@ -24,7 +24,21 @@
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 
-  <Target Name="MsHelpViewer" DependsOnTargets="CleanBuildDirectory;BuildDocumentationForReferencedProjects;Reflection">
+  <PropertyGroup>
+    <MsHelpViewerDependsOn>
+      CleanBuildDirectory;
+      BuildDocumentationForReferencedProjects;
+      Reflection;
+      GenerateTopicManifest;
+      TableOfContents;
+    </MsHelpViewerDependsOn>
+    <NotImplementedYet>
+      CopyPresentationContentToOutput;
+      BuildHtmlDocumentation
+    </NotImplementedYet>
+  </PropertyGroup>
+  
+  <Target Name="MsHelpViewer" DependsOnTargets="$(MsHelpViewerDependsOn)">
     <Message Text="Target: MsHelpViewer" />
   </Target>
 
@@ -67,7 +81,6 @@
     <Message Text="Deleting referenced projects assemblies from the dependency folder." />
     <Delete Files="@(DuplicatesToDelete)" />
   </Target>
-
 
   <Target Name="BuildDocumentationForReferencedProjectsTest">
     <Message Text="ReferencePath = @(ReferencePath->'%(FileName)')" />
@@ -127,15 +140,36 @@
         XslParameters="IncludeAllMembersTopic=true;IncludeInheritedOverloadTopics=true"
         IncludeMsBuildParameters="true"
       />
-    <!--
-    <Exec Command='"$(ProductionTools)\MRefBuilder" &quot;$(DllDir)\*.dll&quot; &quot;$(DllDir)\*.exe&quot; /out:&quot;$(TopicStyleDir)\reflection.org&quot; /dep:&quot;$(DependencyDir)\*.dll&quot;,&quot;$(DependencyDir)\*.exe&quot;' Condition="$(Internal)=='false'" />
+  </Target>
 
-    <Exec Command='"$(ProductionTools)\MRefBuilder" &quot;$(DllDir)\*.dll&quot; &quot;$(DllDir)\*.exe&quot; /out:&quot;$(TopicStyleDir)\reflection.org&quot; /dep:&quot;$(DependencyDir)\*.dll&quot;,&quot;$(DependencyDir)\*.exe&quot; /internal+' Condition="$(Internal)=='true'" />
+  <Target Name="GenerateTopicManifest" DependsOnTargets="Reflection">
+    <Message Text="Generating topics manifest from the reflection.xml file." />
+    
+    <ItemGroup>
+      <XslManifestTransform Include="$(ProductionTransforms)ReflectionToManifest.xsl" />
+    </ItemGroup>
+    
+    <XslTransformTask
+        XmlInputFile="$(BuildDir)\reflection.xml"
+        XmlOutputFile="$(BuildDir)\manifest.xml"
+        XslTransformationFiles="@(XslManifestTransform)"
+        IncludeMsBuildParameters="false"
+      />
+  </Target>
 
-    <Exec Condition="'$(TopicStyle)' == 'prototype'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyPrototypeDocModel.xsl" /xsl:"$(ProductionTransforms)\AddGuidFilenames.xsl" "$(TopicStyleDir)\reflection.org" /out:"$(TopicStyleDir)\reflection.xml"' />
-    <Exec Condition="'$(TopicStyle)' == 'vs2005'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(TopicStyleDir)\reflection.org" /out:"$(TopicStyleDir)\reflection.xml" /arg:IncludeAllMembersTopic=true /arg:IncludeInheritedOverloadTopics=true' />
-    <Exec Condition="'$(TopicStyle)' == 'hana'" Command='"$(ProductionTools)\XslTransform.exe" /xsl:"$(ProductionTransforms)\ApplyVSDocModel.xsl" /xsl:"$(ProductionTransforms)\AddFriendlyFilenames.xsl" "$(TopicStyleDir)\reflection.org" /out:"$(TopicStyleDir)\reflection.xml" /arg:IncludeAllMembersTopic=false /arg:IncludeInheritedOverloadTopics=true' />
-    -->
+  <Target Name="TableOfContents" DependsOnTargets="GenerateTopicManifest">
+    <Message Text="Generating table of contents file with all the topics." />
+
+    <ItemGroup>
+      <XslTocTransform Include="$(ProductionTransforms)CreateVSToc.xsl" />
+    </ItemGroup>
+
+    <XslTransformTask
+        XmlInputFile="$(BuildDir)\reflection.xml"
+        XmlOutputFile="$(BuildDir)\toc.xml"
+        XslTransformationFiles="@(XslTocTransform)"
+        IncludeMsBuildParameters="false"
+      />
   </Target>
 
   <Target Name="CleanBuildDirectory">
